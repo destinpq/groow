@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   List,
@@ -20,6 +20,8 @@ import {
   Row,
   Col,
   Statistic,
+  Spin,
+  message,
 } from 'antd';
 import {
   BellOutlined,
@@ -36,138 +38,149 @@ import {
   MailOutlined,
   MobileOutlined,
   NotificationOutlined,
+  DollarOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
+import { notificationsAPI, type Notification, type NotificationPreferences } from '@/services/api/notifications';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-interface Notification {
-  id: number;
-  type: 'order' | 'promotion' | 'review' | 'delivery' | 'wishlist' | 'account';
-  title: string;
-  message: string;
-  time: string;
-  read: boolean;
-  icon: React.ReactNode;
-  color: string;
-  actionUrl?: string;
-}
+// Helper function to get icon and color for notification type
+const getNotificationStyle = (type: Notification['type']) => {
+  const styles = {
+    order: { icon: <ShoppingOutlined />, color: '#1890ff' },
+    payment: { icon: <DollarOutlined />, color: '#52c41a' },
+    product: { icon: <GiftOutlined />, color: '#722ed1' },
+    rfq: { icon: <FileTextOutlined />, color: '#13c2c2' },
+    review: { icon: <StarOutlined />, color: '#faad14' },
+    system: { icon: <NotificationOutlined />, color: '#ff9900' },
+    promotion: { icon: <GiftOutlined />, color: '#ff4d4f' },
+  };
+  return styles[type] || styles.system;
+};
 
-const mockNotifications: Notification[] = [
-  {
-    id: 1,
-    type: 'order',
-    title: 'Order Shipped',
-    message: 'Your order #12345 has been shipped and is on the way',
-    time: '2 hours ago',
-    read: false,
-    icon: <TruckOutlined />,
-    color: '#1890ff',
-    actionUrl: '/customer/orders/12345',
-  },
-  {
-    id: 2,
-    type: 'promotion',
-    title: 'Flash Sale Alert',
-    message: '50% off on Electronics - Limited time offer!',
-    time: '5 hours ago',
-    read: false,
-    icon: <GiftOutlined />,
-    color: '#ff4d4f',
-  },
-  {
-    id: 3,
-    type: 'delivery',
-    title: 'Delivery Completed',
-    message: 'Your order #12340 has been delivered successfully',
-    time: '1 day ago',
-    read: true,
-    icon: <CheckCircleOutlined />,
-    color: '#52c41a',
-  },
-  {
-    id: 4,
-    type: 'review',
-    title: 'Review Reminder',
-    message: 'How was your recent purchase? Share your experience',
-    time: '2 days ago',
-    read: true,
-    icon: <StarOutlined />,
-    color: '#faad14',
-  },
-  {
-    id: 5,
-    type: 'wishlist',
-    title: 'Price Drop Alert',
-    message: 'Item in your wishlist is now 30% off - Wireless Headphones',
-    time: '3 days ago',
-    read: false,
-    icon: <BellOutlined />,
-    color: '#722ed1',
-  },
-  {
-    id: 6,
-    type: 'order',
-    title: 'Order Confirmed',
-    message: 'Your order #12346 has been confirmed and is being processed',
-    time: '3 days ago',
-    read: true,
-    icon: <ShoppingOutlined />,
-    color: '#1890ff',
-  },
-  {
-    id: 7,
-    type: 'account',
-    title: 'Security Alert',
-    message: 'New login detected from Chrome on Windows',
-    time: '1 week ago',
-    read: true,
-    icon: <NotificationOutlined />,
-    color: '#ff9900',
-  },
-];
+const mockNotifications: Notification[] = [];
 
 const CustomerNotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [pushNotifications, setPushNotifications] = useState(true);
-  const [smsNotifications, setSmsNotifications] = useState(false);
+  const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const markAsRead = (id: number) => {
-    setNotifications(notifications.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ));
+  // Fetch notifications
+  const fetchNotifications = async (filters?: { type?: string; isRead?: boolean }) => {
+    try {
+      setLoading(true);
+      const data = await notificationsAPI.getAll(filters);
+      setNotifications(data);
+      
+      // Update unread count
+      const count = await notificationsAPI.getUnreadCount();
+      setUnreadCount(count);
+    } catch (error) {
+      message.error('Failed to load notifications');
+      console.error('Fetch notifications error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
+  // Fetch preferences
+  const fetchPreferences = async () => {
+    try {
+      const prefs = await notificationsAPI.getPreferences();
+      setPreferences(prefs);
+    } catch (error) {
+      console.error('Fetch preferences error:', error);
+    }
   };
 
-  const deleteNotification = (id: number) => {
-    setNotifications(notifications.filter(n => n.id !== id));
+  // Load data on mount
+  useEffect(() => {
+    fetchNotifications();
+    fetchPreferences();
+  }, []);
+
+  const markAsRead = async (id: string) => {
+    try {
+      await notificationsAPI.markAsRead(id);
+      setNotifications(notifications.map(n => 
+        n.id === id ? { ...n, isRead: true } : n
+      ));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+      message.success('Marked as read');
+    } catch (error) {
+      message.error('Failed to mark as read');
+      console.error('Mark as read error:', error);
+    }
   };
 
-  const clearAllNotifications = () => {
-    setNotifications([]);
+  const markAllAsRead = async () => {
+    try {
+      await notificationsAPI.markAllAsRead();
+      setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+      message.success('All notifications marked as read');
+    } catch (error) {
+      message.error('Failed to mark all as read');
+      console.error('Mark all as read error:', error);
+    }
+  };
+
+  const deleteNotification = async (id: string) => {
+    try {
+      await notificationsAPI.delete(id);
+      setNotifications(notifications.filter(n => n.id !== id));
+      message.success('Notification deleted');
+    } catch (error) {
+      message.error('Failed to delete notification');
+      console.error('Delete notification error:', error);
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    try {
+      await notificationsAPI.clearAll();
+      setNotifications([]);
+      setUnreadCount(0);
+      message.success('All notifications cleared');
+    } catch (error) {
+      message.error('Failed to clear notifications');
+      console.error('Clear all error:', error);
+    }
+  };
+
+  const savePreferences = async (newPrefs: Partial<NotificationPreferences>) => {
+    try {
+      const updated = await notificationsAPI.updatePreferences(newPrefs);
+      setPreferences(updated);
+      message.success('Preferences saved successfully');
+    } catch (error) {
+      message.error('Failed to save preferences');
+      console.error('Save preferences error:', error);
+    }
   };
 
   const getMenuItems = (notification: Notification): MenuProps['items'] => [
     {
       key: 'read',
-      label: notification.read ? 'Mark as unread' : 'Mark as read',
-      icon: notification.read ? <CloseCircleOutlined /> : <CheckCircleOutlined />,
+      label: notification.isRead ? 'Mark as unread' : 'Mark as read',
+      icon: notification.isRead ? <CloseCircleOutlined /> : <CheckCircleOutlined />,
       onClick: () => markAsRead(notification.id),
     },
     {
       key: 'view',
       label: 'View details',
       icon: <EyeOutlined />,
-      disabled: !notification.actionUrl,
+      disabled: !notification.link,
     },
     {
       type: 'divider',
@@ -183,17 +196,18 @@ const CustomerNotificationsPage: React.FC = () => {
 
   const filteredNotifications = notifications.filter(n => {
     if (activeTab === 'all') return true;
-    if (activeTab === 'unread') return !n.read;
+    if (activeTab === 'unread') return !n.isRead;
     return n.type === activeTab;
   });
 
   const notificationsByType = {
     order: notifications.filter(n => n.type === 'order').length,
     promotion: notifications.filter(n => n.type === 'promotion').length,
-    delivery: notifications.filter(n => n.type === 'delivery').length,
+    payment: notifications.filter(n => n.type === 'payment').length,
     review: notifications.filter(n => n.type === 'review').length,
-    wishlist: notifications.filter(n => n.type === 'wishlist').length,
-    account: notifications.filter(n => n.type === 'account').length,
+    product: notifications.filter(n => n.type === 'product').length,
+    rfq: notifications.filter(n => n.type === 'rfq').length,
+    system: notifications.filter(n => n.type === 'system').length,
   };
 
   return (
@@ -277,64 +291,69 @@ const CustomerNotificationsPage: React.FC = () => {
               />
               <TabPane
                 tab={
-                  <Badge count={notificationsByType.delivery} showZero>
-                    <span>Delivery</span>
+                  <Badge count={notificationsByType.payment} showZero>
+                    <span>Payments</span>
                   </Badge>
                 }
-                key="delivery"
+                key="payment"
               />
             </Tabs>
 
             {filteredNotifications.length === 0 ? (
               <Empty description="No notifications" />
             ) : (
-              <List
-                itemLayout="horizontal"
-                dataSource={filteredNotifications}
-                renderItem={(notification) => (
-                  <List.Item
-                    style={{
-                      background: notification.read ? 'transparent' : '#e6f7ff',
-                      padding: 16,
-                      borderRadius: 8,
-                      marginBottom: 8,
-                    }}
-                    actions={[
-                      <Dropdown
-                        menu={{ items: getMenuItems(notification) }}
-                        trigger={['click']}
+              <Spin spinning={loading}>
+                <List
+                  itemLayout="horizontal"
+                  dataSource={filteredNotifications}
+                  renderItem={(notification) => {
+                    const style = getNotificationStyle(notification.type);
+                    return (
+                      <List.Item
+                        style={{
+                          background: notification.isRead ? 'transparent' : '#e6f7ff',
+                          padding: 16,
+                          borderRadius: 8,
+                          marginBottom: 8,
+                        }}
+                        actions={[
+                          <Dropdown
+                            menu={{ items: getMenuItems(notification) }}
+                            trigger={['click']}
+                          >
+                            <Button type="text" icon={<MoreOutlined />} />
+                          </Dropdown>,
+                        ]}
                       >
-                        <Button type="text" icon={<MoreOutlined />} />
-                      </Dropdown>,
-                    ]}
-                  >
-                    <List.Item.Meta
-                      avatar={
-                        <Badge dot={!notification.read}>
-                          <Avatar
-                            icon={notification.icon}
-                            style={{ backgroundColor: notification.color }}
-                          />
-                        </Badge>
-                      }
-                      title={
-                        <Space>
-                          <Text strong={!notification.read}>{notification.title}</Text>
-                          {!notification.read && <Tag color="blue">New</Tag>}
-                        </Space>
-                      }
-                      description={
-                        <Space direction="vertical" size="small">
-                          <Text>{notification.message}</Text>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            {notification.time}
-                          </Text>
-                        </Space>
-                      }
-                    />
-                  </List.Item>
-                )}
-              />
+                        <List.Item.Meta
+                          avatar={
+                            <Badge dot={!notification.isRead}>
+                              <Avatar
+                                icon={style.icon}
+                                style={{ backgroundColor: style.color }}
+                              />
+                            </Badge>
+                          }
+                          title={
+                            <Space>
+                              <Text strong={!notification.isRead}>{notification.title}</Text>
+                              {!notification.isRead && <Tag color="blue">New</Tag>}
+                            </Space>
+                          }
+                          description={
+                            <Space direction="vertical" size="small">
+                              <Text>{notification.message}</Text>
+                              <Text type="secondary" style={{ fontSize: 12 }}>
+                                {dayjs(notification.createdAt).fromNow()}
+                              </Text>
+                            </Space>
+                          }
+                        />
+                      </List.Item>
+                    );
+                  }}
+                />
+              </Spin>
             )}
           </Card>
         </Col>
@@ -377,8 +396,14 @@ const CustomerNotificationsPage: React.FC = () => {
                       <Text>Email Notifications</Text>
                     </Space>
                     <Switch
-                      checked={emailNotifications}
-                      onChange={setEmailNotifications}
+                      checked={preferences?.email?.orders ?? true}
+                      onChange={(checked) => {
+                        if (preferences) {
+                          savePreferences({
+                            email: { ...preferences.email, orders: checked }
+                          });
+                        }
+                      }}
                     />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -387,8 +412,14 @@ const CustomerNotificationsPage: React.FC = () => {
                       <Text>Push Notifications</Text>
                     </Space>
                     <Switch
-                      checked={pushNotifications}
-                      onChange={setPushNotifications}
+                      checked={preferences?.push?.orders ?? true}
+                      onChange={(checked) => {
+                        if (preferences) {
+                          savePreferences({
+                            push: { ...preferences.push, orders: checked }
+                          });
+                        }
+                      }}
                     />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -397,8 +428,14 @@ const CustomerNotificationsPage: React.FC = () => {
                       <Text>SMS Notifications</Text>
                     </Space>
                     <Switch
-                      checked={smsNotifications}
-                      onChange={setSmsNotifications}
+                      checked={preferences?.sms?.orders ?? false}
+                      onChange={(checked) => {
+                        if (preferences) {
+                          savePreferences({
+                            sms: { ...preferences.sms, orders: checked }
+                          });
+                        }
+                      }}
                     />
                   </div>
                 </Space>

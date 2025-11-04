@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -12,6 +12,7 @@ import {
   message,
   Popconfirm,
   Select,
+  Spin,
 } from 'antd';
 import {
   DeleteOutlined,
@@ -21,96 +22,122 @@ import {
 } from '@ant-design/icons';
 import { history } from 'umi';
 import { motion } from 'framer-motion';
+import { wishlistAPI, type WishlistItem } from '@/services/api/cart';
+import { useCartStore } from '@/store/cartStore';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-// Mock wishlist data
-const mockWishlistItems = [
-  {
-    id: 1,
-    productId: 1,
-    name: 'Premium Wireless Bluetooth Headphones',
-    image: 'https://via.placeholder.com/300x300/1890ff/fff?text=Product+1',
-    price: 349.99,
-    originalPrice: 449.99,
-    discount: 22,
-    rating: 4.5,
-    reviewCount: 2847,
-    inStock: true,
-    vendor: 'TechHub Store',
-    addedDate: '2024-10-15',
-  },
-  {
-    id: 2,
-    productId: 2,
-    name: 'Smart Watch Pro - Fitness Tracker',
-    image: 'https://via.placeholder.com/300x300/52c41a/fff?text=Product+2',
-    price: 199.99,
-    originalPrice: 299.99,
-    discount: 33,
-    rating: 4.3,
-    reviewCount: 1523,
-    inStock: true,
-    vendor: 'Gadget World',
-    addedDate: '2024-10-12',
-  },
-  {
-    id: 3,
-    productId: 3,
-    name: 'Laptop Backpack with USB Charging Port',
-    image: 'https://via.placeholder.com/300x300/faad14/fff?text=Product+3',
-    price: 49.99,
-    originalPrice: 79.99,
-    discount: 38,
-    rating: 4.6,
-    reviewCount: 892,
-    inStock: false,
-    vendor: 'Bag Store',
-    addedDate: '2024-10-08',
-  },
-  {
-    id: 4,
-    productId: 4,
-    name: 'Mechanical Gaming Keyboard RGB',
-    image: 'https://via.placeholder.com/300x300/f5222d/fff?text=Product+4',
-    price: 89.99,
-    originalPrice: 129.99,
-    discount: 31,
-    rating: 4.7,
-    reviewCount: 2134,
-    inStock: true,
-    vendor: 'Gaming Hub',
-    addedDate: '2024-10-05',
-  },
-];
+// Extended wishlist item type with product details
+interface ExtendedWishlistItem extends WishlistItem {
+  name?: string;
+  image?: string;
+  originalPrice?: number;
+  discount?: number;
+  rating?: number;
+  reviewCount?: number;
+  vendor?: string;
+}
 
 const WishlistPage: React.FC = () => {
-  const [wishlistItems, setWishlistItems] = useState(mockWishlistItems);
+  const [wishlistItems, setWishlistItems] = useState<ExtendedWishlistItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
+  const { addItem: addToCart } = useCartStore();
 
-  const handleRemoveFromWishlist = (id: number) => {
-    setWishlistItems(wishlistItems.filter((item) => item.id !== id));
-    message.success('Item removed from wishlist');
+  // Fetch wishlist from API
+  const fetchWishlist = async () => {
+    try {
+      setLoading(true);
+      const wishlistData = await wishlistAPI.get();
+      
+      // Map API response to UI format
+      const mappedItems: ExtendedWishlistItem[] = wishlistData.items.map((item) => ({
+        ...item,
+        name: item.productName,
+        image: item.productImage || 'https://via.placeholder.com/300x300/1890ff/fff?text=Product',
+        originalPrice: item.price * 1.2, // Placeholder - would come from product API
+        discount: 20, // Placeholder - would come from product API
+        rating: 4.5, // Placeholder - would come from product API
+        reviewCount: 100, // Placeholder - would come from product API
+        vendor: 'Vendor Name', // Placeholder - would come from product API
+      }));
+      
+      setWishlistItems(mappedItems);
+    } catch (error) {
+      message.error('Failed to load wishlist');
+      console.error('Error fetching wishlist:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAddToCart = (item: any) => {
+  useEffect(() => {
+    fetchWishlist();
+  }, []);
+
+  const handleRemoveFromWishlist = async (id: string) => {
+    try {
+      await wishlistAPI.removeItem(id);
+      setWishlistItems(wishlistItems.filter((item) => item.id !== id));
+      message.success('Item removed from wishlist');
+    } catch (error) {
+      message.error('Failed to remove item');
+      console.error('Error removing item:', error);
+    }
+  };
+
+  const handleAddToCart = async (item: ExtendedWishlistItem) => {
     if (!item.inStock) {
       message.warning('This item is currently out of stock');
       return;
     }
-    message.success(`${item.name} added to cart`);
-    // Add to cart logic
+    
+    try {
+      await addToCart({ productId: item.productId, quantity: 1 });
+      message.success(`${item.productName} added to cart`);
+    } catch (error) {
+      message.error('Failed to add item to cart');
+      console.error('Error adding to cart:', error);
+    }
   };
 
-  const handleAddAllToCart = () => {
+  const handleMoveToCart = async (item: ExtendedWishlistItem) => {
+    if (!item.inStock) {
+      message.warning('This item is currently out of stock');
+      return;
+    }
+    
+    try {
+      await wishlistAPI.moveToCart(item.id);
+      setWishlistItems(wishlistItems.filter((i) => i.id !== item.id));
+      message.success(`${item.productName} moved to cart`);
+    } catch (error) {
+      message.error('Failed to move item to cart');
+      console.error('Error moving to cart:', error);
+    }
+  };
+
+  const handleAddAllToCart = async () => {
     const inStockItems = wishlistItems.filter((item) => item.inStock);
     if (inStockItems.length === 0) {
       message.warning('No items in stock');
       return;
     }
-    message.success(`${inStockItems.length} items added to cart`);
-    // Add all to cart logic
+    
+    try {
+      setLoading(true);
+      // Add all in-stock items to cart
+      await Promise.all(
+        inStockItems.map((item) => addToCart({ productId: item.productId, quantity: 1 }))
+      );
+      message.success(`${inStockItems.length} items added to cart`);
+    } catch (error) {
+      message.error('Failed to add some items to cart');
+      console.error('Error adding all to cart:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleShare = () => {
@@ -134,12 +161,21 @@ const WishlistPage: React.FC = () => {
       case 'price-high':
         return b.price - a.price;
       case 'discount':
-        return b.discount - a.discount;
+        return (b.discount || 0) - (a.discount || 0);
       case 'newest':
       default:
-        return new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime();
+        return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     }
   });
+
+  // Show loading spinner
+  if (loading && wishlistItems.length === 0) {
+    return (
+      <div style={{ padding: 24, textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
@@ -216,7 +252,7 @@ const WishlistPage: React.FC = () => {
                         style={{ width: '100%', height: 280, objectFit: 'cover' }}
                         onClick={() => history.push(`/products/${item.productId}`)}
                       />
-                      {item.discount > 0 && (
+                      {item.discount && item.discount > 0 && (
                         <Tag
                           color="red"
                           style={{
@@ -308,14 +344,14 @@ const WishlistPage: React.FC = () => {
                           <Text strong style={{ fontSize: 18, color: '#B12704' }}>
                             ${item.price.toFixed(2)}
                           </Text>
-                          {item.originalPrice > item.price && (
+                          {item.originalPrice && item.originalPrice > item.price && (
                             <Text delete type="secondary" style={{ fontSize: 14 }}>
                               ${item.originalPrice.toFixed(2)}
                             </Text>
                           )}
                         </Space>
                         <Text type="secondary" style={{ fontSize: 11 }}>
-                          Added on {new Date(item.addedDate).toLocaleDateString()}
+                          Added on {new Date(item.addedAt).toLocaleDateString()}
                         </Text>
                       </Space>
                     }
@@ -348,7 +384,7 @@ const WishlistPage: React.FC = () => {
               <Title level={3} style={{ margin: 0, color: '#52c41a' }}>
                 $
                 {wishlistItems
-                  .reduce((sum, item) => sum + (item.originalPrice - item.price), 0)
+                  .reduce((sum, item) => sum + ((item.originalPrice || item.price) - item.price), 0)
                   .toFixed(2)}
               </Title>
             </Col>

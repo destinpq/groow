@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -19,6 +19,7 @@ import {
   Divider,
   Progress,
   Empty,
+  Spin,
 } from 'antd';
 import {
   StarOutlined,
@@ -31,85 +32,60 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile } from 'antd/es/upload/interface';
+import { reviewsAPI, type Review as APIReview } from '@/services/api/reviews';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
-interface Review {
-  id: number;
-  productId: number;
-  productName: string;
-  productImage: string;
-  rating: number;
-  title: string;
-  comment: string;
-  images: string[];
-  status: 'published' | 'pending' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
-  helpful: number;
-  verified: boolean;
+// Extended Review interface for UI
+interface Review extends APIReview {
+  productName?: string;
+  productImage?: string;
 }
 
-const mockReviews: Review[] = [
-  {
-    id: 1,
-    productId: 101,
-    productName: 'Wireless Bluetooth Headphones Pro',
-    productImage: 'https://via.placeholder.com/80?text=Product',
-    rating: 5,
-    title: 'Excellent sound quality!',
-    comment:
-      'These headphones exceeded my expectations. The bass is deep, the highs are clear, and the battery life is amazing. Highly recommend!',
-    images: [
-      'https://via.placeholder.com/200?text=Review1',
-      'https://via.placeholder.com/200?text=Review2',
-    ],
-    status: 'published',
-    createdAt: '2024-10-15',
-    updatedAt: '2024-10-15',
-    helpful: 45,
-    verified: true,
-  },
-  {
-    id: 2,
-    productId: 102,
-    productName: 'Mechanical Gaming Keyboard RGB',
-    productImage: 'https://via.placeholder.com/80?text=Keyboard',
-    rating: 4,
-    title: 'Great keyboard, minor issues',
-    comment:
-      'Love the RGB lighting and mechanical switches. However, the software could be better. Overall, a solid purchase.',
-    images: ['https://via.placeholder.com/200?text=Review3'],
-    status: 'published',
-    createdAt: '2024-10-20',
-    updatedAt: '2024-10-20',
-    helpful: 23,
-    verified: true,
-  },
-  {
-    id: 3,
-    productId: 103,
-    productName: 'Wireless Gaming Mouse',
-    productImage: 'https://via.placeholder.com/80?text=Mouse',
-    rating: 3,
-    title: 'Average product',
-    comment: 'Works fine but nothing special. The battery drains faster than expected.',
-    images: [],
-    status: 'pending',
-    createdAt: '2024-11-01',
-    updatedAt: '2024-11-01',
-    helpful: 0,
-    verified: false,
-  },
-];
-
 const CustomerReviewsPage: React.FC = () => {
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 5, total: 0 });
   const [form] = Form.useForm();
+
+  // Fetch customer reviews from API
+  const fetchReviews = async (page = 1, pageSize = 5) => {
+    try {
+      setLoading(true);
+      const response = await reviewsAPI.getCustomerReviews({
+        page,
+        limit: pageSize,
+      });
+      
+      // Map API response to UI format (would typically include product details from backend)
+      const mappedReviews: Review[] = response.data.map((review: APIReview) => ({
+        ...review,
+        productName: `Product ${review.productId}`, // Placeholder - would come from backend
+        productImage: 'https://via.placeholder.com/80?text=Product', // Placeholder
+      }));
+      
+      setReviews(mappedReviews);
+      setPagination({
+        current: page,
+        pageSize,
+        total: response.total,
+      });
+    } catch (error) {
+      message.error('Failed to load reviews');
+      console.error('Error fetching reviews:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
   const handleEdit = (review: Review) => {
     setEditingReview(review);
@@ -119,56 +95,79 @@ const CustomerReviewsPage: React.FC = () => {
       comment: review.comment,
     });
     setFileList(
-      review.images.map((img, idx) => ({
+      (review.images || []).map((img, idx) => ({
         uid: `${idx}`,
         name: `image${idx}.jpg`,
-        status: 'done',
+        status: 'done' as const,
         url: img,
       }))
     );
     setIsModalVisible(true);
   };
 
-  const handleDelete = (reviewId: number) => {
+  const handleDelete = async (reviewId: string) => {
     Modal.confirm({
       title: 'Delete Review',
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to delete this review? This action cannot be undone.',
       okText: 'Delete',
       okType: 'danger',
-      onOk() {
-        setReviews(reviews.filter((r) => r.id !== reviewId));
-        message.success('Review deleted successfully');
+      async onOk() {
+        try {
+          await reviewsAPI.delete(reviewId);
+          setReviews(reviews.filter((r) => r.id !== reviewId));
+          message.success('Review deleted successfully');
+        } catch (error) {
+          message.error('Failed to delete review');
+          console.error('Error deleting review:', error);
+        }
       },
     });
   };
 
-  const handleSubmit = (values: any) => {
-    if (editingReview) {
-      setReviews(
-        reviews.map((r) =>
-          r.id === editingReview.id
-            ? {
-                ...r,
-                ...values,
-                images: fileList.map((f) => f.url || ''),
-                updatedAt: new Date().toISOString().split('T')[0],
-                status: 'pending' as const,
-              }
-            : r
-        )
-      );
-      message.success('Review updated successfully and submitted for approval');
+  const handleSubmit = async (values: any) => {
+    try {
+      setUploading(true);
+      
+      // Upload images if any
+      let imageUrls: string[] = [];
+      const newFiles = fileList.filter((f) => !f.url && f.originFileObj);
+      
+      if (newFiles.length > 0) {
+        const files = newFiles.map((f) => f.originFileObj as File);
+        const uploadResult = await reviewsAPI.uploadImages(files);
+        imageUrls = uploadResult.urls;
+      }
+      
+      // Keep existing images
+      const existingImages = fileList.filter((f) => f.url).map((f) => f.url as string);
+      const allImages = [...existingImages, ...imageUrls];
+      
+      if (editingReview) {
+        // Update existing review
+        await reviewsAPI.update(editingReview.id, {
+          ...values,
+          images: allImages,
+        });
+        message.success('Review updated successfully and submitted for approval');
+        fetchReviews(pagination.current, pagination.pageSize);
+      }
+      
+      setIsModalVisible(false);
+      setEditingReview(null);
+      form.resetFields();
+      setFileList([]);
+    } catch (error) {
+      message.error('Failed to submit review');
+      console.error('Error submitting review:', error);
+    } finally {
+      setUploading(false);
     }
-    setIsModalVisible(false);
-    setEditingReview(null);
-    form.resetFields();
-    setFileList([]);
   };
 
   const getStatusTag = (status: string) => {
     switch (status) {
-      case 'published':
+      case 'approved':
         return <Tag color="green" icon={<CheckCircleOutlined />}>Published</Tag>;
       case 'pending':
         return <Tag color="orange" icon={<ClockCircleOutlined />}>Pending Approval</Tag>;
@@ -230,7 +229,7 @@ const CustomerReviewsPage: React.FC = () => {
           >
             {record.comment}
           </Paragraph>
-          {record.images.length > 0 && (
+          {record.images && record.images.length > 0 && (
             <Image.PreviewGroup>
               <Space size={4}>
                 {record.images.map((img, idx) => (
@@ -363,14 +362,26 @@ const CustomerReviewsPage: React.FC = () => {
 
       {/* Reviews Table */}
       <Card title="All Reviews">
-        {reviews.length === 0 ? (
+        {loading && reviews.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <Spin size="large" />
+          </div>
+        ) : reviews.length === 0 ? (
           <Empty description="You haven't written any reviews yet" />
         ) : (
           <Table
             columns={columns}
             dataSource={reviews}
             rowKey="id"
-            pagination={{ pageSize: 5 }}
+            loading={loading}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+              showSizeChanger: true,
+              showTotal: (total) => `Total ${total} reviews`,
+              onChange: (page, pageSize) => fetchReviews(page, pageSize),
+            }}
           />
         )}
       </Card>
@@ -448,10 +459,11 @@ const CustomerReviewsPage: React.FC = () => {
                   form.resetFields();
                   setFileList([]);
                 }}
+                disabled={uploading}
               >
                 Cancel
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={uploading}>
                 Submit for Approval
               </Button>
             </Space>

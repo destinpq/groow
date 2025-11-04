@@ -1,41 +1,69 @@
-import { Row, Col, Card, Image, Button, InputNumber, Table, Space, Divider, message, Empty } from 'antd';
-import { DeleteOutlined, HeartOutlined, ShoppingOutlined } from '@ant-design/icons';
+import { Row, Col, Card, Image, Button, InputNumber, Table, Space, Divider, message, Empty, Input, Spin } from 'antd';
+import { DeleteOutlined, HeartOutlined, ShoppingOutlined, TagOutlined } from '@ant-design/icons';
 import { useNavigate } from 'umi';
+import { useEffect, useState } from 'react';
+import { useCartStore } from '@/store/cartStore';
 
 const CartPage = () => {
   const navigate = useNavigate();
+  const { cart, loading, fetchCart, updateItemQuantity, removeItem, clearCart, applyCoupon, removeCoupon } = useCartStore();
+  const [couponCode, setCouponCode] = useState('');
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
-  const cartItems = [
-    {
-      id: 1,
-      name: 'Premium Wireless Headphones',
-      price: 99.99,
-      quantity: 2,
-      image: 'https://via.placeholder.com/100?text=Product',
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: 'Smart Watch Series 7',
-      price: 349.99,
-      quantity: 1,
-      image: 'https://via.placeholder.com/100?text=Watch',
-      inStock: true,
-    },
-  ];
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const cartItems = cart?.items || [];
+
+  const handleQuantityChange = async (itemId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      await removeItem(itemId);
+    } else {
+      await updateItemQuantity(itemId, newQuantity);
+    }
+  };
+
+  const handleRemoveItem = async (itemId: string) => {
+    await removeItem(itemId);
+  };
+
+  const handleClearCart = async () => {
+    await clearCart();
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      message.warning('Please enter a coupon code');
+      return;
+    }
+    setApplyingCoupon(true);
+    await applyCoupon(couponCode);
+    setApplyingCoupon(false);
+    setCouponCode('');
+  };
+
+  const handleRemoveCoupon = async () => {
+    await removeCoupon();
+  };
 
   const columns = [
     {
       title: 'Product',
-      dataIndex: 'name',
-      key: 'name',
-      render: (name: string, record: any) => (
+      dataIndex: 'product',
+      key: 'product',
+      render: (_: any, record: any) => (
         <Space>
-          <Image src={record.image} width={80} height={80} />
+          <Image 
+            src={record.product?.images?.[0] || 'https://via.placeholder.com/100?text=Product'} 
+            width={80} 
+            height={80} 
+            fallback="https://via.placeholder.com/100?text=Product"
+          />
           <div>
-            <div style={{ fontWeight: 500 }}>{name}</div>
-            <div style={{ color: record.inStock ? '#067D62' : '#C7511F', fontSize: 12 }}>
-              {record.inStock ? 'In Stock' : 'Out of Stock'}
+            <div style={{ fontWeight: 500 }}>{record.product?.name}</div>
+            <div style={{ color: record.product?.stockQuantity > 0 ? '#067D62' : '#C7511F', fontSize: 12 }}>
+              {record.product?.stockQuantity > 0 ? `In Stock (${record.product.stockQuantity})` : 'Out of Stock'}
             </div>
           </div>
         </Space>
@@ -52,7 +80,13 @@ const CartPage = () => {
       dataIndex: 'quantity',
       key: 'quantity',
       render: (quantity: number, record: any) => (
-        <InputNumber min={1} max={10} defaultValue={quantity} onChange={() => message.success('Cart updated')} />
+        <InputNumber 
+          min={1} 
+          max={record.product?.stockQuantity || 10} 
+          value={quantity} 
+          onChange={(value) => handleQuantityChange(record.id, value || 1)}
+          disabled={loading}
+        />
       ),
     },
     {
@@ -60,7 +94,7 @@ const CartPage = () => {
       key: 'subtotal',
       render: (_: any, record: any) => (
         <span style={{ fontSize: 16, fontWeight: 600, color: '#B12704' }}>
-          ${(record.price * record.quantity).toFixed(2)}
+          ${record.subtotal.toFixed(2)}
         </span>
       ),
     },
@@ -69,8 +103,14 @@ const CartPage = () => {
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
-          <Button type="link" icon={<HeartOutlined />}>Save</Button>
-          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleRemove(record.id)}>
+          <Button type="link" icon={<HeartOutlined />} disabled>Save for Later</Button>
+          <Button 
+            type="link" 
+            danger 
+            icon={<DeleteOutlined />} 
+            onClick={() => handleRemoveItem(record.id)}
+            loading={loading}
+          >
             Remove
           </Button>
         </Space>
@@ -78,16 +118,15 @@ const CartPage = () => {
     },
   ];
 
-  const handleRemove = (id: number) => {
-    message.success('Item removed from cart');
-  };
+  if (loading && !cart) {
+    return (
+      <div style={{ padding: '80px 0', textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 10.00;
-  const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
-
-  if (cartItems.length === 0) {
+  if (!loading && cartItems.length === 0) {
     return (
       <div style={{ padding: '80px 0', textAlign: 'center' }}>
         <Empty
@@ -102,9 +141,19 @@ const CartPage = () => {
     );
   }
 
+  const subtotal = cart?.subtotal || 0;
+  const shipping = cart?.shipping || 0;
+  const tax = cart?.tax || 0;
+  const total = cart?.total || 0;
+
   return (
     <div style={{ maxWidth: 1400, margin: '0 auto', padding: '40px 24px' }}>
-      <h1 style={{ marginBottom: 24 }}>Shopping Cart ({cartItems.length} items)</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <h1>Shopping Cart ({cartItems.length} items)</h1>
+        <Button danger onClick={handleClearCart} loading={loading}>
+          Clear Cart
+        </Button>
+      </div>
       
       <Row gutter={24}>
         <Col xs={24} lg={17}>
@@ -121,6 +170,27 @@ const CartPage = () => {
         <Col xs={24} lg={7}>
           <Card title="Order Summary" style={{ position: 'sticky', top: 24 }}>
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
+              {/* Coupon Section */}
+              <div>
+                <Space.Compact style={{ width: '100%' }}>
+                  <Input 
+                    placeholder="Enter coupon code" 
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    prefix={<TagOutlined />}
+                  />
+                  <Button 
+                    type="primary" 
+                    onClick={handleApplyCoupon}
+                    loading={applyingCoupon}
+                  >
+                    Apply
+                  </Button>
+                </Space.Compact>
+              </div>
+
+              <Divider style={{ margin: '12px 0' }} />
+
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Subtotal ({cartItems.length} items)</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -128,7 +198,7 @@ const CartPage = () => {
               
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Shipping</span>
-                <span>${shipping.toFixed(2)}</span>
+                <span>{shipping > 0 ? `$${shipping.toFixed(2)}` : 'FREE'}</span>
               </div>
               
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -149,6 +219,7 @@ const CartPage = () => {
                 block 
                 onClick={() => navigate('/checkout')}
                 style={{ marginTop: 16 }}
+                disabled={loading || cartItems.length === 0}
               >
                 Proceed to Checkout
               </Button>

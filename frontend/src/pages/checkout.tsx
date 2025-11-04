@@ -1,37 +1,101 @@
-import { Row, Col, Card, Form, Input, Select, Radio, Button, Steps, Divider, Space, message } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Radio, Button, Steps, Divider, Space, message, Spin } from 'antd';
 import { CreditCardOutlined, HomeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'umi';
+import { useCartStore } from '@/store/cartStore';
+import { ordersAPI } from '@/services/api/orders';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const { cart, loading: cartLoading, fetchCart } = useCartStore();
   const [currentStep, setCurrentStep] = useState(0);
   const [shippingForm] = Form.useForm();
   const [paymentForm] = Form.useForm();
+  const [submitting, setSubmitting] = useState(false);
+  const [shippingData, setShippingData] = useState<any>(null);
 
-  const cartItems = [
-    { id: 1, name: 'Premium Wireless Headphones', price: 99.99, quantity: 2 },
-    { id: 2, name: 'Smart Watch Series 7', price: 349.99, quantity: 1 },
-  ];
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 10.00;
-  const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
+  const cartItems = cart?.items || [];
+  const subtotal = cart?.subtotal || 0;
+  const shipping = cart?.shipping || 0;
+  const tax = cart?.tax || 0;
+  const total = cart?.total || 0;
 
   const handleShippingSubmit = (values: any) => {
-    console.log('Shipping:', values);
+    setShippingData(values);
     setCurrentStep(1);
   };
 
   const handlePaymentSubmit = async (values: any) => {
+    if (!cart || cartItems.length === 0) {
+      message.error('Your cart is empty');
+      return;
+    }
+
     try {
+      setSubmitting(true);
+      
+      // Prepare address
+      const address = {
+        firstName: shippingData.firstName,
+        lastName: shippingData.lastName,
+        address1: shippingData.address,
+        city: shippingData.city,
+        state: shippingData.city, // Using city as state for now
+        zipCode: shippingData.zipCode,
+        country: shippingData.country,
+        phone: shippingData.phone,
+      };
+
+      // Prepare order data
+      const orderData = {
+        shippingAddress: address,
+        billingAddress: address, // Same as shipping for now
+        paymentMethod: values.paymentMethod,
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      };
+
+      // Create order
+      const order = await ordersAPI.create(orderData);
+      
       message.success('Order placed successfully!');
-      setTimeout(() => navigate('/customer/orders'), 2000);
-    } catch (error) {
-      message.error('Payment failed');
+      
+      // Redirect to order details or orders list
+      setTimeout(() => {
+        navigate(`/customer/orders/${order.id}`);
+      }, 1500);
+      
+    } catch (error: any) {
+      message.error(error.message || 'Failed to place order');
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  if (cartLoading && !cart) {
+    return (
+      <div style={{ padding: '80px 0', textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (!cartLoading && cartItems.length === 0) {
+    return (
+      <div style={{ padding: '80px 0', textAlign: 'center' }}>
+        <h2>Your cart is empty</h2>
+        <Button type="primary" onClick={() => navigate('/products')} style={{ marginTop: 16 }}>
+          Continue Shopping
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
@@ -145,10 +209,10 @@ const CheckoutPage = () => {
                 </Form.Item>
 
                 <Space>
-                  <Button size="large" onClick={() => setCurrentStep(0)}>
+                  <Button size="large" onClick={() => setCurrentStep(0)} disabled={submitting}>
                     Back
                   </Button>
-                  <Button type="primary" htmlType="submit" size="large">
+                  <Button type="primary" htmlType="submit" size="large" loading={submitting}>
                     Place Order
                   </Button>
                 </Space>
@@ -162,8 +226,8 @@ const CheckoutPage = () => {
             {cartItems.map(item => (
               <div key={item.id} style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span>{item.name} (x{item.quantity})</span>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span>{item.productName} (x{item.quantity})</span>
+                  <span>${item.total.toFixed(2)}</span>
                 </div>
               </div>
             ))}

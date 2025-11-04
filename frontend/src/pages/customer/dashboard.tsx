@@ -1,4 +1,4 @@
-import { Row, Col, Card, Statistic, List, Tag, Button, Avatar } from 'antd';
+import { Row, Col, Card, Statistic, List, Tag, Button, Avatar, Spin, message } from 'antd';
 import {
   ShoppingCartOutlined,
   HeartOutlined,
@@ -7,43 +7,48 @@ import {
   EyeOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'umi';
+import { useEffect, useState } from 'react';
+import { ordersAPI } from '@/services/api/orders';
+import { productAPI } from '@/services/api/products';
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
 
-  const recentOrders = [
-    {
-      id: 'ORD-2024-001',
-      items: 'Premium Headphones + 2 more items',
-      total: 549.99,
-      status: 'delivered',
-      date: '2024-10-28',
-    },
-    {
-      id: 'ORD-2024-002',
-      items: 'Smart Watch Series 7',
-      total: 349.99,
-      status: 'processing',
-      date: '2024-11-02',
-    },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const recommendations = [
-    {
-      id: 1,
-      name: 'Wireless Mouse',
-      price: 29.99,
-      image: 'https://via.placeholder.com/80?text=Mouse',
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      name: 'Keyboard RGB',
-      price: 79.99,
-      image: 'https://via.placeholder.com/80?text=Keyboard',
-      rating: 4.7,
-    },
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch customer orders
+      const ordersResponse = await ordersAPI.getAll({ limit: 5 });
+      setOrders(ordersResponse.data || []);
+
+      // Fetch recommended products
+      const productsResponse = await productAPI.getFeatured();
+      setRecommendations(productsResponse.slice(0, 4));
+
+    } catch (error: any) {
+      message.error(error.message || 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '80px 0', textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  const activeOrders = orders.filter(o => ['pending', 'confirmed', 'processing', 'shipped'].includes(o.status)).length;
 
   return (
     <div>
@@ -55,7 +60,7 @@ const CustomerDashboard = () => {
           <Card hoverable onClick={() => navigate('/customer/orders')} style={{ cursor: 'pointer' }}>
             <Statistic
               title="Active Orders"
-              value={3}
+              value={activeOrders}
               prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -101,8 +106,8 @@ const CustomerDashboard = () => {
         <Col xs={24} lg={12}>
           <Card title="Recent Orders" extra={<a onClick={() => navigate('/customer/orders')}>View All</a>}>
             <List
-              dataSource={recentOrders}
-              renderItem={(order) => (
+              dataSource={orders.slice(0, 3)}
+              renderItem={(order: any) => (
                 <List.Item
                   actions={[
                     <Button type="link" icon={<EyeOutlined />} onClick={() => navigate(`/customer/orders/${order.id}`)}>
@@ -113,18 +118,20 @@ const CustomerDashboard = () => {
                   <List.Item.Meta
                     title={
                       <div>
-                        <span style={{ fontWeight: 500 }}>{order.id}</span>
+                        <span style={{ fontWeight: 500 }}>{order.orderNumber}</span>
                         <Tag color={order.status === 'delivered' ? 'success' : 'processing'} style={{ marginLeft: 8 }}>
-                          {order.status.toUpperCase()}
+                          {order.status?.toUpperCase()}
                         </Tag>
                       </div>
                     }
                     description={
                       <div>
-                        <div>{order.items}</div>
+                        <div>{order.items?.length || 0} items</div>
                         <div style={{ marginTop: 4 }}>
-                          <span style={{ fontWeight: 500, color: '#B12704' }}>${order.total}</span>
-                          <span style={{ marginLeft: 16, color: '#666', fontSize: 12 }}>{order.date}</span>
+                          <span style={{ fontWeight: 500, color: '#B12704' }}>${order.total?.toFixed(2)}</span>
+                          <span style={{ marginLeft: 16, color: '#666', fontSize: 12 }}>
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
                     }

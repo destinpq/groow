@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Table,
@@ -19,6 +19,8 @@ import {
   Rate,
   Modal,
   Form,
+  Spin,
+  Popconfirm,
 } from 'antd';
 import {
   SearchOutlined,
@@ -27,151 +29,117 @@ import {
   RedoOutlined,
   MessageOutlined,
   StarOutlined,
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { history } from 'umi';
+import { ordersAPI, type Order, type OrderItem } from '@/services/api/orders';
+import { useCartStore } from '@/store/cartStore';
+import dayjs, { Dayjs } from 'dayjs';
 
 const { Title, Text, Paragraph } = Typography;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { TextArea } = Input;
 
-interface OrderItem {
-  id: number;
-  productName: string;
-  quantity: number;
-  price: number;
-  image: string;
-}
-
-interface Order {
-  id: number;
-  orderNumber: string;
-  date: string;
-  status: string;
-  total: number;
-  items: OrderItem[];
-  shippingAddress: string;
-  paymentMethod: string;
-  trackingNumber?: string;
-  vendor: string;
-}
-
-const mockOrders: Order[] = [
-  {
-    id: 1,
-    orderNumber: 'ORD-2024-10001',
-    date: '2024-10-15',
-    status: 'delivered',
-    total: 349.99,
-    vendor: 'TechHub Store',
-    paymentMethod: 'Credit Card ****4242',
-    trackingNumber: 'TRK1234567890',
-    shippingAddress: '123 Main St, New York, NY 10001',
-    items: [
-      {
-        id: 1,
-        productName: 'Premium Wireless Headphones',
-        quantity: 1,
-        price: 349.99,
-        image: 'https://via.placeholder.com/80/1890ff/fff?text=Product',
-      },
-    ],
-  },
-  {
-    id: 2,
-    orderNumber: 'ORD-2024-10002',
-    date: '2024-10-20',
-    status: 'in_process',
-    total: 249.98,
-    vendor: 'Gadget World',
-    paymentMethod: 'PayPal',
-    trackingNumber: 'TRK0987654321',
-    shippingAddress: '123 Main St, New York, NY 10001',
-    items: [
-      {
-        id: 2,
-        productName: 'Smart Watch Pro',
-        quantity: 1,
-        price: 199.99,
-        image: 'https://via.placeholder.com/80/52c41a/fff?text=Product',
-      },
-      {
-        id: 3,
-        productName: 'Laptop Backpack',
-        quantity: 1,
-        price: 49.99,
-        image: 'https://via.placeholder.com/80/faad14/fff?text=Product',
-      },
-    ],
-  },
-  {
-    id: 3,
-    orderNumber: 'ORD-2024-10003',
-    date: '2024-10-25',
-    status: 'confirmed',
-    total: 89.99,
-    vendor: 'Gaming Hub',
-    paymentMethod: 'Cash on Delivery',
-    shippingAddress: '456 Office Blvd, New York, NY 10002',
-    items: [
-      {
-        id: 4,
-        productName: 'Mechanical Gaming Keyboard',
-        quantity: 1,
-        price: 89.99,
-        image: 'https://via.placeholder.com/80/f5222d/fff?text=Product',
-      },
-    ],
-  },
-  {
-    id: 4,
-    orderNumber: 'ORD-2024-10004',
-    date: '2024-09-10',
-    status: 'cancelled',
-    total: 599.99,
-    vendor: 'Electronics Store',
-    paymentMethod: 'Credit Card ****8888',
-    shippingAddress: '123 Main St, New York, NY 10001',
-    items: [
-      {
-        id: 5,
-        productName: 'Laptop Computer',
-        quantity: 1,
-        price: 599.99,
-        image: 'https://via.placeholder.com/80/722ed1/fff?text=Product',
-      },
-    ],
-  },
-];
+const mockOrders: Order[] = [];
 
 const OrdersPage: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [reviewModalVisible, setReviewModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<OrderItem | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchText, setSearchText] = useState('');
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      new: 'blue',
+  const { addItem } = useCartStore();
+
+  // Fetch orders
+  const fetchOrders = async (page = 1, pageSize = 10) => {
+    try {
+      setLoading(true);
+      const filters: any = {
+        page,
+        limit: pageSize,
+      };
+
+      if (statusFilter !== 'all') {
+        filters.status = statusFilter;
+      }
+
+      if (dateRange[0] && dateRange[1]) {
+        filters.startDate = dateRange[0].toISOString();
+        filters.endDate = dateRange[1].toISOString();
+      }
+
+      const response = await ordersAPI.getAll(filters);
+      setOrders(response.data);
+      setPagination({
+        current: response.page,
+        pageSize: response.limit,
+        total: response.total,
+      });
+    } catch (error) {
+      message.error('Failed to load orders');
+      console.error('Fetch orders error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load orders on mount and when filters change
+  useEffect(() => {
+    fetchOrders(pagination.current, pagination.pageSize);
+  }, [statusFilter, dateRange]);
+
+  // Search functionality
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    const filtered = orders.filter(
+      (order) =>
+        order.orderNumber.toLowerCase().includes(value.toLowerCase()) ||
+        order.items.some((item) =>
+          item.productName.toLowerCase().includes(value.toLowerCase())
+        )
+    );
+    // In a real app, this would be server-side search
+    if (value) {
+      setOrders(filtered);
+    } else {
+      fetchOrders(pagination.current, pagination.pageSize);
+    }
+  };
+
+  const getStatusColor = (status: Order['status']) => {
+    const colors: Record<Order['status'], string> = {
+      pending: 'blue',
       confirmed: 'cyan',
-      in_process: 'gold',
+      processing: 'gold',
+      shipped: 'purple',
       delivered: 'success',
       cancelled: 'error',
-      returned: 'warning',
+      refunded: 'warning',
     };
     return colors[status] || 'default';
   };
 
-  const getStatusText = (status: string) => {
-    const texts: Record<string, string> = {
-      new: 'New Order',
+  const getStatusText = (status: Order['status']) => {
+    const texts: Record<Order['status'], string> = {
+      pending: 'Pending',
       confirmed: 'Confirmed',
-      in_process: 'In Process',
+      processing: 'Processing',
+      shipped: 'Shipped',
       delivered: 'Delivered',
       cancelled: 'Cancelled',
-      returned: 'Returned',
+      refunded: 'Refunded',
     };
     return texts[status] || status;
   };
@@ -181,9 +149,33 @@ const OrdersPage: React.FC = () => {
     setDrawerVisible(true);
   };
 
-  const handleReorder = (order: Order) => {
-    message.success('Items added to cart!');
-    history.push('/cart');
+  const handleCancelOrder = async (order: Order) => {
+    try {
+      await ordersAPI.cancel(order.id, 'Customer requested cancellation');
+      message.success('Order cancelled successfully');
+      fetchOrders(pagination.current, pagination.pageSize);
+      setDrawerVisible(false);
+    } catch (error) {
+      message.error('Failed to cancel order');
+      console.error('Cancel order error:', error);
+    }
+  };
+
+  const handleReorder = async (order: Order) => {
+    try {
+      // Add all order items to cart
+      for (const item of order.items) {
+        await addItem({
+          productId: item.productId,
+          quantity: item.quantity,
+        });
+      }
+      message.success(`${order.items.length} item(s) added to cart!`);
+      history.push('/cart');
+    } catch (error) {
+      message.error('Failed to add items to cart');
+      console.error('Reorder error:', error);
+    }
   };
 
   const handleDownloadInvoice = (order: Order) => {
@@ -211,15 +203,10 @@ const OrdersPage: React.FC = () => {
     },
     {
       title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString(),
-      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    },
-    {
-      title: 'Vendor',
-      dataIndex: 'vendor',
-      key: 'vendor',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date: string) => dayjs(date).format('MMM DD, YYYY'),
+      sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
     },
     {
       title: 'Items',
@@ -242,13 +229,14 @@ const OrdersPage: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
+      render: (status: Order['status']) => (
         <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
       ),
       filters: [
-        { text: 'New', value: 'new' },
+        { text: 'Pending', value: 'pending' },
         { text: 'Confirmed', value: 'confirmed' },
-        { text: 'In Process', value: 'in_process' },
+        { text: 'Processing', value: 'processing' },
+        { text: 'Shipped', value: 'shipped' },
         { text: 'Delivered', value: 'delivered' },
         { text: 'Cancelled', value: 'cancelled' },
       ],
@@ -274,6 +262,23 @@ const OrdersPage: React.FC = () => {
             >
               Reorder
             </Button>
+          )}
+          {(record.status === 'pending' || record.status === 'confirmed') && (
+            <Popconfirm
+              title="Cancel order?"
+              description="Are you sure you want to cancel this order?"
+              onConfirm={() => handleCancelOrder(record)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type="link"
+                danger
+                icon={<CloseCircleOutlined />}
+              >
+                Cancel
+              </Button>
+            </Popconfirm>
           )}
           <Button
             type="link"
@@ -303,6 +308,8 @@ const OrdersPage: React.FC = () => {
               placeholder="Search orders..."
               prefix={<SearchOutlined />}
               size="large"
+              onChange={(e) => handleSearch(e.target.value)}
+              value={searchText}
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
@@ -311,34 +318,51 @@ const OrdersPage: React.FC = () => {
               size="large"
               style={{ width: '100%' }}
               value={statusFilter}
-              onChange={setStatusFilter}
+              onChange={(value) => {
+                setStatusFilter(value);
+                setPagination({ ...pagination, current: 1 });
+              }}
             >
               <Option value="all">All Orders</Option>
-              <Option value="new">New</Option>
+              <Option value="pending">Pending</Option>
               <Option value="confirmed">Confirmed</Option>
-              <Option value="in_process">In Process</Option>
+              <Option value="processing">Processing</Option>
+              <Option value="shipped">Shipped</Option>
               <Option value="delivered">Delivered</Option>
               <Option value="cancelled">Cancelled</Option>
+              <Option value="refunded">Refunded</Option>
             </Select>
           </Col>
           <Col xs={24} sm={12} md={8}>
-            <RangePicker size="large" style={{ width: '100%' }} />
+            <RangePicker
+              size="large"
+              style={{ width: '100%' }}
+              onChange={(dates) => {
+                setDateRange(dates as [Dayjs | null, Dayjs | null]);
+                setPagination({ ...pagination, current: 1 });
+              }}
+            />
           </Col>
         </Row>
       </Card>
 
       {/* Orders Table */}
       <Card>
-        <Table
-          columns={columns}
-          dataSource={filteredOrders}
-          rowKey="id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total) => `Total ${total} orders`,
-          }}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={orders}
+            rowKey="id"
+            pagination={{
+              ...pagination,
+              showSizeChanger: true,
+              showTotal: (total) => `Total ${total} orders`,
+              onChange: (page, pageSize) => {
+                fetchOrders(page, pageSize);
+              },
+            }}
+          />
+        </Spin>
       </Card>
 
       {/* Order Detail Drawer */}
@@ -355,13 +379,13 @@ const OrdersPage: React.FC = () => {
             <Card size="small" style={{ marginBottom: 16 }}>
               <Steps
                 current={
-                  selectedOrder.status === 'new' ? 0 :
+                  selectedOrder.status === 'pending' ? 0 :
                   selectedOrder.status === 'confirmed' ? 1 :
-                  selectedOrder.status === 'in_process' ? 2 :
+                  selectedOrder.status === 'processing' || selectedOrder.status === 'shipped' ? 2 :
                   selectedOrder.status === 'delivered' ? 3 : 0
                 }
                 items={[
-                  { title: 'New' },
+                  { title: 'Pending' },
                   { title: 'Confirmed' },
                   { title: 'Processing' },
                   { title: 'Delivered' },
@@ -373,15 +397,20 @@ const OrdersPage: React.FC = () => {
             <Descriptions title="Order Information" bordered column={1} size="small">
               <Descriptions.Item label="Order Number">{selectedOrder.orderNumber}</Descriptions.Item>
               <Descriptions.Item label="Order Date">
-                {new Date(selectedOrder.date).toLocaleDateString()}
+                {dayjs(selectedOrder.createdAt).format('MMMM DD, YYYY h:mm A')}
               </Descriptions.Item>
               <Descriptions.Item label="Status">
                 <Tag color={getStatusColor(selectedOrder.status)}>
                   {getStatusText(selectedOrder.status)}
                 </Tag>
               </Descriptions.Item>
-              <Descriptions.Item label="Vendor">{selectedOrder.vendor}</Descriptions.Item>
+              <Descriptions.Item label="Vendor ID">{selectedOrder.vendorId}</Descriptions.Item>
               <Descriptions.Item label="Payment Method">{selectedOrder.paymentMethod}</Descriptions.Item>
+              <Descriptions.Item label="Payment Status">
+                <Tag color={selectedOrder.paymentStatus === 'paid' ? 'success' : 'warning'}>
+                  {selectedOrder.paymentStatus.toUpperCase()}
+                </Tag>
+              </Descriptions.Item>
               {selectedOrder.trackingNumber && (
                 <Descriptions.Item label="Tracking Number">
                   <a href="#">{selectedOrder.trackingNumber}</a>
@@ -395,7 +424,7 @@ const OrdersPage: React.FC = () => {
                 <Card.Grid key={item.id} style={{ width: '100%', padding: 16 }}>
                   <Row gutter={16} align="middle">
                     <Col span={4}>
-                      <img src={item.image} alt={item.productName} style={{ width: '100%' }} />
+                      <img src={item.productImage} alt={item.productName} style={{ width: '100%' }} />
                     </Col>
                     <Col span={12}>
                       <Text strong>{item.productName}</Text>
@@ -423,22 +452,39 @@ const OrdersPage: React.FC = () => {
 
             {/* Shipping Address */}
             <Card title="Shipping Address" size="small" style={{ marginTop: 16 }}>
-              <Paragraph>{selectedOrder.shippingAddress}</Paragraph>
+              <Paragraph>
+                {selectedOrder.shippingAddress.firstName} {selectedOrder.shippingAddress.lastName}<br />
+                {selectedOrder.shippingAddress.address1}
+                {selectedOrder.shippingAddress.address2 && <><br />{selectedOrder.shippingAddress.address2}</>}
+                <br />
+                {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zipCode}
+                <br />
+                {selectedOrder.shippingAddress.country}
+                <br />
+                Phone: {selectedOrder.shippingAddress.phone}
+              </Paragraph>
             </Card>
 
             {/* Order Total */}
             <Card size="small" style={{ marginTop: 16 }}>
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Subtotal">
-                  ${selectedOrder.total.toFixed(2)}
+                  ${selectedOrder.subtotal.toFixed(2)}
                 </Descriptions.Item>
-                <Descriptions.Item label="Shipping">Free</Descriptions.Item>
+                <Descriptions.Item label="Shipping">
+                  ${selectedOrder.shipping.toFixed(2)}
+                </Descriptions.Item>
                 <Descriptions.Item label="Tax">
-                  ${(selectedOrder.total * 0.08).toFixed(2)}
+                  ${selectedOrder.tax.toFixed(2)}
                 </Descriptions.Item>
+                {selectedOrder.discount > 0 && (
+                  <Descriptions.Item label="Discount">
+                    -${selectedOrder.discount.toFixed(2)}
+                  </Descriptions.Item>
+                )}
                 <Descriptions.Item label={<Text strong>Total</Text>}>
                   <Text strong style={{ color: '#B12704', fontSize: 18 }}>
-                    ${(selectedOrder.total * 1.08).toFixed(2)}
+                    ${selectedOrder.total.toFixed(2)}
                   </Text>
                 </Descriptions.Item>
               </Descriptions>

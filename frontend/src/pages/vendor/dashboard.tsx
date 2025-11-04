@@ -1,5 +1,5 @@
-import React from 'react';
-import { Row, Col, Card, Statistic, Table, Tag, Button, List, Avatar, Badge, Progress, Space, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, Card, Statistic, Table, Tag, Button, List, Avatar, Badge, Progress, Space, Typography, Spin, message } from 'antd';
 import {
   DollarOutlined,
   ShoppingOutlined,
@@ -14,67 +14,109 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie } from '@ant-design/charts';
+import { vendorAPI } from '@/services/api/vendors';
+import { ordersAPI } from '@/services/api/orders';
+import { productAPI } from '@/services/api/products';
 
 const { Text, Title } = Typography;
 
 const VendorDashboard = () => {
-  const salesData = [
-    { month: 'Jan', sales: 3000 },
-    { month: 'Feb', sales: 4500 },
-    { month: 'Mar', sales: 5200 },
-    { month: 'Apr', sales: 6800 },
-    { month: 'May', sales: 7500 },
-    { month: 'Jun', sales: 8900 },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(null);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
 
-  const recentOrders = [
-    { id: 'ORD-001', customer: 'John Doe', amount: 299.99, status: 'new', date: '2024-11-04' },
-    { id: 'ORD-002', customer: 'Jane Smith', amount: 459.50, status: 'processing', date: '2024-11-03' },
-    { id: 'ORD-003', customer: 'Mike Wilson', amount: 189.99, status: 'shipped', date: '2024-11-02' },
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const notifications = [
-    { id: 1, type: 'order', message: 'New order #ORD-001 received', time: '5 min ago', read: false },
-    { id: 2, type: 'review', message: 'New review on "Wireless Headphones"', time: '1 hour ago', read: false },
-    { id: 3, type: 'stock', message: 'Low stock alert: 3 products', time: '2 hours ago', read: true },
-    { id: 4, type: 'payout', message: 'Payout processed: $2,450', time: '1 day ago', read: true },
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch vendor stats
+      const vendorStats = await vendorAPI.getStats();
+      setStats(vendorStats);
 
-  const topProducts = [
-    { name: 'Wireless Headphones', sold: 245, revenue: 12250, stock: 56 },
-    { name: 'Smart Watch', sold: 189, revenue: 37800, stock: 23 },
-    { name: 'Laptop Stand', sold: 156, revenue: 5460, stock: 89 },
-  ];
+      // Fetch recent orders
+      const ordersResponse = await ordersAPI.getAll({ limit: 5 });
+      setRecentOrders(ordersResponse.data || []);
+
+      // Fetch products
+      const productsResponse = await productAPI.getAll({ limit: 100 });
+      setProducts(productsResponse.data || []);
+
+    } catch (error: any) {
+      message.error(error.message || 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '80px 0', textAlign: 'center' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  const salesData = stats?.monthlySales || [];
+  const activeProducts = products.filter(p => p.isActive).length;
+  const outOfStock = products.filter(p => p.stockQuantity === 0).length;
+  const totalRevenue = stats?.totalRevenue || 0;
+  const totalOrders = stats?.totalOrders || 0;
+  const pendingOrders = recentOrders.filter(o => o.status === 'pending').length;
+  const averageRating = stats?.averageRating || 4.5;
+  const totalReviews = stats?.totalReviews || 0;
+
+  const topProducts = stats?.topProducts || [];
 
   const productStatusData = [
-    { status: 'Active', count: 142 },
-    { status: 'Out of Stock', count: 8 },
-    { status: 'Draft', count: 6 },
+    { status: 'Active', count: activeProducts },
+    { status: 'Out of Stock', count: outOfStock },
+    { status: 'Draft', count: products.length - activeProducts - outOfStock },
   ];
 
   const orderColumns = [
-    { title: 'Order ID', dataIndex: 'id', key: 'id' },
-    { title: 'Customer', dataIndex: 'customer', key: 'customer' },
-    { title: 'Amount', dataIndex: 'amount', key: 'amount', render: (amount: number) => `$${amount}` },
+    { title: 'Order #', dataIndex: 'orderNumber', key: 'orderNumber' },
+    { title: 'Customer ID', dataIndex: 'customerId', key: 'customerId', ellipsis: true },
+    { 
+      title: 'Total', 
+      dataIndex: 'total', 
+      key: 'total', 
+      render: (total: number) => `$${total?.toFixed(2) || '0.00'}` 
+    },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
         const colors: Record<string, string> = {
-          new: 'blue',
+          pending: 'blue',
+          confirmed: 'cyan',
           processing: 'orange',
-          shipped: 'cyan',
+          shipped: 'purple',
           delivered: 'green',
+          cancelled: 'red',
         };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
+        return <Tag color={colors[status] || 'default'}>{status?.toUpperCase()}</Tag>;
       },
     },
-    { title: 'Date', dataIndex: 'date', key: 'date' },
+    { 
+      title: 'Date', 
+      dataIndex: 'createdAt', 
+      key: 'createdAt',
+      render: (date: string) => new Date(date).toLocaleDateString()
+    },
     {
       title: 'Action',
       key: 'action',
-      render: () => <Button type="link" icon={<EyeOutlined />}>View</Button>,
+      render: (_: any, record: any) => (
+        <Button type="link" icon={<EyeOutlined />} onClick={() => window.location.href = `/vendor/orders/${record.id}`}>
+          View
+        </Button>
+      ),
     },
   ];
 
@@ -114,14 +156,14 @@ const VendorDashboard = () => {
           <Card>
             <Statistic
               title="Total Revenue"
-              value={45678.90}
+              value={totalRevenue}
               prefix={<DollarOutlined />}
               precision={2}
               valueStyle={{ color: '#3f8600' }}
             />
             <Progress percent={75} size="small" showInfo={false} strokeColor="#3f8600" />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              <RiseOutlined style={{ color: '#3f8600' }} /> 12.5% vs last month
+              <RiseOutlined style={{ color: '#3f8600' }} /> Growing revenue
             </Text>
           </Card>
         </Col>
@@ -130,13 +172,13 @@ const VendorDashboard = () => {
           <Card>
             <Statistic
               title="Total Products"
-              value={156}
+              value={products.length}
               prefix={<ShoppingOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
             <Progress percent={92} size="small" showInfo={false} />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              142 active, 8 out of stock
+              {activeProducts} active, {outOfStock} out of stock
             </Text>
           </Card>
         </Col>
@@ -145,13 +187,13 @@ const VendorDashboard = () => {
           <Card>
             <Statistic
               title="Total Orders"
-              value={342}
+              value={totalOrders}
               prefix={<ShoppingCartOutlined />}
               valueStyle={{ color: '#cf1322' }}
             />
             <Progress percent={68} size="small" showInfo={false} strokeColor="#cf1322" />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              28 pending processing
+              {pendingOrders} pending processing
             </Text>
           </Card>
         </Col>
@@ -160,14 +202,14 @@ const VendorDashboard = () => {
           <Card>
             <Statistic
               title="Customer Rating"
-              value={4.7}
+              value={averageRating}
               prefix={<StarOutlined />}
               suffix="/ 5"
               valueStyle={{ color: '#faad14' }}
             />
             <Progress percent={94} size="small" showInfo={false} strokeColor="#faad14" />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              Based on 1,247 reviews
+              Based on {totalReviews} reviews
             </Text>
           </Card>
         </Col>
@@ -188,101 +230,13 @@ const VendorDashboard = () => {
         </Col>
       </Row>
 
-      {/* Notifications & Top Products */}
-      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
-        <Col xs={24} lg={12}>
-          <Card 
-            title="Recent Notifications" 
-            bordered={false}
-            extra={<Button type="link">View All</Button>}
-          >
-            <List
-              dataSource={notifications}
-              renderItem={(item) => (
-                <List.Item
-                  style={{
-                    backgroundColor: item.read ? 'transparent' : '#f0f5ff',
-                    padding: '12px',
-                    borderRadius: 4,
-                    marginBottom: 8,
-                  }}
-                >
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        icon={
-                          item.type === 'order' ? <ShoppingCartOutlined /> :
-                          item.type === 'review' ? <StarOutlined /> :
-                          item.type === 'stock' ? <AlertOutlined /> :
-                          <DollarOutlined />
-                        }
-                        style={{
-                          backgroundColor:
-                            item.type === 'order' ? '#1890ff' :
-                            item.type === 'review' ? '#faad14' :
-                            item.type === 'stock' ? '#ff4d4f' :
-                            '#52c41a',
-                        }}
-                      />
-                    }
-                    title={item.message}
-                    description={<Text type="secondary">{item.time}</Text>}
-                  />
-                  {!item.read && <Badge status="processing" />}
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={12}>
-          <Card 
-            title="Top Selling Products" 
-            bordered={false}
-            extra={<Button type="link">View All</Button>}
-          >
-            <List
-              dataSource={topProducts}
-              renderItem={(item, index) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        style={{
-                          backgroundColor: index === 0 ? '#faad14' : index === 1 ? '#d9d9d9' : '#cd7f32',
-                        }}
-                      >
-                        #{index + 1}
-                      </Avatar>
-                    }
-                    title={item.name}
-                    description={
-                      <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                        <Text>Sold: {item.sold} units</Text>
-                        <Text strong style={{ color: '#52c41a' }}>Revenue: ${item.revenue.toLocaleString()}</Text>
-                        <Progress
-                          percent={Math.min((item.stock / 100) * 100, 100)}
-                          size="small"
-                          status={item.stock < 30 ? 'exception' : 'success'}
-                          format={() => `${item.stock} in stock`}
-                        />
-                      </Space>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-      </Row>
-
       {/* Recent Orders */}
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col span={24}>
           <Card 
             title="Recent Orders" 
             bordered={false}
-            extra={<Button type="primary">View All Orders</Button>}
+            extra={<Button type="primary" onClick={() => window.location.href = '/vendor/orders'}>View All Orders</Button>}
           >
             <Table
               columns={orderColumns}
@@ -297,21 +251,21 @@ const VendorDashboard = () => {
       {/* Quick Actions */}
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col xs={24} sm={8}>
-          <Card hoverable style={{ textAlign: 'center' }}>
+          <Card hoverable style={{ textAlign: 'center' }} onClick={() => window.location.href = '/vendor/products/new'}>
             <ShoppingOutlined style={{ fontSize: 48, color: '#1890ff' }} />
             <Title level={4} style={{ marginTop: 16 }}>Add New Product</Title>
             <Button type="primary">Get Started</Button>
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card hoverable style={{ textAlign: 'center' }}>
+          <Card hoverable style={{ textAlign: 'center' }} onClick={() => window.location.href = '/vendor/orders'}>
             <CheckCircleOutlined style={{ fontSize: 48, color: '#52c41a' }} />
             <Title level={4} style={{ marginTop: 16 }}>Process Orders</Title>
             <Button type="primary">View Pending</Button>
           </Card>
         </Col>
         <Col xs={24} sm={8}>
-          <Card hoverable style={{ textAlign: 'center' }}>
+          <Card hoverable style={{ textAlign: 'center' }} onClick={() => window.location.href = '/vendor/rfq'}>
             <ClockCircleOutlined style={{ fontSize: 48, color: '#faad14' }} />
             <Title level={4} style={{ marginTop: 16 }}>Manage RFQs</Title>
             <Button type="primary">View Requests</Button>
