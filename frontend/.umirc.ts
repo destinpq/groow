@@ -84,6 +84,14 @@ export default defineConfig({
         
         // Settings
         { path: '/admin/settings', component: '@/pages/admin/settings' },
+        
+        // Phase 4 Features
+        { path: '/admin/return-management', component: '@/pages/admin/return-management' },
+        { path: '/admin/customer-support', component: '@/pages/admin/customer-support' },
+        { path: '/admin/flash-sales', component: '@/pages/admin/flash-sales' },
+        { path: '/admin/product-bundling', component: '@/pages/admin/product-bundling' },
+        { path: '/admin/bulk-import-export', component: '@/pages/admin/bulk-import-export' },
+        { path: '/admin/multi-currency', component: '@/pages/admin/multi-currency' },
       ]
     },
     

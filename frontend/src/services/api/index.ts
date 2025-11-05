@@ -214,6 +214,124 @@ export type {
   ChatMessage,
 } from './support';
 
+// Flash Sales
+export { flashSalesAPI } from './flashSales';
+export type {
+  FlashSale,
+  FlashSaleProduct,
+  FlashSaleAnalytics,
+  DailyDeal,
+  FlashSaleTemplate,
+  FlashSaleStats,
+  FlashSaleActivity,
+  FlashSaleFilters,
+  FlashSaleCreateRequest,
+  FlashSaleUpdateRequest,
+} from './flashSales';
+
+// Bulk Operations
+export { bulkOperationsAPI } from './bulkOperations';
+export type {
+  BulkOperation,
+  ImportJob,
+  ExportJob,
+  ImportResult,
+  ExportResult,
+  BulkOperationFilters,
+  ImportOptions,
+  ExportOptions,
+  FieldMapping,
+  ValidationResult,
+  JobProgress,
+  ImportTemplate,
+  ExportTemplate,
+} from './bulkOperations';
+
+// Currency
+export { currencyAPI } from './currency';
+export type {
+  Currency,
+  ExchangeRate,
+  CurrencyConversion,
+  PriceLocalization,
+  CurrencySettings,
+  CurrencyStats,
+  GeoLocationCurrency,
+  CurrencyValidation,
+  BulkPriceUpdate,
+  CurrencyFilters,
+} from './currency';
+
+// Inventory Alerts
+export { inventoryAlertsAPI } from './inventoryAlerts';
+export type {
+  InventoryAlert,
+  AlertRule,
+  AlertCondition,
+  AlertAction,
+  NotificationChannel,
+  InventoryThreshold,
+  AlertStats,
+  AlertFilters,
+  BulkAlertAction,
+} from './inventoryAlerts';
+
+// Advanced Orders
+export { advancedOrderAPI } from './advancedOrders';
+export type {
+  AdvancedOrder,
+  AdvancedOrderItem,
+  AdvancedShippingDetails,
+  AdvancedBillingDetails,
+  AdvancedPaymentDetails,
+  AdvancedOrderTotals,
+  OrderWorkflow,
+  AdvancedOrderTracking,
+  AdvancedTrackingEvent,
+  OrderMetadata,
+  OrderEvent,
+  OrderNote,
+  OrderSplit,
+  FulfillmentDetails,
+  AdvancedOrderFilters,
+  OrderStats,
+  WorkflowTemplate,
+  WorkflowStage,
+  AutomationRule,
+  OrderBatch,
+} from './advancedOrders';
+
+// Loyalty Programs
+export { loyaltyAPI } from './loyalty';
+export type {
+  LoyaltyProgram,
+  LoyaltyTier,
+  TierThreshold,
+  LoyaltyReward,
+  CustomerLoyalty,
+  PointsTransaction,
+  LoyaltyAnalytics,
+  LoyaltyRule,
+  LoyaltyEngagement,
+  LoyaltyCampaign,
+} from './loyalty';
+
+// Product Bundles
+export { bundlesAPI } from './bundles';
+export type {
+  ProductBundle,
+  BundleProduct,
+  BundleInventory,
+  BundleAnalytics,
+  BundleTemplate,
+  BundlePromotion,
+  BundleStats,
+  BundleActivity,
+  BundleFilters,
+  CreateBundleRequest,
+  UpdateBundleRequest,
+} from './bundles';
+
 // Re-export all services as a single object for convenience
 import { authAPI } from './auth';
 import { productAPI } from './products';
@@ -237,6 +355,13 @@ import { emailAPI } from './email';
 import { logsAPI } from './logs';
 import { returnsAPI } from './returns';
 import { supportAPI } from './support';
+import { flashSalesAPI } from './flashSales';
+import { bundlesAPI } from './bundles';
+import { bulkDataAPI } from './bulkData';
+import { currencyAPI } from './currency';
+import { inventoryAlertsAPI } from './inventoryAlerts';
+import { advancedOrderAPI } from './advancedOrders';
+import { loyaltyAPI } from './loyalty';
 
 export const API = {
   auth: authAPI,
@@ -264,6 +389,13 @@ export const API = {
   logs: logsAPI,
   returns: returnsAPI,
   support: supportAPI,
+  flashSales: flashSalesAPI,
+  bundles: bundlesAPI,
+  bulkData: bulkDataAPI,
+  currency: currencyAPI,
+  inventoryAlerts: inventoryAlertsAPI,
+  advancedOrders: advancedOrderAPI,
+  loyalty: loyaltyAPI,
 };
 
 export default API;

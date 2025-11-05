@@ -1,298 +1,394 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
   Col,
   Typography,
   Table,
+  Tag,
   Space,
   Button,
-  Tag,
+  Statistic,
+  Progress,
+  Select,
+  DatePicker,
+  Tabs,
+  Alert,
+  List,
+  Avatar,
+  message,
+  Spin,
   Modal,
   Form,
   Input,
-  Select,
   InputNumber,
+  Upload,
   Switch,
-  message,
-  Divider,
   Tooltip,
+  Popconfirm,
   Badge,
+  Divider,
+  Timeline,
+  Empty,
+  Dropdown,
   Image,
+  Checkbox,
+  Radio,
+  Steps,
   Transfer,
+  AutoComplete,
 } from 'antd';
 import {
+  ShoppingOutlined,
+  GiftOutlined,
+  BoxPlotOutlined,
+  DollarOutlined,
+  RiseOutlined,
+  FallOutlined,
+  ThunderboltOutlined,
+  CalendarOutlined,
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  GiftOutlined,
-  ShoppingOutlined,
+  PlayCircleOutlined,
+  PauseCircleOutlined,
+  StopOutlined,
+  CopyOutlined,
+  DownloadOutlined,
+  BellOutlined,
+  EyeOutlined,
+  ShoppingCartOutlined,
+  TrophyOutlined,
+  TeamOutlined,
+  ExclamationCircleOutlined,
+  CheckCircleOutlined,
+  MinusCircleOutlined,
+  ReloadOutlined,
+  FileExcelOutlined,
+  FilePdfOutlined,
+  FileTextOutlined,
+  UploadOutlined,
+  AppstoreAddOutlined,
   PercentageOutlined,
-  DollarOutlined,
+  StarOutlined,
+  HeartOutlined,
   TagsOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  PieChartOutlined,
+  SettingOutlined,
+  BulbOutlined,
+  FireOutlined,
 } from '@ant-design/icons';
+import { Line, Column, Pie, Area } from '@ant-design/charts';
 import type { ColumnsType } from 'antd/es/table';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import { bundlesAPI, ProductBundle, BundleProduct, BundleStats, BundleTemplate } from '../../services/api/bundles';
 
 const { Title, Text, Paragraph } = Typography;
+const { RangePicker } = DatePicker;
 const { TextArea } = Input;
+const { TabPane } = Tabs;
+const { Step } = Steps;
 const { Option } = Select;
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  stock: number;
-}
-
-interface BundleProduct {
-  id: number;
-  productId: number;
-  productName: string;
-  quantity: number;
-  price: number;
-  image: string;
-}
-
-interface Bundle {
-  id: number;
-  name: string;
-  description: string;
-  products: BundleProduct[];
-  totalPrice: number;
-  bundlePrice: number;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  savings: number;
-  savingsPercent: number;
-  status: 'active' | 'inactive' | 'draft';
-  stockLimit: number;
-  sold: number;
-  createdAt: string;
-}
-
-const mockProducts: Product[] = [
-  { id: 1, name: 'Laptop', price: 899, image: 'https://via.placeholder.com/60', stock: 50 },
-  { id: 2, name: 'Mouse', price: 29, image: 'https://via.placeholder.com/60', stock: 200 },
-  { id: 3, name: 'Keyboard', price: 79, image: 'https://via.placeholder.com/60', stock: 150 },
-  { id: 4, name: 'Monitor', price: 299, image: 'https://via.placeholder.com/60', stock: 80 },
-  { id: 5, name: 'Webcam', price: 89, image: 'https://via.placeholder.com/60', stock: 120 },
-  { id: 6, name: 'Headphones', price: 149, image: 'https://via.placeholder.com/60', stock: 100 },
-];
-
-const mockBundles: Bundle[] = [
-  {
-    id: 1,
-    name: 'Complete Home Office Bundle',
-    description: 'Everything you need for your home office setup',
-    products: [
-      { id: 1, productId: 1, productName: 'Laptop', quantity: 1, price: 899, image: 'https://via.placeholder.com/60' },
-      { id: 2, productId: 2, productName: 'Mouse', quantity: 1, price: 29, image: 'https://via.placeholder.com/60' },
-      { id: 3, productId: 3, productName: 'Keyboard', quantity: 1, price: 79, image: 'https://via.placeholder.com/60' },
-    ],
-    totalPrice: 1007,
-    bundlePrice: 899,
-    discountType: 'fixed',
-    discountValue: 108,
-    savings: 108,
-    savingsPercent: 10.7,
-    status: 'active',
-    stockLimit: 50,
-    sold: 23,
-    createdAt: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-  },
-  {
-    id: 2,
-    name: 'Gaming Essentials',
-    description: 'Perfect setup for gaming enthusiasts',
-    products: [
-      { id: 4, productId: 4, productName: 'Monitor', quantity: 1, price: 299, image: 'https://via.placeholder.com/60' },
-      { id: 5, productId: 5, productName: 'Webcam', quantity: 1, price: 89, image: 'https://via.placeholder.com/60' },
-      { id: 6, productId: 6, productName: 'Headphones', quantity: 1, price: 149, image: 'https://via.placeholder.com/60' },
-    ],
-    totalPrice: 537,
-    bundlePrice: 429,
-    discountType: 'percentage',
-    discountValue: 20,
-    savings: 108,
-    savingsPercent: 20,
-    status: 'active',
-    stockLimit: 30,
-    sold: 15,
-    createdAt: dayjs().subtract(15, 'days').format('YYYY-MM-DD'),
-  },
-  {
-    id: 3,
-    name: 'Starter Pack',
-    description: 'Basic accessories for everyday use',
-    products: [
-      { id: 7, productId: 2, productName: 'Mouse', quantity: 1, price: 29, image: 'https://via.placeholder.com/60' },
-      { id: 8, productId: 3, productName: 'Keyboard', quantity: 1, price: 79, image: 'https://via.placeholder.com/60' },
-    ],
-    totalPrice: 108,
-    bundlePrice: 89,
-    discountType: 'fixed',
-    discountValue: 19,
-    savings: 19,
-    savingsPercent: 17.6,
-    status: 'draft',
-    stockLimit: 100,
-    sold: 0,
-    createdAt: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
-  },
-];
-
 const ProductBundlingPage: React.FC = () => {
-  const [bundles, setBundles] = useState<Bundle[]>(mockBundles);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [editingBundle, setEditingBundle] = useState<Bundle | null>(null);
-  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [bundles, setBundles] = useState<ProductBundle[]>([]);
+  const [templates, setTemplates] = useState<BundleTemplate[]>([]);
+  const [stats, setStats] = useState<BundleStats | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedBundleType, setSelectedBundleType] = useState<string>('all');
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().subtract(30, 'days'),
+    dayjs(),
+  ]);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedBundle, setSelectedBundle] = useState<ProductBundle | null>(null);
+  const [activeTab, setActiveTab] = useState('bundles');
+  const [createStep, setCreateStep] = useState(0);
   const [form] = Form.useForm();
+  const [templateForm] = Form.useForm();
 
-  const handleCreateBundle = () => {
-    setEditingBundle(null);
-    setSelectedProducts([]);
-    form.resetFields();
-    setIsModalVisible(true);
-  };
+  // Load data
+  useEffect(() => {
+    loadBundles();
+    loadTemplates();
+    loadStats();
+  }, [selectedStatus, selectedBundleType, dateRange]);
 
-  const handleEditBundle = (bundle: Bundle) => {
-    setEditingBundle(bundle);
-    setSelectedProducts(bundle.products.map((p) => p.productId));
-    form.setFieldsValue({
-      name: bundle.name,
-      description: bundle.description,
-      discountType: bundle.discountType,
-      discountValue: bundle.discountValue,
-      stockLimit: bundle.stockLimit,
-      status: bundle.status,
-    });
-    setIsModalVisible(true);
-  };
-
-  const handleDeleteBundle = (bundleId: number) => {
-    Modal.confirm({
-      title: 'Delete Bundle',
-      content: 'Are you sure you want to delete this bundle?',
-      okText: 'Delete',
-      okType: 'danger',
-      onOk: () => {
-        setBundles(bundles.filter((b) => b.id !== bundleId));
-        message.success('Bundle deleted successfully');
-      },
-    });
-  };
-
-  const handleSubmit = (values: any) => {
-    const selectedProductData = mockProducts.filter((p) => selectedProducts.includes(p.id));
-    
-    if (selectedProductData.length === 0) {
-      message.error('Please select at least one product');
-      return;
+  const loadBundles = async () => {
+    setLoading(true);
+    try {
+      const filters = {
+        status: selectedStatus !== 'all' ? selectedStatus as ProductBundle['status'] : undefined,
+        bundleType: selectedBundleType !== 'all' ? selectedBundleType as ProductBundle['bundleType'] : undefined,
+        createdAfter: dateRange[0].format('YYYY-MM-DD'),
+        createdBefore: dateRange[1].format('YYYY-MM-DD'),
+        limit: 50,
+      };
+      const response = await bundlesAPI.getAll(filters);
+      setBundles(response.bundles);
+    } catch (error) {
+      console.error('Error loading bundles:', error);
+      message.error('Failed to load product bundles');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const totalPrice = selectedProductData.reduce((sum, p) => sum + p.price, 0);
-    let bundlePrice = totalPrice;
-    let savings = 0;
-    let savingsPercent = 0;
-
-    if (values.discountType === 'percentage') {
-      savings = (totalPrice * values.discountValue) / 100;
-      bundlePrice = totalPrice - savings;
-      savingsPercent = values.discountValue;
-    } else {
-      savings = values.discountValue;
-      bundlePrice = totalPrice - values.discountValue;
-      savingsPercent = (savings / totalPrice) * 100;
+  const loadTemplates = async () => {
+    try {
+      const templatesData = await bundlesAPI.getTemplates();
+      setTemplates(templatesData);
+    } catch (error) {
+      console.error('Error loading templates:', error);
     }
+  };
 
-    const bundleProducts: BundleProduct[] = selectedProductData.map((p, index) => ({
-      id: index + 1,
-      productId: p.id,
-      productName: p.name,
-      quantity: 1,
-      price: p.price,
-      image: p.image,
-    }));
+  const loadStats = async () => {
+    try {
+      const statsData = await bundlesAPI.getStats({
+        start: dateRange[0].format('YYYY-MM-DD'),
+        end: dateRange[1].format('YYYY-MM-DD'),
+      });
+      setStats(statsData);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
 
-    const bundleData: Bundle = {
-      id: editingBundle ? editingBundle.id : bundles.length + 1,
-      name: values.name,
-      description: values.description,
-      products: bundleProducts,
-      totalPrice,
-      bundlePrice,
-      discountType: values.discountType,
-      discountValue: values.discountValue,
-      savings,
-      savingsPercent,
-      status: values.status,
-      stockLimit: values.stockLimit,
-      sold: editingBundle ? editingBundle.sold : 0,
-      createdAt: editingBundle ? editingBundle.createdAt : dayjs().format('YYYY-MM-DD'),
+  const handleCreateBundle = async (values: any) => {
+    try {
+      setLoading(true);
+      await bundlesAPI.create({
+        name: values.name,
+        description: values.description,
+        bundleType: values.bundleType,
+        pricingStrategy: values.pricingStrategy,
+        bundlePrice: values.bundlePrice,
+        discountPercentage: values.discountPercentage,
+        discountAmount: values.discountAmount,
+        products: values.products || [],
+        minProducts: values.minProducts,
+        maxProducts: values.maxProducts,
+        trackInventory: values.trackInventory,
+        initialStock: values.initialStock,
+        tags: values.tags,
+        categories: values.categories,
+        visibility: values.visibility || 'public',
+        promotionSettings: values.promotionSettings,
+      });
+      message.success('Product bundle created successfully');
+      setCreateModalOpen(false);
+      setCreateStep(0);
+      form.resetFields();
+      loadBundles();
+    } catch (error) {
+      console.error('Error creating bundle:', error);
+      message.error('Failed to create product bundle');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleActivateBundle = async (bundleId: string) => {
+    try {
+      await bundlesAPI.activate(bundleId);
+      message.success('Bundle activated successfully');
+      loadBundles();
+    } catch (error) {
+      console.error('Error activating bundle:', error);
+      message.error('Failed to activate bundle');
+    }
+  };
+
+  const handleDeactivateBundle = async (bundleId: string) => {
+    try {
+      await bundlesAPI.deactivate(bundleId);
+      message.success('Bundle deactivated successfully');
+      loadBundles();
+    } catch (error) {
+      console.error('Error deactivating bundle:', error);
+      message.error('Failed to deactivate bundle');
+    }
+  };
+
+  const handleDeleteBundle = async (bundleId: string) => {
+    try {
+      await bundlesAPI.delete(bundleId);
+      message.success('Bundle deleted successfully');
+      loadBundles();
+    } catch (error) {
+      console.error('Error deleting bundle:', error);
+      message.error('Failed to delete bundle');
+    }
+  };
+
+  const handleDuplicateBundle = async (bundleId: string) => {
+    try {
+      await bundlesAPI.duplicate(bundleId, {
+        name: `Copy of ${bundles.find(b => b.id === bundleId)?.name}`,
+      });
+      message.success('Bundle duplicated successfully');
+      loadBundles();
+    } catch (error) {
+      console.error('Error duplicating bundle:', error);
+      message.error('Failed to duplicate bundle');
+    }
+  };
+
+  const handleExport = async (format: 'csv' | 'xlsx' | 'json') => {
+    try {
+      setLoading(true);
+      const blob = await bundlesAPI.export(
+        {
+          status: selectedStatus !== 'all' ? selectedStatus as ProductBundle['status'] : undefined,
+          bundleType: selectedBundleType !== 'all' ? selectedBundleType as ProductBundle['bundleType'] : undefined,
+          createdAfter: dateRange[0].format('YYYY-MM-DD'),
+          createdBefore: dateRange[1].format('YYYY-MM-DD'),
+        },
+        format
+      );
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `product-bundles-${dayjs().format('YYYY-MM-DD')}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      message.success(`Product bundles exported as ${format.toUpperCase()}`);
+    } catch (error) {
+      console.error('Export error:', error);
+      message.error('Failed to export product bundles');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: ProductBundle['status']) => {
+    const colors = {
+      active: 'green',
+      inactive: 'default',
+      draft: 'blue',
+      archived: 'orange',
     };
-
-    if (editingBundle) {
-      setBundles(bundles.map((b) => (b.id === editingBundle.id ? bundleData : b)));
-      message.success('Bundle updated successfully');
-    } else {
-      setBundles([...bundles, bundleData]);
-      message.success('Bundle created successfully');
-    }
-
-    setIsModalVisible(false);
-    form.resetFields();
+    return colors[status];
   };
 
-  const columns: ColumnsType<Bundle> = [
+  const getStatusIcon = (status: ProductBundle['status']) => {
+    const icons = {
+      active: <CheckCircleOutlined />,
+      inactive: <PauseCircleOutlined />,
+      draft: <EditOutlined />,
+      archived: <MinusCircleOutlined />,
+    };
+    return icons[status];
+  };
+
+  const getBundleTypeColor = (type: ProductBundle['bundleType']) => {
+    const colors = {
+      fixed: 'blue',
+      dynamic: 'green',
+      mix_and_match: 'purple',
+      tiered: 'orange',
+    };
+    return colors[type];
+  };
+
+  const getBundleTypeIcon = (type: ProductBundle['bundleType']) => {
+    const icons = {
+      fixed: <BoxPlotOutlined />,
+      dynamic: <ThunderboltOutlined />,
+      mix_and_match: <AppstoreAddOutlined />,
+      tiered: <BarChartOutlined />,
+    };
+    return icons[type];
+  };
+
+  const bundleColumns: ColumnsType<ProductBundle> = [
     {
-      title: 'Bundle',
-      key: 'bundle',
-      width: 300,
+      title: 'Bundle Info',
+      key: 'info',
       render: (_, record) => (
         <div>
-          <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
-            {record.products.slice(0, 3).map((product) => (
-              <Image
-                key={product.id}
-                src={product.image}
-                width={40}
-                height={40}
-                style={{ borderRadius: 4 }}
-                preview={false}
-              />
-            ))}
-            {record.products.length > 3 && (
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  background: '#f0f0f0',
-                  borderRadius: 4,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Text type="secondary">+{record.products.length - 3}</Text>
-              </div>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+            <Avatar
+              src={record.featuredImage}
+              icon={<GiftOutlined />}
+              size="small"
+              style={{ marginRight: 8 }}
+            />
+            <Text strong>{record.name}</Text>
           </div>
-          <Text strong>{record.name}</Text>
-          <div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {record.products.length} products
-            </Text>
+          <Text type="secondary" style={{ fontSize: '12px', display: 'block' }}>
+            {record.description}
+          </Text>
+          <div style={{ marginTop: 4 }}>
+            {record.tags.slice(0, 2).map(tag => (
+              <Tag key={tag} color="blue">{tag}</Tag>
+            ))}
+            {record.tags.length > 2 && (
+              <Tag>+{record.tags.length - 2}</Tag>
+            )}
           </div>
         </div>
       ),
+      width: 280,
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      ellipsis: true,
+      title: 'Type',
+      dataIndex: 'bundleType',
+      key: 'bundleType',
+      render: (type: ProductBundle['bundleType']) => (
+        <Tag color={getBundleTypeColor(type)} icon={getBundleTypeIcon(type)}>
+          {type.replace('_', ' ').toUpperCase()}
+        </Tag>
+      ),
+      filters: [
+        { text: 'Fixed', value: 'fixed' },
+        { text: 'Dynamic', value: 'dynamic' },
+        { text: 'Mix & Match', value: 'mix_and_match' },
+        { text: 'Tiered', value: 'tiered' },
+      ],
+      onFilter: (value, record) => record.bundleType === value,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: ProductBundle['status']) => (
+        <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
+          {status.toUpperCase()}
+        </Tag>
+      ),
+      filters: [
+        { text: 'Active', value: 'active' },
+        { text: 'Inactive', value: 'inactive' },
+        { text: 'Draft', value: 'draft' },
+        { text: 'Archived', value: 'archived' },
+      ],
+      onFilter: (value, record) => record.status === value,
+    },
+    {
+      title: 'Products',
+      dataIndex: 'products',
+      key: 'products',
+      render: (products: BundleProduct[]) => (
+        <div>
+          <Text strong>{products.length}</Text>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            products
+          </div>
+          {products.some(p => p.isRequired) && (
+            <Tag color="red">Required Items</Tag>
+          )}
+        </div>
+      ),
     },
     {
       title: 'Pricing',
@@ -300,375 +396,700 @@ const ProductBundlingPage: React.FC = () => {
       render: (_, record) => (
         <div>
           <div>
-            <Text delete type="secondary" style={{ fontSize: 12 }}>
-              ${record.totalPrice}
+            <Text strong style={{ color: '#52c41a', fontSize: '16px' }}>
+              ${record.bundlePrice || record.originalPrice}
             </Text>
           </div>
-          <div>
-            <Text strong style={{ fontSize: 16, color: '#52c41a' }}>
-              ${record.bundlePrice}
-            </Text>
-          </div>
-          <div>
-            <Tag color="green" style={{ margin: 0 }}>
-              Save ${record.savings} ({record.savingsPercent.toFixed(1)}%)
-            </Tag>
+          {record.originalPrice !== (record.bundlePrice || record.originalPrice) && (
+            <div>
+              <Text delete style={{ color: '#999', fontSize: '12px' }}>
+                ${record.originalPrice}
+              </Text>
+              <Tag color="green" style={{ marginLeft: 4 }}>
+                {record.savingsPercentage.toFixed(0)}% OFF
+              </Tag>
+            </div>
+          )}
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            {record.pricingStrategy.replace('_', ' ')}
           </div>
         </div>
       ),
     },
     {
-      title: 'Stock',
-      key: 'stock',
+      title: 'Inventory',
+      key: 'inventory',
       render: (_, record) => (
         <div>
           <div>
-            <Text>{record.stockLimit - record.sold} available</Text>
+            <Text strong>{record.inventory.availableStock}</Text>
+            <Text type="secondary"> / {record.inventory.totalStock}</Text>
           </div>
-          <div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {record.sold} sold
-            </Text>
+          <div style={{ marginTop: 4 }}>
+            <Progress
+              percent={(record.inventory.availableStock / record.inventory.totalStock) * 100}
+              size="small"
+              strokeColor={
+                record.inventory.availableStock <= record.inventory.lowStockThreshold 
+                  ? '#ff4d4f' 
+                  : '#52c41a'
+              }
+            />
           </div>
+          <Tag 
+            color={record.stockStatus === 'in_stock' ? 'green' : 
+                  record.stockStatus === 'low_stock' ? 'orange' : 'red'}
+          >
+            {record.stockStatus.replace('_', ' ').toUpperCase()}
+          </Tag>
         </div>
       ),
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: Bundle['status']) => {
-        const config: Record<Bundle['status'], { color: string; text: string }> = {
-          active: { color: 'green', text: 'Active' },
-          inactive: { color: 'red', text: 'Inactive' },
-          draft: { color: 'orange', text: 'Draft' },
-        };
-        return <Tag color={config[status].color}>{config[status].text}</Tag>;
-      },
-      filters: [
-        { text: 'Active', value: 'active' },
-        { text: 'Inactive', value: 'inactive' },
-        { text: 'Draft', value: 'draft' },
-      ],
-      onFilter: (value, record) => record.status === value,
-    },
-    {
-      title: 'Created',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (date) => <Text>{dayjs(date).format('MMM DD, YYYY')}</Text>,
+      title: 'Performance',
+      key: 'performance',
+      render: (_, record) => (
+        <div>
+          <div style={{ fontSize: '12px' }}>
+            <Text strong style={{ color: '#52c41a' }}>
+              ${record.analytics.totalRevenue.toLocaleString()}
+            </Text>
+          </div>
+          <div style={{ fontSize: '12px' }}>
+            {record.analytics.totalSales} sales
+          </div>
+          <div style={{ fontSize: '12px' }}>
+            {record.analytics.conversionRate.toFixed(1)}% conv.
+          </div>
+          <div style={{ fontSize: '12px' }}>
+            {record.analytics.totalViews} views
+          </div>
+        </div>
+      ),
     },
     {
       title: 'Actions',
       key: 'actions',
-      fixed: 'right' as const,
-      width: 150,
       render: (_, record) => (
-        <Space>
+        <Space size="small">
+          {record.status === 'inactive' || record.status === 'draft' ? (
+            <Tooltip title="Activate">
+              <Button
+                type="text"
+                icon={<PlayCircleOutlined />}
+                onClick={() => handleActivateBundle(record.id)}
+                style={{ color: '#52c41a' }}
+              />
+            </Tooltip>
+          ) : (
+            <Tooltip title="Deactivate">
+              <Button
+                type="text"
+                icon={<PauseCircleOutlined />}
+                onClick={() => handleDeactivateBundle(record.id)}
+                style={{ color: '#faad14' }}
+              />
+            </Tooltip>
+          )}
           <Tooltip title="Edit">
-            <Button type="link" icon={<EditOutlined />} onClick={() => handleEditBundle(record)} />
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setSelectedBundle(record);
+                setEditModalOpen(true);
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="Duplicate">
+            <Button
+              type="text"
+              icon={<CopyOutlined />}
+              onClick={() => handleDuplicateBundle(record.id)}
+            />
+          </Tooltip>
+          <Tooltip title="Analytics">
+            <Button
+              type="text"
+              icon={<LineChartOutlined />}
+              onClick={() => {
+                // Navigate to analytics view
+                message.info('Bundle analytics view');
+              }}
+            />
           </Tooltip>
           <Tooltip title="Delete">
-            <Button
-              type="link"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDeleteBundle(record.id)}
-            />
+            <Popconfirm
+              title="Are you sure you want to delete this bundle?"
+              onConfirm={() => handleDeleteBundle(record.id)}
+              okText="Delete"
+              cancelText="Cancel"
+              okButtonProps={{ danger: true }}
+            >
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                danger
+              />
+            </Popconfirm>
           </Tooltip>
         </Space>
       ),
     },
   ];
 
-  const totalBundles = bundles.length;
-  const activeBundles = bundles.filter((b) => b.status === 'active').length;
-  const totalSales = bundles.reduce((sum, b) => sum + b.sold * b.bundlePrice, 0);
-  const averageDiscount = bundles.reduce((sum, b) => sum + b.savingsPercent, 0) / bundles.length;
+  const exportMenuItems = [
+    {
+      key: 'csv',
+      label: (
+        <Space>
+          <FileTextOutlined />
+          Export as CSV
+        </Space>
+      ),
+      onClick: () => handleExport('csv'),
+    },
+    {
+      key: 'xlsx',
+      label: (
+        <Space>
+          <FileExcelOutlined />
+          Export as Excel
+        </Space>
+      ),
+      onClick: () => handleExport('xlsx'),
+    },
+    {
+      key: 'json',
+      label: (
+        <Space>
+          <FileTextOutlined />
+          Export as JSON
+        </Space>
+      ),
+      onClick: () => handleExport('json'),
+    },
+  ];
+
+  const revenueChartData = bundles.map(bundle => ({
+    name: bundle.name,
+    revenue: bundle.analytics.totalRevenue,
+    sales: bundle.analytics.totalSales,
+    conversion: bundle.analytics.conversionRate,
+  }));
+
+  const typeDistribution = [
+    { type: 'Fixed', value: bundles.filter(b => b.bundleType === 'fixed').length },
+    { type: 'Dynamic', value: bundles.filter(b => b.bundleType === 'dynamic').length },
+    { type: 'Mix & Match', value: bundles.filter(b => b.bundleType === 'mix_and_match').length },
+    { type: 'Tiered', value: bundles.filter(b => b.bundleType === 'tiered').length },
+  ].filter(item => item.value > 0);
+
+  const createSteps = [
+    {
+      title: 'Basic Info',
+      description: 'Bundle details and type',
+    },
+    {
+      title: 'Products',
+      description: 'Select and configure products',
+    },
+    {
+      title: 'Pricing',
+      description: 'Set pricing strategy',
+    },
+    {
+      title: 'Settings',
+      description: 'Inventory and promotion settings',
+    },
+  ];
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ marginBottom: 24 }}>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={3}>
-              <GiftOutlined style={{ color: '#722ed1' }} /> Product Bundling
-            </Title>
-            <Paragraph type="secondary">Create and manage product bundles with special pricing</Paragraph>
+    <Spin spinning={loading} tip="Loading product bundles data...">
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+        {/* Header */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <Title level={3}>
+                <GiftOutlined style={{ color: '#722ed1' }} /> Product Bundling
+              </Title>
+              <Paragraph type="secondary">
+                Create and manage product bundles with flexible pricing strategies and inventory tracking
+              </Paragraph>
+            </div>
+            <Space>
+              <Select
+                value={selectedStatus}
+                onChange={setSelectedStatus}
+                style={{ width: 120 }}
+              >
+                <Option value="all">All Status</Option>
+                <Option value="active">Active</Option>
+                <Option value="inactive">Inactive</Option>
+                <Option value="draft">Draft</Option>
+                <Option value="archived">Archived</Option>
+              </Select>
+              <Select
+                value={selectedBundleType}
+                onChange={setSelectedBundleType}
+                style={{ width: 140 }}
+              >
+                <Option value="all">All Types</Option>
+                <Option value="fixed">Fixed</Option>
+                <Option value="dynamic">Dynamic</Option>
+                <Option value="mix_and_match">Mix & Match</Option>
+                <Option value="tiered">Tiered</Option>
+              </Select>
+              <RangePicker
+                value={dateRange}
+                onChange={(dates) => dates && setDateRange(dates as [Dayjs, Dayjs])}
+              />
+              <Dropdown menu={{ items: exportMenuItems }} placement="bottomRight">
+                <Button icon={<DownloadOutlined />}>
+                  Export
+                </Button>
+              </Dropdown>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setCreateModalOpen(true)}
+              >
+                Create Bundle
+              </Button>
+            </Space>
+          </div>
+        </div>
+
+        {/* Alert */}
+        <Alert
+          message="Product Bundling Management"
+          description="Create flexible product bundles with custom pricing strategies, inventory management, and promotional features. Track performance and optimize bundle configurations for maximum sales."
+          type="info"
+          showIcon
+          closable
+          style={{ marginBottom: 24 }}
+        />
+
+        {/* Statistics */}
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Total Bundles"
+                value={stats?.totalBundles || 0}
+                prefix={<BoxPlotOutlined />}
+                valueStyle={{ color: '#1890ff' }}
+              />
+            </Card>
           </Col>
-          <Col>
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateBundle}>
-              Create Bundle
-            </Button>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Active Bundles"
+                value={stats?.activeBundles || 0}
+                prefix={<CheckCircleOutlined />}
+                valueStyle={{ color: '#52c41a' }}
+                suffix={
+                  <Tag color="green" icon={<RiseOutlined />}>
+                    Live
+                  </Tag>
+                }
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Bundle Revenue"
+                value={stats?.totalRevenue || 0}
+                prefix={<DollarOutlined />}
+                valueStyle={{ color: '#722ed1' }}
+                precision={2}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Avg Order Value"
+                value={stats?.averageOrderValue || 0}
+                prefix={<TrophyOutlined />}
+                valueStyle={{ color: '#faad14' }}
+                precision={2}
+              />
+            </Card>
           </Col>
         </Row>
-      </div>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  background: '#e6f7ff',
-                  borderRadius: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <GiftOutlined style={{ fontSize: 24, color: '#1890ff' }} />
-              </div>
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Total Bundles
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 24 }}>
-                    {totalBundles}
-                  </Text>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  background: '#f6ffed',
-                  borderRadius: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <TagsOutlined style={{ fontSize: 24, color: '#52c41a' }} />
-              </div>
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Active Bundles
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 24 }}>
-                    {activeBundles}
-                  </Text>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  background: '#f9f0ff',
-                  borderRadius: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <DollarOutlined style={{ fontSize: 24, color: '#722ed1' }} />
-              </div>
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Total Sales
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 24 }}>
-                    ${totalSales.toLocaleString()}
-                  </Text>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  background: '#fff7e6',
-                  borderRadius: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <PercentageOutlined style={{ fontSize: 24, color: '#fa8c16' }} />
-              </div>
-              <div>
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  Avg. Discount
-                </Text>
-                <div>
-                  <Text strong style={{ fontSize: 24 }}>
-                    {averageDiscount.toFixed(1)}%
-                  </Text>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      <Card>
-        <Table columns={columns} dataSource={bundles} rowKey="id" scroll={{ x: 1200 }} />
-      </Card>
-
-      <Modal
-        title={editingBundle ? 'Edit Bundle' : 'Create Bundle'}
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        width={800}
-        footer={null}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item
-            label="Bundle Name"
-            name="name"
-            rules={[{ required: true, message: 'Please enter bundle name' }]}
+        {/* Main Content */}
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
+          <TabPane
+            tab={
+              <span>
+                <GiftOutlined />
+                Product Bundles ({bundles.length})
+              </span>
+            }
+            key="bundles"
           >
-            <Input placeholder="e.g., Complete Home Office Bundle" />
-          </Form.Item>
+            <Card>
+              <Table
+                columns={bundleColumns}
+                dataSource={bundles}
+                rowKey="id"
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} bundles`,
+                }}
+                scroll={{ x: 1400 }}
+              />
+            </Card>
+          </TabPane>
 
-          <Form.Item
-            label="Description"
-            name="description"
-            rules={[{ required: true, message: 'Please enter description' }]}
+          <TabPane
+            tab={
+              <span>
+                <SettingOutlined />
+                Templates ({templates.length})
+              </span>
+            }
+            key="templates"
           >
-            <TextArea rows={3} placeholder="Describe what's included in this bundle" />
-          </Form.Item>
-
-          <Form.Item label="Select Products">
-            <div style={{ marginBottom: 16 }}>
-              <Text type="secondary">Choose products to include in this bundle</Text>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-              {mockProducts.map((product) => {
-                const isSelected = selectedProducts.includes(product.id);
-                return (
-                  <div
-                    key={product.id}
-                    onClick={() => {
-                      if (isSelected) {
-                        setSelectedProducts(selectedProducts.filter((id) => id !== product.id));
-                      } else {
-                        setSelectedProducts([...selectedProducts, product.id]);
-                      }
-                    }}
-                    style={{
-                      width: 'calc(33.33% - 8px)',
-                      border: isSelected ? '2px solid #1890ff' : '1px solid #d9d9d9',
-                      borderRadius: 8,
-                      padding: 12,
-                      cursor: 'pointer',
-                      background: isSelected ? '#e6f7ff' : 'white',
-                      transition: 'all 0.3s',
-                    }}
+            <Row gutter={[16, 16]}>
+              {templates.map(template => (
+                <Col xs={24} sm={12} md={8} lg={6} key={template.id}>
+                  <Card
+                    hoverable
+                    actions={[
+                      <Tooltip title="Use Template">
+                        <Button
+                          type="text"
+                          icon={<PlusOutlined />}
+                          onClick={() => {
+                            // Apply template logic
+                            message.info('Template applied');
+                          }}
+                        />
+                      </Tooltip>,
+                      <Tooltip title="Edit Template">
+                        <Button type="text" icon={<EditOutlined />} />
+                      </Tooltip>,
+                      <Tooltip title="Delete Template">
+                        <Button type="text" icon={<DeleteOutlined />} danger />
+                      </Tooltip>,
+                    ]}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Image src={product.image} width={50} height={50} preview={false} />
-                      <div style={{ flex: 1 }}>
-                        <Text strong style={{ fontSize: 13 }}>
-                          {product.name}
-                        </Text>
+                    <Card.Meta
+                      title={template.name}
+                      description={
                         <div>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            ${product.price}
-                          </Text>
+                          <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 8 }}>
+                            {template.description}
+                          </Paragraph>
+                          <Tag color={getBundleTypeColor(template.bundleType)}>
+                            {template.bundleType.replace('_', ' ').toUpperCase()}
+                          </Tag>
+                          <Tag color="blue">
+                            {template.pricingStrategy.replace('_', ' ')}
+                          </Tag>
+                          <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
+                            Used {template.usageCount} times
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                      }
+                    />
+                  </Card>
+                </Col>
+              ))}
+              {templates.length === 0 && (
+                <Col span={24}>
+                  <Empty description="No bundle templates found">
+                    <Button type="primary" icon={<PlusOutlined />}>
+                      Create Template
+                    </Button>
+                  </Empty>
+                </Col>
+              )}
+            </Row>
+          </TabPane>
+
+          <TabPane
+            tab={
+              <span>
+                <BarChartOutlined />
+                Analytics
+              </span>
+            }
+            key="analytics"
+          >
+            <Row gutter={[16, 16]}>
+              <Col xs={24} lg={16}>
+                <Card title="Bundle Revenue Performance">
+                  <Column
+                    data={revenueChartData}
+                    xField="name"
+                    yField="revenue"
+                    label={{
+                      position: 'top',
+                      style: {
+                        fill: '#000000',
+                        opacity: 0.6,
+                      },
+                    }}
+                    meta={{
+                      revenue: {
+                        formatter: (v: number) => `$${(v / 1000).toFixed(1)}k`,
+                      },
+                    }}
+                    height={300}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} lg={8}>
+                <Card title="Bundle Type Distribution">
+                  <Pie
+                    data={typeDistribution}
+                    angleField="value"
+                    colorField="type"
+                    radius={0.8}
+                    label={{
+                      type: 'outer',
+                      content: '{name} {percentage}',
+                    }}
+                    interactions={[{ type: 'element-active' }]}
+                    height={300}
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </TabPane>
+        </Tabs>
+
+        {/* Create Bundle Modal */}
+        <Modal
+          title={
+            <div>
+              <GiftOutlined style={{ marginRight: 8 }} />
+              Create Product Bundle
             </div>
-          </Form.Item>
+          }
+          open={createModalOpen}
+          onCancel={() => {
+            setCreateModalOpen(false);
+            setCreateStep(0);
+            form.resetFields();
+          }}
+          footer={null}
+          width={900}
+          bodyStyle={{ padding: '24px 0' }}
+        >
+          <Steps current={createStep} style={{ marginBottom: 24 }}>
+            {createSteps.map(step => (
+              <Step key={step.title} title={step.title} description={step.description} />
+            ))}
+          </Steps>
 
-          <Divider />
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleCreateBundle}
+          >
+            {createStep === 0 && (
+              <div style={{ padding: '0 24px' }}>
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="name"
+                      label="Bundle Name"
+                      rules={[{ required: true, message: 'Please enter bundle name' }]}
+                    >
+                      <Input placeholder="Enter bundle name" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name="description"
+                      label="Description"
+                      rules={[{ required: true, message: 'Please enter description' }]}
+                    >
+                      <TextArea rows={3} placeholder="Enter bundle description" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="bundleType"
+                      label="Bundle Type"
+                      rules={[{ required: true, message: 'Please select bundle type' }]}
+                    >
+                      <Select placeholder="Select bundle type">
+                        <Option value="fixed">Fixed Bundle</Option>
+                        <Option value="dynamic">Dynamic Bundle</Option>
+                        <Option value="mix_and_match">Mix & Match</Option>
+                        <Option value="tiered">Tiered Pricing</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="visibility"
+                      label="Visibility"
+                    >
+                      <Select defaultValue="public">
+                        <Option value="public">Public</Option>
+                        <Option value="private">Private</Option>
+                        <Option value="members_only">Members Only</Option>
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
+            )}
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Discount Type"
-                name="discountType"
-                rules={[{ required: true, message: 'Please select discount type' }]}
-              >
-                <Select placeholder="Select discount type">
-                  <Option value="percentage">Percentage</Option>
-                  <Option value="fixed">Fixed Amount</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Discount Value"
-                name="discountValue"
-                rules={[{ required: true, message: 'Please enter discount value' }]}
-              >
-                <InputNumber
-                  min={0}
-                  style={{ width: '100%' }}
-                  placeholder="Enter discount"
-                  addonAfter={
-                    form.getFieldValue('discountType') === 'percentage' ? '%' : '$'
-                  }
+            {createStep === 1 && (
+              <div style={{ padding: '0 24px' }}>
+                <Alert
+                  message="Product Selection"
+                  description="Select products to include in this bundle. You can specify quantities and requirements for each product."
+                  type="info"
+                  style={{ marginBottom: 16 }}
                 />
-              </Form.Item>
-            </Col>
-          </Row>
+                <Empty description="Product selection interface would go here" />
+              </div>
+            )}
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Stock Limit"
-                name="stockLimit"
-                rules={[{ required: true, message: 'Please enter stock limit' }]}
-              >
-                <InputNumber min={1} style={{ width: '100%' }} placeholder="Enter stock limit" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Status"
-                name="status"
-                rules={[{ required: true, message: 'Please select status' }]}
-              >
-                <Select placeholder="Select status">
-                  <Option value="active">Active</Option>
-                  <Option value="inactive">Inactive</Option>
-                  <Option value="draft">Draft</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+            {createStep === 2 && (
+              <div style={{ padding: '0 24px' }}>
+                <Row gutter={16}>
+                  <Col span={24}>
+                    <Form.Item
+                      name="pricingStrategy"
+                      label="Pricing Strategy"
+                      rules={[{ required: true, message: 'Please select pricing strategy' }]}
+                    >
+                      <Radio.Group>
+                        <Radio value="fixed_price">Fixed Price</Radio>
+                        <Radio value="percentage_discount">Percentage Discount</Radio>
+                        <Radio value="fixed_discount">Fixed Discount</Radio>
+                        <Radio value="dynamic_pricing">Dynamic Pricing</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      name="bundlePrice"
+                      label="Bundle Price ($)"
+                    >
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        placeholder="0.00"
+                        min={0}
+                        precision={2}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      name="discountPercentage"
+                      label="Discount (%)"
+                    >
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        placeholder="0"
+                        min={0}
+                        max={100}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      name="discountAmount"
+                      label="Discount Amount ($)"
+                    >
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        placeholder="0.00"
+                        min={0}
+                        precision={2}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
+            )}
 
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                {editingBundle ? 'Update Bundle' : 'Create Bundle'}
-              </Button>
-              <Button onClick={() => setIsModalVisible(false)}>Cancel</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+            {createStep === 3 && (
+              <div style={{ padding: '0 24px' }}>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="trackInventory"
+                      label="Track Inventory"
+                      valuePropName="checked"
+                    >
+                      <Switch />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="initialStock"
+                      label="Initial Stock"
+                    >
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        placeholder="0"
+                        min={0}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item
+                      name="tags"
+                      label="Tags"
+                    >
+                      <Select
+                        mode="tags"
+                        placeholder="Add tags"
+                        style={{ width: '100%' }}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
+            )}
+
+            <div style={{ textAlign: 'right', marginTop: 24, padding: '0 24px' }}>
+              <Space>
+                {createStep > 0 && (
+                  <Button onClick={() => setCreateStep(createStep - 1)}>
+                    Previous
+                  </Button>
+                )}
+                <Button onClick={() => {
+                  setCreateModalOpen(false);
+                  setCreateStep(0);
+                  form.resetFields();
+                }}>
+                  Cancel
+                </Button>
+                {createStep < createSteps.length - 1 ? (
+                  <Button type="primary" onClick={() => setCreateStep(createStep + 1)}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button type="primary" htmlType="submit" loading={loading}>
+                    Create Bundle
+                  </Button>
+                )}
+              </Space>
+            </div>
+          </Form>
+        </Modal>
+      </div>
+    </Spin>
   );
 };
 

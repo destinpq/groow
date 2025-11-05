@@ -4,125 +4,306 @@ import {
   Row,
   Col,
   Typography,
-  Select,
   Table,
   Tag,
-  Statistic,
   Space,
-  Switch,
   Button,
-  InputNumber,
+  Statistic,
+  Select,
+  DatePicker,
+  Tabs,
   Alert,
-  Divider,
+  List,
+  Avatar,
   message,
+  Spin,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Switch,
+  Tooltip,
+  Popconfirm,
+  Badge,
+  Divider,
+  Progress,
+  Empty,
+  Dropdown,
+  Upload,
+  Radio,
+  Checkbox,
 } from 'antd';
 import {
   DollarOutlined,
-  SwapOutlined,
   GlobalOutlined,
+  SwapOutlined,
+  SettingOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ReloadOutlined,
+  DownloadOutlined,
+  UploadOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  PieChartOutlined,
+  FlagOutlined,
+  BankOutlined,
+  SwapRightOutlined,
+  TrophyOutlined,
   RiseOutlined,
   FallOutlined,
-  ReloadOutlined,
+  SyncOutlined,
+  WarningOutlined,
+  InfoCircleOutlined,
+  FileExcelOutlined,
+  FilePdfOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
+import { Line, Column, Pie, Area } from '@ant-design/charts';
 import type { ColumnsType } from 'antd/es/table';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import { currencyAPI, Currency, ExchangeRate, CurrencyStats, CurrencySettings } from '../../services/api/currency';
 
 const { Title, Text, Paragraph } = Typography;
-
-interface Currency {
-  code: string;
-  name: string;
-  symbol: string;
-  flag: string;
-  rate: number;
-  change24h: number;
-}
-
-interface ConversionHistory {
-  id: number;
-  from: string;
-  to: string;
-  amount: number;
-  result: number;
-  rate: number;
-  timestamp: string;
-}
-
-const currencies: Currency[] = [
-  { code: 'USD', name: 'US Dollar', symbol: '$', flag: '🇺🇸', rate: 1.0, change24h: 0 },
-  { code: 'EUR', name: 'Euro', symbol: '€', flag: '🇪🇺', rate: 0.92, change24h: -0.15 },
-  { code: 'GBP', name: 'British Pound', symbol: '£', flag: '🇬🇧', rate: 0.79, change24h: 0.23 },
-  { code: 'JPY', name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵', rate: 149.50, change24h: 0.45 },
-  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', flag: '🇨🇦', rate: 1.36, change24h: -0.08 },
-  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', flag: '🇦🇺', rate: 1.52, change24h: 0.12 },
-  { code: 'CHF', name: 'Swiss Franc', symbol: 'Fr', flag: '🇨🇭', rate: 0.88, change24h: -0.05 },
-  { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', flag: '🇨🇳', rate: 7.24, change24h: 0.18 },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹', flag: '🇮🇳', rate: 83.12, change24h: 0.35 },
-  { code: 'MXN', name: 'Mexican Peso', symbol: '$', flag: '🇲🇽', rate: 17.15, change24h: -0.22 },
-];
+const { RangePicker } = DatePicker;
+const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 const MultiCurrencyPage: React.FC = () => {
-  const [baseCurrency, setBaseCurrency] = useState<string>('USD');
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('EUR');
-  const [amount, setAmount] = useState<number>(100);
-  const [convertedAmount, setConvertedAmount] = useState<number>(0);
-  const [autoUpdate, setAutoUpdate] = useState<boolean>(true);
-  const [history, setHistory] = useState<ConversionHistory[]>([]);
-  const [lastUpdated, setLastUpdated] = useState<string>(dayjs().format('HH:mm:ss'));
+  const [loading, setLoading] = useState(false);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRate[]>([]);
+  const [stats, setStats] = useState<CurrencyStats | null>(null);
+  const [settings, setSettings] = useState<CurrencySettings | null>(null);
+  const [activeTab, setActiveTab] = useState('currencies');
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [rateHistoryModalOpen, setRateHistoryModalOpen] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
+  const [selectedRatePair, setSelectedRatePair] = useState<{ from: string; to: string } | null>(null);
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().subtract(30, 'days'),
+    dayjs(),
+  ]);
+  const [form] = Form.useForm();
+  const [settingsForm] = Form.useForm();
+  const [refreshing, setRefreshing] = useState(false);
 
-  const baseCurrencyData = currencies.find((c) => c.code === baseCurrency);
-  const targetCurrencyData = currencies.find((c) => c.code === selectedCurrency);
-
+  // Load data
   useEffect(() => {
-    if (autoUpdate) {
-      const interval = setInterval(() => {
-        handleRefreshRates();
-      }, 60000); // Update every minute
-      return () => clearInterval(interval);
+    loadCurrencies();
+    loadExchangeRates();
+    loadStats();
+    loadSettings();
+  }, [dateRange]);
+
+  const loadCurrencies = async () => {
+    setLoading(true);
+    try {
+      const response = await currencyAPI.getAll({ limit: 100 });
+      setCurrencies(response.currencies);
+    } catch (error) {
+      console.error('Error loading currencies:', error);
+      message.error('Failed to load currencies');
+    } finally {
+      setLoading(false);
     }
-  }, [autoUpdate]);
-
-  useEffect(() => {
-    handleConvert();
-  }, [amount, baseCurrency, selectedCurrency]);
-
-  const handleConvert = () => {
-    if (!baseCurrencyData || !targetCurrencyData) return;
-
-    // Convert to USD first, then to target currency
-    const amountInUSD = amount / baseCurrencyData.rate;
-    const result = amountInUSD * targetCurrencyData.rate;
-    setConvertedAmount(result);
   };
 
-  const handleSaveConversion = () => {
-    if (!baseCurrencyData || !targetCurrencyData) return;
-
-    const rate = targetCurrencyData.rate / baseCurrencyData.rate;
-    const newHistory: ConversionHistory = {
-      id: Date.now(),
-      from: baseCurrency,
-      to: selectedCurrency,
-      amount,
-      result: convertedAmount,
-      rate,
-      timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-    };
-
-    setHistory([newHistory, ...history]);
-    message.success('Conversion saved to history');
+  const loadExchangeRates = async () => {
+    try {
+      const rates = await currencyAPI.getExchangeRates();
+      setExchangeRates(rates);
+    } catch (error) {
+      console.error('Error loading exchange rates:', error);
+      message.error('Failed to load exchange rates');
+    }
   };
 
-  const handleRefreshRates = () => {
-    // Simulate rate refresh
-    setLastUpdated(dayjs().format('HH:mm:ss'));
-    message.success('Exchange rates updated');
+  const loadStats = async () => {
+    try {
+      const statsData = await currencyAPI.getStats({
+        start: dateRange[0].format('YYYY-MM-DD'),
+        end: dateRange[1].format('YYYY-MM-DD'),
+      });
+      setStats(statsData);
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
   };
 
-  const handleSwapCurrencies = () => {
-    setBaseCurrency(selectedCurrency);
-    setSelectedCurrency(baseCurrency);
-    message.info('Currencies swapped');
+  const loadSettings = async () => {
+    try {
+      const settingsData = await currencyAPI.getSettings();
+      setSettings(settingsData);
+      settingsForm.setFieldsValue(settingsData);
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      message.error('Failed to load currency settings');
+    }
+  };
+
+  const handleCreateCurrency = async (values: any) => {
+    try {
+      setLoading(true);
+      await currencyAPI.create({
+        code: values.code.toUpperCase(),
+        name: values.name,
+        symbol: values.symbol,
+        symbolPosition: values.symbolPosition,
+        decimalPlaces: values.decimalPlaces,
+        thousandsSeparator: values.thousandsSeparator,
+        decimalSeparator: values.decimalSeparator,
+        isActive: values.isActive || false,
+        isDefault: false,
+        exchangeRate: values.exchangeRate || 1,
+        countryCode: values.countryCode,
+        displayFormat: values.displayFormat,
+      });
+      message.success('Currency created successfully');
+      setCreateModalOpen(false);
+      form.resetFields();
+      loadCurrencies();
+    } catch (error) {
+      console.error('Error creating currency:', error);
+      message.error('Failed to create currency');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateCurrency = async (values: any) => {
+    if (!selectedCurrency) return;
+    
+    try {
+      setLoading(true);
+      await currencyAPI.update(selectedCurrency.id, values);
+      message.success('Currency updated successfully');
+      setEditModalOpen(false);
+      setSelectedCurrency(null);
+      form.resetFields();
+      loadCurrencies();
+    } catch (error) {
+      console.error('Error updating currency:', error);
+      message.error('Failed to update currency');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCurrency = async (currencyId: string) => {
+    try {
+      await currencyAPI.delete(currencyId);
+      message.success('Currency deleted successfully');
+      loadCurrencies();
+    } catch (error) {
+      console.error('Error deleting currency:', error);
+      message.error('Failed to delete currency');
+    }
+  };
+
+  const handleSetDefault = async (currencyId: string) => {
+    try {
+      await currencyAPI.setDefault(currencyId);
+      message.success('Default currency updated successfully');
+      loadCurrencies();
+    } catch (error) {
+      console.error('Error setting default currency:', error);
+      message.error('Failed to set default currency');
+    }
+  };
+
+  const handleToggleActive = async (currency: Currency) => {
+    try {
+      if (currency.isActive) {
+        await currencyAPI.deactivate(currency.id);
+        message.success('Currency deactivated');
+      } else {
+        await currencyAPI.activate(currency.id);
+        message.success('Currency activated');
+      }
+      loadCurrencies();
+    } catch (error) {
+      console.error('Error toggling currency status:', error);
+      message.error('Failed to update currency status');
+    }
+  };
+
+  const handleRefreshRates = async () => {
+    setRefreshing(true);
+    try {
+      const result = await currencyAPI.refreshExchangeRates();
+      message.success(`${result.updated} exchange rates updated successfully`);
+      if (result.failed.length > 0) {
+        message.warning(`Failed to update rates for: ${result.failed.join(', ')}`);
+      }
+      loadExchangeRates();
+    } catch (error) {
+      console.error('Error refreshing exchange rates:', error);
+      message.error('Failed to refresh exchange rates');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleUpdateSettings = async (values: any) => {
+    try {
+      setLoading(true);
+      await currencyAPI.updateSettings(values);
+      message.success('Currency settings updated successfully');
+      setSettingsModalOpen(false);
+      loadSettings();
+    } catch (error) {
+      console.error('Error updating settings:', error);
+      message.error('Failed to update settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExport = async (format: 'csv' | 'xlsx' | 'json', type: 'currencies' | 'rates') => {
+    try {
+      setLoading(true);
+      let blob: Blob;
+      if (type === 'currencies') {
+        blob = await currencyAPI.exportCurrencies(format);
+      } else {
+        blob = await currencyAPI.exportExchangeRates(format);
+      }
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${type}-${dayjs().format('YYYY-MM-DD')}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      message.success(`${type} exported as ${format.toUpperCase()}`);
+    } catch (error) {
+      console.error('Export error:', error);
+      message.error('Failed to export data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConvert = async (from: string, to: string, amount: number) => {
+    try {
+      const result = await currencyAPI.convert(from, to, amount);
+      return result;
+    } catch (error) {
+      console.error('Error converting currency:', error);
+      message.error('Failed to convert currency');
+      return null;
+    }
   };
 
   const currencyColumns: ColumnsType<Currency> = [
@@ -130,289 +311,851 @@ const MultiCurrencyPage: React.FC = () => {
       title: 'Currency',
       key: 'currency',
       render: (_, record) => (
-        <Space>
-          <span style={{ fontSize: 24 }}>{record.flag}</span>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar
+            size="small"
+            style={{ marginRight: 8, backgroundColor: '#1890ff' }}
+          >
+            {record.flag || record.code[0]}
+          </Avatar>
           <div>
             <Text strong>{record.code}</Text>
-            <div>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {record.name}
-              </Text>
+            <div style={{ fontSize: '12px', color: '#666' }}>
+              {record.name}
             </div>
           </div>
-        </Space>
+        </div>
       ),
+      sorter: (a, b) => a.code.localeCompare(b.code),
     },
     {
       title: 'Symbol',
       dataIndex: 'symbol',
       key: 'symbol',
-      render: (symbol) => <Text code>{symbol}</Text>,
+      render: (symbol, record) => (
+        <Text code>
+          {record.symbolPosition === 'before' ? symbol : ''}
+          1,234.56
+          {record.symbolPosition === 'after' ? ` ${symbol}` : ''}
+        </Text>
+      ),
     },
     {
       title: 'Exchange Rate',
-      dataIndex: 'rate',
-      key: 'rate',
-      render: (rate, record) => (
-        <Text strong>
-          1 USD = {rate.toFixed(4)} {record.code}
-        </Text>
+      dataIndex: 'exchangeRate',
+      key: 'exchangeRate',
+      render: (rate) => (
+        <Text strong>{rate.toFixed(4)}</Text>
       ),
-      sorter: (a, b) => a.rate - b.rate,
+      sorter: (a, b) => a.exchangeRate - b.exchangeRate,
     },
     {
-      title: '24h Change',
-      dataIndex: 'change24h',
-      key: 'change24h',
-      render: (change) => {
-        const isPositive = change >= 0;
-        return (
-          <Tag color={isPositive ? 'green' : 'red'} icon={isPositive ? <RiseOutlined /> : <FallOutlined />}>
-            {isPositive ? '+' : ''}
-            {change.toFixed(2)}%
+      title: 'Status',
+      key: 'status',
+      render: (_, record) => (
+        <Space>
+          <Tag color={record.isActive ? 'green' : 'red'}>
+            {record.isActive ? 'Active' : 'Inactive'}
           </Tag>
-        );
+          {record.isDefault && (
+            <Tag color="gold" icon={<TrophyOutlined />}>
+              Default
+            </Tag>
+          )}
+        </Space>
+      ),
+      filters: [
+        { text: 'Active', value: 'active' },
+        { text: 'Inactive', value: 'inactive' },
+        { text: 'Default', value: 'default' },
+      ],
+      onFilter: (value, record) => {
+        if (value === 'active') return record.isActive;
+        if (value === 'inactive') return !record.isActive;
+        if (value === 'default') return record.isDefault;
+        return true;
       },
-      sorter: (a, b) => a.change24h - b.change24h,
+    },
+    {
+      title: 'Last Updated',
+      dataIndex: 'lastUpdated',
+      key: 'lastUpdated',
+      render: (date) => dayjs(date).format('MMM DD, YYYY HH:mm'),
+      sorter: (a, b) => dayjs(a.lastUpdated).unix() - dayjs(b.lastUpdated).unix(),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Tooltip title="Edit">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setSelectedCurrency(record);
+                form.setFieldsValue(record);
+                setEditModalOpen(true);
+              }}
+            />
+          </Tooltip>
+          <Tooltip title={record.isActive ? 'Deactivate' : 'Activate'}>
+            <Button
+              type="text"
+              icon={record.isActive ? <CloseCircleOutlined /> : <CheckCircleOutlined />}
+              onClick={() => handleToggleActive(record)}
+              style={{ color: record.isActive ? '#ff4d4f' : '#52c41a' }}
+            />
+          </Tooltip>
+          {!record.isDefault && (
+            <Tooltip title="Set as Default">
+              <Button
+                type="text"
+                icon={<TrophyOutlined />}
+                onClick={() => handleSetDefault(record.id)}
+                style={{ color: '#faad14' }}
+              />
+            </Tooltip>
+          )}
+          <Tooltip title="View Rate History">
+            <Button
+              type="text"
+              icon={<LineChartOutlined />}
+              onClick={() => {
+                setSelectedRatePair({ from: record.code, to: settings?.defaultCurrency || 'USD' });
+                setRateHistoryModalOpen(true);
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="Delete">
+            <Popconfirm
+              title="Are you sure you want to delete this currency?"
+              onConfirm={() => handleDeleteCurrency(record.id)}
+              okText="Delete"
+              cancelText="Cancel"
+              okButtonProps={{ danger: true }}
+            >
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                danger
+                disabled={record.isDefault}
+              />
+            </Popconfirm>
+          </Tooltip>
+        </Space>
+      ),
     },
   ];
 
-  const historyColumns: ColumnsType<ConversionHistory> = [
+  const ratesColumns: ColumnsType<ExchangeRate> = [
     {
-      title: 'From',
-      dataIndex: 'from',
-      key: 'from',
-      render: (code) => <Tag color="blue">{code}</Tag>,
-    },
-    {
-      title: 'To',
-      dataIndex: 'to',
-      key: 'to',
-      render: (code) => <Tag color="green">{code}</Tag>,
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: 'amount',
-      render: (amount, record) => {
-        const currency = currencies.find((c) => c.code === record.from);
-        return `${currency?.symbol || ''}${amount.toFixed(2)}`;
-      },
-    },
-    {
-      title: 'Result',
-      dataIndex: 'result',
-      key: 'result',
-      render: (result, record) => {
-        const currency = currencies.find((c) => c.code === record.to);
-        return (
-          <Text strong>
-            {currency?.symbol || ''}
-            {result.toFixed(2)}
-          </Text>
-        );
-      },
+      title: 'Currency Pair',
+      key: 'pair',
+      render: (_, record) => (
+        <Text strong>
+          {record.fromCurrency}/{record.toCurrency}
+        </Text>
+      ),
     },
     {
       title: 'Rate',
       dataIndex: 'rate',
       key: 'rate',
-      render: (rate) => rate.toFixed(4),
+      render: (rate) => <Text strong>{rate.toFixed(6)}</Text>,
+      sorter: (a, b) => a.rate - b.rate,
     },
     {
-      title: 'Time',
+      title: 'Source',
+      dataIndex: 'source',
+      key: 'source',
+      render: (source) => (
+        <Tag color={source === 'api' ? 'blue' : source === 'manual' ? 'orange' : 'green'}>
+          {source.toUpperCase()}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Provider',
+      dataIndex: 'provider',
+      key: 'provider',
+      render: (provider) => provider || '-',
+    },
+    {
+      title: 'Last Updated',
       dataIndex: 'timestamp',
       key: 'timestamp',
+      render: (timestamp) => dayjs(timestamp).format('MMM DD, HH:mm'),
+      sorter: (a, b) => dayjs(a.timestamp).unix() - dayjs(b.timestamp).unix(),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Tooltip title="View History">
+            <Button
+              type="text"
+              icon={<LineChartOutlined />}
+              onClick={() => {
+                setSelectedRatePair({ from: record.fromCurrency, to: record.toCurrency });
+                setRateHistoryModalOpen(true);
+              }}
+            />
+          </Tooltip>
+        </Space>
+      ),
     },
   ];
 
-  const rate = targetCurrencyData && baseCurrencyData
-    ? targetCurrencyData.rate / baseCurrencyData.rate
-    : 0;
+  const exportMenuItems = [
+    {
+      key: 'currencies-csv',
+      label: (
+        <Space>
+          <FileTextOutlined />
+          Export Currencies (CSV)
+        </Space>
+      ),
+      onClick: () => handleExport('csv', 'currencies'),
+    },
+    {
+      key: 'currencies-xlsx',
+      label: (
+        <Space>
+          <FileExcelOutlined />
+          Export Currencies (Excel)
+        </Space>
+      ),
+      onClick: () => handleExport('xlsx', 'currencies'),
+    },
+    {
+      key: 'rates-csv',
+      label: (
+        <Space>
+          <FileTextOutlined />
+          Export Rates (CSV)
+        </Space>
+      ),
+      onClick: () => handleExport('csv', 'rates'),
+    },
+    {
+      key: 'rates-xlsx',
+      label: (
+        <Space>
+          <FileExcelOutlined />
+          Export Rates (Excel)
+        </Space>
+      ),
+      onClick: () => handleExport('xlsx', 'rates'),
+    },
+  ];
+
+  const revenueByCurrentData = stats?.revenueByCurrency ? 
+    Object.entries(stats.revenueByCurrency).map(([code, revenue]) => ({
+      currency: code,
+      revenue: revenue,
+    })) : [];
+
+  const conversionVolumeData = stats?.conversionVolume || [];
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <Title level={3}>
-              <GlobalOutlined style={{ color: '#1890ff' }} /> Multi-Currency Support
-            </Title>
-            <Paragraph type="secondary">
-              Real-time currency conversion and exchange rates
-            </Paragraph>
-          </div>
-          <Space>
-            <Text type="secondary">Auto Update</Text>
-            <Switch checked={autoUpdate} onChange={setAutoUpdate} />
-          </Space>
-        </div>
-      </div>
-
-      <Alert
-        message="Live Exchange Rates"
-        description={`Rates last updated at ${lastUpdated}. Auto-update is ${autoUpdate ? 'enabled' : 'disabled'}.`}
-        type="info"
-        showIcon
-        action={
-          <Button size="small" icon={<ReloadOutlined />} onClick={handleRefreshRates}>
-            Refresh
-          </Button>
-        }
-        style={{ marginBottom: 24 }}
-      />
-
-      <Row gutter={16}>
-        {/* Currency Converter */}
-        <Col xs={24} lg={12}>
-          <Card title="Currency Converter">
-            <Space direction="vertical" style={{ width: '100%' }} size="large">
-              {/* From Currency */}
-              <div>
-                <Text strong style={{ display: 'block', marginBottom: 8 }}>
-                  From
-                </Text>
-                <Space.Compact style={{ width: '100%' }}>
-                  <Select
-                    value={baseCurrency}
-                    onChange={setBaseCurrency}
-                    style={{ width: '40%' }}
-                    showSearch
-                    optionFilterProp="children"
-                  >
-                    {currencies.map((c) => (
-                      <Select.Option key={c.code} value={c.code}>
-                        {c.flag} {c.code}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                  <InputNumber
-                    value={amount}
-                    onChange={(val) => setAmount(val || 0)}
-                    style={{ width: '60%' }}
-                    min={0}
-                    step={0.01}
-                    precision={2}
-                    prefix={baseCurrencyData?.symbol}
-                  />
-                </Space.Compact>
-              </div>
-
-              {/* Swap Button */}
-              <div style={{ textAlign: 'center' }}>
-                <Button
-                  type="dashed"
-                  icon={<SwapOutlined />}
-                  onClick={handleSwapCurrencies}
-                  size="large"
-                >
-                  Swap
+    <Spin spinning={loading} tip="Loading currency data...">
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+        {/* Header */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <Title level={3}>
+                <GlobalOutlined style={{ color: '#1890ff' }} /> Multi-Currency Management
+              </Title>
+              <Paragraph type="secondary">
+                Manage currencies, exchange rates, and international pricing with real-time data
+              </Paragraph>
+            </div>
+            <Space>
+              <RangePicker
+                value={dateRange}
+                onChange={(dates) => dates && setDateRange(dates as [Dayjs, Dayjs])}
+              />
+              <Dropdown menu={{ items: exportMenuItems }} placement="bottomRight">
+                <Button icon={<DownloadOutlined />}>
+                  Export
                 </Button>
-              </div>
-
-              {/* To Currency */}
-              <div>
-                <Text strong style={{ display: 'block', marginBottom: 8 }}>
-                  To
-                </Text>
-                <Space.Compact style={{ width: '100%' }}>
-                  <Select
-                    value={selectedCurrency}
-                    onChange={setSelectedCurrency}
-                    style={{ width: '40%' }}
-                    showSearch
-                    optionFilterProp="children"
-                  >
-                    {currencies.map((c) => (
-                      <Select.Option key={c.code} value={c.code}>
-                        {c.flag} {c.code}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                  <InputNumber
-                    value={convertedAmount}
-                    style={{ width: '60%' }}
-                    disabled
-                    precision={2}
-                    prefix={targetCurrencyData?.symbol}
-                  />
-                </Space.Compact>
-              </div>
-
-              <Divider />
-
-              {/* Exchange Rate Info */}
-              <Card size="small" style={{ background: '#f0f2f5' }}>
-                <Space direction="vertical" style={{ width: '100%' }} size="small">
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Text type="secondary">Exchange Rate:</Text>
-                    <Text strong>1 {baseCurrency} = {rate.toFixed(4)} {selectedCurrency}</Text>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Text type="secondary">Inverse Rate:</Text>
-                    <Text>1 {selectedCurrency} = {(1 / rate).toFixed(4)} {baseCurrency}</Text>
-                  </div>
-                </Space>
-              </Card>
-
-              <Button type="primary" block icon={<DollarOutlined />} onClick={handleSaveConversion}>
-                Save Conversion
+              </Dropdown>
+              <Button
+                icon={<SettingOutlined />}
+                onClick={() => setSettingsModalOpen(true)}
+              >
+                Settings
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setCreateModalOpen(true)}
+              >
+                Add Currency
               </Button>
             </Space>
-          </Card>
+          </div>
+        </div>
 
-          {/* Conversion History */}
-          {history.length > 0 && (
-            <Card title="Conversion History" style={{ marginTop: 16 }}>
-              <Table
-                columns={historyColumns}
-                dataSource={history}
-                rowKey="id"
-                pagination={{ pageSize: 5 }}
-                size="small"
+        {/* Alert */}
+        <Alert
+          message="Multi-Currency Support"
+          description="Manage global currencies with real-time exchange rates, automatic conversions, and localized pricing. Monitor currency performance and revenue analytics."
+          type="info"
+          showIcon
+          closable
+          style={{ marginBottom: 24 }}
+        />
+
+        {/* Statistics */}
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Active Currencies"
+                value={stats?.activeCurrencies || 0}
+                prefix={<GlobalOutlined />}
+                valueStyle={{ color: '#52c41a' }}
+                suffix={
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    /{stats?.totalCurrencies || 0} total
+                  </Text>
+                }
               />
             </Card>
-          )}
-        </Col>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Total Conversions"
+                value={stats?.totalConversions || 0}
+                prefix={<SwapOutlined />}
+                valueStyle={{ color: '#1890ff' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Revenue (Multi-Currency)"
+                value={Object.values(stats?.revenueByCurrency || {}).reduce((sum, val) => sum + val, 0)}
+                prefix={<DollarOutlined />}
+                valueStyle={{ color: '#722ed1' }}
+                precision={2}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Exchange Rate Updates"
+                value={exchangeRates.filter(r => dayjs(r.timestamp).isAfter(dayjs().subtract(1, 'day'))).length}
+                prefix={<SyncOutlined />}
+                valueStyle={{ color: '#faad14' }}
+                suffix={
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    /24h
+                  </Text>
+                }
+              />
+            </Card>
+          </Col>
+        </Row>
 
-        {/* Exchange Rates & Stats */}
-        <Col xs={24} lg={12}>
-          <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-            <Col span={12}>
-              <Card>
-                <Statistic
-                  title="Supported Currencies"
-                  value={currencies.length}
-                  prefix={<GlobalOutlined />}
-                  valueStyle={{ color: '#1890ff' }}
-                />
-              </Card>
-            </Col>
-            <Col span={12}>
-              <Card>
-                <Statistic
-                  title="Conversions Today"
-                  value={history.length}
-                  prefix={<SwapOutlined />}
-                  valueStyle={{ color: '#52c41a' }}
-                />
-              </Card>
-            </Col>
-          </Row>
+        {/* Main Content */}
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
+          <TabPane
+            tab={
+              <span>
+                <GlobalOutlined />
+                Currencies ({currencies.length})
+              </span>
+            }
+            key="currencies"
+          >
+            <Card
+              extra={
+                <Space>
+                  <Button
+                    icon={<ReloadOutlined />}
+                    onClick={loadCurrencies}
+                    loading={loading}
+                  >
+                    Refresh
+                  </Button>
+                </Space>
+              }
+            >
+              <Table
+                columns={currencyColumns}
+                dataSource={currencies}
+                rowKey="id"
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} currencies`,
+                }}
+                scroll={{ x: 1200 }}
+              />
+            </Card>
+          </TabPane>
 
-          <Card title="All Exchange Rates">
-            <Table
-              columns={currencyColumns}
-              dataSource={currencies}
-              rowKey="code"
-              pagination={false}
-              size="small"
-              scroll={{ y: 400 }}
-            />
-          </Card>
-        </Col>
-      </Row>
-    </div>
+          <TabPane
+            tab={
+              <span>
+                <SwapRightOutlined />
+                Exchange Rates ({exchangeRates.length})
+              </span>
+            }
+            key="rates"
+          >
+            <Card
+              extra={
+                <Space>
+                  <Button
+                    icon={<SyncOutlined />}
+                    onClick={handleRefreshRates}
+                    loading={refreshing}
+                    type="primary"
+                  >
+                    Refresh Rates
+                  </Button>
+                </Space>
+              }
+            >
+              <Table
+                columns={ratesColumns}
+                dataSource={exchangeRates}
+                rowKey={(record) => `${record.fromCurrency}-${record.toCurrency}`}
+                pagination={{
+                  pageSize: 15,
+                  showSizeChanger: true,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} exchange rates`,
+                }}
+              />
+            </Card>
+          </TabPane>
+
+          <TabPane
+            tab={
+              <span>
+                <BarChartOutlined />
+                Analytics
+              </span>
+            }
+            key="analytics"
+          >
+            <Row gutter={[16, 16]}>
+              <Col xs={24} lg={12}>
+                <Card title="Revenue by Currency">
+                  <Column
+                    data={revenueByCurrentData}
+                    xField="currency"
+                    yField="revenue"
+                    label={{
+                      position: 'top',
+                      style: {
+                        fill: '#000000',
+                        opacity: 0.6,
+                      },
+                    }}
+                    height={300}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} lg={12}>
+                <Card title="Top Currencies by Usage">
+                  <List
+                    dataSource={stats?.topCurrencies || []}
+                    renderItem={(currency, index) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={
+                            <Avatar
+                              style={{
+                                backgroundColor: ['#1890ff', '#52c41a', '#faad14', '#722ed1'][index % 4],
+                              }}
+                            >
+                              {index + 1}
+                            </Avatar>
+                          }
+                          title={`${currency.code} - ${currency.name}`}
+                          description={`${currency.conversions} conversions • $${currency.revenue.toLocaleString()} revenue`}
+                        />
+                        <div style={{ textAlign: 'right' }}>
+                          <Text strong>{currency.percentage.toFixed(1)}%</Text>
+                        </div>
+                      </List.Item>
+                    )}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24}>
+                <Card title="Conversion Volume Trend">
+                  <Area
+                    data={conversionVolumeData}
+                    xField="date"
+                    yField="volume"
+                    height={300}
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </TabPane>
+        </Tabs>
+
+        {/* Create Currency Modal */}
+        <Modal
+          title="Add New Currency"
+          open={createModalOpen}
+          onCancel={() => {
+            setCreateModalOpen(false);
+            form.resetFields();
+          }}
+          footer={null}
+          width={600}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleCreateCurrency}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="code"
+                  label="Currency Code"
+                  rules={[
+                    { required: true, message: 'Please enter currency code' },
+                    { len: 3, message: 'Currency code must be 3 characters' },
+                  ]}
+                >
+                  <Input placeholder="USD" maxLength={3} style={{ textTransform: 'uppercase' }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="name"
+                  label="Currency Name"
+                  rules={[{ required: true, message: 'Please enter currency name' }]}
+                >
+                  <Input placeholder="US Dollar" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="symbol"
+                  label="Symbol"
+                  rules={[{ required: true, message: 'Please enter symbol' }]}
+                >
+                  <Input placeholder="$" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="symbolPosition"
+                  label="Symbol Position"
+                  rules={[{ required: true, message: 'Please select position' }]}
+                >
+                  <Select>
+                    <Select.Option value="before">Before ($100)</Select.Option>
+                    <Select.Option value="after">After (100$)</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="decimalPlaces"
+                  label="Decimal Places"
+                  rules={[{ required: true, message: 'Please enter decimal places' }]}
+                >
+                  <InputNumber min={0} max={4} style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="exchangeRate"
+                  label="Exchange Rate (to default currency)"
+                  rules={[{ required: true, message: 'Please enter exchange rate' }]}
+                >
+                  <InputNumber
+                    min={0}
+                    step={0.0001}
+                    precision={4}
+                    style={{ width: '100%' }}
+                    placeholder="1.0000"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="countryCode"
+                  label="Country Code"
+                >
+                  <Input placeholder="US" maxLength={2} style={{ textTransform: 'uppercase' }} />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  name="displayFormat"
+                  label="Display Format"
+                  rules={[{ required: true, message: 'Please enter display format' }]}
+                >
+                  <Input placeholder="$1,234.56" />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  name="isActive"
+                  label="Active"
+                  valuePropName="checked"
+                >
+                  <Switch />
+                </Form.Item>
+              </Col>
+            </Row>
+            <div style={{ textAlign: 'right', marginTop: 16 }}>
+              <Space>
+                <Button onClick={() => {
+                  setCreateModalOpen(false);
+                  form.resetFields();
+                }}>
+                  Cancel
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Add Currency
+                </Button>
+              </Space>
+            </div>
+          </Form>
+        </Modal>
+
+        {/* Edit Currency Modal */}
+        <Modal
+          title="Edit Currency"
+          open={editModalOpen}
+          onCancel={() => {
+            setEditModalOpen(false);
+            setSelectedCurrency(null);
+            form.resetFields();
+          }}
+          footer={null}
+          width={600}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleUpdateCurrency}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="name"
+                  label="Currency Name"
+                  rules={[{ required: true, message: 'Please enter currency name' }]}
+                >
+                  <Input placeholder="US Dollar" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="symbol"
+                  label="Symbol"
+                  rules={[{ required: true, message: 'Please enter symbol' }]}
+                >
+                  <Input placeholder="$" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="symbolPosition"
+                  label="Symbol Position"
+                  rules={[{ required: true, message: 'Please select position' }]}
+                >
+                  <Select>
+                    <Select.Option value="before">Before ($100)</Select.Option>
+                    <Select.Option value="after">After (100$)</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="exchangeRate"
+                  label="Exchange Rate"
+                  rules={[{ required: true, message: 'Please enter exchange rate' }]}
+                >
+                  <InputNumber
+                    min={0}
+                    step={0.0001}
+                    precision={4}
+                    style={{ width: '100%' }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  name="isActive"
+                  label="Active"
+                  valuePropName="checked"
+                >
+                  <Switch />
+                </Form.Item>
+              </Col>
+            </Row>
+            <div style={{ textAlign: 'right', marginTop: 16 }}>
+              <Space>
+                <Button onClick={() => {
+                  setEditModalOpen(false);
+                  setSelectedCurrency(null);
+                  form.resetFields();
+                }}>
+                  Cancel
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Update Currency
+                </Button>
+              </Space>
+            </div>
+          </Form>
+        </Modal>
+
+        {/* Settings Modal */}
+        <Modal
+          title="Currency Settings"
+          open={settingsModalOpen}
+          onCancel={() => setSettingsModalOpen(false)}
+          footer={null}
+          width={800}
+        >
+          <Form
+            form={settingsForm}
+            layout="vertical"
+            onFinish={handleUpdateSettings}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="defaultCurrency"
+                  label="Default Currency"
+                  rules={[{ required: true, message: 'Please select default currency' }]}
+                >
+                  <Select placeholder="Select default currency">
+                    {currencies.map(currency => (
+                      <Select.Option key={currency.code} value={currency.code}>
+                        {currency.code} - {currency.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="fallbackCurrency"
+                  label="Fallback Currency"
+                  rules={[{ required: true, message: 'Please select fallback currency' }]}
+                >
+                  <Select placeholder="Select fallback currency">
+                    {currencies.map(currency => (
+                      <Select.Option key={currency.code} value={currency.code}>
+                        {currency.code} - {currency.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="rateProvider"
+                  label="Exchange Rate Provider"
+                  rules={[{ required: true, message: 'Please select rate provider' }]}
+                >
+                  <Select>
+                    <Select.Option value="fixer">Fixer.io</Select.Option>
+                    <Select.Option value="openexchangerates">Open Exchange Rates</Select.Option>
+                    <Select.Option value="currencylayer">CurrencyLayer</Select.Option>
+                    <Select.Option value="exchangeratesapi">ExchangeRates API</Select.Option>
+                    <Select.Option value="manual">Manual</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="updateFrequency"
+                  label="Update Frequency"
+                  rules={[{ required: true, message: 'Please select update frequency' }]}
+                >
+                  <Select>
+                    <Select.Option value="realtime">Real-time</Select.Option>
+                    <Select.Option value="hourly">Hourly</Select.Option>
+                    <Select.Option value="daily">Daily</Select.Option>
+                    <Select.Option value="weekly">Weekly</Select.Option>
+                    <Select.Option value="manual">Manual</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="markupPercentage"
+                  label="Markup Percentage"
+                  rules={[{ required: true, message: 'Please enter markup percentage' }]}
+                >
+                  <InputNumber
+                    min={0}
+                    max={100}
+                    step={0.1}
+                    style={{ width: '100%' }}
+                    formatter={value => `${value}%`}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="autoUpdateRates"
+                  label="Auto Update Rates"
+                  valuePropName="checked"
+                >
+                  <Switch />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="detectUserCurrency"
+                  label="Detect User Currency"
+                  valuePropName="checked"
+                >
+                  <Switch />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="showCurrencySelector"
+                  label="Show Currency Selector"
+                  valuePropName="checked"
+                >
+                  <Switch />
+                </Form.Item>
+              </Col>
+            </Row>
+            <div style={{ textAlign: 'right', marginTop: 16 }}>
+              <Space>
+                <Button onClick={() => setSettingsModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  Save Settings
+                </Button>
+              </Space>
+            </div>
+          </Form>
+        </Modal>
+      </div>
+    </Spin>
   );
 };
 
