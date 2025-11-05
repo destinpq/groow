@@ -14,6 +14,8 @@ import {
   Tag,
   Empty,
   Tooltip,
+  Spin,
+  message as antMessage,
 } from 'antd';
 import {
   MessageOutlined,
@@ -27,168 +29,58 @@ import {
   CheckOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
+import { chatAPI } from '@/services/api/chat';
+import type { Conversation, Message } from '@/services/api/chat';
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
-interface Message {
-  id: number;
-  conversationId: number;
-  sender: 'customer' | 'vendor';
-  text: string;
-  timestamp: string;
-  status: 'sent' | 'delivered' | 'read';
-  attachments?: string[];
-}
-
-interface Conversation {
-  id: number;
-  vendorName: string;
-  vendorAvatar: string;
-  lastMessage: string;
-  timestamp: string;
-  unreadCount: number;
-  status: 'online' | 'offline' | 'away';
-  productContext?: string;
-}
-
-const mockConversations: Conversation[] = [
-  {
-    id: 1,
-    vendorName: 'TechHub Electronics',
-    vendorAvatar: 'https://via.placeholder.com/40?text=TH',
-    lastMessage: 'Yes, we have that model in stock',
-    timestamp: '2024-11-10T10:30:00',
-    unreadCount: 2,
-    status: 'online',
-    productContext: 'Wireless Headphones Pro',
-  },
-  {
-    id: 2,
-    vendorName: 'Fashion Boutique',
-    vendorAvatar: 'https://via.placeholder.com/40?text=FB',
-    lastMessage: 'Thank you for your order!',
-    timestamp: '2024-11-09T15:45:00',
-    unreadCount: 0,
-    status: 'offline',
-    productContext: 'Summer Dress Collection',
-  },
-  {
-    id: 3,
-    vendorName: 'Home Essentials',
-    vendorAvatar: 'https://via.placeholder.com/40?text=HE',
-    lastMessage: 'What size are you looking for?',
-    timestamp: '2024-11-08T09:20:00',
-    unreadCount: 1,
-    status: 'away',
-    productContext: 'Dining Table Set',
-  },
-];
-
-const mockMessages: { [key: number]: Message[] } = {
-  1: [
-    {
-      id: 1,
-      conversationId: 1,
-      sender: 'customer',
-      text: 'Hi, do you have the Wireless Headphones Pro in stock?',
-      timestamp: '2024-11-10T10:25:00',
-      status: 'read',
-    },
-    {
-      id: 2,
-      conversationId: 1,
-      sender: 'vendor',
-      text: 'Hello! Yes, we have that model in stock. It comes in black and white colors.',
-      timestamp: '2024-11-10T10:26:00',
-      status: 'read',
-    },
-    {
-      id: 3,
-      conversationId: 1,
-      sender: 'customer',
-      text: 'Great! What about warranty?',
-      timestamp: '2024-11-10T10:27:00',
-      status: 'read',
-    },
-    {
-      id: 4,
-      conversationId: 1,
-      sender: 'vendor',
-      text: 'It comes with a 2-year manufacturer warranty. We also offer extended warranty options.',
-      timestamp: '2024-11-10T10:28:00',
-      status: 'read',
-    },
-    {
-      id: 5,
-      conversationId: 1,
-      sender: 'customer',
-      text: 'Perfect! Can you ship to New York?',
-      timestamp: '2024-11-10T10:29:00',
-      status: 'read',
-    },
-    {
-      id: 6,
-      conversationId: 1,
-      sender: 'vendor',
-      text: 'Yes, we have that model in stock',
-      timestamp: '2024-11-10T10:30:00',
-      status: 'delivered',
-    },
-  ],
-  2: [
-    {
-      id: 7,
-      conversationId: 2,
-      sender: 'customer',
-      text: 'I just placed an order for the summer dress. When will it ship?',
-      timestamp: '2024-11-09T15:40:00',
-      status: 'read',
-    },
-    {
-      id: 8,
-      conversationId: 2,
-      sender: 'vendor',
-      text: 'Thank you for your order! It will ship within 24 hours.',
-      timestamp: '2024-11-09T15:42:00',
-      status: 'read',
-    },
-    {
-      id: 9,
-      conversationId: 2,
-      sender: 'vendor',
-      text: 'You\'ll receive a tracking number via email.',
-      timestamp: '2024-11-09T15:45:00',
-      status: 'read',
-    },
-  ],
-  3: [
-    {
-      id: 10,
-      conversationId: 3,
-      sender: 'customer',
-      text: 'I\'m interested in the dining table set',
-      timestamp: '2024-11-08T09:15:00',
-      status: 'read',
-    },
-    {
-      id: 11,
-      conversationId: 3,
-      sender: 'vendor',
-      text: 'What size are you looking for?',
-      timestamp: '2024-11-08T09:20:00',
-      status: 'delivered',
-    },
-  ],
-};
-
 const ChatPage: React.FC = () => {
-  const [conversations, setConversations] = useState<Conversation[]>(mockConversations);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(conversations[0]);
-  const [messages, setMessages] = useState<{ [key: number]: Message[] }>(mockMessages);
+  const [loading, setLoading] = useState(true);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetchConversations();
+  }, []);
+
+  useEffect(() => {
+    if (selectedConversation) {
+      fetchMessages(selectedConversation.id);
+    }
+  }, [selectedConversation]);
+
+  const fetchConversations = async () => {
+    try {
+      setLoading(true);
+      const data = await chatAPI.getConversations();
+      setConversations(data);
+    } catch (error) {
+      antMessage.error('Failed to load conversations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMessages = async (conversationId: string) => {
+    try {
+      const response = await chatAPI.getMessages(conversationId);
+      setMessages(response.data);
+      // Mark conversation as read
+      await chatAPI.markAsRead(conversationId);
+      // Update local state
+      setConversations((prev) =>
+        prev.map((conv) => (conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv))
+      );
+    } catch (error) {
+      antMessage.error('Failed to load messages');
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -196,60 +88,45 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, selectedConversation]);
+  }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!messageInput.trim() || !selectedConversation) return;
 
-    const newMessage: Message = {
-      id: Date.now(),
-      conversationId: selectedConversation.id,
-      sender: 'customer',
-      text: messageInput,
-      timestamp: new Date().toISOString(),
-      status: 'sent',
-    };
-
-    setMessages((prev) => ({
-      ...prev,
-      [selectedConversation.id]: [...(prev[selectedConversation.id] || []), newMessage],
-    }));
-
-    // Update conversation last message
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.id === selectedConversation.id
-          ? { ...conv, lastMessage: messageInput, timestamp: new Date().toISOString() }
-          : conv
-      )
-    );
-
-    setMessageInput('');
-
-    // Simulate vendor response after 2 seconds
-    setTimeout(() => {
-      const vendorReply: Message = {
-        id: Date.now() + 1,
+    try {
+      setSending(true);
+      const newMessage = await chatAPI.sendMessage({
         conversationId: selectedConversation.id,
-        sender: 'vendor',
-        text: 'Thanks for your message! We\'ll get back to you shortly.',
-        timestamp: new Date().toISOString(),
-        status: 'delivered',
-      };
+        text: messageInput.trim(),
+      });
+      
+      // Add message to local state
+      setMessages((prev) => [...prev, newMessage]);
+      
+      // Update conversation last message
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === selectedConversation.id
+            ? { 
+                ...conv, 
+                lastMessage: messageInput.trim(), 
+                lastMessageAt: newMessage.createdAt,
+              }
+            : conv
+        )
+      );
 
-      setMessages((prev) => ({
-        ...prev,
-        [selectedConversation.id]: [...(prev[selectedConversation.id] || []), vendorReply],
-      }));
-    }, 2000);
+      setMessageInput('');
+      antMessage.success('Message sent');
+    } catch (error) {
+      antMessage.error('Failed to send message');
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleSelectConversation = (conversation: Conversation) => {
     setSelectedConversation(conversation);
-    // Mark messages as read
-    setConversations((prev) =>
-      prev.map((conv) => (conv.id === conversation.id ? { ...conv, unreadCount: 0 } : conv))
-    );
   };
 
   const formatTimestamp = (timestamp: string) => {
@@ -274,7 +151,7 @@ const ChatPage: React.FC = () => {
   const filteredConversations = conversations.filter(
     (conv) =>
       conv.vendorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+      (conv.lastMessage || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const getStatusIcon = (status: Message['status']) => {
@@ -333,11 +210,7 @@ const ChatPage: React.FC = () => {
                           <Badge
                             dot
                             status={
-                              conversation.status === 'online'
-                                ? 'success'
-                                : conversation.status === 'away'
-                                ? 'warning'
-                                : 'default'
+                              conversation.status === 'active' ? 'success' : 'default'
                             }
                             offset={[-5, 35]}
                           >
@@ -365,11 +238,11 @@ const ChatPage: React.FC = () => {
                             </Paragraph>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                               <Text type="secondary" style={{ fontSize: 11 }}>
-                                {formatTimestamp(conversation.timestamp)}
+                                {formatTimestamp(conversation.lastMessageAt || conversation.createdAt)}
                               </Text>
                               {conversation.productContext && (
                                 <Tag style={{ fontSize: 10, padding: '0 4px', margin: 0 }}>
-                                  {conversation.productContext.substring(0, 15)}...
+                                  {conversation.productContext.productName.substring(0, 15)}...
                                 </Tag>
                               )}
                             </div>
@@ -400,11 +273,7 @@ const ChatPage: React.FC = () => {
                       <Badge
                         dot
                         status={
-                          selectedConversation.status === 'online'
-                            ? 'success'
-                            : selectedConversation.status === 'away'
-                            ? 'warning'
-                            : 'default'
+                          selectedConversation.status === 'active' ? 'success' : 'default'
                         }
                         offset={[-5, 35]}
                       >
@@ -414,11 +283,7 @@ const ChatPage: React.FC = () => {
                         <Text strong>{selectedConversation.vendorName}</Text>
                         <div>
                           <Text type="secondary" style={{ fontSize: 12 }}>
-                            {selectedConversation.status === 'online'
-                              ? 'Online'
-                              : selectedConversation.status === 'away'
-                              ? 'Away'
-                              : 'Offline'}
+                            {selectedConversation.status === 'active' ? 'Active' : 'Archived'}
                           </Text>
                         </div>
                       </div>
@@ -428,7 +293,7 @@ const ChatPage: React.FC = () => {
                   {selectedConversation.productContext && (
                     <div style={{ marginTop: 8 }}>
                       <Tag icon={<ShopOutlined />} color="blue">
-                        Re: {selectedConversation.productContext}
+                        Re: {selectedConversation.productContext.productName}
                       </Tag>
                     </div>
                   )}
@@ -436,16 +301,16 @@ const ChatPage: React.FC = () => {
 
                 {/* Messages */}
                 <div style={{ flex: 1, overflow: 'auto', paddingRight: 8 }}>
-                  {messages[selectedConversation.id]?.map((message) => (
+                  {messages?.map((message) => (
                     <div
                       key={message.id}
                       style={{
                         display: 'flex',
-                        justifyContent: message.sender === 'customer' ? 'flex-end' : 'flex-start',
+                        justifyContent: message.senderType === 'customer' ? 'flex-end' : 'flex-start',
                         marginBottom: 16,
                       }}
                     >
-                      {message.sender === 'vendor' && (
+                      {message.senderType === 'vendor' && (
                         <Avatar
                           src={selectedConversation.vendorAvatar}
                           size={32}
@@ -458,30 +323,30 @@ const ChatPage: React.FC = () => {
                           maxWidth: '70%',
                           display: 'flex',
                           flexDirection: 'column',
-                          alignItems: message.sender === 'customer' ? 'flex-end' : 'flex-start',
+                          alignItems: message.senderType === 'customer' ? 'flex-end' : 'flex-start',
                         }}
                       >
                         <div
                           style={{
-                            background: message.sender === 'customer' ? '#1890ff' : '#f0f0f0',
-                            color: message.sender === 'customer' ? 'white' : 'black',
+                            background: message.senderType === 'customer' ? '#1890ff' : '#f0f0f0',
+                            color: message.senderType === 'customer' ? 'white' : 'black',
                             padding: '8px 12px',
                             borderRadius: 12,
                             wordBreak: 'break-word',
                           }}
                         >
-                          <Text style={{ color: message.sender === 'customer' ? 'white' : 'inherit' }}>
+                          <Text style={{ color: message.senderType === 'customer' ? 'white' : 'inherit' }}>
                             {message.text}
                           </Text>
                         </div>
                         <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                           <Text type="secondary" style={{ fontSize: 11 }}>
-                            {formatMessageTime(message.timestamp)}
+                            {formatMessageTime(message.createdAt)}
                           </Text>
-                          {message.sender === 'customer' && getStatusIcon(message.status)}
+                          {message.senderType === 'customer' && getStatusIcon(message.status)}
                         </div>
                       </div>
-                      {message.sender === 'customer' && (
+                      {message.senderType === 'customer' && (
                         <Avatar
                           size={32}
                           icon={<UserOutlined />}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -15,11 +15,8 @@ import {
   message,
   Statistic,
   Alert,
-  Progress,
+  Spin,
   Tabs,
-  List,
-  Avatar,
-  Badge,
 } from 'antd';
 import {
   DollarOutlined,
@@ -36,177 +33,83 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { paymentAPI, walletAPI } from '@/services/api/wallet';
+import type { PaymentMethod, WalletTransaction } from '@/services/api/wallet';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
-interface PaymentMethod {
-  id: number;
-  type: 'credit_card' | 'debit_card' | 'paypal' | 'bank_account' | 'apple_pay' | 'google_pay';
-  name: string;
-  last4: string;
-  brand?: string;
-  expiryDate?: string;
-  isDefault: boolean;
-  billingAddress: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    country: string;
-  };
-  addedDate: string;
-  lastUsed?: string;
-}
-
-interface Transaction {
-  id: number;
-  type: 'payment' | 'refund' | 'authorization';
-  amount: number;
-  currency: string;
-  status: 'completed' | 'pending' | 'failed' | 'refunded';
-  paymentMethod: string;
-  orderId: string;
-  timestamp: string;
-  description: string;
-}
-
-const mockPaymentMethods: PaymentMethod[] = [
-  {
-    id: 1,
-    type: 'credit_card',
-    name: 'Visa ending in 4242',
-    last4: '4242',
-    brand: 'Visa',
-    expiryDate: '12/2027',
-    isDefault: true,
-    billingAddress: {
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      zip: '10001',
-      country: 'USA',
-    },
-    addedDate: dayjs().subtract(2, 'years').format('YYYY-MM-DD'),
-    lastUsed: dayjs().subtract(3, 'days').format('YYYY-MM-DD'),
-  },
-  {
-    id: 2,
-    type: 'paypal',
-    name: 'PayPal',
-    last4: 'user@email.com',
-    isDefault: false,
-    billingAddress: {
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      zip: '10001',
-      country: 'USA',
-    },
-    addedDate: dayjs().subtract(1, 'year').format('YYYY-MM-DD'),
-    lastUsed: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-  },
-  {
-    id: 3,
-    type: 'bank_account',
-    name: 'Bank Account',
-    last4: '6789',
-    brand: 'Chase',
-    isDefault: false,
-    billingAddress: {
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      zip: '10001',
-      country: 'USA',
-    },
-    addedDate: dayjs().subtract(6, 'months').format('YYYY-MM-DD'),
-  },
-];
-
-const mockTransactions: Transaction[] = [
-  {
-    id: 1,
-    type: 'payment',
-    amount: 299.99,
-    currency: 'USD',
-    status: 'completed',
-    paymentMethod: 'Visa ****4242',
-    orderId: '#12345',
-    timestamp: dayjs().subtract(3, 'days').toISOString(),
-    description: 'Order payment',
-  },
-  {
-    id: 2,
-    type: 'refund',
-    amount: 49.99,
-    currency: 'USD',
-    status: 'completed',
-    paymentMethod: 'Visa ****4242',
-    orderId: '#12340',
-    timestamp: dayjs().subtract(10, 'days').toISOString(),
-    description: 'Order refund',
-  },
-  {
-    id: 3,
-    type: 'payment',
-    amount: 599.99,
-    currency: 'USD',
-    status: 'pending',
-    paymentMethod: 'PayPal',
-    orderId: '#12346',
-    timestamp: dayjs().subtract(1, 'hour').toISOString(),
-    description: 'Order payment',
-  },
-  {
-    id: 4,
-    type: 'payment',
-    amount: 1299.99,
-    currency: 'USD',
-    status: 'completed',
-    paymentMethod: 'Visa ****4242',
-    orderId: '#12350',
-    timestamp: dayjs().subtract(30, 'days').toISOString(),
-    description: 'Order payment',
-  },
-];
-
 const PaymentMethodsPage: React.FC = () => {
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(mockPaymentMethods);
-  const [transactions] = useState<Transaction[]>(mockTransactions);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
 
-  const handleAddPaymentMethod = (values: any) => {
-    const newMethod: PaymentMethod = {
-      id: paymentMethods.length + 1,
-      type: values.type,
-      name: `${values.type === 'credit_card' ? values.brand : values.type} ending in ${values.last4}`,
-      last4: values.last4,
-      brand: values.brand,
-      expiryDate: values.expiryDate,
-      isDefault: paymentMethods.length === 0,
-      billingAddress: values.billingAddress,
-      addedDate: dayjs().format('YYYY-MM-DD'),
-    };
+  useEffect(() => {
+    fetchPaymentMethods();
+    fetchTransactions();
+  }, []);
 
-    setPaymentMethods([...paymentMethods, newMethod]);
-    message.success('Payment method added successfully!');
-    setIsAddModalVisible(false);
-    form.resetFields();
+  const fetchPaymentMethods = async () => {
+    try {
+      setLoading(true);
+      const data = await paymentAPI.getAll();
+      setPaymentMethods(data);
+    } catch (error) {
+      message.error('Failed to load payment methods');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSetDefault = (id: number) => {
-    setPaymentMethods(
-      paymentMethods.map((pm) => ({
-        ...pm,
-        isDefault: pm.id === id,
-      }))
-    );
-    message.success('Default payment method updated');
+  const fetchTransactions = async () => {
+    try {
+      const response = await walletAPI.getTransactions({ limit: 50 });
+      setTransactions(response.data);
+    } catch (error) {
+      message.error('Failed to load transactions');
+    }
   };
 
-  const handleDelete = (id: number) => {
+  const handleAddPaymentMethod = async (values: any) => {
+    try {
+      setLoading(true);
+      await paymentAPI.add({
+        type: values.type,
+        cardNumber: values.cardNumber,
+        expiryMonth: values.expiryMonth,
+        expiryYear: values.expiryYear,
+        cvv: values.cvv,
+        nameOnCard: values.nameOnCard,
+        bankName: values.bankName,
+        accountNumber: values.accountNumber,
+        routingNumber: values.routingNumber,
+        paypalEmail: values.paypalEmail,
+      });
+      
+      message.success('Payment method added successfully!');
+      setIsAddModalVisible(false);
+      form.resetFields();
+      await fetchPaymentMethods();
+    } catch (error) {
+      message.error('Failed to add payment method');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSetDefault = async (id: string) => {
+    try {
+      await paymentAPI.setDefault(id);
+      message.success('Default payment method updated');
+      await fetchPaymentMethods();
+    } catch (error) {
+      message.error('Failed to update default payment method');
+    }
+  };
+
+  const handleDelete = (id: string) => {
     const method = paymentMethods.find((pm) => pm.id === id);
     if (method?.isDefault && paymentMethods.length > 1) {
       message.error('Cannot delete default payment method. Please set another as default first.');
@@ -218,21 +121,24 @@ const PaymentMethodsPage: React.FC = () => {
       content: 'Are you sure you want to delete this payment method?',
       okText: 'Delete',
       okType: 'danger',
-      onOk: () => {
-        setPaymentMethods(paymentMethods.filter((pm) => pm.id !== id));
-        message.success('Payment method deleted');
+      onOk: async () => {
+        try {
+          await paymentAPI.delete(id);
+          message.success('Payment method deleted');
+          await fetchPaymentMethods();
+        } catch (error) {
+          message.error('Failed to delete payment method');
+        }
       },
     });
   };
 
   const getPaymentIcon = (type: PaymentMethod['type']) => {
     const icons = {
-      credit_card: <CreditCardOutlined style={{ fontSize: 24, color: '#1890ff' }} />,
-      debit_card: <CreditCardOutlined style={{ fontSize: 24, color: '#52c41a' }} />,
+      card: <CreditCardOutlined style={{ fontSize: 24, color: '#1890ff' }} />,
+      bank: <BankOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
       paypal: <PayCircleOutlined style={{ fontSize: 24, color: '#003087' }} />,
-      bank_account: <BankOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
-      apple_pay: <CreditCardOutlined style={{ fontSize: 24, color: '#000' }} />,
-      google_pay: <CreditCardOutlined style={{ fontSize: 24, color: '#4285F4' }} />,
+      wallet: <DollarOutlined style={{ fontSize: 24, color: '#52c41a' }} />,
     };
     return icons[type];
   };
@@ -265,9 +171,14 @@ const PaymentMethodsPage: React.FC = () => {
                 </Tag>
               )}
             </div>
-            {record.expiryDate && (
+            {record.expiryMonth && record.expiryYear && (
               <Text type="secondary" style={{ fontSize: 12 }}>
-                Expires: {record.expiryDate}
+                Expires: {record.expiryMonth}/{record.expiryYear}
+              </Text>
+            )}
+            {record.last4 && (
+              <Text type="secondary" style={{ fontSize: 12, marginLeft: 8 }}>
+                ••••{record.last4}
               </Text>
             )}
           </div>
@@ -275,31 +186,15 @@ const PaymentMethodsPage: React.FC = () => {
       ),
     },
     {
-      title: 'Billing Address',
-      key: 'address',
-      render: (_, record) => (
-        <div>
-          <Text style={{ fontSize: 12 }}>
-            {record.billingAddress.street}, {record.billingAddress.city}
-          </Text>
-          <div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {record.billingAddress.state} {record.billingAddress.zip}
-            </Text>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Last Used',
-      dataIndex: 'lastUsed',
-      key: 'lastUsed',
-      render: (date) => (date ? dayjs(date).format('MMM DD, YYYY') : 'Never'),
+      title: 'Brand',
+      dataIndex: 'brand',
+      key: 'brand',
+      render: (brand) => brand ? <Tag>{brand}</Tag> : <Text type="secondary">-</Text>,
     },
     {
       title: 'Added',
-      dataIndex: 'addedDate',
-      key: 'added',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       render: (date) => dayjs(date).format('MMM DD, YYYY'),
     },
     {
@@ -334,38 +229,39 @@ const PaymentMethodsPage: React.FC = () => {
     },
   ];
 
-  const transactionColumns: ColumnsType<Transaction> = [
+  const transactionColumns: ColumnsType<WalletTransaction> = [
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type: Transaction['type']) => {
+      render: (type: WalletTransaction['type']) => {
         const typeConfig = {
-          payment: { color: 'blue', text: 'Payment' },
-          refund: { color: 'green', text: 'Refund' },
-          authorization: { color: 'orange', text: 'Authorization' },
+          credit: { color: 'green', text: 'Credit' },
+          debit: { color: 'red', text: 'Debit' },
         };
         const config = typeConfig[type];
         return <Tag color={config.color}>{config.text}</Tag>;
       },
       filters: [
-        { text: 'Payment', value: 'payment' },
-        { text: 'Refund', value: 'refund' },
-        { text: 'Authorization', value: 'authorization' },
+        { text: 'Credit', value: 'credit' },
+        { text: 'Debit', value: 'debit' },
       ],
       onFilter: (value, record) => record.type === value,
     },
     {
       title: 'Description',
+      dataIndex: 'description',
       key: 'description',
-      render: (_, record) => (
+      render: (description, record) => (
         <div>
-          <Text>{record.description}</Text>
-          <div>
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              Order: {record.orderId}
-            </Text>
-          </div>
+          <Text>{description}</Text>
+          {record.reference && (
+            <div>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                Ref: {record.reference}
+              </Text>
+            </div>
+          )}
         </div>
       ),
     },
@@ -378,28 +274,22 @@ const PaymentMethodsPage: React.FC = () => {
           strong
           style={{
             fontSize: 16,
-            color: record.type === 'refund' ? '#52c41a' : '#1890ff',
+            color: record.type === 'credit' ? '#52c41a' : '#ff4d4f',
           }}
         >
-          {record.type === 'refund' ? '+' : '-'}${amount.toFixed(2)}
+          {record.type === 'credit' ? '+' : '-'}${amount.toFixed(2)}
         </Text>
       ),
-    },
-    {
-      title: 'Payment Method',
-      dataIndex: 'paymentMethod',
-      key: 'paymentMethod',
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: Transaction['status']) => {
+      render: (status: WalletTransaction['status']) => {
         const statusConfig = {
           completed: { color: 'success', icon: <CheckCircleOutlined />, text: 'Completed' },
           pending: { color: 'processing', icon: <ClockCircleOutlined />, text: 'Pending' },
           failed: { color: 'error', icon: <WarningOutlined />, text: 'Failed' },
-          refunded: { color: 'default', icon: <CheckCircleOutlined />, text: 'Refunded' },
         };
         const config = statusConfig[status];
         return (
@@ -412,28 +302,28 @@ const PaymentMethodsPage: React.FC = () => {
         { text: 'Completed', value: 'completed' },
         { text: 'Pending', value: 'pending' },
         { text: 'Failed', value: 'failed' },
-        { text: 'Refunded', value: 'refunded' },
       ],
       onFilter: (value, record) => record.status === value,
     },
     {
       title: 'Date',
-      dataIndex: 'timestamp',
-      key: 'timestamp',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       render: (date) => dayjs(date).format('MMM DD, YYYY HH:mm'),
     },
   ];
 
   const totalSpent = transactions
-    .filter((t) => t.type === 'payment' && t.status === 'completed')
+    .filter((t) => t.type === 'debit' && t.status === 'completed')
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalRefunded = transactions
-    .filter((t) => t.type === 'refund' && t.status === 'completed')
+    .filter((t) => t.type === 'credit' && t.status === 'completed')
     .reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+    <Spin spinning={loading}>
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
           <Title level={3}>
@@ -538,19 +428,16 @@ const PaymentMethodsPage: React.FC = () => {
             label="Payment Type"
             name="type"
             rules={[{ required: true, message: 'Please select payment type' }]}
-            initialValue="credit_card"
+            initialValue="card"
           >
             <Select size="large">
-              <Option value="credit_card">
-                <CreditCardOutlined /> Credit Card
-              </Option>
-              <Option value="debit_card">
-                <CreditCardOutlined /> Debit Card
+              <Option value="card">
+                <CreditCardOutlined /> Credit/Debit Card
               </Option>
               <Option value="paypal">
                 <PayCircleOutlined /> PayPal
               </Option>
-              <Option value="bank_account">
+              <Option value="bank">
                 <BankOutlined /> Bank Account
               </Option>
             </Select>
@@ -561,49 +448,64 @@ const PaymentMethodsPage: React.FC = () => {
             shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
           >
             {({ getFieldValue }) =>
-              getFieldValue('type') === 'credit_card' || getFieldValue('type') === 'debit_card' ? (
+              getFieldValue('type') === 'card' ? (
                 <>
+                  <Form.Item
+                    label="Cardholder Name"
+                    name="nameOnCard"
+                    rules={[{ required: true, message: 'Please enter cardholder name' }]}
+                  >
+                    <Input size="large" placeholder="John Doe" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Card Number"
+                    name="cardNumber"
+                    rules={[
+                      { required: true, message: 'Please enter card number' },
+                      { len: 16, message: 'Card number must be 16 digits' },
+                    ]}
+                  >
+                    <Input size="large" placeholder="1234567890123456" maxLength={16} />
+                  </Form.Item>
+
                   <Row gutter={16}>
-                    <Col span={12}>
+                    <Col span={8}>
                       <Form.Item
-                        label="Card Brand"
-                        name="brand"
-                        rules={[{ required: true, message: 'Please select brand' }]}
+                        label="Expiry Month"
+                        name="expiryMonth"
+                        rules={[{ required: true, message: 'Required' }]}
                       >
-                        <Select size="large">
-                          <Option value="Visa">Visa</Option>
-                          <Option value="Mastercard">Mastercard</Option>
-                          <Option value="Amex">American Express</Option>
-                          <Option value="Discover">Discover</Option>
-                        </Select>
+                        <Input size="large" placeholder="MM" maxLength={2} />
                       </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                       <Form.Item
-                        label="Last 4 Digits"
-                        name="last4"
+                        label="Expiry Year"
+                        name="expiryYear"
+                        rules={[{ required: true, message: 'Required' }]}
+                      >
+                        <Input size="large" placeholder="YYYY" maxLength={4} />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        label="CVV"
+                        name="cvv"
                         rules={[
-                          { required: true, message: 'Please enter last 4 digits' },
-                          { len: 4, message: 'Must be 4 digits' },
+                          { required: true, message: 'Required' },
+                          { len: 3, message: '3 digits' },
                         ]}
                       >
-                        <Input size="large" placeholder="4242" maxLength={4} />
+                        <Input size="large" placeholder="123" maxLength={3} type="password" />
                       </Form.Item>
                     </Col>
                   </Row>
-
-                  <Form.Item
-                    label="Expiry Date"
-                    name="expiryDate"
-                    rules={[{ required: true, message: 'Please enter expiry date' }]}
-                  >
-                    <Input size="large" placeholder="MM/YYYY" />
-                  </Form.Item>
                 </>
               ) : getFieldValue('type') === 'paypal' ? (
                 <Form.Item
                   label="PayPal Email"
-                  name="last4"
+                  name="paypalEmail"
                   rules={[
                     { required: true, message: 'Please enter email' },
                     { type: 'email', message: 'Please enter valid email' },
@@ -612,81 +514,33 @@ const PaymentMethodsPage: React.FC = () => {
                   <Input size="large" placeholder="user@email.com" />
                 </Form.Item>
               ) : (
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Bank Name"
-                      name="brand"
-                      rules={[{ required: true, message: 'Please enter bank name' }]}
-                    >
-                      <Input size="large" placeholder="Chase" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Last 4 Digits"
-                      name="last4"
-                      rules={[
-                        { required: true, message: 'Please enter last 4 digits' },
-                        { len: 4, message: 'Must be 4 digits' },
-                      ]}
-                    >
-                      <Input size="large" placeholder="6789" maxLength={4} />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                <>
+                  <Form.Item
+                    label="Bank Name"
+                    name="bankName"
+                    rules={[{ required: true, message: 'Please enter bank name' }]}
+                  >
+                    <Input size="large" placeholder="Chase Bank" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Account Number"
+                    name="accountNumber"
+                    rules={[{ required: true, message: 'Please enter account number' }]}
+                  >
+                    <Input size="large" placeholder="1234567890" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Routing Number"
+                    name="routingNumber"
+                    rules={[{ required: true, message: 'Please enter routing number' }]}
+                  >
+                    <Input size="large" placeholder="123456789" maxLength={9} />
+                  </Form.Item>
+                </>
               )
             }
-          </Form.Item>
-
-          <Form.Item label="Billing Address">
-            <Form.Item
-              name={['billingAddress', 'street']}
-              rules={[{ required: true, message: 'Please enter street address' }]}
-            >
-              <Input size="large" placeholder="Street Address" />
-            </Form.Item>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name={['billingAddress', 'city']}
-                  rules={[{ required: true, message: 'Please enter city' }]}
-                >
-                  <Input size="large" placeholder="City" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name={['billingAddress', 'state']}
-                  rules={[{ required: true, message: 'Please enter state' }]}
-                >
-                  <Input size="large" placeholder="State" />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name={['billingAddress', 'zip']}
-                  rules={[{ required: true, message: 'Please enter ZIP code' }]}
-                >
-                  <Input size="large" placeholder="ZIP Code" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name={['billingAddress', 'country']}
-                  rules={[{ required: true, message: 'Please select country' }]}
-                  initialValue="USA"
-                >
-                  <Select size="large">
-                    <Option value="USA">United States</Option>
-                    <Option value="CAN">Canada</Option>
-                    <Option value="UK">United Kingdom</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
           </Form.Item>
 
           <Form.Item>
@@ -701,7 +555,8 @@ const PaymentMethodsPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

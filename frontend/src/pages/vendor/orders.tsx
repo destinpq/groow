@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Table,
@@ -18,6 +18,7 @@ import {
   Col,
   Typography,
   Alert,
+  Spin,
 } from 'antd';
 import {
   SearchOutlined,
@@ -28,73 +29,70 @@ import {
   TruckOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import { ordersAPI } from '@/services/api/orders';
+import type { Order } from '@/services/api/orders';
+import { useAuthStore } from '@/store/auth';
+import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-interface Order {
-  id: number;
-  orderNumber: string;
-  customer: string;
-  date: string;
-  items: number;
-  total: number;
-  status: string;
-  payment: string;
-  shippingAddress: string;
-}
-
-const mockOrders: Order[] = [
-  {
-    id: 1,
-    orderNumber: 'ORD-2024-10001',
-    customer: 'John Doe',
-    date: '2024-11-01',
-    items: 2,
-    total: 399.98,
-    status: 'new',
-    payment: 'Paid',
-    shippingAddress: '123 Main St, NY',
-  },
-  {
-    id: 2,
-    orderNumber: 'ORD-2024-10002',
-    customer: 'Sarah Smith',
-    date: '2024-10-30',
-    items: 1,
-    total: 199.99,
-    status: 'confirmed',
-    payment: 'Paid',
-    shippingAddress: '456 Oak Ave, CA',
-  },
-  {
-    id: 3,
-    orderNumber: 'ORD-2024-10003',
-    customer: 'Mike Johnson',
-    date: '2024-10-28',
-    items: 3,
-    total: 549.97,
-    status: 'shipped',
-    payment: 'Paid',
-    shippingAddress: '789 Pine Rd, TX',
-  },
-];
-
 const VendorOrdersPage: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const { user } = useAuthStore();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [trackingModalVisible, setTrackingModalVisible] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchText, setSearchText] = useState('');
   const [form] = Form.useForm();
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      new: 'blue',
+  // Fetch orders
+  const fetchOrders = async () => {
+    if (!user?.id) return;
+    
+    setLoading(true);
+    try {
+      const filters: any = {};
+      if (statusFilter !== 'all') {
+        filters.status = statusFilter;
+      }
+      
+      const response = await ordersAPI.getVendorOrders(user.id, filters);
+      
+      // Filter by search text if provided
+      let filteredData = response.data;
+      if (searchText) {
+        filteredData = filteredData.filter(
+          (order) =>
+            order.orderNumber.toLowerCase().includes(searchText.toLowerCase()) ||
+            order.customerId.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }
+      
+      setOrders(filteredData);
+    } catch (error) {
+      message.error('Failed to fetch orders');
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, [statusFilter, user?.id]);
+
+  const getStatusColor = (status: Order['status']) => {
+    const colors: Record<Order['status'], string> = {
+      pending: 'blue',
       confirmed: 'cyan',
       processing: 'orange',
       shipped: 'purple',
       delivered: 'success',
       cancelled: 'error',
+      refunded: 'warning',
     };
     return colors[status] || 'default';
   };
@@ -104,17 +102,19 @@ const VendorOrdersPage: React.FC = () => {
     setDrawerVisible(true);
   };
 
-  const handleConfirmOrder = (order: Order) => {
+  const handleConfirmOrder = async (order: Order) => {
     Modal.confirm({
       title: 'Confirm Order',
       content: `Confirm order ${order.orderNumber}?`,
-      onOk: () => {
-        setOrders(
-          orders.map((o) =>
-            o.id === order.id ? { ...o, status: 'confirmed' } : o
-          )
-        );
-        message.success('Order confirmed successfully');
+      onOk: async () => {
+        try {
+          await ordersAPI.updateStatus(order.id, 'confirmed');
+          message.success('Order confirmed successfully');
+          fetchOrders();
+        } catch (error) {
+          message.error('Failed to confirm order');
+          console.error('Error confirming order:', error);
+        }
       },
     });
   };
@@ -124,34 +124,38 @@ const VendorOrdersPage: React.FC = () => {
     setTrackingModalVisible(true);
   };
 
-  const handleCancelOrder = (order: Order) => {
+  const handleCancelOrder = async (order: Order) => {
     Modal.confirm({
       title: 'Cancel Order',
       content: `Are you sure you want to cancel order ${order.orderNumber}?`,
       okText: 'Yes, Cancel Order',
       okType: 'danger',
-      onOk: () => {
-        setOrders(
-          orders.map((o) =>
-            o.id === order.id ? { ...o, status: 'cancelled' } : o
-          )
-        );
-        message.success('Order cancelled');
+      onOk: async () => {
+        try {
+          await ordersAPI.cancel(order.id, 'Cancelled by vendor');
+          message.success('Order cancelled');
+          fetchOrders();
+        } catch (error) {
+          message.error('Failed to cancel order');
+          console.error('Error cancelling order:', error);
+        }
       },
     });
   };
 
-  const handleSubmitTracking = (values: any) => {
-    console.log('Tracking info:', values);
-    if (selectedOrder) {
-      setOrders(
-        orders.map((o) =>
-          o.id === selectedOrder.id ? { ...o, status: 'shipped' } : o
-        )
-      );
+  const handleSubmitTracking = async (values: any) => {
+    if (!selectedOrder) return;
+    
+    try {
+      await ordersAPI.updateTracking(selectedOrder.id, values.trackingNumber);
+      await ordersAPI.updateStatus(selectedOrder.id, 'shipped');
       message.success('Order marked as shipped with tracking info');
       setTrackingModalVisible(false);
       form.resetFields();
+      fetchOrders();
+    } catch (error) {
+      message.error('Failed to update tracking');
+      console.error('Error updating tracking:', error);
     }
   };
 
@@ -163,21 +167,22 @@ const VendorOrdersPage: React.FC = () => {
       render: (text: string) => <Text strong>{text}</Text>,
     },
     {
-      title: 'Customer',
-      dataIndex: 'customer',
-      key: 'customer',
+      title: 'Customer ID',
+      dataIndex: 'customerId',
+      key: 'customerId',
     },
     {
       title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString(),
-      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date: string) => dayjs(date).format('MMM DD, YYYY'),
+      sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
     },
     {
       title: 'Items',
       dataIndex: 'items',
       key: 'items',
+      render: (items: any[]) => items?.length || 0,
     },
     {
       title: 'Total',
@@ -192,21 +197,23 @@ const VendorOrdersPage: React.FC = () => {
     },
     {
       title: 'Payment',
-      dataIndex: 'payment',
-      key: 'payment',
-      render: (payment: string) => (
-        <Tag color="success">{payment}</Tag>
+      dataIndex: 'paymentStatus',
+      key: 'paymentStatus',
+      render: (paymentStatus: string) => (
+        <Tag color={paymentStatus === 'paid' ? 'success' : 'warning'}>
+          {paymentStatus?.toUpperCase()}
+        </Tag>
       ),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
+      render: (status: Order['status']) => (
         <Tag color={getStatusColor(status)}>{status.toUpperCase()}</Tag>
       ),
       filters: [
-        { text: 'New', value: 'new' },
+        { text: 'Pending', value: 'pending' },
         { text: 'Confirmed', value: 'confirmed' },
         { text: 'Processing', value: 'processing' },
         { text: 'Shipped', value: 'shipped' },
@@ -227,7 +234,7 @@ const VendorOrdersPage: React.FC = () => {
           >
             View
           </Button>
-          {record.status === 'new' && (
+          {record.status === 'pending' && (
             <Button
               type="link"
               icon={<CheckCircleOutlined />}
@@ -245,7 +252,7 @@ const VendorOrdersPage: React.FC = () => {
               Ship
             </Button>
           )}
-          {(record.status === 'new' || record.status === 'confirmed') && (
+          {(record.status === 'pending' || record.status === 'confirmed') && (
             <Button
               type="link"
               danger
@@ -261,56 +268,66 @@ const VendorOrdersPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <Card title={<Title level={3}>Order Management</Title>}>
-        {/* Filters */}
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <Col xs={24} sm={12} md={8}>
-            <Input
-              placeholder="Search orders..."
-              prefix={<SearchOutlined />}
-              size="large"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Select placeholder="Status" size="large" style={{ width: '100%' }}>
-              <Option value="all">All Orders</Option>
-              <Option value="new">New</Option>
-              <Option value="confirmed">Confirmed</Option>
-              <Option value="processing">Processing</Option>
-              <Option value="shipped">Shipped</Option>
-              <Option value="delivered">Delivered</Option>
-              <Option value="cancelled">Cancelled</Option>
-            </Select>
-          </Col>
-        </Row>
+    <Spin spinning={loading}>
+      <div style={{ padding: 24 }}>
+        <Card title={<Title level={3}>Order Management</Title>}>
+          {/* Filters */}
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col xs={24} sm={12} md={8}>
+              <Input
+                placeholder="Search orders..."
+                prefix={<SearchOutlined />}
+                size="large"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onPressEnter={fetchOrders}
+              />
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Select 
+                placeholder="Status" 
+                size="large" 
+                style={{ width: '100%' }}
+                value={statusFilter}
+                onChange={setStatusFilter}
+              >
+                <Option value="all">All Orders</Option>
+                <Option value="pending">Pending</Option>
+                <Option value="confirmed">Confirmed</Option>
+                <Option value="processing">Processing</Option>
+                <Option value="shipped">Shipped</Option>
+                <Option value="delivered">Delivered</Option>
+                <Option value="cancelled">Cancelled</Option>
+              </Select>
+            </Col>
+          </Row>
 
-        {/* Stats */}
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <Col span={6}>
-            <Card size="small">
-              <Text type="secondary">Total Orders</Text>
-              <Title level={3} style={{ margin: 0 }}>
-                {orders.length}
-              </Title>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small">
-              <Text type="secondary">New Orders</Text>
-              <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-                {orders.filter((o) => o.status === 'new').length}
-              </Title>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small">
-              <Text type="secondary">In Progress</Text>
-              <Title level={3} style={{ margin: 0, color: '#faad14' }}>
-                {orders.filter((o) => ['confirmed', 'processing', 'shipped'].includes(o.status)).length}
-              </Title>
-            </Card>
-          </Col>
+          {/* Stats */}
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col span={6}>
+              <Card size="small">
+                <Text type="secondary">Total Orders</Text>
+                <Title level={3} style={{ margin: 0 }}>
+                  {orders.length}
+                </Title>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small">
+                <Text type="secondary">Pending</Text>
+                <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+                  {orders.filter((o) => o.status === 'pending').length}
+                </Title>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card size="small">
+                <Text type="secondary">In Progress</Text>
+                <Title level={3} style={{ margin: 0, color: '#faad14' }}>
+                  {orders.filter((o) => ['confirmed', 'processing', 'shipped'].includes(o.status)).length}
+                </Title>
+              </Card>
+            </Col>
           <Col span={6}>
             <Card size="small">
               <Text type="secondary">Total Revenue</Text>
@@ -346,14 +363,14 @@ const VendorOrdersPage: React.FC = () => {
           <Space direction="vertical" style={{ width: '100%' }} size="large">
             <Steps
               current={
-                selectedOrder.status === 'new' ? 0 :
+                selectedOrder.status === 'pending' ? 0 :
                 selectedOrder.status === 'confirmed' ? 1 :
                 selectedOrder.status === 'processing' ? 2 :
                 selectedOrder.status === 'shipped' ? 3 :
                 selectedOrder.status === 'delivered' ? 4 : 0
               }
               items={[
-                { title: 'New' },
+                { title: 'Pending' },
                 { title: 'Confirmed' },
                 { title: 'Processing' },
                 { title: 'Shipped' },
@@ -363,9 +380,9 @@ const VendorOrdersPage: React.FC = () => {
 
             <Descriptions title="Order Information" bordered column={1} size="small">
               <Descriptions.Item label="Order Number">{selectedOrder.orderNumber}</Descriptions.Item>
-              <Descriptions.Item label="Customer">{selectedOrder.customer}</Descriptions.Item>
+              <Descriptions.Item label="Customer ID">{selectedOrder.customerId}</Descriptions.Item>
               <Descriptions.Item label="Order Date">
-                {new Date(selectedOrder.date).toLocaleDateString()}
+                {dayjs(selectedOrder.createdAt).format('MMM DD, YYYY hh:mm A')}
               </Descriptions.Item>
               <Descriptions.Item label="Status">
                 <Tag color={getStatusColor(selectedOrder.status)}>
@@ -373,8 +390,20 @@ const VendorOrdersPage: React.FC = () => {
                 </Tag>
               </Descriptions.Item>
               <Descriptions.Item label="Payment Status">
-                <Tag color="success">{selectedOrder.payment}</Tag>
+                <Tag color={selectedOrder.paymentStatus === 'paid' ? 'success' : 'warning'}>
+                  {selectedOrder.paymentStatus?.toUpperCase()}
+                </Tag>
               </Descriptions.Item>
+              <Descriptions.Item label="Payment Method">{selectedOrder.paymentMethod}</Descriptions.Item>
+              {selectedOrder.trackingNumber && (
+                <Descriptions.Item label="Tracking Number">{selectedOrder.trackingNumber}</Descriptions.Item>
+              )}
+              <Descriptions.Item label="Subtotal">${selectedOrder.subtotal.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label="Tax">${selectedOrder.tax.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label="Shipping">${selectedOrder.shipping.toFixed(2)}</Descriptions.Item>
+              {selectedOrder.discount > 0 && (
+                <Descriptions.Item label="Discount">-${selectedOrder.discount.toFixed(2)}</Descriptions.Item>
+              )}
               <Descriptions.Item label="Total Amount">
                 <Text strong style={{ fontSize: 18, color: '#52c41a' }}>
                   ${selectedOrder.total.toFixed(2)}
@@ -383,17 +412,35 @@ const VendorOrdersPage: React.FC = () => {
             </Descriptions>
 
             <Card title="Shipping Address" size="small">
-              <Text>{selectedOrder.shippingAddress}</Text>
+              <Text>
+                {selectedOrder.shippingAddress.firstName} {selectedOrder.shippingAddress.lastName}<br />
+                {selectedOrder.shippingAddress.address1}<br />
+                {selectedOrder.shippingAddress.address2 && <>{selectedOrder.shippingAddress.address2}<br /></>}
+                {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zipCode}<br />
+                {selectedOrder.shippingAddress.country}<br />
+                Phone: {selectedOrder.shippingAddress.phone}
+              </Text>
             </Card>
 
             <Card title="Order Items" size="small">
-              <Text>{selectedOrder.items} item(s)</Text>
-              {/* Item details would go here */}
+              <div style={{ marginBottom: 8 }}>
+                <Text strong>{selectedOrder.items.length} item(s)</Text>
+              </div>
+              {selectedOrder.items.map((item) => (
+                <div key={item.id} style={{ marginBottom: 12, padding: 12, background: '#f5f5f5', borderRadius: 4 }}>
+                  <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                    <Text strong>{item.productName}</Text>
+                    <Text type="secondary">Quantity: {item.quantity}</Text>
+                    <Text>Price: ${item.price.toFixed(2)} each</Text>
+                    <Text strong>Total: ${item.total.toFixed(2)}</Text>
+                  </Space>
+                </div>
+              ))}
             </Card>
 
             <Space>
               <Button icon={<PrinterOutlined />}>Print Invoice</Button>
-              {selectedOrder.status === 'new' && (
+              {selectedOrder.status === 'pending' && (
                 <Button
                   type="primary"
                   icon={<CheckCircleOutlined />}
@@ -459,7 +506,8 @@ const VendorOrdersPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

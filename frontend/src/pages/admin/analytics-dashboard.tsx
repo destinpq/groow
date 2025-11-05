@@ -15,6 +15,8 @@ import {
   Alert,
   Tabs,
   List,
+  Spin,
+  message,
 } from 'antd';
 import {
   LineChartOutlined,
@@ -29,85 +31,92 @@ import {
 import { Line, Column, Pie } from '@ant-design/charts';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
+import { analyticsAPI } from '@/services/api/analytics';
+import type { 
+  AnalyticsOverview,
+  TrafficData,
+  RevenueData,
+  TrafficSource,
+  PageView,
+  ConversionFunnel,
+  AnalyticsEvent,
+  AnalyticsFilters,
+} from '@/services/api/analytics';
 
 const { Title, Text, Paragraph } = Typography;
 const { RangePicker } = DatePicker;
 
-interface AnalyticsEvent {
-  id: number;
-  event: string;
-  category: string;
-  count: number;
-  value: number;
-  change: number;
-}
-
-interface PageView {
-  page: string;
-  views: number;
-  uniqueVisitors: number;
-  avgTime: string;
-  bounceRate: number;
-}
-
-interface ConversionFunnel {
-  step: string;
-  users: number;
-  dropoff: number;
-}
-
-const mockEvents: AnalyticsEvent[] = [
-  { id: 1, event: 'Product View', category: 'Engagement', count: 15420, value: 0, change: 12.5 },
-  { id: 2, event: 'Add to Cart', category: 'E-commerce', count: 3840, value: 0, change: 8.3 },
-  { id: 3, event: 'Purchase', category: 'E-commerce', count: 1250, value: 87500, change: 15.2 },
-  { id: 4, event: 'Newsletter Signup', category: 'Engagement', count: 890, value: 0, change: -3.1 },
-  { id: 5, event: 'Social Share', category: 'Social', count: 450, value: 0, change: 22.4 },
-];
-
-const mockPageViews: PageView[] = [
-  { page: '/products', views: 12450, uniqueVisitors: 8920, avgTime: '3:45', bounceRate: 42.3 },
-  { page: '/products/electronics', views: 8730, uniqueVisitors: 6450, avgTime: '4:12', bounceRate: 38.5 },
-  { page: '/', views: 7890, uniqueVisitors: 7120, avgTime: '2:30', bounceRate: 55.2 },
-  { page: '/checkout', views: 2340, uniqueVisitors: 2100, avgTime: '5:20', bounceRate: 28.4 },
-  { page: '/cart', views: 3890, uniqueVisitors: 3450, avgTime: '2:15', bounceRate: 48.9 },
-];
-
-const conversionFunnel: ConversionFunnel[] = [
-  { step: 'Page Visit', users: 10000, dropoff: 0 },
-  { step: 'Product View', users: 7500, dropoff: 25 },
-  { step: 'Add to Cart', users: 3000, dropoff: 60 },
-  { step: 'Checkout', users: 1800, dropoff: 40 },
-  { step: 'Purchase', users: 1200, dropoff: 33 },
-];
-
 const AnalyticsDashboardPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [overview, setOverview] = useState<AnalyticsOverview | null>(null);
+  const [trafficData, setTrafficData] = useState<TrafficData[]>([]);
+  const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
+  const [trafficSources, setTrafficSources] = useState<TrafficSource[]>([]);
+  const [pageViews, setPageViews] = useState<PageView[]>([]);
+  const [conversionFunnel, setConversionFunnel] = useState<ConversionFunnel[]>([]);
+  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
+  
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
     dayjs().subtract(30, 'days'),
     dayjs(),
   ]);
   const [timeframe, setTimeframe] = useState<string>('30days');
 
-  // Mock traffic data
-  const trafficData = Array.from({ length: 30 }, (_, i) => ({
-    date: dayjs().subtract(29 - i, 'days').format('MMM DD'),
-    visitors: Math.floor(Math.random() * 500) + 300,
-    pageViews: Math.floor(Math.random() * 1500) + 800,
-  }));
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [dateRange]);
 
-  // Mock revenue data
-  const revenueData = Array.from({ length: 12 }, (_, i) => ({
-    month: dayjs().subtract(11 - i, 'months').format('MMM'),
-    revenue: Math.floor(Math.random() * 50000) + 30000,
-  }));
+  const fetchAnalyticsData = async () => {
+    try {
+      setLoading(true);
+      const filters: AnalyticsFilters = {
+        startDate: dateRange[0].format('YYYY-MM-DD'),
+        endDate: dateRange[1].format('YYYY-MM-DD'),
+      };
 
-  // Mock traffic sources
-  const trafficSources = [
-    { source: 'Organic Search', value: 45.2 },
-    { source: 'Direct', value: 28.5 },
-    { source: 'Social Media', value: 15.8 },
-    { source: 'Referral', value: 7.3 },
-    { source: 'Email', value: 3.2 },
-  ];
+      const [
+        overviewData,
+        traffic,
+        revenue,
+        sources,
+        pages,
+        funnel,
+        analyticsEvents,
+      ] = await Promise.all([
+        analyticsAPI.getOverview(filters),
+        analyticsAPI.getTrafficData(filters),
+        analyticsAPI.getRevenueData(filters),
+        analyticsAPI.getTrafficSources(filters),
+        analyticsAPI.getPageViews(filters),
+        analyticsAPI.getConversionFunnel(filters),
+        analyticsAPI.getEvents(filters),
+      ]);
+
+      setOverview(overviewData);
+      setTrafficData(traffic);
+      setRevenueData(revenue);
+      setTrafficSources(sources);
+      setPageViews(pages);
+      setConversionFunnel(funnel);
+      setEvents(analyticsEvents);
+    } catch (error) {
+      message.error('Failed to load analytics data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDateRangeChange = (dates: any) => {
+    if (dates) {
+      setDateRange([dates[0], dates[1]]);
+    }
+  };
+
+  // Format traffic sources for pie chart
+  const trafficSourcesForChart = trafficSources.map(source => ({
+    source: source.source,
+    value: source.percentage,
+  }));
 
   const eventColumns: ColumnsType<AnalyticsEvent> = [
     {
@@ -179,12 +188,12 @@ const AnalyticsDashboardPage: React.FC = () => {
     },
     {
       title: 'Avg. Time',
-      dataIndex: 'avgTime',
-      key: 'avgTime',
+      dataIndex: 'avgTimeOnPage',
+      key: 'avgTimeOnPage',
       render: (time) => (
         <Space>
           <ClockCircleOutlined />
-          <Text>{time}</Text>
+          <Text>{time}s</Text>
         </Space>
       ),
     },
@@ -207,7 +216,11 @@ const AnalyticsDashboardPage: React.FC = () => {
   ];
 
   const trafficConfig = {
-    data: trafficData,
+    data: trafficData.map(d => ({
+      date: dayjs(d.date).format('MMM DD'),
+      visitors: d.visitors,
+      pageViews: d.pageViews,
+    })),
     xField: 'date',
     yField: 'visitors',
     seriesField: 'type',
@@ -221,7 +234,10 @@ const AnalyticsDashboardPage: React.FC = () => {
   };
 
   const revenueConfig = {
-    data: revenueData,
+    data: revenueData.map(d => ({
+      month: dayjs(d.date).format('MMM'),
+      revenue: d.revenue,
+    })),
     xField: 'month',
     yField: 'revenue',
     label: {
@@ -239,7 +255,7 @@ const AnalyticsDashboardPage: React.FC = () => {
   };
 
   const sourceConfig = {
-    data: trafficSources,
+    data: trafficSourcesForChart,
     angleField: 'value',
     colorField: 'source',
     radius: 0.8,
@@ -256,100 +272,128 @@ const AnalyticsDashboardPage: React.FC = () => {
 
   const totalVisitors = trafficData.reduce((sum, d) => sum + d.visitors, 0);
   const totalPageViews = trafficData.reduce((sum, d) => sum + d.pageViews, 0);
-  const conversionRate = ((conversionFunnel[4].users / conversionFunnel[0].users) * 100).toFixed(2);
+  const conversionRate = conversionFunnel.length > 0 
+    ? ((conversionFunnel[conversionFunnel.length - 1].users / conversionFunnel[0].users) * 100).toFixed(2)
+    : '0.00';
   const avgSessionDuration = '3:25';
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <Title level={3}>
-              <LineChartOutlined style={{ color: '#1890ff' }} /> Analytics Dashboard
-            </Title>
-            <Paragraph type="secondary">
-              Track user behavior, conversions, and performance metrics
-            </Paragraph>
+    <Spin spinning={loading}>
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <Title level={3}>
+                <LineChartOutlined style={{ color: '#1890ff' }} /> Analytics Dashboard
+              </Title>
+              <Paragraph type="secondary">
+                Track user behavior, conversions, and performance metrics
+              </Paragraph>
+            </div>
+            <Space>
+              <Select value={timeframe} onChange={setTimeframe} style={{ width: 120 }}>
+                <Select.Option value="7days">Last 7 days</Select.Option>
+                <Select.Option value="30days">Last 30 days</Select.Option>
+                <Select.Option value="90days">Last 90 days</Select.Option>
+                <Select.Option value="custom">Custom</Select.Option>
+              </Select>
+              {timeframe === 'custom' && (
+                <RangePicker
+                  value={dateRange}
+                  onChange={handleDateRangeChange}
+                />
+              )}
+            </Space>
           </div>
-          <Space>
-            <Select value={timeframe} onChange={setTimeframe} style={{ width: 120 }}>
-              <Select.Option value="7days">Last 7 days</Select.Option>
-              <Select.Option value="30days">Last 30 days</Select.Option>
-              <Select.Option value="90days">Last 90 days</Select.Option>
-              <Select.Option value="custom">Custom</Select.Option>
-            </Select>
-            {timeframe === 'custom' && (
-              <RangePicker
-                value={dateRange}
-                onChange={(dates) => dates && setDateRange(dates as [Dayjs, Dayjs])}
-              />
-            )}
-          </Space>
         </div>
-      </div>
 
-      <Alert
-        message="Google Analytics Integration Active"
-        description="Real-time analytics tracking is enabled. Data updates every 5 minutes."
-        type="success"
-        showIcon
-        closable
-        style={{ marginBottom: 24 }}
-      />
+        <Alert
+          message="Google Analytics Integration Active"
+          description="Real-time analytics tracking is enabled. Data updates every 5 minutes."
+          type="success"
+          showIcon
+          closable
+          style={{ marginBottom: 24 }}
+        />
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Total Visitors"
-              value={totalVisitors}
-              prefix={<UserOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-              suffix={
-                <Tag color="green" icon={<RiseOutlined />} style={{ marginLeft: 8 }}>
-                  +12.5%
-                </Tag>
-              }
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Page Views"
-              value={totalPageViews}
-              prefix={<EyeOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-              suffix={
-                <Tag color="green" icon={<RiseOutlined />} style={{ marginLeft: 8 }}>
-                  +8.3%
-                </Tag>
-              }
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Conversion Rate"
-              value={conversionRate}
-              suffix="%"
-              prefix={<ShoppingCartOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="Avg. Session Duration"
-              value={avgSessionDuration}
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Total Revenue"
+                value={overview?.totalRevenue || 0}
+                prefix={<DollarOutlined />}
+                valueStyle={{ color: '#1890ff' }}
+                precision={2}
+                suffix={
+                  overview?.revenueChange && (
+                    <Tag 
+                      color={overview.revenueChange >= 0 ? 'green' : 'red'} 
+                      icon={overview.revenueChange >= 0 ? <RiseOutlined /> : <FallOutlined />} 
+                      style={{ marginLeft: 8 }}
+                    >
+                      {overview.revenueChange >= 0 ? '+' : ''}{overview.revenueChange.toFixed(1)}%
+                    </Tag>
+                  )
+                }
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Total Orders"
+                value={overview?.totalOrders || 0}
+                prefix={<ShoppingCartOutlined />}
+                valueStyle={{ color: '#52c41a' }}
+                suffix={
+                  overview?.ordersChange && (
+                    <Tag 
+                      color={overview.ordersChange >= 0 ? 'green' : 'red'} 
+                      icon={overview.ordersChange >= 0 ? <RiseOutlined /> : <FallOutlined />} 
+                      style={{ marginLeft: 8 }}
+                    >
+                      {overview.ordersChange >= 0 ? '+' : ''}{overview.ordersChange.toFixed(1)}%
+                    </Tag>
+                  )
+                }
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Conversion Rate"
+                value={overview?.conversionRate || 0}
+                suffix="%"
+                prefix={<LineChartOutlined />}
+                valueStyle={{ color: '#faad14' }}
+                precision={2}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Card>
+              <Statistic
+                title="Total Customers"
+                value={overview?.totalCustomers || 0}
+                prefix={<UserOutlined />}
+                valueStyle={{ color: '#722ed1' }}
+                suffix={
+                  overview?.customersChange && (
+                    <Tag 
+                      color={overview.customersChange >= 0 ? 'green' : 'red'} 
+                      icon={overview.customersChange >= 0 ? <RiseOutlined /> : <FallOutlined />} 
+                      style={{ marginLeft: 8 }}
+                    >
+                      {overview.customersChange >= 0 ? '+' : ''}{overview.customersChange.toFixed(1)}%
+                    </Tag>
+                  )
+                }
+              />
+            </Card>
+          </Col>
+        </Row>
 
       <Tabs
         defaultActiveKey="overview"
@@ -384,7 +428,7 @@ const AnalyticsDashboardPage: React.FC = () => {
               <Card title="Event Tracking">
                 <Table
                   columns={eventColumns}
-                  dataSource={mockEvents}
+                  dataSource={events}
                   rowKey="id"
                   pagination={false}
                 />
@@ -398,7 +442,7 @@ const AnalyticsDashboardPage: React.FC = () => {
               <Card title="Top Pages">
                 <Table
                   columns={pageViewColumns}
-                  dataSource={mockPageViews}
+                  dataSource={pageViews}
                   rowKey="page"
                   pagination={false}
                 />
@@ -415,20 +459,22 @@ const AnalyticsDashboardPage: React.FC = () => {
                     <List
                       dataSource={conversionFunnel}
                       renderItem={(item, index) => {
-                        const percentage = ((item.users / conversionFunnel[0].users) * 100).toFixed(1);
+                        const percentage = conversionFunnel[0].users > 0 
+                          ? ((item.users / conversionFunnel[0].users) * 100).toFixed(1)
+                          : '0';
                         return (
                           <List.Item>
                             <Space direction="vertical" style={{ width: '100%' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <Text strong>
-                                  {index + 1}. {item.step}
+                                  {item.stepNumber}. {item.step}
                                 </Text>
                                 <Text>{item.users.toLocaleString()} users</Text>
                               </div>
                               <Progress percent={parseFloat(percentage)} />
-                              {item.dropoff > 0 && (
+                              {item.dropoffRate > 0 && (
                                 <Text type="danger" style={{ fontSize: 12 }}>
-                                  {item.dropoff}% drop-off
+                                  {item.dropoffRate.toFixed(1)}% drop-off
                                 </Text>
                               )}
                             </Space>
@@ -444,19 +490,19 @@ const AnalyticsDashboardPage: React.FC = () => {
                       <div>
                         <Text type="secondary">Overall Conversion Rate</Text>
                         <div style={{ fontSize: 32, fontWeight: 'bold', color: '#52c41a' }}>
-                          {conversionRate}%
-                        </div>
-                      </div>
-                      <div>
-                        <Text type="secondary">Cart Abandonment Rate</Text>
-                        <div style={{ fontSize: 24, fontWeight: 'bold', color: '#ff4d4f' }}>
-                          40%
+                          {overview?.conversionRate.toFixed(2) || '0.00'}%
                         </div>
                       </div>
                       <div>
                         <Text type="secondary">Average Order Value</Text>
                         <div style={{ fontSize: 24, fontWeight: 'bold', color: '#1890ff' }}>
-                          $72.50
+                          ${overview?.averageOrderValue.toFixed(2) || '0.00'}
+                        </div>
+                      </div>
+                      <div>
+                        <Text type="secondary">Total Revenue</Text>
+                        <div style={{ fontSize: 24, fontWeight: 'bold', color: '#722ed1' }}>
+                          ${overview?.totalRevenue.toLocaleString() || '0'}
                         </div>
                       </div>
                     </Space>
@@ -467,7 +513,8 @@ const AnalyticsDashboardPage: React.FC = () => {
           },
         ]}
       />
-    </div>
+      </div>
+    </Spin>
   );
 };
 

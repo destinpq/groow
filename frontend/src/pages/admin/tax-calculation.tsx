@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -18,6 +18,8 @@ import {
   Divider,
   Alert,
   Descriptions,
+  Spin,
+  Modal,
 } from 'antd';
 import {
   DollarOutlined,
@@ -26,48 +28,29 @@ import {
   CalculatorOutlined,
   CheckCircleOutlined,
   WarningOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import { taxAPI } from '@/services/api/tax';
+import type { 
+  TaxRate, 
+  TaxCalculation, 
+  TaxStats,
+  CreateTaxRateDto,
+  UpdateTaxRateDto,
+} from '@/services/api/tax';
 
 const { Title, Text, Paragraph } = Typography;
 
-interface TaxRate {
-  country: string;
-  state: string;
-  rate: number;
-  type: 'state' | 'local' | 'combined';
-}
-
-interface TaxJurisdiction {
-  name: string;
-  code: string;
-  rate: number;
-  type: string;
-}
-
-interface TaxCalculation {
-  subtotal: number;
-  taxableAmount: number;
-  taxRate: number;
-  taxAmount: number;
-  total: number;
-  jurisdictions: TaxJurisdiction[];
-}
-
-const mockTaxRates: TaxRate[] = [
-  { country: 'USA', state: 'California', rate: 7.25, type: 'state' },
-  { country: 'USA', state: 'New York', rate: 4.0, type: 'state' },
-  { country: 'USA', state: 'Texas', rate: 6.25, type: 'state' },
-  { country: 'USA', state: 'Florida', rate: 6.0, type: 'state' },
-  { country: 'USA', state: 'Illinois', rate: 6.25, type: 'state' },
-  { country: 'Canada', state: 'Ontario', rate: 13.0, type: 'combined' },
-  { country: 'Canada', state: 'Quebec', rate: 14.975, type: 'combined' },
-  { country: 'UK', state: 'England', rate: 20.0, type: 'state' },
-  { country: 'Germany', state: 'All States', rate: 19.0, type: 'state' },
-  { country: 'France', state: 'All States', rate: 20.0, type: 'state' },
-];
-
 const TaxCalculationPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [taxRates, setTaxRates] = useState<TaxRate[]>([]);
+  const [stats, setStats] = useState<TaxStats | null>(null);
+  const [countries, setCountries] = useState<string[]>([]);
+  const [states, setStates] = useState<string[]>([]);
+  
   const [selectedCountry, setSelectedCountry] = useState<string>('USA');
   const [selectedState, setSelectedState] = useState<string>('California');
   const [orderAmount, setOrderAmount] = useState<number>(100);
@@ -75,67 +58,158 @@ const TaxCalculationPage: React.FC = () => {
   const [taxExempt, setTaxExempt] = useState<boolean>(false);
   const [calculation, setCalculation] = useState<TaxCalculation | null>(null);
   const [autoCalculate, setAutoCalculate] = useState<boolean>(true);
+  
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedTaxRate, setSelectedTaxRate] = useState<TaxRate | null>(null);
+  const [form] = Form.useForm();
 
-  const countries = Array.from(new Set(mockTaxRates.map((r) => r.country)));
-  const states = mockTaxRates.filter((r) => r.country === selectedCountry);
+  useEffect(() => {
+    fetchTaxRates();
+    fetchStats();
+    fetchCountries();
+  }, []);
 
-  const handleCalculateTax = () => {
-    if (taxExempt) {
-      setCalculation({
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchStates(selectedCountry);
+    }
+  }, [selectedCountry]);
+
+  const fetchTaxRates = async () => {
+    try {
+      setLoading(true);
+      const response = await taxAPI.getAll();
+      setTaxRates(response.data || response);
+    } catch (error) {
+      message.error('Failed to load tax rates');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const statsData = await taxAPI.getStats();
+      setStats(statsData);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const countriesData = await taxAPI.getCountries();
+      setCountries(countriesData);
+      if (countriesData.length > 0 && !selectedCountry) {
+        setSelectedCountry(countriesData[0]);
+      }
+    } catch (error) {
+      console.error('Failed to load countries:', error);
+    }
+  };
+
+  const fetchStates = async (country: string) => {
+    try {
+      const statesData = await taxAPI.getStates(country);
+      setStates(statesData);
+      if (statesData.length > 0) {
+        setSelectedState(statesData[0]);
+      }
+    } catch (error) {
+      console.error('Failed to load states:', error);
+    }
+  };
+
+  const handleCalculateTax = async () => {
+    try {
+      const calculationData = await taxAPI.calculate({
+        country: selectedCountry,
+        state: selectedState,
         subtotal: orderAmount,
-        taxableAmount: 0,
-        taxRate: 0,
-        taxAmount: 0,
-        total: orderAmount + shippingAmount,
-        jurisdictions: [],
+        shippingAmount,
+        taxExempt,
       });
-      message.info('Order is tax exempt');
-      return;
+      
+      setCalculation(calculationData);
+      message.success('Tax calculated successfully!');
+    } catch (error) {
+      message.error('Failed to calculate tax');
     }
+  };
 
-    const taxRate = mockTaxRates.find(
-      (r) => r.country === selectedCountry && r.state === selectedState
-    );
+  const handleCreate = () => {
+    setSelectedTaxRate(null);
+    form.resetFields();
+    setIsModalVisible(true);
+  };
 
-    if (!taxRate) {
-      message.error('Tax rate not found for selected location');
-      return;
+  const handleEdit = (taxRate: TaxRate) => {
+    setSelectedTaxRate(taxRate);
+    form.setFieldsValue(taxRate);
+    setIsModalVisible(true);
+  };
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setLoading(true);
+      const taxRateData: CreateTaxRateDto | UpdateTaxRateDto = {
+        country: values.country,
+        countryCode: values.countryCode,
+        state: values.state,
+        stateCode: values.stateCode,
+        city: values.city,
+        zipCode: values.zipCode,
+        rate: values.rate,
+        type: values.type,
+        enabled: values.enabled !== undefined ? values.enabled : true,
+        priority: values.priority || 0,
+      };
+
+      if (selectedTaxRate) {
+        await taxAPI.update(selectedTaxRate.id, taxRateData);
+        message.success('Tax rate updated successfully');
+      } else {
+        await taxAPI.create(taxRateData as CreateTaxRateDto);
+        message.success('Tax rate created successfully');
+      }
+
+      setIsModalVisible(false);
+      await fetchTaxRates();
+      await fetchStats();
+    } catch (error) {
+      message.error(selectedTaxRate ? 'Failed to update tax rate' : 'Failed to create tax rate');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const subtotal = orderAmount;
-    const taxableAmount = subtotal; // Simplified - in reality, some items may be exempt
-    const taxAmount = (taxableAmount * taxRate.rate) / 100;
-    const total = subtotal + shippingAmount + taxAmount;
-
-    // Simulate multiple jurisdictions
-    const jurisdictions: TaxJurisdiction[] = [
-      {
-        name: `${taxRate.state} State Tax`,
-        code: taxRate.state.substring(0, 2).toUpperCase(),
-        rate: taxRate.rate * 0.7,
-        type: 'State',
+  const handleDelete = (id: number) => {
+    Modal.confirm({
+      title: 'Delete Tax Rate',
+      content: 'Are you sure you want to delete this tax rate?',
+      okText: 'Delete',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await taxAPI.delete(id);
+          message.success('Tax rate deleted successfully');
+          await fetchTaxRates();
+          await fetchStats();
+        } catch (error) {
+          message.error('Failed to delete tax rate');
+        }
       },
-    ];
-
-    if (taxRate.type === 'combined') {
-      jurisdictions.push({
-        name: 'Local Tax',
-        code: 'LOC',
-        rate: taxRate.rate * 0.3,
-        type: 'Local',
-      });
-    }
-
-    setCalculation({
-      subtotal,
-      taxableAmount,
-      taxRate: taxRate.rate,
-      taxAmount,
-      total,
-      jurisdictions,
     });
+  };
 
-    message.success('Tax calculated successfully!');
+  const handleToggleStatus = async (id: number, enabled: boolean) => {
+    try {
+      await taxAPI.toggleStatus(id, enabled);
+      message.success(`Tax rate ${enabled ? 'enabled' : 'disabled'} successfully`);
+      await fetchTaxRates();
+    } catch (error) {
+      message.error('Failed to update tax rate status');
+    }
   };
 
   const taxRateColumns: ColumnsType<TaxRate> = [
@@ -150,6 +224,13 @@ const TaxCalculationPage: React.FC = () => {
       title: 'State/Province',
       dataIndex: 'state',
       key: 'state',
+      render: (state) => state || '-',
+    },
+    {
+      title: 'City',
+      dataIndex: 'city',
+      key: 'city',
+      render: (city) => city || '-',
     },
     {
       title: 'Tax Rate',
@@ -162,23 +243,75 @@ const TaxCalculationPage: React.FC = () => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type) => (
-        <Tag color={type === 'combined' ? 'orange' : 'green'}>
-          {type === 'combined' ? 'Combined' : 'State Only'}
-        </Tag>
+      render: (type) => {
+        const colorMap: Record<string, string> = {
+          state: 'green',
+          federal: 'blue',
+          local: 'purple',
+          combined: 'orange',
+          vat: 'cyan',
+          gst: 'magenta',
+        };
+        return <Tag color={colorMap[type] || 'default'}>{type?.toUpperCase() || '-'}</Tag>;
+      },
+    },
+    {
+      title: 'Status',
+      dataIndex: 'enabled',
+      key: 'enabled',
+      render: (enabled, record) => (
+        <Switch
+          checked={enabled}
+          onChange={(checked) => handleToggleStatus(record.id, checked)}
+        />
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
+            Edit
+          </Button>
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id)}
+          >
+            Delete
+          </Button>
+        </Space>
       ),
     },
   ];
 
   return (
+    <>
+    <Spin spinning={loading} tip="Loading tax data...">
     <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ marginBottom: 24 }}>
-        <Title level={3}>
-          <CalculatorOutlined style={{ color: '#1890ff' }} /> Tax Calculation Engine
-        </Title>
-        <Paragraph type="secondary">
-          Automated tax calculation based on location and product taxability
-        </Paragraph>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <Title level={3}>
+            <CalculatorOutlined style={{ color: '#1890ff' }} /> Tax Calculation Engine
+          </Title>
+          <Paragraph type="secondary">
+            Automated tax calculation based on location and product taxability
+          </Paragraph>
+        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleCreate}
+          size="large"
+        >
+          Create Tax Rate
+        </Button>
       </div>
 
       <Alert
@@ -217,9 +350,11 @@ const TaxCalculationPage: React.FC = () => {
                 <Col span={12}>
                   <Form.Item label="State/Province">
                     <Select
+                      placeholder="Select State"
                       value={selectedState}
                       onChange={setSelectedState}
-                      options={states.map((s) => ({ label: s.state, value: s.state }))}
+                      disabled={!selectedCountry}
+                      options={states.map((s) => ({ label: s, value: s }))}
                     />
                   </Form.Item>
                 </Col>
@@ -352,9 +487,7 @@ const TaxCalculationPage: React.FC = () => {
               <Card>
                 <Statistic
                   title="Average Tax Rate"
-                  value={
-                    mockTaxRates.reduce((sum, r) => sum + r.rate, 0) / mockTaxRates.length
-                  }
+                  value={stats?.averageRate || 0}
                   precision={2}
                   suffix="%"
                   prefix={<PercentageOutlined />}
@@ -366,7 +499,7 @@ const TaxCalculationPage: React.FC = () => {
               <Card>
                 <Statistic
                   title="Supported Regions"
-                  value={mockTaxRates.length}
+                  value={stats?.totalRates || 0}
                   prefix={<EnvironmentOutlined />}
                   valueStyle={{ color: '#52c41a' }}
                 />
@@ -377,10 +510,11 @@ const TaxCalculationPage: React.FC = () => {
           <Card title="Tax Rates Database">
             <Table
               columns={taxRateColumns}
-              dataSource={mockTaxRates}
-              rowKey={(record) => `${record.country}-${record.state}`}
+              dataSource={taxRates}
+              rowKey="id"
               pagination={{ pageSize: 8 }}
               size="small"
+              loading={loading}
             />
           </Card>
         </Col>
@@ -460,6 +594,151 @@ const TaxCalculationPage: React.FC = () => {
         </Row>
       </Card>
     </div>
+    </Spin>
+
+    {/* Create/Edit Modal */}
+    <Modal
+      title={selectedTaxRate ? 'Edit Tax Rate' : 'Create Tax Rate'}
+      open={isModalVisible}
+      onCancel={() => {
+        setIsModalVisible(false);
+        setSelectedTaxRate(null);
+        form.resetFields();
+      }}
+      onOk={() => form.submit()}
+      width={600}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+      >
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Country"
+              name="country"
+              rules={[{ required: true, message: 'Please enter country' }]}
+            >
+              <Input placeholder="e.g., United States" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Country Code"
+              name="countryCode"
+              rules={[{ required: true, message: 'Please enter country code' }]}
+            >
+              <Input placeholder="e.g., US" maxLength={2} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="State/Province"
+              name="state"
+            >
+              <Input placeholder="e.g., California" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="State Code"
+              name="stateCode"
+            >
+              <Input placeholder="e.g., CA" maxLength={3} />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="City (Optional)"
+              name="city"
+            >
+              <Input placeholder="e.g., Los Angeles" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="ZIP Code (Optional)"
+              name="zipCode"
+            >
+              <Input placeholder="e.g., 90001" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Tax Rate (%)"
+              name="rate"
+              rules={[
+                { required: true, message: 'Please enter tax rate' },
+                { type: 'number', min: 0, max: 100, message: 'Rate must be between 0 and 100' }
+              ]}
+            >
+              <InputNumber
+                style={{ width: '100%' }}
+                placeholder="e.g., 7.25"
+                precision={2}
+                min={0}
+                max={100}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Tax Type"
+              name="type"
+              rules={[{ required: true, message: 'Please select tax type' }]}
+            >
+              <Select
+                placeholder="Select type"
+                options={[
+                  { label: 'State', value: 'state' },
+                  { label: 'Federal', value: 'federal' },
+                  { label: 'Local', value: 'local' },
+                  { label: 'Combined', value: 'combined' },
+                  { label: 'VAT', value: 'vat' },
+                  { label: 'GST', value: 'gst' },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Priority"
+              name="priority"
+              tooltip="Higher priority rates are applied first"
+            >
+              <InputNumber
+                style={{ width: '100%' }}
+                placeholder="e.g., 1"
+                min={0}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Status"
+              name="enabled"
+              valuePropName="checked"
+            >
+              <Switch checkedChildren="Enabled" unCheckedChildren="Disabled" />
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
+    </Modal>
+    </>
   );
 };
 

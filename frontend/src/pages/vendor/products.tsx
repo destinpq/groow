@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Button,
@@ -18,6 +18,8 @@ import {
   Col,
   Drawer,
   Image,
+  Spin,
+  Statistic,
 } from 'antd';
 import {
   PlusOutlined,
@@ -28,84 +30,26 @@ import {
   SearchOutlined,
   FileExcelOutlined,
   DownloadOutlined,
+  ShoppingOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile } from 'antd/es/upload/interface';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { productAPI } from '@/services/api/products';
+import type { Product, CreateProductData } from '@/services/api/products';
+import { useAuthStore } from '@/store/auth';
+import { categoriesAPI, brandsAPI } from '@/services/api/catalog';
+import type { Category, Brand } from '@/services/api/catalog';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-interface ProductAttribute {
-  size?: string;
-  color?: string;
-  price: number;
-  stock: number;
-  sku: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  category: string;
-  price: number;
-  stock: number;
-  moq: number;
-  status: 'active' | 'inactive' | 'pending';
-  images: string[];
-  attributes: ProductAttribute[];
-  created: string;
-}
-
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: 'Premium Wireless Headphones',
-    sku: 'WH-001',
-    category: 'Electronics',
-    price: 349.99,
-    stock: 156,
-    moq: 1,
-    status: 'active',
-    images: ['https://via.placeholder.com/300'],
-    attributes: [
-      { color: 'Black', price: 349.99, stock: 100, sku: 'WH-001-BLK' },
-      { color: 'Silver', price: 349.99, stock: 56, sku: 'WH-001-SLV' },
-    ],
-    created: '2024-10-15',
-  },
-  {
-    id: 2,
-    name: 'Smart Watch Pro',
-    sku: 'SW-002',
-    category: 'Electronics',
-    price: 199.99,
-    stock: 89,
-    moq: 2,
-    status: 'active',
-    images: ['https://via.placeholder.com/300'],
-    attributes: [],
-    created: '2024-10-10',
-  },
-  {
-    id: 3,
-    name: 'Laptop Backpack',
-    sku: 'LB-003',
-    category: 'Accessories',
-    price: 49.99,
-    stock: 0,
-    moq: 5,
-    status: 'inactive',
-    images: ['https://via.placeholder.com/300'],
-    attributes: [],
-    created: '2024-10-05',
-  },
-];
-
 const VendorProductsPage: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const { user } = useAuthStore();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -113,22 +57,81 @@ const VendorProductsPage: React.FC = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [description, setDescription] = useState('');
-  const [attributes, setAttributes] = useState<ProductAttribute[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [searchText, setSearchText] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>();
+  const [statusFilter, setStatusFilter] = useState<boolean | undefined>();
+  const pageSize = 10;
+
+  // Fetch products
+  useEffect(() => {
+    if (user?.id) {
+      fetchProducts();
+    }
+  }, [user, page, searchText, categoryFilter, statusFilter]);
+
+  // Fetch categories and brands
+  useEffect(() => {
+    fetchCategoriesAndBrands();
+  }, []);
+
+  const fetchProducts = async () => {
+    if (!user?.id) return;
+    
+    setLoading(true);
+    try {
+      const response = await productAPI.getAll({
+        vendorId: user.id,
+        page,
+        limit: pageSize,
+        search: searchText || undefined,
+        categoryId: categoryFilter,
+        inStock: statusFilter,
+      });
+      setProducts(response.data);
+      setTotal(response.total);
+    } catch (error) {
+      message.error('Failed to load products');
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategoriesAndBrands = async () => {
+    try {
+      const [categoriesData, brandsData] = await Promise.all([
+        categoriesAPI.getAll(),
+        brandsAPI.getAll(),
+      ]);
+      setCategories(categoriesData);
+      setBrands(brandsData);
+    } catch (error) {
+      console.error('Error fetching categories/brands:', error);
+    }
+  };
 
   const handleAddProduct = () => {
     setEditingProduct(null);
     form.resetFields();
     setFileList([]);
     setDescription('');
-    setAttributes([]);
     setModalVisible(true);
   };
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    form.setFieldsValue(product);
-    setDescription('Product description here...');
-    setAttributes(product.attributes);
+    form.setFieldsValue({
+      name: product.name,
+      sku: product.sku,
+      categoryId: product.categoryId,
+      brandId: product.brandId,
+      price: product.price,
+      stock: product.stock,
+    });
+    setDescription(product.description);
     setModalVisible(true);
   };
 
@@ -137,60 +140,96 @@ const VendorProductsPage: React.FC = () => {
     setDrawerVisible(true);
   };
 
-  const handleDeleteProduct = (id: number) => {
+  const handleDeleteProduct = (id: string) => {
     Modal.confirm({
       title: 'Delete Product',
-      content: 'Are you sure you want to delete this product?',
-      onOk: () => {
-        setProducts(products.filter((p) => p.id !== id));
-        message.success('Product deleted successfully');
+      content: 'Are you sure you want to delete this product? This action cannot be undone.',
+      okText: 'Delete',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await productAPI.delete(id);
+          message.success('Product deleted successfully');
+          fetchProducts(); // Refresh list
+        } catch (error) {
+          message.error('Failed to delete product');
+          console.error('Error deleting product:', error);
+        }
       },
     });
   };
 
-  const handleToggleStatus = (id: number) => {
-    setProducts(
-      products.map((p) =>
-        p.id === id
-          ? { ...p, status: p.status === 'active' ? 'inactive' : 'active' }
-          : p
-      )
-    );
-    message.success('Product status updated');
+  const handleToggleStatus = async (id: string) => {
+    try {
+      await productAPI.toggleActive(id);
+      message.success('Product status updated');
+      fetchProducts(); // Refresh list
+    } catch (error) {
+      message.error('Failed to update product status');
+      console.error('Error toggling status:', error);
+    }
   };
 
-  const handleSubmit = (values: any) => {
-    console.log('Product data:', { ...values, description, attributes, images: fileList });
-    message.success(editingProduct ? 'Product updated!' : 'Product created!');
-    setModalVisible(false);
-    form.resetFields();
+  const handleSubmit = async (values: any) => {
+    try {
+      const productData: CreateProductData = {
+        name: values.name,
+        sku: values.sku,
+        description,
+        price: values.price,
+        stock: values.stock,
+        categoryId: values.categoryId,
+        brandId: values.brandId,
+        images: fileList.map(f => f.url || '').filter(Boolean),
+      };
+
+      if (editingProduct) {
+        await productAPI.update(editingProduct.id, productData);
+        message.success('Product updated successfully!');
+      } else {
+        await productAPI.create(productData);
+        message.success('Product created successfully!');
+      }
+      
+      setModalVisible(false);
+      form.resetFields();
+      setFileList([]);
+      setDescription('');
+      fetchProducts(); // Refresh list
+    } catch (error) {
+      message.error(editingProduct ? 'Failed to update product' : 'Failed to create product');
+      console.error('Error saving product:', error);
+    }
   };
 
-  const handleAddAttribute = () => {
-    setAttributes([
-      ...attributes,
-      { size: '', color: '', price: 0, stock: 0, sku: '' },
-    ]);
-  };
-
-  const handleRemoveAttribute = (index: number) => {
-    setAttributes(attributes.filter((_, i) => i !== index));
-  };
-
-  const handleAttributeChange = (index: number, field: string, value: any) => {
-    const newAttributes = [...attributes];
-    newAttributes[index] = { ...newAttributes[index], [field]: value };
-    setAttributes(newAttributes);
-  };
-
-  const handleExportCSV = () => {
-    message.success('Exporting products to CSV...');
-    // Export logic
+  const handleExportCSV = async () => {
+    try {
+      await productAPI.bulkExport({ vendorId: user?.id });
+      message.success('Products exported successfully!');
+    } catch (error) {
+      message.error('Failed to export products');
+      console.error('Error exporting products:', error);
+    }
   };
 
   const handleImportCSV = () => {
-    message.info('CSV import feature');
-    // Import modal logic
+    message.info('CSV import feature - Upload CSV file with products');
+    // TODO: Implement CSV import modal
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchText(value);
+    setPage(1); // Reset to first page
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value === 'all' ? undefined : value);
+    setPage(1);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value === 'all' ? undefined : value === 'active');
+    setPage(1);
   };
 
   const columns: ColumnsType<Product> = [
@@ -200,7 +239,13 @@ const VendorProductsPage: React.FC = () => {
       key: 'images',
       width: 80,
       render: (images: string[]) => (
-        <Image src={images[0]} alt="Product" width={50} height={50} style={{ objectFit: 'cover' }} />
+        <Image 
+          src={images[0] || 'https://via.placeholder.com/50'} 
+          alt="Product" 
+          width={50} 
+          height={50} 
+          style={{ objectFit: 'cover' }} 
+        />
       ),
     },
     {
@@ -216,13 +261,12 @@ const VendorProductsPage: React.FC = () => {
     },
     {
       title: 'Category',
-      dataIndex: 'category',
-      key: 'category',
-      filters: [
-        { text: 'Electronics', value: 'Electronics' },
-        { text: 'Accessories', value: 'Accessories' },
-      ],
-      onFilter: (value, record) => record.category === value,
+      dataIndex: 'categoryId',
+      key: 'categoryId',
+      render: (categoryId: string) => {
+        const category = categories.find(c => c.id === categoryId);
+        return <Tag>{category?.name || 'N/A'}</Tag>;
+      },
     },
     {
       title: 'Price',
@@ -243,27 +287,21 @@ const VendorProductsPage: React.FC = () => {
       ),
     },
     {
-      title: 'MOQ',
-      dataIndex: 'moq',
-      key: 'moq',
-    },
-    {
       title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'isActive',
+      key: 'isActive',
       filters: [
-        { text: 'Active', value: 'active' },
-        { text: 'Inactive', value: 'inactive' },
-        { text: 'Pending', value: 'pending' },
+        { text: 'Active', value: true },
+        { text: 'Inactive', value: false },
       ],
-      onFilter: (value, record) => record.status === value,
-      render: (status: string, record) => (
+      onFilter: (value, record) => record.isActive === value,
+      render: (isActive: boolean, record) => (
         <Space>
-          <Tag color={status === 'active' ? 'success' : status === 'pending' ? 'warning' : 'default'}>
-            {status.toUpperCase()}
+          <Tag color={isActive ? 'success' : 'default'}>
+            {isActive ? 'ACTIVE' : 'INACTIVE'}
           </Tag>
           <Switch
-            checked={status === 'active'}
+            checked={isActive}
             onChange={() => handleToggleStatus(record.id)}
             size="small"
           />
@@ -324,25 +362,39 @@ const VendorProductsPage: React.FC = () => {
         {/* Filters */}
         <Row gutter={16} style={{ marginBottom: 16 }}>
           <Col xs={24} sm={12} md={8}>
-            <Input
+            <Input.Search
               placeholder="Search products..."
               prefix={<SearchOutlined />}
               size="large"
+              onSearch={handleSearch}
+              allowClear
             />
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Select placeholder="Category" size="large" style={{ width: '100%' }}>
+            <Select 
+              placeholder="Category" 
+              size="large" 
+              style={{ width: '100%' }}
+              onChange={handleCategoryChange}
+              allowClear
+            >
               <Option value="all">All Categories</Option>
-              <Option value="electronics">Electronics</Option>
-              <Option value="accessories">Accessories</Option>
+              {categories.map(cat => (
+                <Option key={cat.id} value={cat.id}>{cat.name}</Option>
+              ))}
             </Select>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Select placeholder="Status" size="large" style={{ width: '100%' }}>
+            <Select 
+              placeholder="Status" 
+              size="large" 
+              style={{ width: '100%' }}
+              onChange={handleStatusChange}
+              allowClear
+            >
               <Option value="all">All Status</Option>
               <Option value="active">Active</Option>
               <Option value="inactive">Inactive</Option>
-              <Option value="pending">Pending</Option>
             </Select>
           </Col>
         </Row>
@@ -351,47 +403,60 @@ const VendorProductsPage: React.FC = () => {
         <Row gutter={16} style={{ marginBottom: 16 }}>
           <Col span={6}>
             <Card size="small">
-              <div>Total Products</div>
-              <div style={{ fontSize: 24, fontWeight: 'bold' }}>{products.length}</div>
+              <Statistic
+                title="Total Products"
+                value={total}
+                prefix={<ShoppingOutlined />}
+              />
             </Card>
           </Col>
           <Col span={6}>
             <Card size="small">
-              <div>Active</div>
-              <div style={{ fontSize: 24, fontWeight: 'bold', color: '#52c41a' }}>
-                {products.filter((p) => p.status === 'active').length}
-              </div>
+              <Statistic
+                title="Active"
+                value={products.filter((p) => p.isActive).length}
+                valueStyle={{ color: '#52c41a' }}
+              />
             </Card>
           </Col>
           <Col span={6}>
             <Card size="small">
-              <div>Out of Stock</div>
-              <div style={{ fontSize: 24, fontWeight: 'bold', color: '#ff4d4f' }}>
-                {products.filter((p) => p.stock === 0).length}
-              </div>
+              <Statistic
+                title="Out of Stock"
+                value={products.filter((p) => p.stock === 0).length}
+                valueStyle={{ color: '#ff4d4f' }}
+              />
             </Card>
           </Col>
           <Col span={6}>
             <Card size="small">
-              <div>Total Value</div>
-              <div style={{ fontSize: 24, fontWeight: 'bold', color: '#1890ff' }}>
-                ${products.reduce((sum, p) => sum + p.price * p.stock, 0).toFixed(0)}
-              </div>
+              <Statistic
+                title="Total Value"
+                value={products.reduce((sum, p) => sum + p.price * p.stock, 0)}
+                precision={0}
+                prefix="$"
+                valueStyle={{ color: '#1890ff' }}
+              />
             </Card>
           </Col>
         </Row>
 
         {/* Products Table */}
-        <Table
-          columns={columns}
-          dataSource={products}
-          rowKey="id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showTotal: (total) => `Total ${total} products`,
-          }}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={products}
+            rowKey="id"
+            pagination={{
+              current: page,
+              pageSize,
+              total,
+              onChange: setPage,
+              showSizeChanger: false,
+              showTotal: (total) => `Total ${total} products`,
+            }}
+          />
+        </Spin>
       </Card>
 
       {/* Add/Edit Product Modal */}
@@ -429,20 +494,28 @@ const VendorProductsPage: React.FC = () => {
               <Row gutter={16}>
                 <Col span={12}>
                   <Form.Item
-                    name="category"
+                    name="categoryId"
                     label="Category"
                     rules={[{ required: true, message: 'Please select category' }]}
                   >
                     <Select placeholder="Select category">
-                      <Option value="Electronics">Electronics</Option>
-                      <Option value="Accessories">Accessories</Option>
-                      <Option value="Clothing">Clothing</Option>
+                      {categories.map(cat => (
+                        <Option key={cat.id} value={cat.id}>{cat.name}</Option>
+                      ))}
                     </Select>
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="brand" label="Brand">
-                    <Input placeholder="Brand name" />
+                  <Form.Item 
+                    name="brandId" 
+                    label="Brand"
+                    rules={[{ required: true, message: 'Please select brand' }]}
+                  >
+                    <Select placeholder="Select brand">
+                      {brands.map(brand => (
+                        <Option key={brand.id} value={brand.id}>{brand.name}</Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </Col>
               </Row>
@@ -476,6 +549,14 @@ const VendorProductsPage: React.FC = () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item
+                    name="comparePrice"
+                    label="Compare Price ($)"
+                  >
+                    <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
                     name="stock"
                     label="Stock Quantity"
                     rules={[{ required: true, message: 'Please enter stock' }]}
@@ -483,39 +564,7 @@ const VendorProductsPage: React.FC = () => {
                     <InputNumber min={0} style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
-                <Col span={8}>
-                  <Form.Item
-                    name="moq"
-                    label="MOQ (Min Order Qty)"
-                    rules={[{ required: true }]}
-                  >
-                    <InputNumber min={1} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
               </Row>
-
-              <Form.Item label="Wholesale Pricing Tiers">
-                <Card size="small">
-                  <Row gutter={8} style={{ marginBottom: 8 }}>
-                    <Col span={8}><strong>Quantity Range</strong></Col>
-                    <Col span={8}><strong>Price per Unit</strong></Col>
-                    <Col span={8}><strong>Discount %</strong></Col>
-                  </Row>
-                  <Row gutter={8} style={{ marginBottom: 8 }}>
-                    <Col span={8}><Input placeholder="1-10" /></Col>
-                    <Col span={8}><InputNumber placeholder="349.99" style={{ width: '100%' }} /></Col>
-                    <Col span={8}><InputNumber placeholder="0" style={{ width: '100%' }} suffix="%" /></Col>
-                  </Row>
-                  <Row gutter={8} style={{ marginBottom: 8 }}>
-                    <Col span={8}><Input placeholder="11-50" /></Col>
-                    <Col span={8}><InputNumber placeholder="329.99" style={{ width: '100%' }} /></Col>
-                    <Col span={8}><InputNumber placeholder="5" style={{ width: '100%' }} suffix="%" /></Col>
-                  </Row>
-                  <Button type="dashed" block icon={<PlusOutlined />}>
-                    Add Tier
-                  </Button>
-                </Card>
-              </Form.Item>
             </TabPane>
 
             <TabPane tab="Images" key="3">
@@ -535,64 +584,6 @@ const VendorProductsPage: React.FC = () => {
                   )}
                 </Upload>
               </Form.Item>
-            </TabPane>
-
-            <TabPane tab="Attributes & Variants" key="4">
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {attributes.map((attr, index) => (
-                  <Card key={index} size="small">
-                    <Row gutter={8}>
-                      <Col span={4}>
-                        <Input
-                          placeholder="Size"
-                          value={attr.size}
-                          onChange={(e) => handleAttributeChange(index, 'size', e.target.value)}
-                        />
-                      </Col>
-                      <Col span={4}>
-                        <Input
-                          placeholder="Color"
-                          value={attr.color}
-                          onChange={(e) => handleAttributeChange(index, 'color', e.target.value)}
-                        />
-                      </Col>
-                      <Col span={5}>
-                        <InputNumber
-                          placeholder="Price"
-                          style={{ width: '100%' }}
-                          value={attr.price}
-                          onChange={(val) => handleAttributeChange(index, 'price', val)}
-                        />
-                      </Col>
-                      <Col span={4}>
-                        <InputNumber
-                          placeholder="Stock"
-                          style={{ width: '100%' }}
-                          value={attr.stock}
-                          onChange={(val) => handleAttributeChange(index, 'stock', val)}
-                        />
-                      </Col>
-                      <Col span={5}>
-                        <Input
-                          placeholder="SKU"
-                          value={attr.sku}
-                          onChange={(e) => handleAttributeChange(index, 'sku', e.target.value)}
-                        />
-                      </Col>
-                      <Col span={2}>
-                        <Button
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={() => handleRemoveAttribute(index)}
-                        />
-                      </Col>
-                    </Row>
-                  </Card>
-                ))}
-                <Button type="dashed" block icon={<PlusOutlined />} onClick={handleAddAttribute}>
-                  Add Variant
-                </Button>
-              </Space>
             </TabPane>
           </Tabs>
 
@@ -619,28 +610,33 @@ const VendorProductsPage: React.FC = () => {
       >
         {viewingProduct && (
           <Space direction="vertical" style={{ width: '100%' }} size="large">
-            <Image src={viewingProduct.images[0]} alt={viewingProduct.name} />
+            <Image 
+              src={viewingProduct.images[0] || 'https://via.placeholder.com/300'} 
+              alt={viewingProduct.name} 
+            />
             <div>
               <h2>{viewingProduct.name}</h2>
               <p>SKU: {viewingProduct.sku}</p>
-              <Tag color="blue">{viewingProduct.category}</Tag>
+              <Tag color="blue">
+                {categories.find(c => c.id === viewingProduct.categoryId)?.name || 'Unknown Category'}
+              </Tag>
+              <Tag color={viewingProduct.isActive ? 'success' : 'default'}>
+                {viewingProduct.isActive ? 'ACTIVE' : 'INACTIVE'}
+              </Tag>
             </div>
             <Card title="Pricing & Stock">
               <p><strong>Price:</strong> ${viewingProduct.price.toFixed(2)}</p>
+              {viewingProduct.comparePrice && (
+                <p><strong>Compare Price:</strong> ${viewingProduct.comparePrice.toFixed(2)}</p>
+              )}
               <p><strong>Stock:</strong> {viewingProduct.stock} units</p>
-              <p><strong>MOQ:</strong> {viewingProduct.moq}</p>
             </Card>
-            {viewingProduct.attributes.length > 0 && (
-              <Card title="Variants">
-                {viewingProduct.attributes.map((attr, idx) => (
-                  <div key={idx}>
-                    {attr.color && <Tag>{attr.color}</Tag>}
-                    {attr.size && <Tag>{attr.size}</Tag>}
-                    <span> - ${attr.price} ({attr.stock} in stock)</span>
-                  </div>
-                ))}
-              </Card>
-            )}
+            <Card title="Product Information">
+              <p><strong>Description:</strong></p>
+              <div dangerouslySetInnerHTML={{ __html: viewingProduct.description }} />
+              <p style={{ marginTop: 16 }}><strong>Brand:</strong> {brands.find(b => b.id === viewingProduct.brandId)?.name || 'N/A'}</p>
+              <p><strong>Rating:</strong> {viewingProduct.rating} ({viewingProduct.reviewCount} reviews)</p>
+            </Card>
           </Space>
         )}
       </Drawer>

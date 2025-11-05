@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Table,
@@ -19,6 +19,7 @@ import {
   Statistic,
   Row,
   Col,
+  Spin,
 } from 'antd';
 import {
   PlusOutlined,
@@ -31,147 +32,67 @@ import {
   DollarOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import { rfqAPI } from '@/services/api/rfq';
+import type { RFQ, Quotation } from '@/services/api/rfq';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
-interface RFQ {
-  id: number;
-  title: string;
-  category: string;
-  quantity: number;
-  unit: string;
-  status: 'pending' | 'active' | 'quoted' | 'closed' | 'cancelled';
-  createdAt: string;
-  expiresAt: string;
-  quotesReceived: number;
-  budget?: number;
-  deliveryDate: string;
-}
-
-interface Quote {
-  id: number;
-  vendorName: string;
-  vendorRating: number;
-  price: number;
-  deliveryTime: string;
-  paymentTerms: string;
-  validity: string;
-  status: 'pending' | 'accepted' | 'rejected';
-  submittedAt: string;
-  notes?: string;
-}
-
-const mockRFQs: RFQ[] = [
-  {
-    id: 1,
-    title: 'Office Furniture for 50-Person Office',
-    category: 'Office Supplies',
-    quantity: 50,
-    unit: 'sets',
-    status: 'quoted',
-    createdAt: '2025-11-01',
-    expiresAt: '2025-11-15',
-    quotesReceived: 5,
-    budget: 25000,
-    deliveryDate: '2025-12-01',
-  },
-  {
-    id: 2,
-    title: 'Industrial Printing Equipment',
-    category: 'Industrial Equipment',
-    quantity: 2,
-    unit: 'units',
-    status: 'active',
-    createdAt: '2025-10-28',
-    expiresAt: '2025-11-12',
-    quotesReceived: 3,
-    deliveryDate: '2025-11-25',
-  },
-  {
-    id: 3,
-    title: 'Bulk Office Supplies - Monthly Subscription',
-    category: 'Office Supplies',
-    quantity: 1,
-    unit: 'subscription',
-    status: 'pending',
-    createdAt: '2025-11-03',
-    expiresAt: '2025-11-17',
-    quotesReceived: 0,
-    budget: 1500,
-    deliveryDate: '2025-11-20',
-  },
-  {
-    id: 4,
-    title: 'Custom Branded Merchandise',
-    category: 'Marketing Materials',
-    quantity: 1000,
-    unit: 'pieces',
-    status: 'closed',
-    createdAt: '2025-10-15',
-    expiresAt: '2025-10-30',
-    quotesReceived: 8,
-    budget: 5000,
-    deliveryDate: '2025-11-10',
-  },
-];
-
-const mockQuotes: Quote[] = [
-  {
-    id: 1,
-    vendorName: 'Office Pro Solutions',
-    vendorRating: 4.7,
-    price: 23500,
-    deliveryTime: '15-20 business days',
-    paymentTerms: '50% Advance, 50% on Delivery',
-    validity: '15 days',
-    status: 'pending',
-    submittedAt: '2025-11-02',
-    notes: 'Premium quality furniture with ergonomic design. Includes installation and warranty.',
-  },
-  {
-    id: 2,
-    vendorName: 'Business Furnishings Inc',
-    vendorRating: 4.5,
-    price: 22000,
-    deliveryTime: '20-25 business days',
-    paymentTerms: 'Net 30',
-    validity: '10 days',
-    status: 'pending',
-    submittedAt: '2025-11-02',
-    notes: 'Competitive pricing with bulk discount applied.',
-  },
-  {
-    id: 3,
-    vendorName: 'Workspace Essentials',
-    vendorRating: 4.9,
-    price: 26000,
-    deliveryTime: '10-15 business days',
-    paymentTerms: '100% Advance',
-    validity: '20 days',
-    status: 'accepted',
-    submittedAt: '2025-11-01',
-    notes: 'Fast delivery with premium materials. 3-year warranty included.',
-  },
-];
-
 const RFQManagementPage: React.FC = () => {
-  const [rfqs, setRfqs] = useState<RFQ[]>(mockRFQs);
+  const [rfqs, setRfqs] = useState<RFQ[]>([]);
   const [selectedRFQ, setSelectedRFQ] = useState<RFQ | null>(null);
-  const [quotes, setQuotes] = useState<Quote[]>(mockQuotes);
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const pageSize = 10;
+
+  // Fetch RFQs from API
+  useEffect(() => {
+    fetchRFQs();
+  }, [page, activeTab]);
+
+  const fetchRFQs = async () => {
+    setLoading(true);
+    try {
+      const status = activeTab === 'all' ? undefined : activeTab;
+      const response = await rfqAPI.getAll({ status, page, limit: pageSize });
+      setRfqs(response.data);
+      setTotal(response.total);
+    } catch (error) {
+      message.error('Failed to load RFQs');
+      console.error('Error fetching RFQs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch quotations for selected RFQ
+  const fetchQuotations = async (rfqId: string) => {
+    try {
+      const data = await rfqAPI.getQuotations(rfqId);
+      setQuotations(data);
+    } catch (error) {
+      message.error('Failed to load quotations');
+      console.error('Error fetching quotations:', error);
+    }
+  };
 
   const getStatusColor = (status: RFQ['status']) => {
     const colors = {
-      pending: 'orange',
-      active: 'blue',
+      open: 'blue',
       quoted: 'green',
       closed: 'default',
       cancelled: 'red',
     };
-    return colors[status];
+    return colors[status] || 'default';
   };
 
   const filteredRFQs = rfqs.filter(rfq => {
@@ -179,31 +100,49 @@ const RFQManagementPage: React.FC = () => {
     return rfq.status === activeTab;
   });
 
-  const handleViewDetails = (rfq: RFQ) => {
+  const handleViewDetails = async (rfq: RFQ) => {
     setSelectedRFQ(rfq);
     setIsDetailModalVisible(true);
+    // Fetch quotations for this RFQ
+    await fetchQuotations(rfq.id);
   };
 
-  const handleAcceptQuote = (quoteId: number) => {
-    setQuotes(quotes.map(q =>
-      q.id === quoteId ? { ...q, status: 'accepted' as const } : q
-    ));
-    message.success('Quote accepted successfully!');
+  const handleAcceptQuote = async (quotationId: string) => {
+    try {
+      await rfqAPI.acceptQuotation(quotationId);
+      message.success('Quotation accepted successfully!');
+      // Refresh quotations
+      if (selectedRFQ) {
+        await fetchQuotations(selectedRFQ.id);
+      }
+      // Refresh RFQs to update status
+      await fetchRFQs();
+    } catch (error) {
+      message.error('Failed to accept quotation');
+      console.error('Error accepting quotation:', error);
+    }
   };
 
-  const handleRejectQuote = (quoteId: number) => {
-    setQuotes(quotes.map(q =>
-      q.id === quoteId ? { ...q, status: 'rejected' as const } : q
-    ));
-    message.info('Quote rejected');
+  const handleRejectQuote = async (quotationId: string) => {
+    try {
+      await rfqAPI.rejectQuotation(quotationId, 'Not suitable for requirements');
+      message.info('Quotation rejected');
+      // Refresh quotations
+      if (selectedRFQ) {
+        await fetchQuotations(selectedRFQ.id);
+      }
+    } catch (error) {
+      message.error('Failed to reject quotation');
+      console.error('Error rejecting quotation:', error);
+    }
   };
 
   const columns: ColumnsType<RFQ> = [
     {
       title: 'RFQ ID',
-      dataIndex: 'id',
-      key: 'id',
-      render: (id: number) => <Text strong>#{id.toString().padStart(4, '0')}</Text>,
+      dataIndex: 'rfqNumber',
+      key: 'rfqNumber',
+      render: (rfqNumber: string) => <Text strong>{rfqNumber}</Text>,
     },
     {
       title: 'Title',
@@ -219,8 +158,9 @@ const RFQManagementPage: React.FC = () => {
     },
     {
       title: 'Quantity',
+      dataIndex: 'quantity',
       key: 'quantity',
-      render: (_, record) => `${record.quantity} ${record.unit}`,
+      render: (qty: number) => qty.toLocaleString(),
     },
     {
       title: 'Status',
@@ -234,8 +174,8 @@ const RFQManagementPage: React.FC = () => {
     },
     {
       title: 'Quotes',
-      dataIndex: 'quotesReceived',
-      key: 'quotesReceived',
+      dataIndex: 'quotationCount',
+      key: 'quotationCount',
       render: (count: number) => (
         <Badge count={count} showZero style={{ backgroundColor: count > 0 ? '#52c41a' : '#d9d9d9' }} />
       ),
@@ -244,11 +184,13 @@ const RFQManagementPage: React.FC = () => {
       title: 'Created',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      render: (date: string) => dayjs(date).format('MMM DD, YYYY'),
     },
     {
-      title: 'Expires',
-      dataIndex: 'expiresAt',
-      key: 'expiresAt',
+      title: 'Deadline',
+      dataIndex: 'deadline',
+      key: 'deadline',
+      render: (date?: string) => date ? dayjs(date).format('MMM DD, YYYY') : '-',
     },
     {
       title: 'Actions',
@@ -262,26 +204,20 @@ const RFQManagementPage: React.FC = () => {
           >
             View
           </Button>
-          <Button type="link" icon={<MessageOutlined />}>
-            Messages
-          </Button>
         </Space>
       ),
     },
   ];
 
-  const quoteColumns: ColumnsType<Quote> = [
+  const quotationColumns: ColumnsType<Quotation> = [
     {
       title: 'Vendor',
       dataIndex: 'vendorName',
       key: 'vendorName',
       render: (name: string, record) => (
         <Space>
-          <Avatar>{name[0]}</Avatar>
-          <div>
-            <div><Text strong>{name}</Text></div>
-            <Rate disabled value={record.vendorRating} style={{ fontSize: 12 }} />
-          </div>
+          <Avatar src={record.vendorLogo}>{name[0]}</Avatar>
+          <Text strong>{name}</Text>
         </Space>
       ),
     },
@@ -297,25 +233,33 @@ const RFQManagementPage: React.FC = () => {
       sorter: (a, b) => a.price - b.price,
     },
     {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      render: (qty: number) => qty.toLocaleString(),
+    },
+    {
+      title: 'MOQ',
+      dataIndex: 'moq',
+      key: 'moq',
+      render: (moq: number) => moq.toLocaleString(),
+    },
+    {
       title: 'Delivery Time',
       dataIndex: 'deliveryTime',
       key: 'deliveryTime',
     },
     {
-      title: 'Payment Terms',
-      dataIndex: 'paymentTerms',
-      key: 'paymentTerms',
-    },
-    {
       title: 'Valid Until',
-      dataIndex: 'validity',
-      key: 'validity',
+      dataIndex: 'validUntil',
+      key: 'validUntil',
+      render: (date: string) => dayjs(date).format('MMM DD, YYYY'),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: Quote['status']) => {
+      render: (status: Quotation['status']) => {
         const config = {
           pending: { color: 'orange', text: 'Pending' },
           accepted: { color: 'green', text: 'Accepted' },
@@ -349,9 +293,6 @@ const RFQManagementPage: React.FC = () => {
               </Button>
             </>
           )}
-          <Button size="small" icon={<MessageOutlined />}>
-            Message
-          </Button>
         </Space>
       ),
     },
@@ -374,7 +315,7 @@ const RFQManagementPage: React.FC = () => {
           <Card>
             <Statistic
               title="Total RFQs"
-              value={rfqs.length}
+              value={total}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -383,8 +324,8 @@ const RFQManagementPage: React.FC = () => {
         <Col xs={12} sm={6}>
           <Card>
             <Statistic
-              title="Active"
-              value={rfqs.filter(r => r.status === 'active' || r.status === 'pending').length}
+              title="Open"
+              value={rfqs.filter(r => r.status === 'open').length}
               prefix={<ClockCircleOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
@@ -394,7 +335,7 @@ const RFQManagementPage: React.FC = () => {
           <Card>
             <Statistic
               title="Quotes Received"
-              value={rfqs.reduce((sum, r) => sum + r.quotesReceived, 0)}
+              value={rfqs.reduce((sum, r) => sum + r.quotationCount, 0)}
               prefix={<DollarOutlined />}
               valueStyle={{ color: '#faad14' }}
             />
@@ -412,25 +353,32 @@ const RFQManagementPage: React.FC = () => {
       </Row>
 
       <Card>
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab={`All (${rfqs.length})`} key="all" />
-          <TabPane tab={`Pending (${rfqs.filter(r => r.status === 'pending').length})`} key="pending" />
-          <TabPane tab={`Active (${rfqs.filter(r => r.status === 'active').length})`} key="active" />
-          <TabPane tab={`Quoted (${rfqs.filter(r => r.status === 'quoted').length})`} key="quoted" />
-          <TabPane tab={`Closed (${rfqs.filter(r => r.status === 'closed').length})`} key="closed" />
+        <Tabs activeKey={activeTab} onChange={(key) => { setActiveTab(key); setPage(1); }}>
+          <TabPane tab={`All (${total})`} key="all" />
+          <TabPane tab="Open" key="open" />
+          <TabPane tab="Quoted" key="quoted" />
+          <TabPane tab="Closed" key="closed" />
+          <TabPane tab="Cancelled" key="cancelled" />
         </Tabs>
 
-        <Table
-          columns={columns}
-          dataSource={filteredRFQs}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={filteredRFQs}
+            rowKey="id"
+            pagination={{
+              current: page,
+              pageSize,
+              total,
+              onChange: setPage,
+            }}
+          />
+        </Spin>
       </Card>
 
       {/* Detail Modal */}
       <Modal
-        title={`RFQ #${selectedRFQ?.id.toString().padStart(4, '0')} - ${selectedRFQ?.title}`}
+        title={`RFQ ${selectedRFQ?.rfqNumber} - ${selectedRFQ?.title}`}
         open={isDetailModalVisible}
         onCancel={() => setIsDetailModalVisible(false)}
         width={1000}
@@ -449,33 +397,33 @@ const RFQManagementPage: React.FC = () => {
                   {selectedRFQ.category}
                 </Descriptions.Item>
                 <Descriptions.Item label="Quantity">
-                  {selectedRFQ.quantity} {selectedRFQ.unit}
+                  {selectedRFQ.quantity.toLocaleString()}
                 </Descriptions.Item>
                 <Descriptions.Item label="Budget">
                   {selectedRFQ.budget ? `$${selectedRFQ.budget.toLocaleString()}` : 'Not specified'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Created">
-                  {selectedRFQ.createdAt}
+                  {dayjs(selectedRFQ.createdAt).format('MMM DD, YYYY')}
                 </Descriptions.Item>
-                <Descriptions.Item label="Expires">
-                  {selectedRFQ.expiresAt}
+                <Descriptions.Item label="Deadline">
+                  {selectedRFQ.deadline ? dayjs(selectedRFQ.deadline).format('MMM DD, YYYY') : 'Not specified'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Delivery Date">
-                  {selectedRFQ.deliveryDate}
+                <Descriptions.Item label="Description" span={2}>
+                  {selectedRFQ.description}
                 </Descriptions.Item>
                 <Descriptions.Item label="Quotes Received">
-                  <Badge count={selectedRFQ.quotesReceived} showZero />
+                  <Badge count={selectedRFQ.quotationCount} showZero />
                 </Descriptions.Item>
               </Descriptions>
             </TabPane>
 
-            <TabPane tab={`Quotes (${quotes.length})`} key="quotes">
-              {quotes.length === 0 ? (
-                <Empty description="No quotes received yet" />
+            <TabPane tab={`Quotations (${quotations.length})`} key="quotes">
+              {quotations.length === 0 ? (
+                <Empty description="No quotations received yet" />
               ) : (
                 <Table
-                  columns={quoteColumns}
-                  dataSource={quotes}
+                  columns={quotationColumns}
+                  dataSource={quotations}
                   rowKey="id"
                   pagination={false}
                   expandable={{
@@ -495,18 +443,18 @@ const RFQManagementPage: React.FC = () => {
                 items={[
                   {
                     color: 'green',
-                    children: `RFQ created - ${selectedRFQ.createdAt}`,
+                    children: `RFQ created - ${dayjs(selectedRFQ.createdAt).format('MMM DD, YYYY')}`,
                   },
                   {
                     color: 'blue',
-                    children: 'RFQ sent to 15 vendors - 2025-11-01',
+                    children: 'RFQ published to vendors',
                   },
-                  {
+                  ...(quotations.length > 0 ? [{
                     color: 'orange',
-                    children: 'First quote received - 2025-11-02',
-                  },
+                    children: `First quotation received - ${dayjs(quotations[0].createdAt).format('MMM DD, YYYY')}`,
+                  }] : []),
                   {
-                    children: `${quotes.length} quotes received so far`,
+                    children: `${quotations.length} quotation(s) received so far`,
                   },
                 ]}
               />

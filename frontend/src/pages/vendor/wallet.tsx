@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -16,6 +16,8 @@ import {
   Typography,
   Alert,
   Tabs,
+  Spin,
+  InputNumber,
 } from 'antd';
 import {
   WalletOutlined,
@@ -27,138 +29,105 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import { walletAPI } from '@/services/api/wallet';
+import type { Wallet, WalletTransaction, PayoutRequest } from '@/services/api/wallet';
+import { useAuthStore } from '@/store/auth';
+import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-interface Transaction {
-  id: number;
-  date: string;
-  type: 'credit' | 'debit';
-  amount: number;
-  description: string;
-  status: string;
-  orderId?: string;
-}
-
-interface PayoutRequest {
-  id: number;
-  date: string;
-  amount: number;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
-  method: string;
-  accountNumber: string;
-}
-
-const mockTransactions: Transaction[] = [
-  {
-    id: 1,
-    date: '2024-11-01',
-    type: 'credit',
-    amount: 399.98,
-    description: 'Order payment received',
-    status: 'completed',
-    orderId: 'ORD-2024-10001',
-  },
-  {
-    id: 2,
-    date: '2024-10-30',
-    type: 'credit',
-    amount: 199.99,
-    description: 'Order payment received',
-    status: 'completed',
-    orderId: 'ORD-2024-10002',
-  },
-  {
-    id: 3,
-    date: '2024-10-28',
-    type: 'debit',
-    amount: 500.00,
-    description: 'Payout to bank account',
-    status: 'completed',
-  },
-  {
-    id: 4,
-    date: '2024-10-25',
-    type: 'credit',
-    amount: 549.97,
-    description: 'Order payment received',
-    status: 'completed',
-    orderId: 'ORD-2024-10003',
-  },
-  {
-    id: 5,
-    date: '2024-10-20',
-    type: 'debit',
-    amount: 29.99,
-    description: 'Platform commission',
-    status: 'completed',
-  },
-];
-
-const mockPayouts: PayoutRequest[] = [
-  {
-    id: 1,
-    date: '2024-10-28',
-    amount: 500.00,
-    status: 'completed',
-    method: 'Bank Transfer',
-    accountNumber: '****1234',
-  },
-  {
-    id: 2,
-    date: '2024-10-15',
-    amount: 300.00,
-    status: 'completed',
-    method: 'Bank Transfer',
-    accountNumber: '****1234',
-  },
-];
-
 const VendorWalletPage: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
-  const [payouts, setPayouts] = useState<PayoutRequest[]>(mockPayouts);
+  const { user } = useAuthStore();
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
+  const [payouts, setPayouts] = useState<PayoutRequest[]>([]);
+  const [loading, setLoading] = useState(false);
   const [payoutModalVisible, setPayoutModalVisible] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [form] = Form.useForm();
 
-  const walletBalance = 649.94; // Mock balance
-  const pendingAmount = 0;
-  const totalEarnings = mockTransactions
-    .filter((t) => t.type === 'credit')
-    .reduce((sum, t) => sum + t.amount, 0);
-  const totalPayouts = mockTransactions
-    .filter((t) => t.type === 'debit')
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const handleRequestPayout = (values: any) => {
-    console.log('Payout request:', values);
-    const newPayout: PayoutRequest = {
-      id: payouts.length + 1,
-      date: new Date().toISOString().split('T')[0],
-      amount: parseFloat(values.amount),
-      status: 'pending',
-      method: values.method,
-      accountNumber: values.accountNumber,
-    };
-    setPayouts([newPayout, ...payouts]);
-    setPayoutModalVisible(false);
-    form.resetFields();
-    message.success('Payout request submitted successfully');
+  // Fetch wallet balance
+  const fetchWallet = async () => {
+    try {
+      const data = await walletAPI.getBalance();
+      setWallet(data);
+    } catch (error) {
+      message.error('Failed to fetch wallet balance');
+      console.error('Error fetching wallet:', error);
+    }
   };
 
-  const transactionColumns: ColumnsType<Transaction> = [
+  // Fetch transactions
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const filters: any = {};
+      if (typeFilter !== 'all') {
+        filters.type = typeFilter;
+      }
+      if (statusFilter !== 'all') {
+        filters.status = statusFilter;
+      }
+      
+      const response = await walletAPI.getTransactions(filters);
+      setTransactions(response.data);
+    } catch (error) {
+      message.error('Failed to fetch transactions');
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch payout requests
+  const fetchPayouts = async () => {
+    try {
+      const data = await walletAPI.getPayoutRequests();
+      setPayouts(data);
+    } catch (error) {
+      message.error('Failed to fetch payout requests');
+      console.error('Error fetching payouts:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWallet();
+    fetchPayouts();
+  }, []);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [typeFilter, statusFilter]);
+
+  const handleRequestPayout = async (values: any) => {
+    try {
+      await walletAPI.requestPayout(values.amount, values.method);
+      message.success('Payout request submitted successfully');
+      setPayoutModalVisible(false);
+      form.resetFields();
+      fetchPayouts(); // Refresh payout list
+      fetchWallet(); // Update balance
+    } catch (error) {
+      message.error('Failed to request payout');
+      console.error('Error requesting payout:', error);
+    }
+  };
+
+  const transactionColumns: ColumnsType<WalletTransaction> = [
     {
       title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString(),
-      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date: string) => dayjs(date).format('MMM DD, YYYY hh:mm A'),
+      sorter: (a, b) => dayjs(a.createdAt).unix() - dayjs(b.createdAt).unix(),
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type: string) => (
+      render: (type: WalletTransaction['type']) => (
         <Tag color={type === 'credit' ? 'success' : 'error'} icon={type === 'credit' ? <ArrowDownOutlined /> : <ArrowUpOutlined />}>
           {type === 'credit' ? 'CREDIT' : 'DEBIT'}
         </Tag>
@@ -176,10 +145,10 @@ const VendorWalletPage: React.FC = () => {
       render: (desc: string, record) => (
         <div>
           <Text>{desc}</Text>
-          {record.orderId && (
+          {record.reference && (
             <div>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                Order: {record.orderId}
+                Ref: {record.reference}
               </Text>
             </div>
           )}
@@ -201,8 +170,11 @@ const VendorWalletPage: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'completed' ? 'success' : 'processing'} icon={status === 'completed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}>
+      render: (status: WalletTransaction['status']) => (
+        <Tag 
+          color={status === 'completed' ? 'success' : status === 'pending' ? 'processing' : 'error'} 
+          icon={status === 'completed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+        >
           {status.toUpperCase()}
         </Tag>
       ),
@@ -211,10 +183,10 @@ const VendorWalletPage: React.FC = () => {
 
   const payoutColumns: ColumnsType<PayoutRequest> = [
     {
-      title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      title: 'Requested',
+      dataIndex: 'requestedAt',
+      key: 'requestedAt',
+      render: (date: string) => dayjs(date).format('MMM DD, YYYY'),
     },
     {
       title: 'Amount',
@@ -235,20 +207,15 @@ const VendorWalletPage: React.FC = () => {
       ),
     },
     {
-      title: 'Account',
-      dataIndex: 'accountNumber',
-      key: 'accountNumber',
-    },
-    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        const colors: Record<string, string> = {
+      render: (status: PayoutRequest['status']) => {
+        const colors: Record<PayoutRequest['status'], string> = {
           pending: 'processing',
           approved: 'success',
           rejected: 'error',
-          completed: 'success',
+          paid: 'success',
         };
         return (
           <Tag color={colors[status]}>{status.toUpperCase()}</Tag>
@@ -258,8 +225,9 @@ const VendorWalletPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={3}>Wallet & Payments</Title>
+    <Spin spinning={loading}>
+      <div style={{ padding: 24 }}>
+        <Title level={3}>Wallet & Payments</Title>
 
       {/* Balance Cards */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
@@ -267,7 +235,7 @@ const VendorWalletPage: React.FC = () => {
           <Card>
             <Statistic
               title="Current Balance"
-              value={walletBalance}
+              value={wallet?.balance || 0}
               precision={2}
               prefix={<WalletOutlined style={{ color: '#1890ff' }} />}
               suffix="USD"
@@ -277,7 +245,7 @@ const VendorWalletPage: React.FC = () => {
               type="primary"
               style={{ marginTop: 16, width: '100%' }}
               onClick={() => setPayoutModalVisible(true)}
-              disabled={walletBalance < 100}
+              disabled={(wallet?.balance || 0) < 100}
             >
               Request Payout
             </Button>
@@ -287,7 +255,7 @@ const VendorWalletPage: React.FC = () => {
           <Card>
             <Statistic
               title="Pending Amount"
-              value={pendingAmount}
+              value={wallet?.pendingBalance || 0}
               precision={2}
               prefix={<ClockCircleOutlined style={{ color: '#faad14' }} />}
               suffix="USD"
@@ -299,7 +267,7 @@ const VendorWalletPage: React.FC = () => {
           <Card>
             <Statistic
               title="Total Earnings"
-              value={totalEarnings}
+              value={wallet?.totalEarned || 0}
               precision={2}
               prefix={<ArrowDownOutlined style={{ color: '#52c41a' }} />}
               suffix="USD"
@@ -311,7 +279,7 @@ const VendorWalletPage: React.FC = () => {
           <Card>
             <Statistic
               title="Total Payouts"
-              value={totalPayouts}
+              value={wallet?.totalSpent || 0}
               precision={2}
               prefix={<ArrowUpOutlined style={{ color: '#ff4d4f' }} />}
               suffix="USD"
@@ -322,7 +290,7 @@ const VendorWalletPage: React.FC = () => {
       </Row>
 
       {/* Alert */}
-      {walletBalance < 100 && (
+      {(wallet?.balance || 0) < 100 && (
         <Alert
           message="Minimum payout amount is $100.00"
           description="You can request a payout once your balance reaches $100.00"
@@ -363,7 +331,7 @@ const VendorWalletPage: React.FC = () => {
                       type="primary"
                       icon={<DollarOutlined />}
                       onClick={() => setPayoutModalVisible(true)}
-                      disabled={walletBalance < 100}
+                      disabled={(wallet?.balance || 0) < 100}
                     >
                       Request New Payout
                     </Button>
@@ -393,7 +361,7 @@ const VendorWalletPage: React.FC = () => {
         footer={null}
       >
         <Alert
-          message={`Available Balance: $${walletBalance.toFixed(2)}`}
+          message={`Available Balance: $${(wallet?.balance || 0).toFixed(2)}`}
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
@@ -407,7 +375,8 @@ const VendorWalletPage: React.FC = () => {
               { required: true, message: 'Please enter amount' },
               {
                 validator: (_, value) => {
-                  if (value && parseFloat(value) > walletBalance) {
+                  const balance = wallet?.balance || 0;
+                  if (value && parseFloat(value) > balance) {
                     return Promise.reject('Amount exceeds available balance');
                   }
                   if (value && parseFloat(value) < 100) {
@@ -423,7 +392,7 @@ const VendorWalletPage: React.FC = () => {
               prefix="$"
               placeholder="Enter amount"
               min={100}
-              max={walletBalance}
+              max={wallet?.balance || 0}
               step={0.01}
             />
           </Form.Item>
@@ -470,7 +439,8 @@ const VendorWalletPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

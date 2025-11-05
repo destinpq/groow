@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -17,6 +17,9 @@ import {
   Switch,
   InputNumber,
   Alert,
+  Modal,
+  Spin,
+  Statistic,
 } from 'antd';
 import {
   MailOutlined,
@@ -27,85 +30,189 @@ import {
   CheckCircleOutlined,
   UploadOutlined,
   FileTextOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  EyeOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { emailAPI } from '@/services/api/email';
+import type { EmailTemplate, EmailCampaign, EmailStats } from '@/services/api/email';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
-
-interface EmailTemplate {
-  id: number;
-  name: string;
-  subject: string;
-  category: string;
-  status: 'active' | 'draft';
-}
-
-interface EmailCampaign {
-  id: number;
-  name: string;
-  subject: string;
-  recipients: number;
-  sent: number;
-  opened: number;
-  clicked: number;
-  status: 'draft' | 'scheduled' | 'sending' | 'sent';
-  scheduledAt: string;
-}
-
-const emailTemplates: EmailTemplate[] = [
-  { id: 1, name: 'Welcome Email', subject: 'Welcome to Our Store!', category: 'Onboarding', status: 'active' },
-  { id: 2, name: 'Order Confirmation', subject: 'Your Order #{{order_id}}', category: 'Transactional', status: 'active' },
-  { id: 3, name: 'Shipping Notification', subject: 'Your Order Has Shipped!', category: 'Transactional', status: 'active' },
-  { id: 4, name: 'Abandoned Cart', subject: 'You Left Items in Your Cart', category: 'Marketing', status: 'active' },
-  { id: 5, name: 'Weekly Newsletter', subject: 'Weekly Deals & Updates', category: 'Newsletter', status: 'draft' },
-];
-
-const emailCampaigns: EmailCampaign[] = [
-  {
-    id: 1,
-    name: 'Summer Sale 2024',
-    subject: '🔥 Summer Sale: Up to 70% Off!',
-    recipients: 15420,
-    sent: 15420,
-    opened: 8234,
-    clicked: 2156,
-    status: 'sent',
-    scheduledAt: dayjs().subtract(3, 'days').format('YYYY-MM-DD HH:mm'),
-  },
-  {
-    id: 2,
-    name: 'New Product Launch',
-    subject: 'Introducing Our Latest Collection',
-    recipients: 12890,
-    sent: 12890,
-    opened: 6445,
-    clicked: 1544,
-    status: 'sent',
-    scheduledAt: dayjs().subtract(1, 'week').format('YYYY-MM-DD HH:mm'),
-  },
-  {
-    id: 3,
-    name: 'Weekend Flash Sale',
-    subject: '⚡ 48-Hour Flash Sale Starts Now!',
-    recipients: 8500,
-    sent: 0,
-    opened: 0,
-    clicked: 0,
-    status: 'scheduled',
-    scheduledAt: dayjs().add(2, 'days').format('YYYY-MM-DD HH:mm'),
-  },
-];
 
 const EmailMarketingPage: React.FC = () => {
   const [form] = Form.useForm();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [templateForm] = Form.useForm();
+  
+  // State
+  const [loading, setLoading] = useState(false);
+  const [templates, setTemplates] = useState<EmailTemplate[]>([]);
+  const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
+  const [stats, setStats] = useState<EmailStats | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  const [isTemplateModalVisible, setIsTemplateModalVisible] = useState(false);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState('');
 
-  const handleSendCampaign = () => {
-    message.success('Email campaign scheduled successfully!');
-    form.resetFields();
+  // Fetch data on mount
+  useEffect(() => {
+    fetchTemplates();
+    fetchCampaigns();
+    fetchStats();
+  }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      setLoading(true);
+      const data = await emailAPI.getTemplates();
+      setTemplates(data);
+    } catch (error) {
+      message.error('Failed to fetch email templates');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCampaigns = async () => {
+    try {
+      const data = await emailAPI.getCampaigns();
+      setCampaigns(data);
+    } catch (error) {
+      message.error('Failed to fetch campaigns');
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const data = await emailAPI.getStats();
+      setStats(data);
+    } catch (error) {
+      message.error('Failed to fetch statistics');
+    }
+  };
+
+  // Template handlers
+  const handleCreateTemplate = () => {
+    setSelectedTemplate(null);
+    templateForm.resetFields();
+    setIsTemplateModalVisible(true);
+  };
+
+  const handleEditTemplate = (template: EmailTemplate) => {
+    setSelectedTemplate(template);
+    templateForm.setFieldsValue(template);
+    setIsTemplateModalVisible(true);
+  };
+
+  const handleTemplateSubmit = async (values: any) => {
+    try {
+      setLoading(true);
+      if (selectedTemplate) {
+        await emailAPI.updateTemplate(selectedTemplate.id, values);
+        message.success('Template updated successfully');
+      } else {
+        await emailAPI.createTemplate(values);
+        message.success('Template created successfully');
+      }
+      setIsTemplateModalVisible(false);
+      fetchTemplates();
+      fetchStats();
+    } catch (error) {
+      message.error('Failed to save template');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    Modal.confirm({
+      title: 'Delete Template',
+      content: 'Are you sure you want to delete this template?',
+      okText: 'Delete',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await emailAPI.deleteTemplate(id);
+          message.success('Template deleted successfully');
+          fetchTemplates();
+          fetchStats();
+        } catch (error) {
+          message.error('Failed to delete template');
+        }
+      },
+    });
+  };
+
+  const handleDuplicateTemplate = async (id: string, name: string) => {
+    try {
+      await emailAPI.duplicateTemplate(id, `${name} (Copy)`);
+      message.success('Template duplicated successfully');
+      fetchTemplates();
+    } catch (error) {
+      message.error('Failed to duplicate template');
+    }
+  };
+
+  const handlePreviewTemplate = async (id: string) => {
+    try {
+      setLoading(true);
+      const preview = await emailAPI.previewTemplate(id);
+      setPreviewHtml(preview.html);
+      setIsPreviewModalVisible(true);
+    } catch (error) {
+      message.error('Failed to generate preview');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendTestEmail = async (templateId: string) => {
+    const email = prompt('Enter email address for test:');
+    if (!email) return;
+    
+    try {
+      await emailAPI.sendTestEmail({ templateId, recipientEmail: email });
+      message.success(`Test email sent to ${email}`);
+    } catch (error) {
+      message.error('Failed to send test email');
+    }
+  };
+
+  // Campaign handlers
+  const handleSendCampaign = async (values: any) => {
+    try {
+      setLoading(true);
+      await emailAPI.createCampaign(values);
+      message.success('Email campaign scheduled successfully!');
+      form.resetFields();
+      fetchCampaigns();
+    } catch (error) {
+      message.error('Failed to schedule campaign');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCampaign = async (id: string) => {
+    Modal.confirm({
+      title: 'Delete Campaign',
+      content: 'Are you sure you want to delete this campaign?',
+      okText: 'Delete',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await emailAPI.deleteCampaign(id);
+          message.success('Campaign deleted successfully');
+          fetchCampaigns();
+        } catch (error) {
+          message.error('Failed to delete campaign');
+        }
+      },
+    });
   };
 
   const templateColumns: ColumnsType<EmailTemplate> = [
@@ -125,12 +232,22 @@ const EmailMarketingPage: React.FC = () => {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      render: (category) => <Tag color="blue">{category}</Tag>,
+      render: (category) => {
+        const colorMap: Record<string, string> = {
+          onboarding: 'blue',
+          transactional: 'green',
+          marketing: 'orange',
+          newsletter: 'purple',
+          notification: 'cyan',
+        };
+        return <Tag color={colorMap[category] || 'default'}>{category?.toUpperCase()}</Tag>;
+      },
       filters: [
-        { text: 'Onboarding', value: 'Onboarding' },
-        { text: 'Transactional', value: 'Transactional' },
-        { text: 'Marketing', value: 'Marketing' },
-        { text: 'Newsletter', value: 'Newsletter' },
+        { text: 'Onboarding', value: 'onboarding' },
+        { text: 'Transactional', value: 'transactional' },
+        { text: 'Marketing', value: 'marketing' },
+        { text: 'Newsletter', value: 'newsletter' },
+        { text: 'Notification', value: 'notification' },
       ],
       onFilter: (value, record) => record.category === value,
     },
@@ -149,10 +266,42 @@ const EmailMarketingPage: React.FC = () => {
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button size="small" onClick={() => setSelectedTemplate(record.name)}>
-            Use Template
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handlePreviewTemplate(record.id)}
+          >
+            Preview
           </Button>
-          <Button size="small">Edit</Button>
+          <Button
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => handleEditTemplate(record)}
+          >
+            Edit
+          </Button>
+          <Button
+            size="small"
+            icon={<CopyOutlined />}
+            onClick={() => handleDuplicateTemplate(record.id, record.name)}
+          >
+            Duplicate
+          </Button>
+          <Button
+            size="small"
+            icon={<SendOutlined />}
+            onClick={() => handleSendTestEmail(record.id)}
+          >
+            Test
+          </Button>
+          <Button
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDeleteTemplate(record.id)}
+          >
+            Delete
+          </Button>
         </Space>
       ),
     },
@@ -209,6 +358,8 @@ const EmailMarketingPage: React.FC = () => {
           scheduled: 'blue',
           sending: 'purple',
           sent: 'green',
+          paused: 'yellow',
+          cancelled: 'red',
         };
         return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
       },
@@ -229,15 +380,75 @@ const EmailMarketingPage: React.FC = () => {
   ];
 
   return (
+    <>
+    <Spin spinning={loading} tip="Loading email data...">
     <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ marginBottom: 24 }}>
-        <Title level={3}>
-          <MailOutlined style={{ color: '#1890ff' }} /> Email Marketing
-        </Title>
-        <Paragraph type="secondary">
-          Create and send email campaigns, manage templates, and track performance
-        </Paragraph>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <Title level={3}>
+            <MailOutlined style={{ color: '#1890ff' }} /> Email Marketing
+          </Title>
+          <Paragraph type="secondary">
+            Create and send email campaigns, manage templates, and track performance
+          </Paragraph>
+        </div>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleCreateTemplate}
+          size="large"
+        >
+          Create Template
+        </Button>
       </div>
+
+      {/* Statistics Cards */}
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Total Templates"
+              value={stats?.totalTemplates || 0}
+              prefix={<FileTextOutlined />}
+              valueStyle={{ color: '#3f8600' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Active Templates"
+              value={stats?.activeTemplates || 0}
+              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: '#1890ff' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Avg Open Rate"
+              value={stats?.averageOpenRate || 0}
+              precision={1}
+              suffix="%"
+              prefix={<MailOutlined />}
+              valueStyle={{ color: '#cf1322' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Avg Click Rate"
+              value={stats?.averageClickRate || 0}
+              precision={1}
+              suffix="%"
+              prefix={<SendOutlined />}
+              valueStyle={{ color: '#722ed1' }}
+            />
+          </Card>
+        </Col>
+      </Row>
 
       <Alert
         message="Email Service Connected"
@@ -262,21 +473,22 @@ const EmailMarketingPage: React.FC = () => {
 
               <Form.Item
                 label="Email Template"
-                name="template"
-                help="Choose from existing templates or create custom email"
+                name="templateId"
+                rules={[{ required: true, message: 'Please select a template' }]}
               >
                 <Select
-                  placeholder="Select a template"
-                  value={selectedTemplate}
-                  onChange={setSelectedTemplate}
+                  placeholder="Choose email template"
+                  value={selectedTemplate?.id}
+                  onChange={(value) => {
+                    const template = templates.find(t => t.id === value);
+                    setSelectedTemplate(template || null);
+                  }}
                   allowClear
-                >
-                  {emailTemplates.map((t) => (
-                    <Option key={t.id} value={t.name}>
-                      {t.name} - {t.category}
-                    </Option>
-                  ))}
-                </Select>
+                  options={templates.map(t => ({
+                    label: `${t.name} - ${t.category}`,
+                    value: t.id
+                  }))}
+                />
               </Form.Item>
 
               <Form.Item
@@ -295,14 +507,16 @@ const EmailMarketingPage: React.FC = () => {
                 />
               </Form.Item>
 
-              <Form.Item label="Recipient List" name="recipients" rules={[{ required: true }]}>
-                <Select placeholder="Select recipient list">
-                  <Option value="all">All Subscribers (15,420)</Option>
-                  <Option value="customers">All Customers (12,890)</Option>
-                  <Option value="newsletter">Newsletter Subscribers (8,500)</Option>
-                  <Option value="vip">VIP Customers (1,245)</Option>
-                  <Option value="inactive">Inactive Customers (3,450)</Option>
-                </Select>
+              <Form.Item label="Recipient List" name="recipientType" rules={[{ required: true }]}>
+                <Select
+                  placeholder="Select recipient list"
+                  options={[
+                    { label: 'All Subscribers', value: 'all' },
+                    { label: 'All Customers', value: 'customers' },
+                    { label: 'Newsletter Subscribers', value: 'subscribers' },
+                    { label: 'Custom Segment', value: 'segment' },
+                  ]}
+                />
               </Form.Item>
 
               <Form.Item label="Attachments" name="attachments">
@@ -341,10 +555,11 @@ const EmailMarketingPage: React.FC = () => {
           <Card title="Email Templates" style={{ marginBottom: 16 }}>
             <Table
               columns={templateColumns}
-              dataSource={emailTemplates}
+              dataSource={templates}
               rowKey="id"
               pagination={{ pageSize: 5 }}
               size="small"
+              loading={loading}
             />
           </Card>
 
@@ -377,12 +592,139 @@ const EmailMarketingPage: React.FC = () => {
       <Card title="Campaign History" style={{ marginTop: 16 }}>
         <Table
           columns={campaignColumns}
-          dataSource={emailCampaigns}
+          dataSource={campaigns}
           rowKey="id"
           pagination={{ pageSize: 10 }}
+          loading={loading}
         />
       </Card>
     </div>
+    </Spin>
+
+    {/* Template Create/Edit Modal */}
+    <Modal
+      title={selectedTemplate ? 'Edit Template' : 'Create Email Template'}
+      open={isTemplateModalVisible}
+      onCancel={() => {
+        setIsTemplateModalVisible(false);
+        setSelectedTemplate(null);
+        templateForm.resetFields();
+      }}
+      onOk={() => templateForm.submit()}
+      width={800}
+    >
+      <Form
+        form={templateForm}
+        layout="vertical"
+        onFinish={handleTemplateSubmit}
+      >
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Template Name"
+              name="name"
+              rules={[{ required: true, message: 'Please enter template name' }]}
+            >
+              <Input placeholder="e.g., Welcome Email" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Category"
+              name="category"
+              rules={[{ required: true, message: 'Please select category' }]}
+            >
+              <Select
+                placeholder="Select category"
+                options={[
+                  { label: 'Onboarding', value: 'onboarding' },
+                  { label: 'Transactional', value: 'transactional' },
+                  { label: 'Marketing', value: 'marketing' },
+                  { label: 'Newsletter', value: 'newsletter' },
+                  { label: 'Notification', value: 'notification' },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item
+          label="Subject Line"
+          name="subject"
+          rules={[{ required: true, message: 'Please enter subject' }]}
+        >
+          <Input placeholder="e.g., Welcome to Our Store!" />
+        </Form.Item>
+
+        <Form.Item
+          label="Preview Text"
+          name="previewText"
+        >
+          <Input placeholder="Text shown in email preview" />
+        </Form.Item>
+
+        <Form.Item
+          label="Email Body (HTML)"
+          name="body"
+          rules={[{ required: true, message: 'Please enter email body' }]}
+        >
+          <TextArea
+            rows={10}
+            placeholder="Enter HTML email template. Use variables like {{name}}, {{order_id}}, etc."
+          />
+        </Form.Item>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="From Name"
+              name="fromName"
+            >
+              <Input placeholder="e.g., Groow Store" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="From Email"
+              name="fromEmail"
+            >
+              <Input placeholder="e.g., noreply@groow.com" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item
+          label="Reply To"
+          name="replyTo"
+        >
+          <Input placeholder="e.g., support@groow.com" />
+        </Form.Item>
+
+        <Form.Item
+          label="Status"
+          name="status"
+          valuePropName="checked"
+        >
+          <Switch checkedChildren="Active" unCheckedChildren="Draft" />
+        </Form.Item>
+      </Form>
+    </Modal>
+
+    {/* Preview Modal */}
+    <Modal
+      title="Email Preview"
+      open={isPreviewModalVisible}
+      onCancel={() => setIsPreviewModalVisible(false)}
+      footer={[
+        <Button key="close" onClick={() => setIsPreviewModalVisible(false)}>
+          Close
+        </Button>
+      ]}
+      width={800}
+    >
+      <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
+    </Modal>
+    </>
   );
 };
 

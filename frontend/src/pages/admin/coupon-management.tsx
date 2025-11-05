@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -19,6 +19,7 @@ import {
   Progress,
   DatePicker,
   Radio,
+  Spin,
 } from 'antd';
 import {
   GiftOutlined,
@@ -33,129 +34,52 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
+import { couponsAPI } from '@/services/api/coupons';
+import type { Coupon, CouponStats, CreateCouponDto, UpdateCouponDto } from '@/services/api/coupons';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-interface Coupon {
-  id: number;
-  code: string;
-  type: 'percentage' | 'fixed' | 'free-shipping' | 'buy-x-get-y';
-  value: number;
-  minPurchase?: number;
-  maxDiscount?: number;
-  description: string;
-  startDate: string;
-  endDate: string;
-  usageLimit: number;
-  usageCount: number;
-  perUserLimit: number;
-  userUsageCount: number;
-  status: 'active' | 'expired' | 'upcoming' | 'used-up';
-  categories?: string[];
-  excludedProducts?: number[];
-  stackable: boolean;
-  autoApply: boolean;
-}
-
-const mockCoupons: Coupon[] = [
-  {
-    id: 1,
-    code: 'WELCOME20',
-    type: 'percentage',
-    value: 20,
-    minPurchase: 50,
-    maxDiscount: 100,
-    description: 'Welcome offer - 20% off your first order',
-    startDate: dayjs().subtract(10, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(20, 'days').format('YYYY-MM-DD'),
-    usageLimit: 1000,
-    usageCount: 542,
-    perUserLimit: 1,
-    userUsageCount: 0,
-    status: 'active',
-    categories: ['All'],
-    stackable: false,
-    autoApply: true,
-  },
-  {
-    id: 2,
-    code: 'FREESHIP',
-    type: 'free-shipping',
-    value: 0,
-    minPurchase: 35,
-    description: 'Free shipping on orders over $35',
-    startDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(25, 'days').format('YYYY-MM-DD'),
-    usageLimit: 5000,
-    usageCount: 1234,
-    perUserLimit: 10,
-    userUsageCount: 2,
-    status: 'active',
-    stackable: true,
-    autoApply: false,
-  },
-  {
-    id: 3,
-    code: 'BLACKFRIDAY50',
-    type: 'percentage',
-    value: 50,
-    minPurchase: 100,
-    maxDiscount: 500,
-    description: 'Black Friday Special - 50% off site-wide',
-    startDate: dayjs().add(5, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(7, 'days').format('YYYY-MM-DD'),
-    usageLimit: 10000,
-    usageCount: 0,
-    perUserLimit: 1,
-    userUsageCount: 0,
-    status: 'upcoming',
-    categories: ['Electronics', 'Fashion', 'Home'],
-    stackable: false,
-    autoApply: false,
-  },
-  {
-    id: 4,
-    code: 'SAVE25',
-    type: 'fixed',
-    value: 25,
-    minPurchase: 100,
-    description: '$25 off orders over $100',
-    startDate: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().subtract(1, 'days').format('YYYY-MM-DD'),
-    usageLimit: 500,
-    usageCount: 500,
-    perUserLimit: 2,
-    userUsageCount: 1,
-    status: 'used-up',
-    stackable: true,
-    autoApply: false,
-  },
-  {
-    id: 5,
-    code: 'BUY2GET1',
-    type: 'buy-x-get-y',
-    value: 1,
-    description: 'Buy 2 Get 1 Free on selected items',
-    startDate: dayjs().subtract(15, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(15, 'days').format('YYYY-MM-DD'),
-    usageLimit: 2000,
-    usageCount: 876,
-    perUserLimit: 5,
-    userUsageCount: 1,
-    status: 'active',
-    categories: ['Fashion', 'Books'],
-    stackable: false,
-    autoApply: false,
-  },
-];
-
 const CouponManagementPage: React.FC = () => {
-  const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
+  const [loading, setLoading] = useState(true);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [stats, setStats] = useState<CouponStats | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    fetchCoupons();
+    fetchStats();
+  }, [statusFilter, typeFilter]);
+
+  const fetchCoupons = async () => {
+    try {
+      setLoading(true);
+      const filters: any = {};
+      if (statusFilter !== 'all') filters.status = statusFilter;
+      if (typeFilter !== 'all') filters.type = typeFilter;
+      
+      const response = await couponsAPI.getAll(filters);
+      setCoupons(response.data || response);
+    } catch (error) {
+      message.error('Failed to load coupons');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const statsData = await couponsAPI.getStats();
+      setStats(statsData);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
 
   const handleCreate = () => {
     setSelectedCoupon(null);
@@ -172,37 +96,43 @@ const CouponManagementPage: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const handleSubmit = (values: any) => {
-    const [startDate, endDate] = values.dateRange;
-    const couponData: Coupon = {
-      id: selectedCoupon?.id || coupons.length + 1,
-      code: values.code.toUpperCase(),
-      type: values.type,
-      value: values.value,
-      minPurchase: values.minPurchase,
-      maxDiscount: values.maxDiscount,
-      description: values.description,
-      startDate: startDate.format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
-      usageLimit: values.usageLimit,
-      usageCount: selectedCoupon?.usageCount || 0,
-      perUserLimit: values.perUserLimit,
-      userUsageCount: selectedCoupon?.userUsageCount || 0,
-      status: dayjs().isBefore(startDate) ? 'upcoming' : 'active',
-      categories: values.categories,
-      stackable: values.stackable,
-      autoApply: values.autoApply,
-    };
+  const handleSubmit = async (values: any) => {
+    try {
+      setLoading(true);
+      const [startDate, endDate] = values.dateRange;
+      
+      const couponData: CreateCouponDto | UpdateCouponDto = {
+        code: values.code.toUpperCase(),
+        type: values.type,
+        value: values.value,
+        minPurchase: values.minPurchase,
+        maxDiscount: values.maxDiscount,
+        description: values.description,
+        startDate: startDate.format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+        usageLimit: values.usageLimit,
+        perUserLimit: values.perUserLimit,
+        categories: values.categories,
+        stackable: values.stackable,
+        autoApply: values.autoApply,
+      };
 
-    if (selectedCoupon) {
-      setCoupons(coupons.map((c) => (c.id === selectedCoupon.id ? couponData : c)));
-      message.success('Coupon updated successfully');
-    } else {
-      setCoupons([couponData, ...coupons]);
-      message.success('Coupon created successfully');
+      if (selectedCoupon) {
+        await couponsAPI.update(selectedCoupon.id, couponData);
+        message.success('Coupon updated successfully');
+      } else {
+        await couponsAPI.create(couponData as CreateCouponDto);
+        message.success('Coupon created successfully');
+      }
+
+      setIsModalVisible(false);
+      await fetchCoupons();
+      await fetchStats();
+    } catch (error) {
+      message.error(selectedCoupon ? 'Failed to update coupon' : 'Failed to create coupon');
+    } finally {
+      setLoading(false);
     }
-
-    setIsModalVisible(false);
   };
 
   const handleDelete = (id: number) => {
@@ -211,9 +141,15 @@ const CouponManagementPage: React.FC = () => {
       content: 'Are you sure you want to delete this coupon? This action cannot be undone.',
       okText: 'Delete',
       okType: 'danger',
-      onOk: () => {
-        setCoupons(coupons.filter((c) => c.id !== id));
-        message.success('Coupon deleted successfully');
+      onOk: async () => {
+        try {
+          await couponsAPI.delete(id);
+          message.success('Coupon deleted successfully');
+          await fetchCoupons();
+          await fetchStats();
+        } catch (error) {
+          message.error('Failed to delete coupon');
+        }
       },
     });
   };
@@ -417,86 +353,107 @@ const CouponManagementPage: React.FC = () => {
     },
   ];
 
-  const activeCoupons = coupons.filter((c) => c.status === 'active').length;
-  const totalUsage = coupons.reduce((sum, c) => sum + c.usageCount, 0);
-  const totalDiscount = coupons.reduce((sum, c) => {
-    if (c.type === 'fixed') return sum + c.value * c.usageCount;
-    if (c.type === 'percentage') return sum + ((c.maxDiscount || 50) * c.usageCount * 0.3); // estimate
-    return sum;
-  }, 0);
-
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={3}>
-            <GiftOutlined style={{ color: '#52c41a' }} /> Coupon Management
-          </Title>
-          <Paragraph type="secondary">
-            Create and manage promotional coupons for your customers
-          </Paragraph>
-        </Col>
-        <Col>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-            Create Coupon
-          </Button>
-        </Col>
-      </Row>
+    <Spin spinning={loading}>
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+          <Col>
+            <Title level={3}>
+              <GiftOutlined style={{ color: '#52c41a' }} /> Coupon Management
+            </Title>
+            <Paragraph type="secondary">
+              Create and manage promotional coupons for your customers
+            </Paragraph>
+          </Col>
+          <Col>
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+              Create Coupon
+            </Button>
+          </Col>
+        </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic
-              title="Active Coupons"
-              value={activeCoupons}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic
-              title="Total Usage"
-              value={totalUsage}
-              prefix={<ShoppingCartOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic
-              title="Total Discount Given"
-              value={totalDiscount}
-              prefix="$"
-              precision={2}
-              valueStyle={{ color: '#fa8c16' }}
-            />
-          </Card>
-        </Col>
-      </Row>
+        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Active Coupons"
+                value={stats?.active || 0}
+                prefix={<CheckCircleOutlined />}
+                valueStyle={{ color: '#52c41a' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Total Usage"
+                value={stats?.totalUsage || 0}
+                prefix={<ShoppingCartOutlined />}
+                valueStyle={{ color: '#1890ff' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card>
+              <Statistic
+                title="Total Discount Given"
+                value={stats?.totalDiscountGiven || 0}
+                prefix="$"
+                precision={2}
+                valueStyle={{ color: '#fa8c16' }}
+              />
+            </Card>
+          </Col>
+        </Row>
 
-      <Alert
-        message="💡 Pro Tip"
-        description="Create time-limited coupons with auto-apply feature to increase conversion rates during special events or holidays."
-        type="info"
-        showIcon
-        closable
-        style={{ marginBottom: 16 }}
-      />
+        <Alert
+          message="💡 Pro Tip"
+          description="Create time-limited coupons with auto-apply feature to increase conversion rates during special events or holidays."
+          type="info"
+          showIcon
+          closable
+          style={{ marginBottom: 16 }}
+        />
 
-      <Card title="All Coupons">
-        <Table columns={columns} dataSource={coupons} rowKey="id" scroll={{ x: 1400 }} />
-      </Card>
+        <Card 
+          title="All Coupons"
+          extra={
+            <Space>
+              <Select
+                value={statusFilter}
+                onChange={setStatusFilter}
+                style={{ width: 120 }}
+              >
+                <Option value="all">All Status</Option>
+                <Option value="active">Active</Option>
+                <Option value="expired">Expired</Option>
+                <Option value="upcoming">Upcoming</Option>
+                <Option value="used-up">Used Up</Option>
+              </Select>
+              <Select
+                value={typeFilter}
+                onChange={setTypeFilter}
+                style={{ width: 140 }}
+              >
+                <Option value="all">All Types</Option>
+                <Option value="percentage">Percentage</Option>
+                <Option value="fixed">Fixed Amount</Option>
+                <Option value="free-shipping">Free Shipping</Option>
+                <Option value="buy-x-get-y">Buy X Get Y</Option>
+              </Select>
+            </Space>
+          }
+        >
+          <Table columns={columns} dataSource={coupons} rowKey="id" scroll={{ x: 1400 }} />
+        </Card>
 
-      <Modal
-        title={selectedCoupon ? 'Edit Coupon' : 'Create New Coupon'}
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        footer={null}
-        width={700}
-      >
+        <Modal
+          title={selectedCoupon ? 'Edit Coupon' : 'Create New Coupon'}
+          open={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+          width={700}
+        >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             label="Coupon Code"
@@ -683,7 +640,8 @@ const CouponManagementPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

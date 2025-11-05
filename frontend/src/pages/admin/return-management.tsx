@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -18,6 +18,7 @@ import {
   Steps,
   Alert,
   InputNumber,
+  Spin,
 } from 'antd';
 import {
   RollbackOutlined,
@@ -29,148 +30,188 @@ import {
   UserOutlined,
   InboxOutlined,
   WarningOutlined,
+  ReloadOutlined,
+  DownloadOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { returnsAPI } from '@/services/api/returns';
+import type {
+  ReturnRequest,
+  ReturnStats,
+  UpdateReturnRequestDto,
+  InspectionDto,
+  RefundDto,
+} from '@/services/api/returns';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text, Paragraph} = Typography;
 const { Step } = Steps;
 const { TextArea } = Input;
 
-interface ReturnRequest {
-  id: number;
-  rmaNumber: string;
-  orderNumber: string;
-  customerName: string;
-  customerEmail: string;
-  productName: string;
-  sku: string;
-  quantity: number;
-  reason: string;
-  condition: 'unopened' | 'opened' | 'defective' | 'damaged';
-  refundAmount: number;
-  status: 'pending' | 'approved' | 'rejected' | 'received' | 'inspected' | 'refunded';
-  requestDate: string;
-  approvedDate: string;
-  refundMethod: 'original-payment' | 'store-credit' | 'exchange';
-  notes: string;
-  images: string[];
-}
-
-const mockReturns: ReturnRequest[] = [
-  {
-    id: 1,
-    rmaNumber: 'RMA-2024-001',
-    orderNumber: 'ORD-2024-100',
-    customerName: 'John Doe',
-    customerEmail: 'john@example.com',
-    productName: 'Wireless Headphones Pro',
-    sku: 'ELEC-001',
-    quantity: 1,
-    reason: 'Product not as described',
-    condition: 'unopened',
-    refundAmount: 99,
-    status: 'pending',
-    requestDate: dayjs().subtract(2, 'hours').format('YYYY-MM-DD HH:mm'),
-    approvedDate: '',
-    refundMethod: 'original-payment',
-    notes: 'Customer received wrong color',
-    images: [],
-  },
-  {
-    id: 2,
-    rmaNumber: 'RMA-2024-002',
-    orderNumber: 'ORD-2024-101',
-    customerName: 'Jane Smith',
-    customerEmail: 'jane@example.com',
-    productName: 'Smart Watch Series 5',
-    sku: 'ELEC-002',
-    quantity: 1,
-    reason: 'Defective product',
-    condition: 'defective',
-    refundAmount: 299,
-    status: 'approved',
-    requestDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm'),
-    approvedDate: dayjs().subtract(12, 'hours').format('YYYY-MM-DD HH:mm'),
-    refundMethod: 'original-payment',
-    notes: 'Screen not working properly',
-    images: [],
-  },
-  {
-    id: 3,
-    rmaNumber: 'RMA-2024-003',
-    orderNumber: 'ORD-2024-102',
-    customerName: 'Bob Wilson',
-    customerEmail: 'bob@example.com',
-    productName: 'Ergonomic Office Chair',
-    sku: 'HOME-003',
-    quantity: 1,
-    reason: 'Changed mind',
-    condition: 'opened',
-    refundAmount: 449,
-    status: 'received',
-    requestDate: dayjs().subtract(3, 'days').format('YYYY-MM-DD HH:mm'),
-    approvedDate: dayjs().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
-    refundMethod: 'store-credit',
-    notes: 'Customer decided to get a different model',
-    images: [],
-  },
-  {
-    id: 4,
-    rmaNumber: 'RMA-2024-004',
-    orderNumber: 'ORD-2024-103',
-    customerName: 'Alice Brown',
-    customerEmail: 'alice@example.com',
-    productName: 'Leather Jacket',
-    sku: 'FASH-004',
-    quantity: 1,
-    reason: 'Wrong size',
-    condition: 'unopened',
-    refundAmount: 299,
-    status: 'refunded',
-    requestDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD HH:mm'),
-    approvedDate: dayjs().subtract(4, 'days').format('YYYY-MM-DD HH:mm'),
-    refundMethod: 'exchange',
-    notes: 'Exchanged for size L',
-    images: [],
-  },
-];
-
 const ReturnManagementPage: React.FC = () => {
+  // State management
+  const [loading, setLoading] = useState<boolean>(false);
+  const [returns, setReturns] = useState<ReturnRequest[]>([]);
+  const [stats, setStats] = useState<ReturnStats | null>(null);
   const [selectedReturn, setSelectedReturn] = useState<ReturnRequest | null>(null);
   const [isReturnModalVisible, setIsReturnModalVisible] = useState<boolean>(false);
   const [isProcessModalVisible, setIsProcessModalVisible] = useState<boolean>(false);
+  const [isInspectionModalVisible, setIsInspectionModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
+  const [inspectionForm] = Form.useForm();
 
-  const handleViewReturn = (returnRequest: ReturnRequest) => {
+  // Fetch returns on mount
+  useEffect(() => {
+    fetchReturns();
+    fetchStats();
+  }, []);
+
+  const fetchReturns = async () => {
+    setLoading(true);
+    try {
+      const response = await returnsAPI.getReturnRequests({ limit: 100 });
+      setReturns(response.data.returns);
+    } catch (error) {
+      message.error('Failed to fetch return requests');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await returnsAPI.getReturnStats();
+      setStats(response.data);
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchReturns();
+    fetchStats();
+    message.success('Data refreshed');
+  };
+
+  const handleExport = async () => {
+    try {
+      setLoading(true);
+      const response = await returnsAPI.exportReturns({}, 'csv');
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `returns-${dayjs().format('YYYY-MM-DD')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      message.success('Returns exported successfully');
+    } catch (error) {
+      message.error('Failed to export returns');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewReturn = async (returnRequest: ReturnRequest) => {
     setSelectedReturn(returnRequest);
     setIsReturnModalVisible(true);
   };
 
-  const handleApproveReturn = (returnRequest: ReturnRequest) => {
-    setSelectedReturn(returnRequest);
-    setIsProcessModalVisible(true);
+  const handleApproveReturn = async (returnRequest: ReturnRequest) => {
+    try {
+      await returnsAPI.approveReturn(returnRequest.id, 'Admin');
+      message.success('Return request approved');
+      fetchReturns();
+      fetchStats();
+    } catch (error) {
+      message.error('Failed to approve return');
+      console.error(error);
+    }
   };
 
-  const handleRejectReturn = (id: number) => {
+  const handleRejectReturn = (id: string) => {
     Modal.confirm({
       title: 'Reject Return Request',
-      content: 'Are you sure you want to reject this return request?',
-      onOk: () => {
-        message.success('Return request rejected');
+      content: 'Are you sure you want to reject this return request? Please provide a reason.',
+      onOk: async () => {
+        try {
+          await returnsAPI.rejectReturn(id, 'Return policy violation', 'Admin');
+          message.success('Return request rejected');
+          fetchReturns();
+          fetchStats();
+        } catch (error) {
+          message.error('Failed to reject return');
+          console.error(error);
+        }
       },
     });
   };
 
-  const handleProcessReturn = (values: any) => {
-    console.log('Processing return:', values);
-    message.success('Return processed successfully');
-    setIsProcessModalVisible(false);
-    form.resetFields();
+  const handleProcessInspection = (returnRequest: ReturnRequest) => {
+    setSelectedReturn(returnRequest);
+    setIsInspectionModalVisible(true);
   };
 
-  const handleIssueRefund = (returnRequest: ReturnRequest) => {
-    message.success(`Refund of $${returnRequest.refundAmount} issued to ${returnRequest.customerName}`);
+  const handleInspectionSubmit = async (values: any) => {
+    if (!selectedReturn) return;
+
+    try {
+      const inspectionData: InspectionDto = {
+        returnId: selectedReturn.id,
+        condition: values.condition,
+        approved: values.approved,
+        refundAmount: values.refundAmount,
+        restockingFee: values.restockingFee || 0,
+        notes: values.notes || '',
+        inspectedBy: 'Admin',
+      };
+
+      await returnsAPI.inspectReturn(selectedReturn.id, inspectionData);
+      message.success('Return inspected successfully');
+      setIsInspectionModalVisible(false);
+      inspectionForm.resetFields();
+      fetchReturns();
+      fetchStats();
+    } catch (error) {
+      message.error('Failed to process inspection');
+      console.error(error);
+    }
+  };
+
+  const handleIssueRefund = async (returnRequest: ReturnRequest) => {
+    try {
+      const refundData: RefundDto = {
+        returnId: returnRequest.id,
+        refundAmount: returnRequest.refundAmount,
+        refundMethod: returnRequest.refundMethod,
+        refundedBy: 'Admin',
+      };
+
+      await returnsAPI.processRefund(refundData);
+      message.success(`Refund of $${returnRequest.refundAmount} issued to ${returnRequest.customerName}`);
+      fetchReturns();
+      fetchStats();
+    } catch (error) {
+      message.error('Failed to process refund');
+      console.error(error);
+    }
+  };
+
+  const handleMarkAsReceived = async (returnRequest: ReturnRequest) => {
+    try {
+      await returnsAPI.markAsReceived(returnRequest.id, 'Admin');
+      message.success('Return marked as received');
+      fetchReturns();
+    } catch (error) {
+      message.error('Failed to mark as received');
+      console.error(error);
+    }
   };
 
   const returnColumns: ColumnsType<ReturnRequest> = [
@@ -256,6 +297,8 @@ const ReturnManagementPage: React.FC = () => {
           received: { color: 'cyan', icon: <InboxOutlined />, text: 'Received' },
           inspected: { color: 'purple', icon: <CheckCircleOutlined />, text: 'Inspected' },
           refunded: { color: 'green', icon: <DollarOutlined />, text: 'Refunded' },
+          completed: { color: 'green', icon: <CheckCircleOutlined />, text: 'Completed' },
+          cancelled: { color: 'red', icon: <CloseCircleOutlined />, text: 'Cancelled' },
         };
         return (
           <Tag color={config[status].color} icon={config[status].icon}>
@@ -285,7 +328,12 @@ const ReturnManagementPage: React.FC = () => {
       width: 200,
       render: (_, record) => (
         <Space direction="vertical" size="small">
-          <Button size="small" type="link" onClick={() => handleViewReturn(record)}>
+          <Button
+            size="small"
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewReturn(record)}
+          >
             View Details
           </Button>
           {record.status === 'pending' && (
@@ -307,6 +355,26 @@ const ReturnManagementPage: React.FC = () => {
                 Reject
               </Button>
             </Space>
+          )}
+          {record.status === 'approved' && (
+            <Button
+              size="small"
+              type="primary"
+              icon={<InboxOutlined />}
+              onClick={() => handleMarkAsReceived(record)}
+            >
+              Mark Received
+            </Button>
+          )}
+          {record.status === 'received' && (
+            <Button
+              size="small"
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={() => handleProcessInspection(record)}
+            >
+              Inspect
+            </Button>
           )}
           {record.status === 'inspected' && (
             <Button
@@ -331,16 +399,18 @@ const ReturnManagementPage: React.FC = () => {
       received: 2,
       inspected: 3,
       refunded: 4,
+      completed: 4,
+      cancelled: 0,
     };
     return steps[status];
   };
 
-  const pendingReturns = mockReturns.filter((r) => r.status === 'pending').length;
-  const approvedReturns = mockReturns.filter((r) => r.status === 'approved').length;
-  const totalRefunded = mockReturns
-    .filter((r) => r.status === 'refunded')
+  const pendingReturns = stats?.pendingReturns || returns.filter((r) => r.status === 'pending').length;
+  const approvedReturns = stats?.approvedReturns || returns.filter((r) => r.status === 'approved').length;
+  const totalRefunded = stats?.totalRefundAmount || returns
+    .filter((r) => r.status === 'refunded' || r.status === 'completed')
     .reduce((sum, r) => sum + r.refundAmount, 0);
-  const avgProcessingTime = 2.5; // days
+  const avgProcessingTime = 2.5; // days - can be calculated from API
 
   return (
     <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
@@ -396,7 +466,19 @@ const ReturnManagementPage: React.FC = () => {
         </Col>
       </Row>
 
-      <Card title="Return Requests">
+      <Card
+        title="Return Requests"
+        extra={
+          <Space>
+            <Button icon={<ReloadOutlined />} onClick={handleRefresh}>
+              Refresh
+            </Button>
+            <Button icon={<DownloadOutlined />} onClick={handleExport}>
+              Export
+            </Button>
+          </Space>
+        }
+      >
         <Alert
           message="Return Policy Reminder"
           description="Review return requests within 24 hours. Ensure all defective items are properly documented with photos."
@@ -404,13 +486,15 @@ const ReturnManagementPage: React.FC = () => {
           showIcon
           style={{ marginBottom: 16 }}
         />
-        <Table
-          columns={returnColumns}
-          dataSource={mockReturns}
-          rowKey="id"
-          scroll={{ x: 1400 }}
-          pagination={{ pageSize: 10 }}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={returnColumns}
+            dataSource={returns}
+            rowKey="id"
+            scroll={{ x: 1400 }}
+            pagination={{ pageSize: 10 }}
+          />
+        </Spin>
       </Card>
 
       <Modal
@@ -514,16 +598,17 @@ const ReturnManagementPage: React.FC = () => {
         )}
       </Modal>
 
+      {/* Inspection Modal */}
       <Modal
-        title="Process Return"
-        open={isProcessModalVisible}
-        onCancel={() => setIsProcessModalVisible(false)}
+        title="Inspect Return"
+        open={isInspectionModalVisible}
+        onCancel={() => setIsInspectionModalVisible(false)}
         footer={null}
         width={600}
       >
-        <Form form={form} layout="vertical" onFinish={handleProcessReturn}>
+        <Form form={inspectionForm} layout="vertical" onFinish={handleInspectionSubmit}>
           <Alert
-            message={`Processing return for: ${selectedReturn?.productName}`}
+            message={`Inspecting return for: ${selectedReturn?.productName}`}
             description={`RMA Number: ${selectedReturn?.rmaNumber}`}
             type="info"
             showIcon
@@ -531,14 +616,26 @@ const ReturnManagementPage: React.FC = () => {
           />
 
           <Form.Item
-            label="Refund Method"
-            name="refundMethod"
-            rules={[{ required: true, message: 'Please select refund method' }]}
+            label="Condition After Inspection"
+            name="condition"
+            rules={[{ required: true, message: 'Please select condition' }]}
           >
-            <Select placeholder="Select refund method">
-              <Select.Option value="original-payment">Original Payment Method</Select.Option>
-              <Select.Option value="store-credit">Store Credit</Select.Option>
-              <Select.Option value="exchange">Exchange for Different Item</Select.Option>
+            <Select placeholder="Select condition">
+              <Select.Option value="unopened">Unopened</Select.Option>
+              <Select.Option value="opened">Opened</Select.Option>
+              <Select.Option value="defective">Defective</Select.Option>
+              <Select.Option value="damaged">Damaged</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Approve Return?"
+            name="approved"
+            rules={[{ required: true, message: 'Please select approval status' }]}
+          >
+            <Select placeholder="Select approval status">
+              <Select.Option value={true}>Yes - Approve for Refund</Select.Option>
+              <Select.Option value={false}>No - Reject Return</Select.Option>
             </Select>
           </Form.Item>
 
@@ -556,35 +653,24 @@ const ReturnManagementPage: React.FC = () => {
             />
           </Form.Item>
 
+          <Form.Item label="Restocking Fee" name="restockingFee" initialValue={0}>
+            <InputNumber prefix="$" min={0} style={{ width: '100%' }} />
+          </Form.Item>
+
           <Form.Item
-            label="Restocking Fee"
-            name="restockingFee"
-            initialValue={0}
+            label="Inspection Notes"
+            name="notes"
+            rules={[{ required: true, message: 'Please add inspection notes' }]}
           >
-            <InputNumber
-              prefix="$"
-              min={0}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-
-          <Form.Item label="Internal Notes" name="internalNotes">
-            <TextArea rows={3} placeholder="Add any internal notes about this return..." />
-          </Form.Item>
-
-          <Form.Item label="Restock Item" name="restock" valuePropName="checked">
-            <Select defaultValue="yes">
-              <Select.Option value="yes">Yes - Add back to inventory</Select.Option>
-              <Select.Option value="no">No - Mark as damaged/defective</Select.Option>
-            </Select>
+            <TextArea rows={3} placeholder="Document the condition and any issues found..." />
           </Form.Item>
 
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">
-                Process Return
+                Complete Inspection
               </Button>
-              <Button onClick={() => setIsProcessModalVisible(false)}>Cancel</Button>
+              <Button onClick={() => setIsInspectionModalVisible(false)}>Cancel</Button>
             </Space>
           </Form.Item>
         </Form>

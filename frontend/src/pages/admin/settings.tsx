@@ -1,20 +1,58 @@
-import { Tabs, Form, Input, Upload, Button, Switch, Select, message, Card } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Tabs, Form, Input, Upload, Button, Switch, Select, message, Card, Spin } from 'antd';
 import { UploadOutlined, SaveOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
+import { settingsAPI } from '@/services/api/settings';
+import type { GeneralSettings, SEOSettings, PaymentSettings, EmailSettings } from '@/services/api/settings';
 
 const AdminSettings = () => {
   const [generalForm] = Form.useForm();
   const [seoForm] = Form.useForm();
   const [paymentForm] = Form.useForm();
   const [emailForm] = Form.useForm();
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSave = (formName: string) => {
-    message.success(`${formName} settings saved successfully`);
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true);
+      const settings = await settingsAPI.getAll();
+      
+      // Populate forms with fetched data
+      generalForm.setFieldsValue(settings.general);
+      seoForm.setFieldsValue(settings.seo);
+      paymentForm.setFieldsValue(settings.payment);
+      emailForm.setFieldsValue(settings.email);
+    } catch (error) {
+      message.error('Failed to load settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (formName: string, form: any, updateFunc: any) => {
+    try {
+      setLoading(true);
+      const values = await form.validateFields();
+      await updateFunc(values);
+      message.success(`${formName} settings saved successfully`);
+    } catch (error) {
+      message.error(`Failed to save ${formName} settings`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const generalSettings = (
     <Card>
-      <Form form={generalForm} layout="vertical" onFinish={() => handleSave('General')}>
+      <Form 
+        form={generalForm} 
+        layout="vertical" 
+        onFinish={() => handleSave('General', generalForm, settingsAPI.updateGeneral)}
+      >
         <Form.Item label="Site Name" name="siteName" initialValue="Groow">
           <Input />
         </Form.Item>
@@ -74,7 +112,11 @@ const AdminSettings = () => {
 
   const seoSettings = (
     <Card>
-      <Form form={seoForm} layout="vertical" onFinish={() => handleSave('SEO')}>
+      <Form 
+        form={seoForm} 
+        layout="vertical" 
+        onFinish={() => handleSave('SEO', seoForm, settingsAPI.updateSEO)}
+      >
         <Form.Item label="Meta Title" name="metaTitle">
           <Input placeholder="Your site's meta title" />
         </Form.Item>
@@ -113,7 +155,11 @@ const AdminSettings = () => {
 
   const paymentSettings = (
     <Card>
-      <Form form={paymentForm} layout="vertical" onFinish={() => handleSave('Payment')}>
+      <Form 
+        form={paymentForm} 
+        layout="vertical" 
+        onFinish={() => handleSave('Payment', paymentForm, settingsAPI.updatePayment)}
+      >
         <h3>Stripe</h3>
         <Form.Item label="Stripe Publishable Key" name="stripePublishable">
           <Input.Password placeholder="pk_live_..." />
@@ -163,7 +209,11 @@ const AdminSettings = () => {
 
   const emailSettings = (
     <Card>
-      <Form form={emailForm} layout="vertical" onFinish={() => handleSave('Email')}>
+      <Form 
+        form={emailForm} 
+        layout="vertical" 
+        onFinish={() => handleSave('Email', emailForm, settingsAPI.updateEmail)}
+      >
         <Form.Item label="SMTP Host" name="smtpHost" initialValue="smtp.gmail.com">
           <Input />
         </Form.Item>
@@ -225,10 +275,12 @@ const AdminSettings = () => {
   ];
 
   return (
-    <div>
-      <h1>System Settings</h1>
-      <Tabs defaultActiveKey="general" items={items} />
-    </div>
+    <Spin spinning={loading}>
+      <div>
+        <h1>System Settings</h1>
+        <Tabs defaultActiveKey="general" items={items} />
+      </div>
+    </Spin>
   );
 };
 

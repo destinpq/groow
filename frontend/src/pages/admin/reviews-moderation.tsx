@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -20,6 +20,7 @@ import {
   Progress,
   Image,
   Switch,
+  Spin,
 } from 'antd';
 import {
   StarOutlined,
@@ -33,108 +34,83 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { reviewsAPI } from '@/services/api/reviews';
+import type { Review } from '@/services/api/reviews';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
-interface ProductReview {
-  id: number;
-  productId: number;
-  productName: string;
-  customerName: string;
-  customerAvatar: string;
-  rating: number;
-  title: string;
-  comment: string;
-  helpful: number;
-  notHelpful: number;
-  verified: boolean;
-  status: 'pending' | 'approved' | 'rejected';
-  createdAt: string;
-  images: string[];
-}
-
-const mockReviews: ProductReview[] = [
-  {
-    id: 1,
-    productId: 101,
-    productName: 'Wireless Headphones Pro',
-    customerName: 'John Doe',
-    customerAvatar: '',
-    rating: 5,
-    title: 'Excellent sound quality!',
-    comment: 'These headphones are amazing. The noise cancellation is top-notch and battery life is great. Highly recommended!',
-    helpful: 45,
-    notHelpful: 3,
-    verified: true,
-    status: 'approved',
-    createdAt: dayjs().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
-    images: [],
-  },
-  {
-    id: 2,
-    productId: 102,
-    productName: 'Smart Watch Series 5',
-    customerName: 'Jane Smith',
-    customerAvatar: '',
-    rating: 4,
-    title: 'Good but battery could be better',
-    comment: 'Overall great smartwatch with lots of features. Only complaint is the battery life could be longer.',
-    helpful: 28,
-    notHelpful: 5,
-    verified: true,
-    status: 'approved',
-    createdAt: dayjs().subtract(5, 'days').format('YYYY-MM-DD HH:mm'),
-    images: [],
-  },
-  {
-    id: 3,
-    productId: 103,
-    productName: 'Leather Office Chair',
-    customerName: 'Bob Johnson',
-    customerAvatar: '',
-    rating: 2,
-    title: 'Not as comfortable as expected',
-    comment: 'The chair looks good but is not very comfortable for long sitting sessions. Disappointed.',
-    helpful: 12,
-    notHelpful: 8,
-    verified: false,
-    status: 'pending',
-    createdAt: dayjs().subtract(1, 'hour').format('YYYY-MM-DD HH:mm'),
-    images: [],
-  },
-  {
-    id: 4,
-    productId: 101,
-    productName: 'Wireless Headphones Pro',
-    customerName: 'Alice Williams',
-    customerAvatar: '',
-    rating: 1,
-    title: 'Terrible product',
-    comment: 'This is spam content with inappropriate language...',
-    helpful: 0,
-    notHelpful: 15,
-    verified: false,
-    status: 'pending',
-    createdAt: dayjs().subtract(30, 'minutes').format('YYYY-MM-DD HH:mm'),
-    images: [],
-  },
-];
-
 const ReviewsModerationPage: React.FC = () => {
-  const [selectedReview, setSelectedReview] = useState<ProductReview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [ratingFilter, setRatingFilter] = useState<number | undefined>();
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [replyText, setReplyText] = useState<string>('');
 
-  const handleApproveReview = (id: number) => {
-    message.success('Review approved successfully');
+  useEffect(() => {
+    fetchReviews();
+  }, [page, pageSize, statusFilter, ratingFilter]);
+
+  const fetchReviews = async () => {
+    try {
+      setLoading(true);
+      const response = await reviewsAPI.getAll({
+        page,
+        limit: pageSize,
+        status: statusFilter,
+        rating: ratingFilter,
+      });
+      setReviews(response.data);
+      setTotal(response.total);
+    } catch (error) {
+      message.error('Failed to load reviews');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRejectReview = (id: number) => {
-    message.success('Review rejected');
+  const handleApproveReview = async (id: string) => {
+    try {
+      await reviewsAPI.approve(id);
+      message.success('Review approved successfully');
+      fetchReviews(); // Refresh list
+    } catch (error) {
+      message.error('Failed to approve review');
+    }
   };
 
-  const handleViewReview = (review: ProductReview) => {
+  const handleRejectReview = async (id: string) => {
+    try {
+      await reviewsAPI.reject(id);
+      message.success('Review rejected');
+      fetchReviews(); // Refresh list
+    } catch (error) {
+      message.error('Failed to reject review');
+    }
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    Modal.confirm({
+      title: 'Delete Review',
+      content: 'Are you sure you want to delete this review?',
+      onOk: async () => {
+        try {
+          await reviewsAPI.delete(id);
+          message.success('Review deleted successfully');
+          fetchReviews();
+        } catch (error) {
+          message.error('Failed to delete review');
+        }
+      },
+    });
+  };
+
+  const handleViewReview = (review: Review) => {
     setSelectedReview(review);
     setIsModalVisible(true);
   };
@@ -145,14 +121,14 @@ const ReviewsModerationPage: React.FC = () => {
     setReplyText('');
   };
 
-  const reviewColumns: ColumnsType<ProductReview> = [
+  const reviewColumns: ColumnsType<Review> = [
     {
       title: 'Customer',
       key: 'customer',
       width: 200,
       render: (_, record) => (
         <Space>
-          <Avatar icon={<UserOutlined />} />
+          <Avatar src={record.customerAvatar} icon={<UserOutlined />} />
           <div>
             <Text strong>{record.customerName}</Text>
             {record.verified && (
@@ -167,10 +143,10 @@ const ReviewsModerationPage: React.FC = () => {
       ),
     },
     {
-      title: 'Product',
-      dataIndex: 'productName',
-      key: 'productName',
-      render: (name) => <Text>{name}</Text>,
+      title: 'Product ID',
+      dataIndex: 'productId',
+      key: 'productId',
+      render: (id) => <Text>#{id}</Text>,
     },
     {
       title: 'Rating',
@@ -219,8 +195,8 @@ const ReviewsModerationPage: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: ProductReview['status']) => {
-        const config: Record<ProductReview['status'], { color: string; icon: React.ReactNode; text: string }> = {
+      render: (status: Review['status']) => {
+        const config: Record<Review['status'], { color: string; icon: React.ReactNode; text: string }> = {
           pending: { color: 'orange', icon: <EyeOutlined />, text: 'Pending' },
           approved: { color: 'green', icon: <CheckCircleOutlined />, text: 'Approved' },
           rejected: { color: 'red', icon: <CloseCircleOutlined />, text: 'Rejected' },
@@ -277,13 +253,17 @@ const ReviewsModerationPage: React.FC = () => {
     },
   ];
 
-  const totalReviews = mockReviews.length;
-  const pendingReviews = mockReviews.filter((r) => r.status === 'pending').length;
-  const approvedReviews = mockReviews.filter((r) => r.status === 'approved').length;
-  const avgRating = (mockReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1);
+  // Calculate stats from loaded reviews
+  const totalReviews = total;
+  const pendingReviews = reviews.filter((r) => r.status === 'pending').length;
+  const approvedReviews = reviews.filter((r) => r.status === 'approved').length;
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : '0.0';
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+    <Spin spinning={loading}>
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
       <div style={{ marginBottom: 24 }}>
         <Title level={3}>
           <StarOutlined style={{ color: '#1890ff' }} /> Reviews Moderation
@@ -342,9 +322,19 @@ const ReviewsModerationPage: React.FC = () => {
           <Card title="Customer Reviews">
             <Table
               columns={reviewColumns}
-              dataSource={mockReviews}
+              dataSource={reviews}
               rowKey="id"
-              pagination={{ pageSize: 10 }}
+              pagination={{
+                current: page,
+                pageSize,
+                total,
+                onChange: (newPage, newPageSize) => {
+                  setPage(newPage);
+                  setPageSize(newPageSize || 10);
+                },
+                showSizeChanger: true,
+                showTotal: (total) => `Total ${total} reviews`,
+              }}
               scroll={{ x: 1200 }}
             />
           </Card>
@@ -354,8 +344,8 @@ const ReviewsModerationPage: React.FC = () => {
           <Card title="Rating Distribution" style={{ marginBottom: 16 }}>
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               {[5, 4, 3, 2, 1].map((star) => {
-                const count = mockReviews.filter((r) => r.rating === star).length;
-                const percentage = (count / totalReviews) * 100;
+                const count = reviews.filter((r) => r.rating === star).length;
+                const percentage = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
                 return (
                   <div key={star}>
                     <Space style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -425,9 +415,9 @@ const ReviewsModerationPage: React.FC = () => {
             </div>
 
             <div>
-              <Text type="secondary">Product:</Text>
+              <Text type="secondary">Product ID:</Text>
               <div>
-                <Text strong>{selectedReview.productName}</Text>
+                <Text strong>#{selectedReview.productId}</Text>
               </div>
             </div>
 
@@ -509,6 +499,7 @@ const ReviewsModerationPage: React.FC = () => {
         )}
       </Modal>
     </div>
+    </Spin>
   );
 };
 
