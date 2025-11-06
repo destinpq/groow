@@ -9,6 +9,9 @@ export default defineConfig({
   // Disable source maps to see actual errors
   devtool: false,
   
+  // Fix esbuild helper conflicts
+  esbuildMinifyIIFE: true,
+  
   // Theme configuration
   theme: {
     '@primary-color': '#FF9900',
