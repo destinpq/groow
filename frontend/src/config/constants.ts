@@ -1,7 +1,7 @@
 // API Base URL
 export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://api.groow.com' 
-  : 'http://localhost:3001';
+  ? 'https://nz-api.destinpq.com' 
+  : 'https://nz-api.destinpq.com';
 
 // Upload Settings
 export const UPLOAD_CONFIG = {

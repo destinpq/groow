@@ -26,9 +26,10 @@ export default defineConfig({
   // Proxy for development
   proxy: {
     '/api': {
-      target: 'http://localhost:3001',
+      target: 'https://nz-api.destinpq.com',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
+      secure: true,
     },
   },
   
