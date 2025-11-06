@@ -17,10 +17,31 @@ async function bootstrap() {
   app.use(helmet());
   app.use(compression());
 
-  // CORS
+  // CORS - Allow multiple origins
+  const allowedOrigins = [
+    'https://nz.destinpq.com',
+    'http://localhost:8001',
+    'http://localhost:3000',
+    'http://127.0.0.1:8001',
+    'http://127.0.0.1:3000',
+  ];
+
   app.enableCors({
-    origin: configService.get('FRONTEND_URL'),
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+    exposedHeaders: ['Authorization'],
+    maxAge: 3600,
   });
 
   // Global prefix
