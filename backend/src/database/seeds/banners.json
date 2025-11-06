@@ -1,0 +1,48 @@
+[
+  {
+    "title": "Winter Sale - Up to 50% Off",
+    "imageUrl": "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a",
+    "linkUrl": "/collections/winter-sale",
+    "placement": "homepage-hero",
+    "displayOrder": 1,
+    "isActive": true,
+    "startDate": "2025-11-01",
+    "endDate": "2025-12-31"
+  },
+  {
+    "title": "New Electronics Arrivals",
+    "imageUrl": "https://images.unsplash.com/photo-1498049794561-7780e7231661",
+    "linkUrl": "/categories/electronics",
+    "placement": "homepage-hero",
+    "displayOrder": 2,
+    "isActive": true,
+    "startDate": "2025-11-01",
+    "endDate": "2025-12-31"
+  },
+  {
+    "title": "Fashion Trends 2025",
+    "imageUrl": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d",
+    "linkUrl": "/categories/fashion",
+    "placement": "homepage-hero",
+    "displayOrder": 3,
+    "isActive": true,
+    "startDate": "2025-11-01",
+    "endDate": "2025-12-31"
+  },
+  {
+    "title": "Free Shipping on Orders Over $50",
+    "imageUrl": "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55",
+    "linkUrl": "/shipping-info",
+    "placement": "sidebar",
+    "displayOrder": 1,
+    "isActive": true
+  },
+  {
+    "title": "Download Our Mobile App",
+    "imageUrl": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c",
+    "linkUrl": "/mobile-app",
+    "placement": "sidebar",
+    "displayOrder": 2,
+    "isActive": true
+  }
+]

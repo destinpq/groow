@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -28,27 +28,14 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EyeOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { flashSalesAPI, FlashSale, FlashSaleStats } from '@/services/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { RangePicker } = DatePicker;
-
-interface FlashSale {
-  id: number;
-  name: string;
-  productId: number;
-  productName: string;
-  originalPrice: number;
-  salePrice: number;
-  discount: number;
-  stock: number;
-  sold: number;
-  startTime: string;
-  endTime: string;
-  status: 'upcoming' | 'active' | 'ended';
-}
 
 interface DailyDeal {
   id: number;

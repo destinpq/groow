@@ -1,0 +1,97 @@
+[
+  {
+    "customerEmail": "customer1@groow.com",
+    "vendorEmail": "vendor1@groow.com",
+    "items": [
+      {
+        "productSlug": "apple-iphone-15-pro-max",
+        "quantity": 1,
+        "price": 1149.99
+      }
+    ],
+    "totalAmount": 1149.99,
+    "shippingAddress": "100 Main St, Apt 4B, Seattle, WA 98101",
+    "billingAddress": "100 Main St, Apt 4B, Seattle, WA 98101",
+    "status": "delivered",
+    "paymentStatus": "paid",
+    "paymentMethod": "credit_card",
+    "shippingMethod": "express"
+  },
+  {
+    "customerEmail": "customer2@groow.com",
+    "vendorEmail": "vendor1@groow.com",
+    "items": [
+      {
+        "productSlug": "samsung-galaxy-s24-ultra",
+        "quantity": 1,
+        "price": 1199.99
+      }
+    ],
+    "totalAmount": 1199.99,
+    "shippingAddress": "200 Oak Ave, Los Angeles, CA 90001",
+    "billingAddress": "200 Oak Ave, Los Angeles, CA 90001",
+    "status": "shipped",
+    "paymentStatus": "paid",
+    "paymentMethod": "paypal",
+    "shippingMethod": "standard"
+  },
+  {
+    "customerEmail": "customer3@groow.com",
+    "vendorEmail": "vendor2@groow.com",
+    "items": [
+      {
+        "productSlug": "nike-air-max-270",
+        "quantity": 2,
+        "price": 129.99
+      }
+    ],
+    "totalAmount": 259.98,
+    "shippingAddress": "300 Pine Rd, Miami, FL 33101",
+    "billingAddress": "300 Pine Rd, Miami, FL 33101",
+    "status": "processing",
+    "paymentStatus": "paid",
+    "paymentMethod": "credit_card",
+    "shippingMethod": "standard"
+  },
+  {
+    "customerEmail": "customer4@groow.com",
+    "vendorEmail": "vendor1@groow.com",
+    "items": [
+      {
+        "productSlug": "sony-wh-1000xm5-wireless-headphones",
+        "quantity": 1,
+        "price": 349.99
+      },
+      {
+        "productSlug": "logitech-mx-master-3s",
+        "quantity": 1,
+        "price": 79.99
+      }
+    ],
+    "totalAmount": 429.98,
+    "shippingAddress": "400 Elm St, Austin, TX 78701",
+    "billingAddress": "400 Elm St, Austin, TX 78701",
+    "status": "delivered",
+    "paymentStatus": "paid",
+    "paymentMethod": "apple_pay",
+    "shippingMethod": "express"
+  },
+  {
+    "customerEmail": "customer5@groow.com",
+    "vendorEmail": "vendor1@groow.com",
+    "items": [
+      {
+        "productSlug": "dell-xps-15-laptop",
+        "quantity": 1,
+        "price": 1699.99
+      }
+    ],
+    "totalAmount": 1699.99,
+    "shippingAddress": "500 Maple Dr, Portland, OR 97201",
+    "billingAddress": "500 Maple Dr, Portland, OR 97201",
+    "status": "pending",
+    "paymentStatus": "paid",
+    "paymentMethod": "credit_card",
+    "shippingMethod": "next_day"
+  }
+]

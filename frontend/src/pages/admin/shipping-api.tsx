@@ -11,12 +11,10 @@ import {
   Tag,
   Statistic,
   Alert,
-  Divider,
   Input,
   Form,
   message,
   Modal,
-  Spin,
 } from 'antd';
 import {
   RocketOutlined,
@@ -24,92 +22,58 @@ import {
   EnvironmentOutlined,
   DollarOutlined,
   ClockCircleOutlined,
-  CheckCircleOutlined,
   TruckOutlined,
   BoxPlotOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { shippingAPI } from '@/services/api/shipping';
-import type { ShippingMethod, ShippingRate, TrackingInfo, ShippingCarrier } from '@/services/api/shipping';
 
 const { Title, Text, Paragraph } = Typography;
 
-const ShippingAPIPage: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [carriers, setCarriers] = useState<ShippingCarrier[]>([]);
-  const [methods, setMethods] = useState<ShippingMethod[]>([]);
-  const [selectedCarrier, setSelectedCarrier] = useState<string>('all');
-  const [destination, setDestination] = useState({ zip: '10001', weight: 2.5 });
-  const [rates, setRates] = useState<ShippingRate[]>([]);
-  const [trackingNumber, setTrackingNumber] = useState('');
-  const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null);
-  const [isTrackingModalVisible, setIsTrackingModalVisible] = useState(false);
+interface ShippingService {
+  id: string;
+  carrierName: string;
+  name: string;
+  description: string;
+  estimatedDays: string;
+  baseRate: number;
+  freeThreshold?: number;
+  icon: React.ReactNode;
+}
 
-  useEffect(() => {
-    fetchCarriersAndMethods();
-  }, []);
+interface Carrier {
+  id: string;
+  name: string;
+  logo: string;
+  trackingEnabled: boolean;
+  pickupAvailable: boolean;
+  services: ShippingService[];
+}
 
-  const fetchCarriersAndMethods = async () => {
-    try {
-      setLoading(true);
-      const [carriersData, methodsData] = await Promise.all([
-        shippingAPI.getCarriers(),
-        shippingAPI.getMethods(),
-      ]);
-      setCarriers(carriersData.filter((c) => c.enabled));
-      setMethods(methodsData.filter((m) => m.enabled));
-    } catch (error) {
-      message.error('Failed to load shipping data');
-    } finally {
-      setLoading(false);
-    }
-  };
+interface ShippingRate {
+  service: string;
+  carrier: string;
+  price: number;
+  estimatedDays: string;
+  icon: React.ReactNode;
+}
 
-  const getAllMethods = () => {
-    if (selectedCarrier === 'all') {
-      return methods;
-    }
-    return methods.filter((m) => m.carrierId === selectedCarrier);
-  };
+interface TrackingEvent {
+  timestamp: string;
+  location: string;
+  description: string;
+  status: string;
+}
 
-  const handleGetRates = async () => {
-    try {
-      const selectedMethods = getAllMethods();
-      
-      // Calculate rates using API (simplified for now)
-      const calculatedRates: ShippingRate[] = selectedMethods.map((method) => ({
-        methodId: method.id,
-        methodName: method.name,
-        carrierName: method.carrierName,
-        price: method.baseRate,
-        estimatedDays: method.estimatedDays,
-        freeShipping: false,
-      }));
+interface TrackingInfo {
+  trackingNumber: string;
+  carrier: string;
+  status: string;
+  events: TrackingEvent[];
+}
 
-      setRates(calculatedRates);
-      message.success('Shipping rates calculated successfully!');
-    } catch (error) {
-      message.error('Failed to calculate rates');
-    }
-  };
-
-  const handleTrackPackage = async () => {
-    if (!trackingNumber) {
-      message.error('Please enter a tracking number');
-      return;
-    }
-
-    try {
-      const tracking = await shippingAPI.trackShipment(trackingNumber);
-      setTrackingInfo(tracking);
-      setIsTrackingModalVisible(true);
-      message.success('Tracking information retrieved');
-    } catch (error) {
-      message.error('Failed to retrieve tracking information');
-    }
-  };
-
-  const ratesColumns: ColumnsType<ShippingRate> = [
+const shippingCarriers: Carrier[] = [
+  {
+    id: 'fedex',
     name: 'FedEx',
     logo: '📦 FedEx',
     trackingEnabled: true,

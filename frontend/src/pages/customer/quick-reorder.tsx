@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -18,6 +18,7 @@ import {
   Checkbox,
   Empty,
   Alert,
+  Spin,
 } from 'antd';
 import {
   ShoppingCartOutlined,
@@ -30,30 +31,26 @@ import {
   RocketOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { ordersAPI, Order, OrderItem as APIOrderItem } from '@/services/api/orders';
+import { productAPI } from '@/services/api/products';
 
 const { Title, Text, Paragraph } = Typography;
 
-interface OrderItem {
-  id: number;
-  productId: number;
-  productName: string;
-  productImage: string;
-  quantity: number;
-  price: number;
-  category: string;
+interface OrderItem extends APIOrderItem {
+  category?: string;
 }
 
 interface PastOrder {
-  id: number;
+  id: string;
   orderNumber: string;
   orderDate: string;
   totalAmount: number;
   items: OrderItem[];
-  status: 'delivered' | 'cancelled';
+  status: 'delivered' | 'cancelled' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'refunded';
 }
 
 interface FrequentItem {
-  productId: number;
+  productId: string;
   productName: string;
   productImage: string;
   category: string;
@@ -63,120 +60,92 @@ interface FrequentItem {
   inStock: boolean;
 }
 
-const mockPastOrders: PastOrder[] = [
-  {
-    id: 1,
-    orderNumber: '#12345',
-    orderDate: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-    totalAmount: 299.99,
-    status: 'delivered',
-    items: [
-      {
-        id: 1,
-        productId: 101,
-        productName: 'Wireless Headphones',
-        productImage: 'https://via.placeholder.com/80x80?text=Headphones',
-        quantity: 1,
-        price: 299.99,
-        category: 'Electronics',
-      },
-    ],
-  },
-  {
-    id: 2,
-    orderNumber: '#12340',
-    orderDate: dayjs().subtract(60, 'days').format('YYYY-MM-DD'),
-    totalAmount: 149.99,
-    status: 'delivered',
-    items: [
-      {
-        id: 2,
-        productId: 102,
-        productName: 'Coffee Maker',
-        productImage: 'https://via.placeholder.com/80x80?text=Coffee',
-        quantity: 1,
-        price: 89.99,
-        category: 'Home',
-      },
-      {
-        id: 3,
-        productId: 103,
-        productName: 'Coffee Beans (1kg)',
-        productImage: 'https://via.placeholder.com/80x80?text=Beans',
-        quantity: 2,
-        price: 29.99,
-        category: 'Groceries',
-      },
-    ],
-  },
-  {
-    id: 3,
-    orderNumber: '#12335',
-    orderDate: dayjs().subtract(90, 'days').format('YYYY-MM-DD'),
-    totalAmount: 199.99,
-    status: 'delivered',
-    items: [
-      {
-        id: 4,
-        productId: 104,
-        productName: 'Yoga Mat',
-        productImage: 'https://via.placeholder.com/80x80?text=Yoga',
-        quantity: 1,
-        price: 49.99,
-        category: 'Sports',
-      },
-      {
-        id: 5,
-        productId: 103,
-        productName: 'Coffee Beans (1kg)',
-        productImage: 'https://via.placeholder.com/80x80?text=Beans',
-        quantity: 5,
-        price: 29.99,
-        category: 'Groceries',
-      },
-    ],
-  },
-];
-
-const mockFrequentItems: FrequentItem[] = [
-  {
-    productId: 103,
-    productName: 'Coffee Beans (1kg)',
-    productImage: 'https://via.placeholder.com/120x120?text=Beans',
-    category: 'Groceries',
-    timesOrdered: 7,
-    lastOrdered: dayjs().subtract(20, 'days').format('YYYY-MM-DD'),
-    avgPrice: 29.99,
-    inStock: true,
-  },
-  {
-    productId: 105,
-    productName: 'Printer Paper (500 sheets)',
-    productImage: 'https://via.placeholder.com/120x120?text=Paper',
-    category: 'Office',
-    timesOrdered: 5,
-    lastOrdered: dayjs().subtract(15, 'days').format('YYYY-MM-DD'),
-    avgPrice: 12.99,
-    inStock: true,
-  },
-  {
-    productId: 106,
-    productName: 'Hand Soap Refill',
-    productImage: 'https://via.placeholder.com/120x120?text=Soap',
-    category: 'Personal Care',
-    timesOrdered: 4,
-    lastOrdered: dayjs().subtract(10, 'days').format('YYYY-MM-DD'),
-    avgPrice: 8.99,
-    inStock: false,
-  },
-];
-
 const QuickReorderPage: React.FC = () => {
-  const [orders] = useState<PastOrder[]>(mockPastOrders);
-  const [frequentItems] = useState<FrequentItem[]>(mockFrequentItems);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [orders, setOrders] = useState<PastOrder[]>([]);
+  const [frequentItems, setFrequentItems] = useState<FrequentItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isReorderModalVisible, setIsReorderModalVisible] = useState<boolean>(false);
   const [reorderingOrder, setReorderingOrder] = useState<PastOrder | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await ordersAPI.getAll({ limit: 10 });
+      
+      // Transform orders to PastOrder format
+      const pastOrders: PastOrder[] = response.data
+        .filter(order => order.status === 'delivered' || order.status === 'cancelled')
+        .map(order => ({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          orderDate: order.createdAt,
+          totalAmount: order.total,
+          items: order.items.map(item => ({
+            ...item,
+            category: 'General' // Can be enhanced with product API call
+          })),
+          status: order.status as 'delivered' | 'cancelled' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'refunded'
+        }));
+
+      setOrders(pastOrders);
+
+      // Calculate frequent items from orders
+      const itemFrequency = new Map<string, {
+        count: number;
+        lastDate: string;
+        totalPrice: number;
+        productName: string;
+        productImage: string;
+      }>();
+
+      pastOrders.forEach(order => {
+        order.items.forEach(item => {
+          const existing = itemFrequency.get(item.productId) || {
+            count: 0,
+            lastDate: '',
+            totalPrice: 0,
+            productName: item.productName,
+            productImage: item.productImage
+          };
+          
+          existing.count += 1;
+          existing.totalPrice += item.price;
+          if (!existing.lastDate || order.orderDate > existing.lastDate) {
+            existing.lastDate = order.orderDate;
+          }
+          
+          itemFrequency.set(item.productId, existing);
+        });
+      });
+
+      // Convert to FrequentItem array and sort by frequency
+      const frequent: FrequentItem[] = Array.from(itemFrequency.entries())
+        .map(([productId, data]) => ({
+          productId,
+          productName: data.productName,
+          productImage: data.productImage,
+          category: 'General',
+          timesOrdered: data.count,
+          lastOrdered: data.lastDate,
+          avgPrice: data.totalPrice / data.count,
+          inStock: true // Can be enhanced with product stock check
+        }))
+        .sort((a, b) => b.timesOrdered - a.timesOrdered)
+        .slice(0, 10);
+
+      setFrequentItems(frequent);
+    } catch (error) {
+      console.error('Failed to load orders:', error);
+      message.error('Failed to load order history');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleReorderEntireOrder = (order: PastOrder) => {
     setReorderingOrder(order);
@@ -203,7 +172,7 @@ const QuickReorderPage: React.FC = () => {
     message.success(`${item.productName} added to cart!`);
   };
 
-  const handleToggleItem = (itemId: number) => {
+  const handleToggleItem = (itemId: string) => {
     setSelectedItems(prev =>
       prev.includes(itemId)
         ? prev.filter(id => id !== itemId)
@@ -218,17 +187,18 @@ const QuickReorderPage: React.FC = () => {
   const avgOrderValue = totalPastOrders > 0 ? totalSpent / totalPastOrders : 0;
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={3}>
-            <ThunderboltOutlined style={{ color: '#1890ff' }} /> Quick Reorder
-          </Title>
-          <Paragraph type="secondary">
-            Reorder your favorite products with one click
-          </Paragraph>
-        </Col>
-      </Row>
+    <Spin spinning={loading} tip="Loading orders...">
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+          <Col>
+            <Title level={3}>
+              <ThunderboltOutlined style={{ color: '#1890ff' }} /> Quick Reorder
+            </Title>
+            <Paragraph type="secondary">
+              Reorder your favorite products with one click
+            </Paragraph>
+          </Col>
+        </Row>
 
       <Alert
         message="⚡ Quick Reorder saves you time!"
@@ -576,7 +546,8 @@ const QuickReorderPage: React.FC = () => {
           </Space>
         )}
       </Modal>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

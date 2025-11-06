@@ -1,0 +1,92 @@
+[
+  {
+    "productSlug": "apple-iphone-15-pro-max",
+    "customerEmail": "customer1@groow.com",
+    "rating": 5,
+    "title": "Amazing Phone!",
+    "comment": "Best iPhone I've ever owned. The camera is incredible and the battery lasts all day. Highly recommend!",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "apple-iphone-15-pro-max",
+    "customerEmail": "customer2@groow.com",
+    "rating": 4,
+    "title": "Great but expensive",
+    "comment": "Fantastic phone with top-notch features, but the price is quite steep. Still worth it for the quality.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "samsung-galaxy-s24-ultra",
+    "customerEmail": "customer3@groow.com",
+    "rating": 5,
+    "title": "S Pen is a game changer",
+    "comment": "The S Pen makes this phone incredibly versatile. Perfect for note-taking and creative work.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "nike-air-max-270",
+    "customerEmail": "customer4@groow.com",
+    "rating": 5,
+    "title": "Super comfortable!",
+    "comment": "These shoes are incredibly comfortable. I can wear them all day without any discomfort.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "nike-air-max-270",
+    "customerEmail": "customer5@groow.com",
+    "rating": 4,
+    "title": "Great shoes, run a bit large",
+    "comment": "Love the style and comfort, but they run about half a size large. Order accordingly.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "sony-wh-1000xm5-wireless-headphones",
+    "customerEmail": "customer6@groow.com",
+    "rating": 5,
+    "title": "Best noise canceling ever",
+    "comment": "The noise canceling is phenomenal. Perfect for flights and working in noisy environments.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "dell-xps-15-laptop",
+    "customerEmail": "customer7@groow.com",
+    "rating": 5,
+    "title": "Perfect for developers",
+    "comment": "Great laptop for coding and development. Fast, beautiful screen, and excellent build quality.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "dell-xps-15-laptop",
+    "customerEmail": "customer8@groow.com",
+    "rating": 4,
+    "title": "Powerful but runs hot",
+    "comment": "Very powerful laptop that handles everything I throw at it, but it does get warm under heavy load.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "adidas-ultraboost-23",
+    "customerEmail": "customer9@groow.com",
+    "rating": 5,
+    "title": "Best running shoes",
+    "comment": "The Boost cushioning is amazing. These are my go-to shoes for long runs.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  },
+  {
+    "productSlug": "lg-oled-c3-65-inch-tv",
+    "customerEmail": "customer10@groow.com",
+    "rating": 5,
+    "title": "Stunning picture quality",
+    "comment": "The OLED display is breathtaking. Perfect blacks and vibrant colors. Great for movies and gaming.",
+    "isVerifiedPurchase": true,
+    "status": "approved"
+  }
+]

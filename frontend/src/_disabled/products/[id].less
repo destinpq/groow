@@ -1,0 +1,30 @@
+.product-detail-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .product-gallery {
+    .main-image-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #f5f5f5;
+    }
+
+    .thumbnail {
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      &.active {
+        box-shadow: 0 2px 8px rgba(255, 153, 0, 0.3);
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
+}

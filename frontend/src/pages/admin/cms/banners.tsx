@@ -1,31 +1,42 @@
 import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns } from '@ant-design/pro-components';
-import { Button, Space, Modal, Form, Input, Upload, Switch, Select, message, Image } from 'antd';
+import { Button, Space, Modal, Form, Input, Upload, Switch, Select, message, Image, DatePicker } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-
-interface BannerType {
-  id: string;
-  title: string;
-  image: string;
-  link: string;
-  position: string;
-  order: number;
-  active: boolean;
-  createdAt: string;
-}
+import { useState, useEffect } from 'react';
+import { cmsAPI, CMSBanner } from '@/services/api';
+import dayjs from 'dayjs';
 
 const AdminBanners = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [editingBanner, setEditingBanner] = useState<CMSBanner | null>(null);
+  const [banners, setBanners] = useState<CMSBanner[]>([]);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  const columns: ProColumns<BannerType>[] = [
+  useEffect(() => {
+    loadBanners();
+  }, []);
+
+  const loadBanners = async () => {
+    try {
+      setLoading(true);
+      const response = await cmsAPI.banners.getAll();
+      setBanners(response.data);
+    } catch (error) {
+      message.error('Failed to load banners');
+      console.error('Load banners error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns: ProColumns<CMSBanner>[] = [
     {
       title: 'Image',
-      dataIndex: 'image',
-      key: 'image',
+      dataIndex: 'imageUrl',
+      key: 'imageUrl',
       width: 150,
-      render: (image: string) => <Image src={image} width={120} height={60} style={{ objectFit: 'cover' }} />,
+      render: (_, record) => <Image src={record.imageUrl} width={120} height={60} style={{ objectFit: 'cover' }} />,
     },
     {
       title: 'Title',
@@ -34,29 +45,36 @@ const AdminBanners = () => {
       width: 200,
     },
     {
-      title: 'Position',
-      dataIndex: 'position',
-      key: 'position',
+      title: 'Placement',
+      dataIndex: 'placement',
+      key: 'placement',
       width: 150,
       filters: [
-        { text: 'Homepage Top', value: 'home_top' },
-        { text: 'Homepage Middle', value: 'home_middle' },
+        { text: 'Home Hero', value: 'home-hero' },
+        { text: 'Home Secondary', value: 'home-secondary' },
+        { text: 'Category', value: 'category' },
+        { text: 'Product', value: 'product' },
         { text: 'Sidebar', value: 'sidebar' },
       ],
     },
     {
       title: 'Order',
-      dataIndex: 'order',
-      key: 'order',
+      dataIndex: 'displayOrder',
+      key: 'displayOrder',
       width: 80,
       sorter: true,
     },
     {
       title: 'Status',
-      dataIndex: 'active',
-      key: 'active',
+      dataIndex: 'isActive',
+      key: 'isActive',
       width: 100,
-      render: (active: boolean) => <Switch checked={active} onChange={() => message.success('Status updated')} />,
+      render: (_, record) => (
+        <Switch 
+          checked={record.isActive} 
+          onChange={() => handleToggleStatus(record.id, record.isActive)} 
+        />
+      ),
     },
     {
       title: 'Actions',
@@ -71,83 +89,168 @@ const AdminBanners = () => {
     },
   ];
 
-  const mockData: BannerType[] = [
-    {
-      id: '1',
-      title: 'Summer Sale Banner',
-      image: 'https://via.placeholder.com/1200x400?text=Summer+Sale',
-      link: '/deals/summer-sale',
-      position: 'home_top',
-      order: 1,
-      active: true,
-      createdAt: '2024-11-01',
-    },
-  ];
+  const handleToggleStatus = async (id: number, currentStatus: boolean) => {
+    try {
+      await cmsAPI.banners.update(id, { isActive: !currentStatus });
+      message.success('Status updated successfully');
+      loadBanners();
+    } catch (error) {
+      message.error('Failed to update status');
+      console.error('Toggle status error:', error);
+    }
+  };
 
-  const handleEdit = (record: BannerType) => {
-    form.setFieldsValue(record);
+  const handleEdit = (record: CMSBanner) => {
+    setEditingBanner(record);
+    form.setFieldsValue({
+      ...record,
+      startDate: record.startDate ? dayjs(record.startDate) : null,
+      endDate: record.endDate ? dayjs(record.endDate) : null,
+    });
     setModalVisible(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     Modal.confirm({
       title: 'Delete Banner',
-      content: 'Are you sure?',
-      onOk: () => message.success('Banner deleted'),
+      content: 'Are you sure you want to delete this banner?',
+      okText: 'Delete',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await cmsAPI.banners.delete(id);
+          message.success('Banner deleted successfully');
+          loadBanners();
+        } catch (error) {
+          message.error('Failed to delete banner');
+          console.error('Delete error:', error);
+        }
+      },
     });
+  };
+
+  const handleSubmit = async (values: any) => {
+    try {
+      const bannerData = {
+        ...values,
+        startDate: values.startDate ? values.startDate.format('YYYY-MM-DD') : undefined,
+        endDate: values.endDate ? values.endDate.format('YYYY-MM-DD') : undefined,
+      };
+
+      if (editingBanner) {
+        await cmsAPI.banners.update(editingBanner.id, bannerData);
+        message.success('Banner updated successfully');
+      } else {
+        await cmsAPI.banners.create(bannerData);
+        message.success('Banner created successfully');
+      }
+
+      setModalVisible(false);
+      setEditingBanner(null);
+      form.resetFields();
+      loadBanners();
+    } catch (error) {
+      message.error(`Failed to ${editingBanner ? 'update' : 'create'} banner`);
+      console.error('Submit error:', error);
+    }
+  };
+
+  const handleAddNew = () => {
+    setEditingBanner(null);
+    form.resetFields();
+    setModalVisible(true);
   };
 
   return (
     <div>
-      <ProTable<BannerType>
+      <ProTable<CMSBanner>
         columns={columns}
-        dataSource={mockData}
+        dataSource={banners}
+        loading={loading}
         rowKey="id"
         search={false}
         headerTitle="Banners Management"
         toolBarRender={() => [
-          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={handleAddNew}>
             Add Banner
           </Button>,
         ]}
       />
 
       <Modal
-        title="Banner Details"
+        title={editingBanner ? 'Edit Banner' : 'Add Banner'}
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+          setModalVisible(false);
+          setEditingBanner(null);
+          form.resetFields();
+        }}
         footer={null}
-        width={600}
+        width={700}
       >
-        <Form form={form} layout="vertical" onFinish={() => message.success('Banner saved')}>
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-            <Input />
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item name="title" label="Banner Title" rules={[{ required: true, message: 'Please enter title' }]}>
+            <Input placeholder="Summer Sale 2024" />
           </Form.Item>
-          <Form.Item name="image" label="Banner Image" rules={[{ required: true }]}>
-            <Upload listType="picture">
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
-            </Upload>
+          
+          <Form.Item name="description" label="Description">
+            <Input.TextArea rows={3} placeholder="Banner description..." />
           </Form.Item>
-          <Form.Item name="link" label="Link URL">
-            <Input placeholder="https://..." />
+
+          <Form.Item name="imageUrl" label="Image URL" rules={[{ required: true, message: 'Please enter image URL' }]}>
+            <Input placeholder="https://example.com/banner.jpg" />
           </Form.Item>
-          <Form.Item name="position" label="Position" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="home_top">Homepage Top</Select.Option>
-              <Select.Option value="home_middle">Homepage Middle</Select.Option>
+
+          <Form.Item name="linkUrl" label="Link URL">
+            <Input placeholder="https://example.com/sale" />
+          </Form.Item>
+
+          <Form.Item name="linkText" label="Link Text">
+            <Input placeholder="Shop Now" />
+          </Form.Item>
+
+          <Form.Item name="placement" label="Placement" rules={[{ required: true }]}>
+            <Select placeholder="Select placement">
+              <Select.Option value="home-hero">Home Hero</Select.Option>
+              <Select.Option value="home-secondary">Home Secondary</Select.Option>
+              <Select.Option value="category">Category</Select.Option>
+              <Select.Option value="product">Product</Select.Option>
               <Select.Option value="sidebar">Sidebar</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="order" label="Display Order">
-            <Input type="number" />
+
+          <Form.Item name="displayOrder" label="Display Order" rules={[{ required: true }]}>
+            <Input type="number" placeholder="1" />
           </Form.Item>
-          <Form.Item name="active" label="Active" valuePropName="checked">
+
+          <Form.Item name="startDate" label="Start Date">
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item name="endDate" label="End Date">
+            <DatePicker style={{ width: '100%' }} />
+          </Form.Item>
+
+          <Form.Item name="targetBlank" label="Open in New Tab" valuePropName="checked">
             <Switch />
           </Form.Item>
+
+          <Form.Item name="isActive" label="Active" valuePropName="checked" initialValue={true}>
+            <Switch />
+          </Form.Item>
+
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit">Submit</Button>
-              <Button onClick={() => setModalVisible(false)}>Cancel</Button>
+              <Button type="primary" htmlType="submit">
+                {editingBanner ? 'Update' : 'Create'} Banner
+              </Button>
+              <Button onClick={() => {
+                setModalVisible(false);
+                setEditingBanner(null);
+                form.resetFields();
+              }}>
+                Cancel
+              </Button>
             </Space>
           </Form.Item>
         </Form>

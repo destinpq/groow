@@ -1,0 +1,107 @@
+[
+  {
+    "name": "Apple",
+    "slug": "apple",
+    "description": "Premium technology products and innovative devices",
+    "logo": "https://logo.clearbit.com/apple.com",
+    "isActive": true
+  },
+  {
+    "name": "Samsung",
+    "slug": "samsung",
+    "description": "Electronics, appliances, and mobile devices",
+    "logo": "https://logo.clearbit.com/samsung.com",
+    "isActive": true
+  },
+  {
+    "name": "Nike",
+    "slug": "nike",
+    "description": "Athletic footwear, apparel, and sports equipment",
+    "logo": "https://logo.clearbit.com/nike.com",
+    "isActive": true
+  },
+  {
+    "name": "Adidas",
+    "slug": "adidas",
+    "description": "Sportswear, shoes, and athletic accessories",
+    "logo": "https://logo.clearbit.com/adidas.com",
+    "isActive": true
+  },
+  {
+    "name": "Sony",
+    "slug": "sony",
+    "description": "Electronics, gaming, and entertainment products",
+    "logo": "https://logo.clearbit.com/sony.com",
+    "isActive": true
+  },
+  {
+    "name": "LG",
+    "slug": "lg",
+    "description": "Home appliances and consumer electronics",
+    "logo": "https://logo.clearbit.com/lg.com",
+    "isActive": true
+  },
+  {
+    "name": "Dell",
+    "slug": "dell",
+    "description": "Computers, laptops, and technology solutions",
+    "logo": "https://logo.clearbit.com/dell.com",
+    "isActive": true
+  },
+  {
+    "name": "HP",
+    "slug": "hp",
+    "description": "Computing, printing, and business solutions",
+    "logo": "https://logo.clearbit.com/hp.com",
+    "isActive": true
+  },
+  {
+    "name": "Canon",
+    "slug": "canon",
+    "description": "Cameras, printers, and imaging equipment",
+    "logo": "https://logo.clearbit.com/canon.com",
+    "isActive": true
+  },
+  {
+    "name": "Nikon",
+    "slug": "nikon",
+    "description": "Photography equipment and optical products",
+    "logo": "https://logo.clearbit.com/nikon.com",
+    "isActive": true
+  },
+  {
+    "name": "Microsoft",
+    "slug": "microsoft",
+    "description": "Software, gaming, and computer hardware",
+    "logo": "https://logo.clearbit.com/microsoft.com",
+    "isActive": true
+  },
+  {
+    "name": "Bose",
+    "slug": "bose",
+    "description": "Premium audio equipment and speakers",
+    "logo": "https://logo.clearbit.com/bose.com",
+    "isActive": true
+  },
+  {
+    "name": "Philips",
+    "slug": "philips",
+    "description": "Healthcare, lighting, and consumer electronics",
+    "logo": "https://logo.clearbit.com/philips.com",
+    "isActive": true
+  },
+  {
+    "name": "Panasonic",
+    "slug": "panasonic",
+    "description": "Electronics and home appliances",
+    "logo": "https://logo.clearbit.com/panasonic.com",
+    "isActive": true
+  },
+  {
+    "name": "Logitech",
+    "slug": "logitech",
+    "description": "Computer peripherals and gaming accessories",
+    "logo": "https://logo.clearbit.com/logitech.com",
+    "isActive": true
+  }
+]

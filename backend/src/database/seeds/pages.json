@@ -1,0 +1,47 @@
+[
+  {
+    "title": "About Us",
+    "slug": "about-us",
+    "content": "<h1>About Groow</h1><p>Welcome to Groow, your premier destination for quality products from trusted vendors. We connect buyers with the best sellers in the marketplace.</p><h2>Our Mission</h2><p>To provide a seamless shopping experience that brings together quality products and exceptional service.</p>",
+    "metaTitle": "About Us - Groow Marketplace",
+    "metaDescription": "Learn about Groow's mission to connect buyers with quality vendors",
+    "status": "published",
+    "isActive": true
+  },
+  {
+    "title": "Terms of Service",
+    "slug": "terms-of-service",
+    "content": "<h1>Terms of Service</h1><p>Last updated: November 6, 2025</p><h2>1. Acceptance of Terms</h2><p>By accessing and using Groow marketplace, you accept and agree to be bound by these terms.</p>",
+    "metaTitle": "Terms of Service - Groow",
+    "metaDescription": "Read Groow's terms of service and conditions",
+    "status": "published",
+    "isActive": true
+  },
+  {
+    "title": "Privacy Policy",
+    "slug": "privacy-policy",
+    "content": "<h1>Privacy Policy</h1><p>Your privacy is important to us. This policy explains how we collect and use your data.</p><h2>Information We Collect</h2><p>We collect information you provide directly to us when using our services.</p>",
+    "metaTitle": "Privacy Policy - Groow",
+    "metaDescription": "Groow's privacy policy and data protection practices",
+    "status": "published",
+    "isActive": true
+  },
+  {
+    "title": "Shipping & Delivery",
+    "slug": "shipping-delivery",
+    "content": "<h1>Shipping & Delivery</h1><p>Fast and reliable shipping on all orders.</p><h2>Delivery Times</h2><ul><li>Standard: 5-7 business days</li><li>Express: 2-3 business days</li><li>Next Day: Order before 2 PM</li></ul>",
+    "metaTitle": "Shipping & Delivery Information",
+    "metaDescription": "Learn about our shipping options and delivery times",
+    "status": "published",
+    "isActive": true
+  },
+  {
+    "title": "Return Policy",
+    "slug": "return-policy",
+    "content": "<h1>Return Policy</h1><p>30-day hassle-free returns on all products.</p><h2>How to Return</h2><ol><li>Contact customer support</li><li>Ship item back with provided label</li><li>Receive refund within 5-7 days</li></ol>",
+    "metaTitle": "Return Policy - 30 Day Returns",
+    "metaDescription": "Easy returns within 30 days of purchase",
+    "status": "published",
+    "isActive": true
+  }
+]

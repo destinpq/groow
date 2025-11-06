@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Space, Tag, Row, Col, Input, Select, Modal, Form, InputNumber, message, Upload, Tabs, Typography, Progress, Alert, Checkbox } from 'antd';
 import { UploadOutlined, DownloadOutlined, EditOutlined, DeleteOutlined, PlayCircleOutlined, PauseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { productAPI, bulkDataAPI, Product } from '@/services/api';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -8,28 +9,53 @@ const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
+interface BulkOperation {
+  id: number;
+  operation: string;
+  items: number;
+  status: string;
+  date: string;
+  user: string;
+}
+
 const BulkOperationsPage: React.FC = () => {
-  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Product[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [operationType, setOperationType] = useState('');
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [form] = Form.useForm();
 
-  const mockProducts = [
-    { id: 1, name: 'Wireless Headphones Pro', sku: 'WH-PRO-001', currentPrice: 79.99, stock: 45, vendor: 'Audio Tech' },
-    { id: 2, name: 'Smart Watch Series X', sku: 'SW-X-002', currentPrice: 249.99, stock: 8, vendor: 'Tech Innovations' },
-    { id: 3, name: 'Laptop Stand Premium', sku: 'LS-PREM-003', currentPrice: 89.99, stock: 32, vendor: 'Office Solutions' },
-    { id: 4, name: 'USB-C Hub Multi', sku: 'USBH-M-004', currentPrice: 45.99, stock: 67, vendor: 'Connect Pro' },
-  ];
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
-  const operationHistory = [
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await productAPI.getAll({ page: 1, limit: 100 });
+      setProducts(response.data || []);
+    } catch (error) {
+      message.error('Failed to load products');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const operationHistory: BulkOperation[] = [
     { id: 1, operation: 'Price Update', items: 25, status: 'completed', date: '2024-01-15', user: 'Admin' },
     { id: 2, operation: 'Stock Adjustment', items: 12, status: 'running', date: '2024-01-15', user: 'Manager' },
     { id: 3, operation: 'Bulk Delete', items: 8, status: 'failed', date: '2024-01-14', user: 'Admin' },
   ];
 
   const handleBulkOperation = (type: string) => {
+    if (selectedItems.length === 0) {
+      message.warning('Please select at least one product');
+      return;
+    }
     setOperationType(type);
     setIsModalVisible(true);
     form.resetFields();
@@ -40,15 +66,20 @@ const BulkOperationsPage: React.FC = () => {
       setProcessing(true);
       setProgress(0);
       
-      // Simulate progress
+      const values = form.getFieldsValue();
+      
+      // Simulate progress and execute operation
       const interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 100) {
             clearInterval(interval);
             setProcessing(false);
             setIsModalVisible(false);
+            
+            // Execute the actual API calls based on operation type
+            performBulkUpdate(values);
+            
             setSelectedItems([]);
-            message.success(`${operationType} completed successfully for ${selectedItems.length} items`);
             return 100;
           }
           return prev + 10;
@@ -57,6 +88,38 @@ const BulkOperationsPage: React.FC = () => {
     } catch (error) {
       setProcessing(false);
       message.error('Operation failed');
+    }
+  };
+
+  const performBulkUpdate = async (values: any) => {
+    try {
+      if (operationType === 'Price Update') {
+        // Update prices for all selected items
+        for (const item of selectedItems) {
+          await productAPI.update(item.id, { price: values.newPrice });
+        }
+        message.success(`Price updated for ${selectedItems.length} products`);
+      } else if (operationType === 'Stock Adjustment') {
+        // Update stock for all selected items
+        for (const item of selectedItems) {
+          await productAPI.update(item.id, { stock: values.newStock });
+        }
+        message.success(`Stock updated for ${selectedItems.length} products`);
+      } else if (operationType === 'Activate/Deactivate') {
+        // Toggle active status - skip this as API doesn't support it
+        message.info(`Status update not supported by API yet`);
+      } else if (operationType === 'Bulk Delete') {
+        // Delete selected products
+        for (const item of selectedItems) {
+          await productAPI.delete(item.id);
+        }
+        message.success(`Deleted ${selectedItems.length} products`);
+      }
+      
+      loadProducts();
+    } catch (error) {
+      message.error('Bulk operation failed');
+      console.error(error);
     }
   };
 
@@ -73,7 +136,7 @@ const BulkOperationsPage: React.FC = () => {
     {
       title: '',
       key: 'select',
-      render: (record: any) => (
+      render: (record: Product) => (
         <Checkbox 
           checked={selectedItems.some(item => item.id === record.id)}
           onChange={(e) => {
@@ -90,29 +153,31 @@ const BulkOperationsPage: React.FC = () => {
     {
       title: 'Product',
       key: 'product',
-      render: (record: any) => (
+      render: (record: Product) => (
         <div>
           <Text strong>{record.name}</Text>
           <br />
-          <Text type="secondary" style={{ fontSize: '12px' }}>SKU: {record.sku}</Text>
+          <Text type="secondary" style={{ fontSize: '12px' }}>SKU: {record.sku || 'N/A'}</Text>
         </div>
       ),
     },
     {
       title: 'Current Price',
-      dataIndex: 'currentPrice',
-      key: 'currentPrice',
-      render: (price: number) => <Text strong>${price}</Text>,
+      dataIndex: 'price',
+      key: 'price',
+      render: (price: number) => <Text strong>${price?.toFixed(2) || '0.00'}</Text>,
     },
     {
       title: 'Stock',
       dataIndex: 'stock',
       key: 'stock',
+      render: (stock: number) => <Text>{stock || 0}</Text>,
     },
     {
-      title: 'Vendor',
-      dataIndex: 'vendor',
-      key: 'vendor',
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
+      render: (category: any) => category?.name || 'N/A',
     },
   ];
 
@@ -234,8 +299,9 @@ const BulkOperationsPage: React.FC = () => {
             
             <Table
               columns={productColumns}
-              dataSource={mockProducts}
+              dataSource={products}
               rowKey="id"
+              loading={loading}
               pagination={{ pageSize: 10 }}
             />
           </Card>

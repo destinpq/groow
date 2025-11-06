@@ -23,7 +23,7 @@ import {
   UserOutlined,
   InfoCircleOutlined,
   CheckCircleOutlined,
-  RulerOutlined,
+  ColumnWidthOutlined,
   ShoppingOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
@@ -218,7 +218,7 @@ const SizeGuidePage: React.FC = () => {
     <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
       <div style={{ marginBottom: 24 }}>
         <Title level={3}>
-          <RulerOutlined style={{ color: '#1890ff' }} /> Size Guide
+          <ColumnWidthOutlined style={{ color: '#1890ff' }} /> Size Guide
         </Title>
         <Paragraph type="secondary">
           Find your perfect fit with our comprehensive size charts and measurement guide
@@ -279,32 +279,32 @@ const SizeGuidePage: React.FC = () => {
               </Col>
               <Col xs={24} md={12}>
                 <Collapse defaultActiveKey={['1']} ghost>
-                  <Panel header={<Text strong><RulerOutlined /> Chest</Text>} key="1">
+                  <Panel header={<Text strong><ColumnWidthOutlined /> Chest</Text>} key="1">
                     <Paragraph>
                       Measure around the fullest part of your chest, keeping the tape measure horizontal. Make sure to keep the tape snug but not tight.
                     </Paragraph>
                   </Panel>
-                  <Panel header={<Text strong><RulerOutlined /> Waist</Text>} key="2">
+                  <Panel header={<Text strong><ColumnWidthOutlined /> Waist</Text>} key="2">
                     <Paragraph>
                       Measure around your natural waistline, keeping the tape comfortably loose. This is usually just above your belly button.
                     </Paragraph>
                   </Panel>
-                  <Panel header={<Text strong><RulerOutlined /> Hips</Text>} key="3">
+                  <Panel header={<Text strong><ColumnWidthOutlined /> Hips</Text>} key="3">
                     <Paragraph>
                       Stand with your feet together and measure around the fullest part of your hips and seat, keeping the tape parallel to the floor.
                     </Paragraph>
                   </Panel>
-                  <Panel header={<Text strong><RulerOutlined /> Shoulders</Text>} key="4">
+                  <Panel header={<Text strong><ColumnWidthOutlined /> Shoulders</Text>} key="4">
                     <Paragraph>
                       Measure from the edge of one shoulder to the edge of the other shoulder across your back, at the widest point.
                     </Paragraph>
                   </Panel>
-                  <Panel header={<Text strong><RulerOutlined /> Sleeve</Text>} key="5">
+                  <Panel header={<Text strong><ColumnWidthOutlined /> Sleeve</Text>} key="5">
                     <Paragraph>
                       With your arm slightly bent, measure from the center back of your neck, across your shoulder, and down to your wrist.
                     </Paragraph>
                   </Panel>
-                  <Panel header={<Text strong><RulerOutlined /> Inseam</Text>} key="6">
+                  <Panel header={<Text strong><ColumnWidthOutlined /> Inseam</Text>} key="6">
                     <Paragraph>
                       Measure from the top of your inner thigh to the bottom of your ankle. It's best to measure a pair of pants that fit you well.
                     </Paragraph>

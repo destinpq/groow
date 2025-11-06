@@ -1,616 +1,860 @@
-import React, { useState } from 'react';
-import {
-  Card,
-  Row,
-  Col,
-  Typography,
-  Space,
-  Button,
-  Tag,
-  Modal,
-  Form,
-  Input,
-  message,
-  Avatar,
-  Divider,
-  Tooltip,
-  Badge,
-  Select,
-} from 'antd';
-import {
-  QuestionCircleOutlined,
-  LikeOutlined,
-  LikeFilled,
-  MessageOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  UserOutlined,
-  ShopOutlined,
-} from '@ant-design/icons';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import React, { useState, useEffect } from 'react';
+import { Card, Button, List, Avatar, Space, Tag, Input, Modal, Form, Select, Upload, message, Row, Col, Tabs, Typography, Badge, Rate, Divider, Tooltip, Empty, Spin, Statistic, Progress, Timeline } from 'antd';
+import { QuestionCircleOutlined, LikeOutlined, DislikeOutlined, MessageOutlined, CheckCircleOutlined, UserOutlined, PlusOutlined, SearchOutlined, FilterOutlined, StarFilled, TrophyOutlined, ClockCircleOutlined, PaperClipOutlined, SendOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { productQAAPI, type ProductQuestion, type ProductAnswer, type CreateQuestionRequest, type QAStats } from '@/services/api/productQAAPI';
+// import './product-qa.less';
 
-dayjs.extend(relativeTime);
-
-const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
+const { TabPane } = Tabs;
+const { Title, Text, Paragraph } = Typography;
+const { Search } = Input;
 
-interface Answer {
-  id: number;
-  text: string;
-  answeredBy: 'seller' | 'customer';
-  answererName: string;
-  answeredAt: string;
-  isVerified: boolean;
-  helpfulVotes: number;
-  isHelpful: boolean;
-}
-
-interface Question {
-  id: number;
-  question: string;
-  askedBy: string;
-  askedAt: string;
-  category: 'product-info' | 'shipping' | 'compatibility' | 'warranty' | 'other';
-  status: 'answered' | 'pending' | 'no-answer';
-  answers: Answer[];
-  helpfulVotes: number;
-  isHelpful: boolean;
-  totalAnswers: number;
-}
-
-const mockQuestions: Question[] = [
-  {
-    id: 1,
-    question: 'Is this laptop suitable for video editing with 4K footage?',
-    askedBy: 'John D.',
-    askedAt: dayjs().subtract(2, 'days').format('YYYY-MM-DD HH:mm:ss'),
-    category: 'product-info',
-    status: 'answered',
-    helpfulVotes: 15,
-    isHelpful: true,
-    totalAnswers: 2,
-    answers: [
-      {
-        id: 1,
-        text: 'Yes! This laptop comes with 32GB RAM and RTX 4060 graphics card, which handles 4K video editing smoothly in Adobe Premiere Pro and DaVinci Resolve. I use it daily for professional video work.',
-        answeredBy: 'seller',
-        answererName: 'TechStore Official',
-        answeredAt: dayjs().subtract(2, 'days').add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss'),
-        isVerified: true,
-        helpfulVotes: 12,
-        isHelpful: true,
-      },
-      {
-        id: 2,
-        text: "I've been using this for 3 months now. It handles 4K editing really well. No issues with timeline scrubbing or rendering.",
-        answeredBy: 'customer',
-        answererName: 'Sarah M.',
-        answeredAt: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
-        isVerified: false,
-        helpfulVotes: 8,
-        isHelpful: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    question: 'Does this come with a warranty? If so, how long?',
-    askedBy: 'Mike R.',
-    askedAt: dayjs().subtract(5, 'days').format('YYYY-MM-DD HH:mm:ss'),
-    category: 'warranty',
-    status: 'answered',
-    helpfulVotes: 10,
-    isHelpful: false,
-    totalAnswers: 1,
-    answers: [
-      {
-        id: 3,
-        text: 'This product comes with a 2-year manufacturer warranty covering hardware defects. We also offer extended warranty options at checkout.',
-        answeredBy: 'seller',
-        answererName: 'TechStore Official',
-        answeredAt: dayjs().subtract(5, 'days').add(1, 'hour').format('YYYY-MM-DD HH:mm:ss'),
-        isVerified: true,
-        helpfulVotes: 10,
-        isHelpful: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    question: 'Can this laptop run the latest games at high settings?',
-    askedBy: 'Alex T.',
-    askedAt: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
-    category: 'product-info',
-    status: 'pending',
-    helpfulVotes: 3,
-    isHelpful: false,
-    totalAnswers: 0,
-    answers: [],
-  },
-  {
-    id: 4,
-    question: 'What is the expected delivery time for international shipping?',
-    askedBy: 'Emma W.',
-    askedAt: dayjs().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-    category: 'shipping',
-    status: 'pending',
-    helpfulVotes: 1,
-    isHelpful: false,
-    totalAnswers: 0,
-    answers: [],
-  },
-  {
-    id: 5,
-    question: 'Is the RAM upgradeable? What is the maximum supported?',
-    askedBy: 'Tom H.',
-    askedAt: dayjs().subtract(7, 'days').format('YYYY-MM-DD HH:mm:ss'),
-    category: 'compatibility',
-    status: 'answered',
-    helpfulVotes: 20,
-    isHelpful: true,
-    totalAnswers: 2,
-    answers: [
-      {
-        id: 4,
-        text: 'Yes, the laptop has 2 SO-DIMM slots. It comes with 32GB (2x16GB) and supports up to 64GB (2x32GB) DDR5 RAM.',
-        answeredBy: 'seller',
-        answererName: 'TechStore Official',
-        answeredAt: dayjs().subtract(7, 'days').add(2, 'hours').format('YYYY-MM-DD HH:mm:ss'),
-        isVerified: true,
-        helpfulVotes: 18,
-        isHelpful: true,
-      },
-      {
-        id: 5,
-        text: 'Just upgraded mine to 64GB last week. Super easy process, took only 10 minutes!',
-        answeredBy: 'customer',
-        answererName: 'Chris P.',
-        answeredAt: dayjs().subtract(6, 'days').format('YYYY-MM-DD HH:mm:ss'),
-        isVerified: false,
-        helpfulVotes: 5,
-        isHelpful: false,
-      },
-    ],
-  },
-];
-
-const ProductQAPage: React.FC = () => {
-  const [questions, setQuestions] = useState<Question[]>(mockQuestions);
-  const [isAskModalVisible, setIsAskModalVisible] = useState<boolean>(false);
-  const [isAnswerModalVisible, setIsAnswerModalVisible] = useState<boolean>(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [form] = Form.useForm();
-  const [answerForm] = Form.useForm();
-
-  const handleAskQuestion = () => {
-    setIsAskModalVisible(true);
-  };
-
-  const handleSubmitQuestion = (values: any) => {
-    const newQuestion: Question = {
-      id: questions.length + 1,
-      question: values.question,
-      askedBy: 'You',
-      askedAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-      category: values.category,
-      status: 'pending',
-      helpfulVotes: 0,
-      isHelpful: false,
-      totalAnswers: 0,
-      answers: [],
-    };
-
-    setQuestions([newQuestion, ...questions]);
-    message.success('Question posted successfully! You will be notified when someone answers.');
-    setIsAskModalVisible(false);
-    form.resetFields();
-  };
-
-  const handleAnswerQuestion = (question: Question) => {
-    setSelectedQuestion(question);
-    setIsAnswerModalVisible(true);
-  };
-
-  const handleSubmitAnswer = (values: any) => {
-    if (!selectedQuestion) return;
-
-    const newAnswer: Answer = {
-      id: selectedQuestion.answers.length + 1,
-      text: values.answer,
-      answeredBy: 'customer',
-      answererName: 'You',
-      answeredAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-      isVerified: false,
-      helpfulVotes: 0,
-      isHelpful: false,
-    };
-
-    setQuestions(
-      questions.map((q) =>
-        q.id === selectedQuestion.id
-          ? {
-              ...q,
-              status: 'answered',
-              totalAnswers: q.totalAnswers + 1,
-              answers: [...q.answers, newAnswer],
-            }
-          : q
-      )
-    );
-
-    message.success('Answer posted successfully!');
-    setIsAnswerModalVisible(false);
-    answerForm.resetFields();
-  };
-
-  const handleToggleQuestionHelpful = (questionId: number) => {
-    setQuestions(
-      questions.map((q) =>
-        q.id === questionId
-          ? {
-              ...q,
-              isHelpful: !q.isHelpful,
-              helpfulVotes: q.isHelpful ? q.helpfulVotes - 1 : q.helpfulVotes + 1,
-            }
-          : q
-      )
-    );
-  };
-
-  const handleToggleAnswerHelpful = (questionId: number, answerId: number) => {
-    setQuestions(
-      questions.map((q) =>
-        q.id === questionId
-          ? {
-              ...q,
-              answers: q.answers.map((a) =>
-                a.id === answerId
-                  ? {
-                      ...a,
-                      isHelpful: !a.isHelpful,
-                      helpfulVotes: a.isHelpful ? a.helpfulVotes - 1 : a.helpfulVotes + 1,
-                    }
-                  : a
-              ),
-            }
-          : q
-      )
-    );
-  };
-
-  const filteredQuestions = questions.filter((q) => {
-    if (filterStatus !== 'all' && q.status !== filterStatus) return false;
-    if (filterCategory !== 'all' && q.category !== filterCategory) return false;
-    return true;
+// Product Q&A System with Community Features
+const ProductQASystem: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [questions, setQuestions] = useState<ProductQuestion[]>([]);
+  const [myQuestions, setMyQuestions] = useState<ProductQuestion[]>([]);
+  const [stats, setStats] = useState<QAStats | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<ProductQuestion | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAnswerModal, setShowAnswerModal] = useState(false);
+  const [showQuestionDetails, setShowQuestionDetails] = useState(false);
+  const [activeTab, setActiveTab] = useState('browse');
+  const [filters, setFilters] = useState({
+    category: undefined,
+    isAnswered: undefined,
+    sortBy: 'newest' as const,
+    search: ''
   });
 
-  const categoryConfig: Record<string, { color: string; text: string }> = {
-    'product-info': { color: 'blue', text: 'Product Info' },
-    shipping: { color: 'green', text: 'Shipping' },
-    compatibility: { color: 'purple', text: 'Compatibility' },
-    warranty: { color: 'orange', text: 'Warranty' },
-    other: { color: 'default', text: 'Other' },
+  const [createForm] = Form.useForm();
+  const [answerForm] = Form.useForm();
+
+  // Sample product ID for demonstration
+  const currentProductId = 'sample-product-1';
+
+  // Load initial data
+  useEffect(() => {
+    loadQuestions();
+    loadMyQuestions();
+    loadStats();
+  }, [filters]);
+
+  const loadQuestions = async () => {
+    setLoading(true);
+    try {
+      const response = await productQAAPI.getProductQuestions(currentProductId, filters);
+      if (response.success) {
+        setQuestions(response.data.questions);
+      } else {
+        message.error('Failed to load questions');
+      }
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      message.error('Failed to load questions');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const statusConfig: Record<string, { color: string; text: string; icon: React.ReactNode }> = {
-    answered: { color: 'green', text: 'Answered', icon: <CheckCircleOutlined /> },
-    pending: { color: 'orange', text: 'Pending', icon: <ClockCircleOutlined /> },
-    'no-answer': { color: 'red', text: 'No Answer', icon: <QuestionCircleOutlined /> },
+  const loadMyQuestions = async () => {
+    try {
+      const response = await productQAAPI.getMyQuestions(filters);
+      if (response.success) {
+        setMyQuestions(response.data.questions);
+      }
+    } catch (error) {
+      console.error('Error loading my questions:', error);
+    }
   };
 
-  return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={3}>
-            <QuestionCircleOutlined style={{ color: '#1890ff' }} /> Product Q&A
-          </Title>
-          <Paragraph type="secondary">
-            Ask questions and get answers from the community and sellers
-          </Paragraph>
-        </Col>
-        <Col>
-          <Button type="primary" icon={<QuestionCircleOutlined />} onClick={handleAskQuestion}>
-            Ask a Question
+  const loadStats = async () => {
+    try {
+      const response = await productQAAPI.getQAStats(currentProductId);
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
+
+  const handleCreateQuestion = async (values: any) => {
+    try {
+      const questionData: CreateQuestionRequest = {
+        productId: currentProductId,
+        question: values.question,
+        isPublic: values.isPublic !== false,
+        category: values.category,
+        tags: values.tags?.split(',').map((tag: string) => tag.trim()) || []
+      };
+
+      const response = await productQAAPI.createQuestion(questionData);
+      if (response.success) {
+        message.success('Question posted successfully');
+        setShowCreateModal(false);
+        createForm.resetFields();
+        loadQuestions();
+        loadMyQuestions();
+        loadStats();
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error creating question:', error);
+      message.error('Failed to post question');
+    }
+  };
+
+  const handleCreateAnswer = async (values: any) => {
+    if (!selectedQuestion) return;
+
+    try {
+      const answerData = {
+        questionId: selectedQuestion.id,
+        answer: values.answer,
+        attachments: values.attachments?.fileList?.map((file: any) => file.originFileObj) || []
+      };
+
+      const response = await productQAAPI.createAnswer(answerData);
+      if (response.success) {
+        message.success('Answer posted successfully');
+        setShowAnswerModal(false);
+        answerForm.resetFields();
+        
+        // Update the question with new answer
+        const updatedQuestion = {
+          ...selectedQuestion,
+          answers: [...selectedQuestion.answers, response.data],
+          isAnswered: true
+        };
+        setSelectedQuestion(updatedQuestion);
+        
+        // Refresh questions list
+        loadQuestions();
+        loadMyQuestions();
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error creating answer:', error);
+      message.error('Failed to post answer');
+    }
+  };
+
+  const handleVoteQuestion = async (questionId: string, voteType: 'up' | 'down') => {
+    try {
+      const response = await productQAAPI.voteQuestion(questionId, voteType);
+      if (response.success) {
+        // Update local state to reflect vote
+        setQuestions(questions.map(q => 
+          q.id === questionId 
+            ? {
+                ...q,
+                upvotes: voteType === 'up' ? q.upvotes + 1 : q.upvotes,
+                downvotes: voteType === 'down' ? q.downvotes + 1 : q.downvotes,
+                hasUserVoted: true,
+                userVoteType: voteType
+              }
+            : q
+        ));
+        message.success('Vote recorded');
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error voting:', error);
+      message.error('Failed to record vote');
+    }
+  };
+
+  const handleVoteAnswer = async (answerId: string, voteType: 'helpful' | 'not_helpful') => {
+    try {
+      const response = await productQAAPI.voteAnswer(answerId, voteType);
+      if (response.success) {
+        // Update the selected question's answers
+        if (selectedQuestion) {
+          const updatedAnswers = selectedQuestion.answers.map(a => 
+            a.id === answerId 
+              ? {
+                  ...a,
+                  helpfulCount: voteType === 'helpful' ? a.helpfulCount + 1 : a.helpfulCount,
+                  notHelpfulCount: voteType === 'not_helpful' ? a.notHelpfulCount + 1 : a.notHelpfulCount,
+                  hasUserVoted: true,
+                  userVoteType: voteType
+                }
+              : a
+          );
+          setSelectedQuestion({ ...selectedQuestion, answers: updatedAnswers });
+        }
+        message.success('Feedback recorded');
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error voting on answer:', error);
+      message.error('Failed to record feedback');
+    }
+  };
+
+  const handleAcceptAnswer = async (answerId: string) => {
+    try {
+      const response = await productQAAPI.acceptAnswer(answerId);
+      if (response.success) {
+        // Update the selected question's answers
+        if (selectedQuestion) {
+          const updatedAnswers = selectedQuestion.answers.map(a => ({
+            ...a,
+            isAccepted: a.id === answerId
+          }));
+          setSelectedQuestion({ ...selectedQuestion, answers: updatedAnswers });
+        }
+        message.success('Answer marked as best answer');
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error accepting answer:', error);
+      message.error('Failed to mark as best answer');
+    }
+  };
+
+  const renderQuestionCard = (question: ProductQuestion) => (
+    <Card
+      key={question.id}
+      size="small"
+      style={{ marginBottom: 16 }}
+      actions={[
+        <Space key="vote">
+          <Button
+            size="small"
+            type={question.hasUserVoted && question.userVoteType === 'up' ? 'primary' : 'text'}
+            icon={<LikeOutlined />}
+            onClick={() => handleVoteQuestion(question.id, 'up')}
+          >
+            {question.upvotes}
           </Button>
-        </Col>
-      </Row>
-
-      <Card style={{ marginBottom: 24 }}>
-        <Row gutter={16} align="middle">
-          <Col>
-            <Text strong>Filter by:</Text>
-          </Col>
-          <Col>
-            <Select
-              value={filterStatus}
-              onChange={setFilterStatus}
-              style={{ width: 150 }}
-              placeholder="Status"
-            >
-              <Option value="all">All Status</Option>
-              <Option value="answered">Answered</Option>
-              <Option value="pending">Pending</Option>
-              <Option value="no-answer">No Answer</Option>
-            </Select>
-          </Col>
-          <Col>
-            <Select
-              value={filterCategory}
-              onChange={setFilterCategory}
-              style={{ width: 150 }}
-              placeholder="Category"
-            >
-              <Option value="all">All Categories</Option>
-              <Option value="product-info">Product Info</Option>
-              <Option value="shipping">Shipping</Option>
-              <Option value="compatibility">Compatibility</Option>
-              <Option value="warranty">Warranty</Option>
-              <Option value="other">Other</Option>
-            </Select>
-          </Col>
-          <Col flex="auto" style={{ textAlign: 'right' }}>
-            <Text type="secondary">{filteredQuestions.length} questions</Text>
-          </Col>
-        </Row>
-      </Card>
-
-      <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        {filteredQuestions.map((question) => (
-          <Card key={question.id}>
-            <div style={{ display: 'flex', gap: 16 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ marginBottom: 12 }}>
-                  <Space>
-                    <Tag color={categoryConfig[question.category].color}>
-                      {categoryConfig[question.category].text}
-                    </Tag>
-                    <Tag color={statusConfig[question.status].color} icon={statusConfig[question.status].icon}>
-                      {statusConfig[question.status].text}
-                    </Tag>
-                    {question.totalAnswers > 0 && (
-                      <Badge count={question.totalAnswers} showZero style={{ backgroundColor: '#52c41a' }}>
-                        <MessageOutlined style={{ fontSize: 16, color: '#52c41a' }} />
-                      </Badge>
-                    )}
-                  </Space>
-                </div>
-
-                <Title level={5} style={{ marginBottom: 8 }}>
-                  <QuestionCircleOutlined style={{ marginRight: 8, color: '#1890ff' }} />
-                  {question.question}
-                </Title>
-
-                <div style={{ marginBottom: 16 }}>
-                  <Space>
-                    <Avatar size="small" icon={<UserOutlined />} />
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      Asked by <Text strong>{question.askedBy}</Text> • {dayjs(question.askedAt).fromNow()}
-                    </Text>
-                  </Space>
-                </div>
-
-                {question.answers.length > 0 && (
-                  <div style={{ background: '#fafafa', padding: 16, borderRadius: 8, marginTop: 16 }}>
-                    <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                      {question.answers.map((answer) => (
-                        <div key={answer.id}>
-                          <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
-                            <Avatar
-                              size="small"
-                              icon={answer.answeredBy === 'seller' ? <ShopOutlined /> : <UserOutlined />}
-                              style={{
-                                background: answer.answeredBy === 'seller' ? '#1890ff' : '#52c41a',
-                              }}
-                            />
-                            <div style={{ flex: 1 }}>
-                              <div style={{ marginBottom: 4 }}>
-                                <Space>
-                                  <Text strong>{answer.answererName}</Text>
-                                  {answer.isVerified && (
-                                    <Tooltip title="Verified Seller">
-                                      <CheckCircleOutlined style={{ color: '#1890ff' }} />
-                                    </Tooltip>
-                                  )}
-                                  {answer.answeredBy === 'seller' && (
-                                    <Tag color="blue" style={{ margin: 0 }}>
-                                      Seller
-                                    </Tag>
-                                  )}
-                                </Space>
-                              </div>
-                              <Paragraph style={{ marginBottom: 8 }}>{answer.text}</Paragraph>
-                              <Space size="large">
-                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                  {dayjs(answer.answeredAt).fromNow()}
-                                </Text>
-                                <Button
-                                  type="text"
-                                  size="small"
-                                  icon={answer.isHelpful ? <LikeFilled /> : <LikeOutlined />}
-                                  onClick={() => handleToggleAnswerHelpful(question.id, answer.id)}
-                                  style={{ color: answer.isHelpful ? '#1890ff' : undefined }}
-                                >
-                                  Helpful ({answer.helpfulVotes})
-                                </Button>
-                              </Space>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </Space>
-                  </div>
-                )}
-
-                <Divider style={{ margin: '16px 0' }} />
-
-                <Row justify="space-between" align="middle">
-                  <Col>
-                    <Space>
-                      <Button
-                        type="text"
-                        icon={question.isHelpful ? <LikeFilled /> : <LikeOutlined />}
-                        onClick={() => handleToggleQuestionHelpful(question.id)}
-                        style={{ color: question.isHelpful ? '#1890ff' : undefined }}
-                      >
-                        Helpful ({question.helpfulVotes})
-                      </Button>
-                    </Space>
-                  </Col>
-                  <Col>
-                    <Button type="link" icon={<MessageOutlined />} onClick={() => handleAnswerQuestion(question)}>
-                      Answer this question
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </Space>
-
-      {filteredQuestions.length === 0 && (
-        <Card>
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <QuestionCircleOutlined style={{ fontSize: 64, color: '#d9d9d9', marginBottom: 16 }} />
-            <Title level={4}>No questions found</Title>
-            <Paragraph type="secondary">
-              Be the first to ask a question about this product!
-            </Paragraph>
-            <Button type="primary" icon={<QuestionCircleOutlined />} onClick={handleAskQuestion}>
-              Ask a Question
-            </Button>
+          <Button
+            size="small"
+            type={question.hasUserVoted && question.userVoteType === 'down' ? 'primary' : 'text'}
+            icon={<DislikeOutlined />}
+            onClick={() => handleVoteQuestion(question.id, 'down')}
+          >
+            {question.downvotes}
+          </Button>
+        </Space>,
+        <Button
+          key="answer"
+          size="small"
+          icon={<MessageOutlined />}
+          onClick={() => {
+            setSelectedQuestion(question);
+            setShowAnswerModal(true);
+          }}
+        >
+          Answer
+        </Button>,
+        <Button
+          key="view"
+          size="small"
+          type="link"
+          onClick={() => {
+            setSelectedQuestion(question);
+            setShowQuestionDetails(true);
+          }}
+        >
+          View Details
+        </Button>
+      ]}
+    >
+      <Row gutter={16}>
+        <Col flex={1}>
+          <div style={{ marginBottom: 8 }}>
+            <Text strong style={{ fontSize: '16px' }}>
+              {question.question}
+            </Text>
           </div>
-        </Card>
+          
+          <Space wrap style={{ marginBottom: 8 }}>
+            {question.category && (
+              <Tag color="blue">{question.category}</Tag>
+            )}
+            {question.tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+            {question.isAnswered && (
+              <Tag color="green" icon={<CheckCircleOutlined />}>
+                Answered ({question.answers.length})
+              </Tag>
+            )}
+          </Space>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Space>
+              <Avatar 
+                size="small" 
+                src={question.customerAvatar} 
+                icon={<UserOutlined />} 
+              />
+              <Text type="secondary">{question.customerName}</Text>
+              <Text type="secondary">
+                {new Date(question.createdAt).toLocaleDateString()}
+              </Text>
+            </Space>
+            
+            {question.isAnswered && question.answers.some(a => a.isBrandResponse) && (
+              <Tag color="gold" icon={<TrophyOutlined />}>
+                Brand Answered
+              </Tag>
+            )}
+          </div>
+        </Col>
+
+        {question.productImage && (
+          <Col>
+            <Avatar
+              size={64}
+              shape="square"
+              src={question.productImage}
+              style={{ border: '1px solid #d9d9d9' }}
+            />
+          </Col>
+        )}
+      </Row>
+    </Card>
+  );
+
+  const renderAnswer = (answer: ProductAnswer, questionOwnerId?: string) => (
+    <Card
+      key={answer.id}
+      size="small"
+      style={{
+        marginBottom: 12,
+        backgroundColor: answer.isAccepted ? '#f6ffed' : undefined,
+        border: answer.isAccepted ? '2px solid #52c41a' : undefined
+      }}
+    >
+      <div style={{ marginBottom: 8 }}>
+        <Space>
+          <Avatar
+            size="small"
+            src={answer.answeredBy.avatar}
+            icon={<UserOutlined />}
+          />
+          <Text strong>{answer.answeredBy.name}</Text>
+          
+          {answer.answeredBy.type === 'vendor' && (
+            <Tag color="gold">
+              {answer.answeredBy.badge || 'Vendor'}
+            </Tag>
+          )}
+          
+          {answer.answeredBy.type === 'expert' && (
+            <Tag color="purple">
+              {answer.answeredBy.badge || 'Expert'}
+            </Tag>
+          )}
+          
+          {answer.answeredBy.verificationLevel === 'verified_purchase' && (
+            <Tag color="green">Verified Purchase</Tag>
+          )}
+          
+          {answer.isAccepted && (
+            <Tag color="success" icon={<CheckCircleOutlined />}>
+              Best Answer
+            </Tag>
+          )}
+          
+          <Text type="secondary">
+            {new Date(answer.createdAt).toLocaleDateString()}
+          </Text>
+        </Space>
+      </div>
+
+      <Paragraph style={{ marginBottom: 12 }}>
+        {answer.answer}
+      </Paragraph>
+
+      {answer.attachments && answer.attachments.length > 0 && (
+        <div style={{ marginBottom: 12 }}>
+          <Text type="secondary">Attachments:</Text>
+          <Row gutter={8} style={{ marginTop: 4 }}>
+            {answer.attachments.map((attachment) => (
+              <Col key={attachment.id}>
+                {attachment.type === 'image' ? (
+                  <img
+                    src={attachment.thumbnail || attachment.url}
+                    alt={attachment.filename}
+                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }}
+                  />
+                ) : (
+                  <Button size="small" icon={<PaperClipOutlined />}>
+                    {attachment.filename}
+                  </Button>
+                )}
+              </Col>
+            ))}
+          </Row>
+        </div>
       )}
 
-      <Modal
-        title="Ask a Question"
-        open={isAskModalVisible}
-        onCancel={() => setIsAskModalVisible(false)}
-        footer={null}
-        width={600}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSubmitQuestion}>
-          <Form.Item
-            label="Category"
-            name="category"
-            rules={[{ required: true, message: 'Please select a category' }]}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Space>
+          <Button
+            size="small"
+            type={answer.hasUserVoted && answer.userVoteType === 'helpful' ? 'primary' : 'text'}
+            onClick={() => handleVoteAnswer(answer.id, 'helpful')}
           >
-            <Select placeholder="Select question category">
-              <Option value="product-info">Product Information</Option>
-              <Option value="shipping">Shipping & Delivery</Option>
-              <Option value="compatibility">Compatibility</Option>
-              <Option value="warranty">Warranty & Returns</Option>
-              <Option value="other">Other</Option>
-            </Select>
-          </Form.Item>
+            👍 Helpful ({answer.helpfulCount})
+          </Button>
+          <Button
+            size="small"
+            type={answer.hasUserVoted && answer.userVoteType === 'not_helpful' ? 'primary' : 'text'}
+            onClick={() => handleVoteAnswer(answer.id, 'not_helpful')}
+          >
+            👎 Not Helpful ({answer.notHelpfulCount})
+          </Button>
+        </Space>
 
-          <Form.Item
-            label="Your Question"
-            name="question"
-            rules={[
-              { required: true, message: 'Please enter your question' },
-              { min: 10, message: 'Question must be at least 10 characters' },
-            ]}
+        {/* Only question owner can accept answers */}
+        {questionOwnerId === '1' && !answer.isAccepted && (
+          <Button
+            size="small"
+            type="primary"
+            ghost
+            icon={<CheckCircleOutlined />}
+            onClick={() => handleAcceptAnswer(answer.id)}
           >
-            <TextArea
-              rows={4}
-              placeholder="What would you like to know about this product?"
-              showCount
-              maxLength={500}
+            Mark as Best Answer
+          </Button>
+        )}
+      </div>
+    </Card>
+  );
+
+  const renderStats = () => (
+    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Total Questions"
+            value={stats?.totalQuestions || 0}
+            prefix={<QuestionCircleOutlined />}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Answered"
+            value={stats?.answeredQuestions || 0}
+            prefix={<CheckCircleOutlined />}
+            valueStyle={{ color: '#52c41a' }}
+          />
+          {stats && (
+            <Progress
+              percent={Math.round((stats.answeredQuestions / stats.totalQuestions) * 100)}
+              size="small"
+              showInfo={false}
             />
-          </Form.Item>
+          )}
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Avg Response Time"
+            value={stats?.averageResponseTime || 0}
+            suffix="hrs"
+            prefix={<ClockCircleOutlined />}
+            precision={1}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Unanswered"
+            value={stats?.unansweredQuestions || 0}
+            prefix={<QuestionCircleOutlined />}
+            valueStyle={{ color: '#faad14' }}
+          />
+        </Card>
+      </Col>
+    </Row>
+  );
 
-          <div style={{ background: '#f0f2f5', padding: 12, borderRadius: 4, marginBottom: 16 }}>
-            <Text strong style={{ display: 'block', marginBottom: 8 }}>
-              Tips for asking good questions:
-            </Text>
-            <ul style={{ marginBottom: 0, paddingLeft: 20 }}>
-              <li>Be specific and clear</li>
-              <li>Check if your question has already been asked</li>
-              <li>Focus on product features and specifications</li>
-              <li>Avoid including personal information</li>
-            </ul>
-          </div>
-
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit" icon={<QuestionCircleOutlined />}>
-                Post Question
-              </Button>
-              <Button onClick={() => setIsAskModalVisible(false)}>Cancel</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Answer Question"
-        open={isAnswerModalVisible}
-        onCancel={() => setIsAnswerModalVisible(false)}
-        footer={null}
-        width={600}
+  const renderCreateQuestionModal = () => (
+    <Modal
+      title="Ask a Question"
+      open={showCreateModal}
+      onCancel={() => {
+        setShowCreateModal(false);
+        createForm.resetFields();
+      }}
+      footer={null}
+      width={600}
+    >
+      <Form
+        form={createForm}
+        layout="vertical"
+        onFinish={handleCreateQuestion}
       >
-        {selectedQuestion && (
-          <div>
-            <div style={{ background: '#f0f2f5', padding: 16, borderRadius: 8, marginBottom: 24 }}>
-              <Text strong style={{ display: 'block', marginBottom: 8 }}>
-                Question:
-              </Text>
-              <Paragraph>{selectedQuestion.question}</Paragraph>
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                Asked by {selectedQuestion.askedBy} • {dayjs(selectedQuestion.askedAt).fromNow()}
-              </Text>
+        <Form.Item
+          label="Your Question"
+          name="question"
+          rules={[
+            { required: true, message: 'Please enter your question' },
+            { min: 10, message: 'Question must be at least 10 characters' }
+          ]}
+        >
+          <TextArea
+            rows={4}
+            placeholder="What would you like to know about this product?"
+          />
+        </Form.Item>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label="Category" name="category">
+              <Select placeholder="Select category (optional)">
+                <Option value="general">General Question</Option>
+                <Option value="specifications">Specifications</Option>
+                <Option value="compatibility">Compatibility</Option>
+                <Option value="shipping">Shipping</Option>
+                <Option value="warranty">Warranty</Option>
+                <Option value="usage">Usage Instructions</Option>
+                <Option value="comparison">Product Comparison</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Tags" name="tags">
+              <Input placeholder="e.g., macbook, wireless, bluetooth" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item name="isPublic" valuePropName="checked" initialValue={true}>
+          <Space>
+            <input type="checkbox" defaultChecked />
+            <Text>Make this question public (recommended for faster answers)</Text>
+          </Space>
+        </Form.Item>
+
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Space>
+            <Button onClick={() => setShowCreateModal(false)}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" icon={<SendOutlined />}>
+              Post Question
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
+  const renderAnswerModal = () => (
+    <Modal
+      title={`Answer: ${selectedQuestion?.question}`}
+      open={showAnswerModal}
+      onCancel={() => {
+        setShowAnswerModal(false);
+        answerForm.resetFields();
+      }}
+      footer={null}
+      width={600}
+    >
+      <Form
+        form={answerForm}
+        layout="vertical"
+        onFinish={handleCreateAnswer}
+      >
+        <Form.Item
+          label="Your Answer"
+          name="answer"
+          rules={[
+            { required: true, message: 'Please provide an answer' },
+            { min: 10, message: 'Answer must be at least 10 characters' }
+          ]}
+        >
+          <TextArea
+            rows={6}
+            placeholder="Share your knowledge and help other customers..."
+          />
+        </Form.Item>
+
+        <Form.Item label="Attachments" name="attachments">
+          <Upload
+            multiple
+            beforeUpload={() => false}
+            fileList={[]}
+          >
+            <Button icon={<PaperClipOutlined />}>
+              Attach Images or Documents
+            </Button>
+          </Upload>
+          <Text type="secondary" style={{ fontSize: '12px', display: 'block', marginTop: 4 }}>
+            Add screenshots, manuals, or other helpful files
+          </Text>
+        </Form.Item>
+
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Space>
+            <Button onClick={() => setShowAnswerModal(false)}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" icon={<SendOutlined />}>
+              Post Answer
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
+  const renderQuestionDetails = () => (
+    <Modal
+      title="Question Details"
+      open={showQuestionDetails}
+      onCancel={() => {
+        setShowQuestionDetails(false);
+        setSelectedQuestion(null);
+      }}
+      width={800}
+      footer={null}
+    >
+      {selectedQuestion && (
+        <div>
+          <Card style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 16 }}>
+              <Title level={4}>{selectedQuestion.question}</Title>
+              <Space wrap>
+                {selectedQuestion.category && (
+                  <Tag color="blue">{selectedQuestion.category}</Tag>
+                )}
+                {selectedQuestion.tags.map((tag) => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </Space>
             </div>
 
-            <Form form={answerForm} layout="vertical" onFinish={handleSubmitAnswer}>
-              <Form.Item
-                label="Your Answer"
-                name="answer"
-                rules={[
-                  { required: true, message: 'Please enter your answer' },
-                  { min: 20, message: 'Answer must be at least 20 characters' },
-                ]}
-              >
-                <TextArea
-                  rows={6}
-                  placeholder="Share your knowledge or experience..."
-                  showCount
-                  maxLength={1000}
-                />
-              </Form.Item>
-
-              <div style={{ background: '#e6f7ff', padding: 12, borderRadius: 4, marginBottom: 16, border: '1px solid #91d5ff' }}>
-                <Text strong style={{ display: 'block', marginBottom: 8 }}>
-                  Helpful answer guidelines:
+            <Space style={{ marginBottom: 16 }}>
+              <Avatar 
+                src={selectedQuestion.customerAvatar} 
+                icon={<UserOutlined />} 
+              />
+              <div>
+                <Text strong>{selectedQuestion.customerName}</Text>
+                <br />
+                <Text type="secondary">
+                  Asked {new Date(selectedQuestion.createdAt).toLocaleDateString()}
                 </Text>
-                <ul style={{ marginBottom: 0, paddingLeft: 20 }}>
-                  <li>Provide accurate and helpful information</li>
-                  <li>Share personal experience if applicable</li>
-                  <li>Be respectful and courteous</li>
-                  <li>Avoid promotional content</li>
-                </ul>
               </div>
+            </Space>
 
-              <Form.Item>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Space>
+                <Button
+                  type={selectedQuestion.hasUserVoted && selectedQuestion.userVoteType === 'up' ? 'primary' : 'default'}
+                  icon={<LikeOutlined />}
+                  onClick={() => handleVoteQuestion(selectedQuestion.id, 'up')}
+                >
+                  {selectedQuestion.upvotes}
+                </Button>
+                <Button
+                  type={selectedQuestion.hasUserVoted && selectedQuestion.userVoteType === 'down' ? 'primary' : 'default'}
+                  icon={<DislikeOutlined />}
+                  onClick={() => handleVoteQuestion(selectedQuestion.id, 'down')}
+                >
+                  {selectedQuestion.downvotes}
+                </Button>
+              </Space>
+              
+              <Button
+                type="primary"
+                icon={<MessageOutlined />}
+                onClick={() => setShowAnswerModal(true)}
+              >
+                Add Answer
+              </Button>
+            </div>
+          </Card>
+
+          <Card title={`${selectedQuestion.answers.length} Answer${selectedQuestion.answers.length !== 1 ? 's' : ''}`}>
+            {selectedQuestion.answers.length > 0 ? (
+              selectedQuestion.answers
+                .sort((a, b) => {
+                  // Sort by: accepted first, then by helpful votes
+                  if (a.isAccepted && !b.isAccepted) return -1;
+                  if (!a.isAccepted && b.isAccepted) return 1;
+                  return b.helpfulCount - a.helpfulCount;
+                })
+                .map((answer) => renderAnswer(answer, selectedQuestion.customerId))
+            ) : (
+              <Empty description="No answers yet" style={{ padding: '40px 0' }}>
+                <Button type="primary" onClick={() => setShowAnswerModal(true)}>
+                  Be the first to answer
+                </Button>
+              </Empty>
+            )}
+          </Card>
+        </div>
+      )}
+    </Modal>
+  );
+
+  return (
+    <div className="product-qa" style={{ padding: '24px', maxWidth: 1400, margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <Title level={2}>
+          <QuestionCircleOutlined /> Product Q&A
+        </Title>
+        <Text type="secondary">
+          Ask questions and get answers from our community of customers and experts
+        </Text>
+      </div>
+
+      {/* Stats */}
+      {renderStats()}
+
+      {/* Tabs */}
+      <Tabs activeKey={activeTab} onChange={setActiveTab} size="large">
+        <TabPane
+          tab={
+            <Space>
+              <QuestionCircleOutlined />
+              Browse Questions
+              {questions.length > 0 && <Badge count={questions.length} />}
+            </Space>
+          }
+          key="browse"
+        >
+          {/* Filters and Actions */}
+          <Card size="small" style={{ marginBottom: 16 }}>
+            <Row gutter={16} align="middle">
+              <Col flex={1}>
+                <Search
+                  placeholder="Search questions..."
+                  value={filters.search}
+                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                  onSearch={loadQuestions}
+                  allowClear
+                />
+              </Col>
+              <Col>
                 <Space>
-                  <Button type="primary" htmlType="submit" icon={<MessageOutlined />}>
-                    Post Answer
+                  <Select
+                    placeholder="Category"
+                    allowClear
+                    style={{ width: 130 }}
+                    value={filters.category}
+                    onChange={(value) => setFilters({ ...filters, category: value })}
+                  >
+                    <Option value="general">General</Option>
+                    <Option value="specifications">Specs</Option>
+                    <Option value="compatibility">Compatibility</Option>
+                    <Option value="warranty">Warranty</Option>
+                    <Option value="shipping">Shipping</Option>
+                  </Select>
+                  
+                  <Select
+                    placeholder="Status"
+                    allowClear
+                    style={{ width: 120 }}
+                    value={filters.isAnswered}
+                    onChange={(value) => setFilters({ ...filters, isAnswered: value })}
+                  >
+                    <Option value={true}>Answered</Option>
+                    <Option value={false}>Unanswered</Option>
+                  </Select>
+
+                  <Select
+                    placeholder="Sort by"
+                    style={{ width: 120 }}
+                    value={filters.sortBy}
+                    onChange={(value) => setFilters({ ...filters, sortBy: value })}
+                  >
+                    <Option value="newest">Newest</Option>
+                    <Option value="oldest">Oldest</Option>
+                    <Option value="most_voted">Most Voted</Option>
+                    <Option value="most_answered">Most Answered</Option>
+                  </Select>
+
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setShowCreateModal(true)}
+                  >
+                    Ask Question
                   </Button>
-                  <Button onClick={() => setIsAnswerModalVisible(false)}>Cancel</Button>
                 </Space>
-              </Form.Item>
-            </Form>
+              </Col>
+            </Row>
+          </Card>
+
+          {/* Questions List */}
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: 40 }}>
+              <Spin size="large" />
+            </div>
+          ) : questions.length > 0 ? (
+            questions.map(renderQuestionCard)
+          ) : (
+            <Card style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <QuestionCircleOutlined style={{ fontSize: 48, color: '#d9d9d9', marginBottom: 16 }} />
+              <Title level={3}>No questions yet</Title>
+              <Paragraph style={{ color: '#666', marginBottom: 24 }}>
+                Be the first to ask a question about this product!
+              </Paragraph>
+              <Button type="primary" size="large" onClick={() => setShowCreateModal(true)}>
+                Ask the First Question
+              </Button>
+            </Card>
+          )}
+        </TabPane>
+
+        <TabPane
+          tab={
+            <Space>
+              <UserOutlined />
+              My Questions
+              {myQuestions.length > 0 && <Badge count={myQuestions.length} />}
+            </Space>
+          }
+          key="my-questions"
+        >
+          <div style={{ marginBottom: 16, textAlign: 'right' }}>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowCreateModal(true)}>
+              Ask New Question
+            </Button>
           </div>
-        )}
-      </Modal>
+
+          {myQuestions.length > 0 ? (
+            myQuestions.map(renderQuestionCard)
+          ) : (
+            <Empty
+              description="You haven't asked any questions yet"
+              style={{ padding: '60px 20px' }}
+            >
+              <Button type="primary" onClick={() => setShowCreateModal(true)}>
+                Ask Your First Question
+              </Button>
+            </Empty>
+          )}
+        </TabPane>
+      </Tabs>
+
+      {/* Modals */}
+      {renderCreateQuestionModal()}
+      {renderAnswerModal()}
+      {renderQuestionDetails()}
     </div>
   );
 };
 
-export default ProductQAPage;
+export default ProductQASystem;

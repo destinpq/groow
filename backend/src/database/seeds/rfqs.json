@@ -1,0 +1,42 @@
+[
+  {
+    "customerEmail": "customer1@groow.com",
+    "title": "Bulk Order Request - Electronics",
+    "description": "Looking to purchase 50 units of wireless headphones for corporate gifts. Need competitive pricing and custom branding options.",
+    "category": "electronics",
+    "budget": 15000,
+    "quantity": 50,
+    "deliveryDate": "2025-12-15",
+    "status": "open"
+  },
+  {
+    "customerEmail": "customer2@groow.com",
+    "title": "Custom T-Shirt Printing",
+    "description": "Need 200 custom printed t-shirts for company event. Looking for quality materials and fast turnaround.",
+    "category": "fashion",
+    "budget": 3000,
+    "quantity": 200,
+    "deliveryDate": "2025-12-01",
+    "status": "open"
+  },
+  {
+    "customerEmail": "customer3@groow.com",
+    "title": "Office Furniture Inquiry",
+    "description": "Seeking quotes for 30 ergonomic office chairs and 15 standing desks for new office setup.",
+    "category": "home-garden",
+    "budget": 25000,
+    "quantity": 45,
+    "deliveryDate": "2025-12-20",
+    "status": "quoted"
+  },
+  {
+    "customerEmail": "customer4@groow.com",
+    "title": "Sports Equipment for School",
+    "description": "School needs various sports equipment including basketballs, soccer balls, and training cones.",
+    "category": "sports-outdoors",
+    "budget": 5000,
+    "quantity": 100,
+    "deliveryDate": "2026-01-10",
+    "status": "open"
+  }
+]

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -19,6 +19,7 @@ import {
   Divider,
   Progress,
   message,
+  Spin,
 } from 'antd';
 import {
   SyncOutlined,
@@ -34,71 +35,46 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { subscriptionsAPI, type Subscription as APISubscription, type SubscriptionStats } from '@/services/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
-interface Subscription {
-  id: number;
-  productName: string;
-  productImage: string;
-  frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
-  quantity: number;
-  pricePerUnit: number;
-  nextDelivery: string;
-  status: 'active' | 'paused' | 'cancelled';
-  startDate: string;
-  totalOrders: number;
-  discount: number;
-}
-
-const mockSubscriptions: Subscription[] = [
-  {
-    id: 1,
-    productName: 'Premium Coffee Beans 1kg',
-    productImage: 'https://via.placeholder.com/80?text=Coffee',
-    frequency: 'monthly',
-    quantity: 2,
-    pricePerUnit: 24.99,
-    nextDelivery: '2024-12-01',
-    status: 'active',
-    startDate: '2024-06-01',
-    totalOrders: 6,
-    discount: 15,
-  },
-  {
-    id: 2,
-    productName: 'Organic Dog Food 5kg',
-    productImage: 'https://via.placeholder.com/80?text=DogFood',
-    frequency: 'biweekly',
-    quantity: 1,
-    pricePerUnit: 39.99,
-    nextDelivery: '2024-11-15',
-    status: 'active',
-    startDate: '2024-08-01',
-    totalOrders: 8,
-    discount: 10,
-  },
-  {
-    id: 3,
-    productName: 'Vitamin C Supplement',
-    productImage: 'https://via.placeholder.com/80?text=Vitamins',
-    frequency: 'monthly',
-    quantity: 1,
-    pricePerUnit: 19.99,
-    nextDelivery: '2024-11-20',
-    status: 'paused',
-    startDate: '2024-07-15',
-    totalOrders: 4,
-    discount: 12,
-  },
-];
-
 const SubscriptionsPage: React.FC = () => {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(mockSubscriptions);
+  const [subscriptions, setSubscriptions] = useState<APISubscription[]>([]);
+  const [stats, setStats] = useState<SubscriptionStats | null>(null);
+  const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
+  const [editingSubscription, setEditingSubscription] = useState<APISubscription | null>(null);
   const [form] = Form.useForm();
+
+  // Load subscriptions and stats on mount
+  useEffect(() => {
+    loadSubscriptions();
+    loadStats();
+  }, []);
+
+  const loadSubscriptions = async () => {
+    try {
+      setLoading(true);
+      const data = await subscriptionsAPI.getSubscriptions();
+      setSubscriptions(data);
+    } catch (error) {
+      message.error('Failed to load subscriptions');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const data = await subscriptionsAPI.getStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
 
   const getFrequencyLabel = (frequency: string) => {
     const labels = {
@@ -124,17 +100,18 @@ const SubscriptionsPage: React.FC = () => {
     );
   };
 
-  const handleToggleStatus = (subscription: Subscription) => {
-    const newStatus = subscription.status === 'active' ? 'paused' : 'active';
-    setSubscriptions(
-      subscriptions.map((sub) =>
-        sub.id === subscription.id ? { ...sub, status: newStatus } : sub
-      )
-    );
-    message.success(`Subscription ${newStatus === 'active' ? 'resumed' : 'paused'}`);
+  const handleToggleStatus = async (subscription: APISubscription) => {
+    try {
+      const newStatus = subscription.status === 'active' ? 'paused' : 'active';
+      await subscriptionsAPI.updateSubscription(subscription.id, { status: newStatus });
+      await loadSubscriptions();
+      message.success(`Subscription ${newStatus === 'active' ? 'resumed' : 'paused'}`);
+    } catch (error) {
+      message.error('Failed to update subscription');
+    }
   };
 
-  const handleEdit = (subscription: Subscription) => {
+  const handleEdit = (subscription: APISubscription) => {
     setEditingSubscription(subscription);
     form.setFieldsValue({
       frequency: subscription.frequency,
@@ -144,15 +121,20 @@ const SubscriptionsPage: React.FC = () => {
     setIsModalVisible(true);
   };
 
-  const handleDelete = (subscriptionId: number) => {
+  const handleDelete = async (subscriptionId: string) => {
     Modal.confirm({
       title: 'Cancel Subscription',
       content: 'Are you sure you want to cancel this subscription? This action cannot be undone.',
       okText: 'Cancel Subscription',
       okType: 'danger',
-      onOk() {
-        setSubscriptions(subscriptions.filter((sub) => sub.id !== subscriptionId));
-        message.success('Subscription cancelled successfully');
+      async onOk() {
+        try {
+          await subscriptionsAPI.cancelSubscription(subscriptionId);
+          await loadSubscriptions();
+          message.success('Subscription cancelled successfully');
+        } catch (error) {
+          message.error('Failed to cancel subscription');
+        }
       },
     });
   };
@@ -178,29 +160,7 @@ const SubscriptionsPage: React.FC = () => {
     form.resetFields();
   };
 
-  const calculateStats = () => {
-    const active = subscriptions.filter((s) => s.status === 'active').length;
-    const monthlyCost = subscriptions
-      .filter((s) => s.status === 'active')
-      .reduce((sum, s) => {
-        const frequencyMultiplier = {
-          weekly: 4,
-          biweekly: 2,
-          monthly: 1,
-          quarterly: 0.33,
-        };
-        return sum + s.pricePerUnit * s.quantity * frequencyMultiplier[s.frequency];
-      }, 0);
-    const totalSavings = subscriptions.reduce(
-      (sum, s) => sum + (s.pricePerUnit * s.quantity * s.discount) / 100 * s.totalOrders,
-      0
-    );
-    return { active, monthlyCost, totalSavings };
-  };
-
-  const stats = calculateStats();
-
-  const columns: ColumnsType<Subscription> = [
+  const columns: ColumnsType<APISubscription> = [
     {
       title: 'Product',
       key: 'product',
@@ -319,7 +279,7 @@ const SubscriptionsPage: React.FC = () => {
           <Card>
             <Statistic
               title="Active Subscriptions"
-              value={stats.active}
+              value={stats?.active || 0}
               prefix={<CheckCircleOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
@@ -329,7 +289,7 @@ const SubscriptionsPage: React.FC = () => {
           <Card>
             <Statistic
               title="Monthly Cost"
-              value={stats.monthlyCost}
+              value={stats?.monthlyCost || 0}
               prefix="$"
               precision={2}
               valueStyle={{ color: '#1890ff' }}
@@ -340,7 +300,7 @@ const SubscriptionsPage: React.FC = () => {
           <Card>
             <Statistic
               title="Total Savings"
-              value={stats.totalSavings}
+              value={stats?.totalSavings || 0}
               prefix="$"
               precision={2}
               valueStyle={{ color: '#ff9900' }}

@@ -1,4 +1,5 @@
-import { Row, Col, Card, Button, Carousel, Input, Space, Typography, Divider } from 'antd';
+import React from 'react';
+import { Row, Col, Card, Button, Carousel, Input, Space, Typography, Divider, Badge, Rate } from 'antd';
 import { useNavigate } from 'umi';
 import { 
   ShoppingOutlined, 
@@ -9,9 +10,14 @@ import {
   TruckOutlined,
   SafetyOutlined,
   CustomerServiceOutlined,
+  PercentageOutlined,
+  ThunderboltOutlined,
+  GiftOutlined,
+  MenuOutlined,
+  UserOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
-import { motion } from 'framer-motion';
-import './index.less';
+// import './index.less';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -19,322 +25,518 @@ const { Search } = Input;
 const HomePage = () => {
   const navigate = useNavigate();
 
-  const banners = [
-    { 
-      title: 'Mega Sale - Up to 70% Off', 
-      description: 'Shop the latest trends at unbeatable prices',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      cta: 'Shop Now'
+  // Top Navigation Categories
+  const topCategories = [
+    'Electronics', 'Fashion', 'Home & Kitchen', 'Beauty & Health', 
+    'Sports & Outdoors', 'Books', 'Toys & Games', 'Automotive'
+  ];
+
+  // Hero Carousel Data
+  const heroSlides = [
+    {
+      title: 'Mega Electronics Sale',
+      subtitle: 'Up to 70% off on Top Brands',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      buttonText: 'Shop Electronics',
+      buttonLink: '/categories/electronics'
     },
-    { 
-      title: 'New Arrivals - Fresh Collection', 
-      description: 'Discover the newest products from top vendors',
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      cta: 'Explore New'
+    {
+      title: 'New Fashion Collection',
+      subtitle: 'Trending styles for every season',
+      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      buttonText: 'Shop Fashion',
+      buttonLink: '/categories/fashion'
     },
-    { 
-      title: 'Wholesale Deals - B2B Special', 
-      description: 'Bulk orders with special pricing for businesses',
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      cta: 'Get Quote'
-    },
+    {
+      title: 'Home Essentials',
+      subtitle: 'Transform your living space',
+      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      buttonText: 'Shop Home',
+      buttonLink: '/categories/home'
+    }
   ];
 
   const categories = [
-    { id: 1, name: 'Electronics', icon: '📱', color: '#1890ff' },
-    { id: 2, name: 'Fashion', icon: '👕', color: '#eb2f96' },
-    { id: 3, name: 'Home & Living', icon: '🏠', color: '#52c41a' },
-    { id: 4, name: 'Beauty', icon: '💄', color: '#fa8c16' },
-    { id: 5, name: 'Sports', icon: '⚽', color: '#13c2c2' },
-    { id: 6, name: 'Books', icon: '📚', color: '#722ed1' },
-    { id: 7, name: 'Toys', icon: '🧸', color: '#faad14' },
-    { id: 8, name: 'Groceries', icon: '🛒', color: '#52c41a' },
+    { name: 'Electronics', icon: '📱', items: 'Phones, Laptops, TVs', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400' },
+    { name: 'Fashion', icon: '�', items: 'Clothing, Shoes, Bags', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400' },
+    { name: 'Home & Kitchen', icon: '🏠', items: 'Furniture, Decor, Appliances', image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400' },
+    { name: 'Beauty', icon: '💄', items: 'Cosmetics, Skincare, Fragrance', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400' },
   ];
 
-  const featuredProducts = [
-    { 
-      id: 1, 
-      title: 'Premium Wireless Headphones', 
-      price: 99.99, 
-      originalPrice: 149.99,
-      rating: 4.5,
-      reviews: 1234,
-      image: 'https://via.placeholder.com/300x300?text=Headphones',
-      discount: 33,
-      badge: 'Best Seller'
-    },
-    { 
-      id: 2, 
-      title: 'Smart Watch Series 7', 
-      price: 349.99,
-      originalPrice: 499.99,
+  const deals = [
+    {
+      id: 1,
+      title: 'Apple iPhone 15 Pro Max',
+      price: 1199,
+      originalPrice: 1499,
       rating: 4.8,
-      reviews: 856,
-      image: 'https://via.placeholder.com/300x300?text=Smart+Watch',
-      discount: 30,
-      badge: 'Hot Deal'
+      reviews: 2847,
+      image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400',
+      discount: 20,
+      badge: 'Limited Deal',
+      prime: true
     },
-    { 
-      id: 3, 
-      title: 'Professional Camera Kit', 
-      price: 799.99,
-      originalPrice: 1099.99,
+    {
+      id: 2,
+      title: 'Sony WH-1000XM5 Wireless Headphones',
+      price: 349,
+      originalPrice: 399,
       rating: 4.9,
-      reviews: 432,
-      image: 'https://via.placeholder.com/300x300?text=Camera',
-      discount: 27,
-      badge: 'Limited Stock'
+      reviews: 5621,
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+      discount: 13,
+      badge: 'Best Seller',
+      prime: true
     },
-    { 
-      id: 4, 
-      title: 'Designer Leather Bag', 
-      price: 179.99,
-      originalPrice: 299.99,
+    {
+      id: 3,
+      title: 'Samsung 55" 4K Smart TV',
+      price: 599,
+      originalPrice: 899,
+      rating: 4.7,
+      reviews: 1893,
+      image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400',
+      discount: 33,
+      badge: 'Deal of the Day',
+      prime: false
+    },
+    {
+      id: 4,
+      title: 'Nike Air Max Running Shoes',
+      price: 129,
+      originalPrice: 180,
       rating: 4.6,
-      reviews: 678,
-      image: 'https://via.placeholder.com/300x300?text=Leather+Bag',
-      discount: 40,
-      badge: 'New Arrival'
-    },
-  ];
-
-  const features = [
-    {
-      icon: <TruckOutlined style={{ fontSize: 32, color: '#FF9900' }} />,
-      title: 'Free Delivery',
-      description: 'On orders above $50'
+      reviews: 3421,
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      discount: 28,
+      badge: 'Hot Deal',
+      prime: true
     },
     {
-      icon: <SafetyOutlined style={{ fontSize: 32, color: '#FF9900' }} />,
-      title: 'Secure Payment',
-      description: '100% secure transactions'
+      id: 5,
+      title: 'Instant Pot Duo 7-in-1',
+      price: 89,
+      originalPrice: 139,
+      rating: 4.8,
+      reviews: 12847,
+      image: 'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400',
+      discount: 36,
+      badge: 'Top Rated',
+      prime: true
     },
     {
-      icon: <CustomerServiceOutlined style={{ fontSize: 32, color: '#FF9900' }} />,
-      title: '24/7 Support',
-      description: 'Dedicated customer service'
+      id: 6,
+      title: 'Canon EOS R6 Camera Body',
+      price: 2299,
+      originalPrice: 2499,
+      rating: 4.9,
+      reviews: 892,
+      image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400',
+      discount: 8,
+      badge: 'New Arrival',
+      prime: false
     },
     {
-      icon: <ShoppingCartOutlined style={{ fontSize: 32, color: '#FF9900' }} />,
-      title: 'Easy Returns',
-      description: '30-day return policy'
+      id: 7,
+      title: 'KitchenAid Stand Mixer',
+      price: 279,
+      originalPrice: 399,
+      rating: 4.9,
+      reviews: 8234,
+      image: 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400',
+      discount: 30,
+      badge: "Amazon's Choice",
+      prime: true
     },
+    {
+      id: 8,
+      title: 'Dyson V15 Vacuum Cleaner',
+      price: 649,
+      originalPrice: 749,
+      rating: 4.7,
+      reviews: 2156,
+      image: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400',
+      discount: 13,
+      badge: 'Limited Stock',
+      prime: true
+    }
   ];
 
   return (
-    <div className="homepage">
-      {/* Hero Carousel */}
-      <Carousel autoplay autoplaySpeed={5000} effect="fade" className="hero-carousel">
-        {banners.map((banner, index) => (
-          <div key={index}>
-            <div 
-              style={{ 
-                height: 500, 
-                background: banner.gradient,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-              }}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                style={{ textAlign: 'center', color: 'white', zIndex: 1 }}
-              >
-                <Title level={1} style={{ color: 'white', fontSize: 56, marginBottom: 16 }}>
-                  {banner.title}
-                </Title>
-                <Paragraph style={{ fontSize: 24, color: 'white', marginBottom: 32 }}>
-                  {banner.description}
-                </Paragraph>
-                <Button 
-                  type="primary" 
-                  size="large" 
-                  icon={<ShoppingOutlined />}
-                  onClick={() => navigate('/products')}
-                  style={{ height: 50, fontSize: 18, padding: '0 40px' }}
-                >
-                  {banner.cta}
-                </Button>
-              </motion.div>
+    <div style={{ background: '#EAEDED' }}>
+      {/* Top Header Bar */}
+      <div style={{ 
+        background: '#131921', 
+        color: 'white', 
+        padding: '8px 0',
+        borderBottom: '1px solid #232F3E'
+      }}>
+        <div style={{ maxWidth: 1500, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Space size="large">
+            <div style={{ fontSize: 24, fontWeight: 'bold', cursor: 'pointer' }} onClick={() => navigate('/')}>
+              GROOW
             </div>
+            <Space size="small" style={{ cursor: 'pointer' }}>
+              <EnvironmentOutlined />
+              <div>
+                <div style={{ fontSize: 11, color: '#ccc' }}>Deliver to</div>
+                <div style={{ fontSize: 14, fontWeight: 'bold' }}>New York 10001</div>
+              </div>
+            </Space>
+          </Space>
+          
+          <div style={{ flex: 1, maxWidth: 800, margin: '0 20px' }}>
+            <Search
+              placeholder="Search Groow"
+              size="large"
+              enterButton={
+                <Button 
+                  style={{ 
+                    background: '#FEBD69', 
+                    borderColor: '#FEBD69',
+                    color: '#131921',
+                    fontWeight: 600
+                  }}
+                  icon={<SearchOutlined />}
+                />
+              }
+              onSearch={(value) => navigate(`/search?q=${value}`)}
+            />
           </div>
-        ))}
-      </Carousel>
 
-      {/* Search Bar */}
-      <div style={{ maxWidth: 1200, margin: '-30px auto 40px', position: 'relative', zIndex: 2, padding: '0 24px' }}>
-        <Search
-          placeholder="Search products, brands, categories..."
-          size="large"
-          enterButton={<Button type="primary" icon={<SearchOutlined />}>Search</Button>}
-          onSearch={(value) => navigate(`/search?q=${value}`)}
-          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
-        />
+          <Space size="large">
+            <div style={{ cursor: 'pointer' }} onClick={() => navigate('/login')}>
+              <div style={{ fontSize: 11 }}>Hello, Sign in</div>
+              <div style={{ fontSize: 14, fontWeight: 'bold' }}>Account & Lists</div>
+            </div>
+            <div style={{ cursor: 'pointer' }} onClick={() => navigate('/orders')}>
+              <div style={{ fontSize: 11 }}>Returns</div>
+              <div style={{ fontSize: 14, fontWeight: 'bold' }}>& Orders</div>
+            </div>
+            <Badge count={3} style={{ background: '#FF9900' }}>
+              <div style={{ cursor: 'pointer', fontSize: 24 }} onClick={() => navigate('/cart')}>
+                <ShoppingCartOutlined style={{ color: 'white' }} />
+              </div>
+            </Badge>
+          </Space>
+        </div>
       </div>
 
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px' }}>
-        {/* Categories */}
-        <section style={{ marginBottom: 48 }}>
-          <Title level={2} style={{ marginBottom: 24 }}>Shop by Category</Title>
-          <Row gutter={[16, 16]}>
-            {categories.map(cat => (
-              <Col xs={12} sm={8} md={6} lg={3} key={cat.id}>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Card
-                    hoverable
-                    onClick={() => navigate(`/category/${cat.id}`)}
-                    style={{ 
-                      textAlign: 'center', 
-                      borderRadius: 8,
-                      border: `2px solid ${cat.color}20`,
+      {/* Navigation Bar */}
+      <div style={{ background: '#232F3E', color: 'white', padding: '8px 0' }}>
+        <div style={{ maxWidth: 1500, margin: '0 auto', padding: '0 20px' }}>
+          <Space size="large">
+            <Button 
+              type="text" 
+              icon={<MenuOutlined />} 
+              style={{ color: 'white', fontWeight: 'bold' }}
+            >
+              All
+            </Button>
+            {topCategories.map((cat, idx) => (
+              <Text 
+                key={idx} 
+                style={{ color: 'white', cursor: 'pointer', fontSize: 14 }}
+                onClick={() => navigate(`/category/${cat.toLowerCase()}`)}
+              >
+                {cat}
+              </Text>
+            ))}
+          </Space>
+        </div>
+      </div>
+
+      {/* Hero Carousel */}
+      <div style={{ position: 'relative' }}>
+        <Carousel autoplay autoplaySpeed={4000} effect="fade">
+          {heroSlides.map((slide, index) => (
+            <div key={index}>
+              <div
+                style={{
+                  height: 400,
+                  background: slide.background,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  padding: '0 20px'
+                }}
+              >
+                <div style={{ textAlign: 'center', color: 'white', maxWidth: 800 }}>
+                  <Title level={1} style={{ color: 'white', fontSize: 48, marginBottom: 8, fontWeight: 700 }}>
+                    {slide.title}
+                  </Title>
+                  <Paragraph style={{ fontSize: 20, color: 'white', marginBottom: 24, opacity: 0.95 }}>
+                    {slide.subtitle}
+                  </Paragraph>
+                  <Button
+                    type="primary"
+                    size="large"
+                    onClick={() => navigate(slide.buttonLink)}
+                    style={{
+                      height: 45,
+                      fontSize: 16,
+                      padding: '0 40px',
+                      background: '#FF9900',
+                      borderColor: '#FF9900',
+                      fontWeight: 600
                     }}
-                    bodyStyle={{ padding: '24px 12px' }}
                   >
-                    <div style={{ fontSize: 48, marginBottom: 8 }}>{cat.icon}</div>
-                    <Text strong style={{ fontSize: 14 }}>{cat.name}</Text>
-                  </Card>
-                </motion.div>
+                    {slide.buttonText}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+
+        {/* Category Quick Access overlaid on hero */}
+        <div style={{ 
+          position: 'absolute', 
+          bottom: -60, 
+          left: 0, 
+          right: 0, 
+          zIndex: 10,
+          maxWidth: 1500,
+          margin: '0 auto',
+          padding: '0 20px'
+        }}>
+          <Row gutter={16}>
+            {categories.map((cat, idx) => (
+              <Col xs={24} sm={12} md={6} key={idx}>
+                <Card
+                  hoverable
+                  onClick={() => navigate(`/category/${cat.name.toLowerCase()}`)}
+                  style={{ 
+                    background: 'white',
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}
+                  bodyStyle={{ padding: 16 }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div 
+                      style={{ 
+                        width: 60, 
+                        height: 60, 
+                        borderRadius: 8,
+                        background: `url(${cat.image})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                      }} 
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>{cat.name}</div>
+                      <div style={{ fontSize: 12, color: '#666' }}>{cat.items}</div>
+                    </div>
+                  </div>
+                </Card>
               </Col>
             ))}
           </Row>
-        </section>
+        </div>
+      </div>
 
-        <Divider />
-
-        {/* Featured Products */}
-        <section style={{ marginBottom: 48 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <Title level={2} style={{ margin: 0 }}>Today's Deals</Title>
-            <Button type="link" onClick={() => navigate('/deals')}>View All →</Button>
+      {/* Main Content */}
+      <div style={{ maxWidth: 1500, margin: '0 auto', padding: '80px 20px 40px' }}>
+        
+        {/* Today's Deals Section */}
+        <Card 
+          style={{ marginBottom: 24, border: 'none' }}
+          bodyStyle={{ padding: 20 }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <Title level={3} style={{ margin: 0 }}>Today's Deals</Title>
+            <Button type="link" onClick={() => navigate('/deals')} style={{ fontSize: 16 }}>
+              See all deals →
+            </Button>
           </div>
-          
+
           <Row gutter={[16, 16]}>
-            {featuredProducts.map(product => (
-              <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
-                <motion.div
-                  whileHover={{ y: -8 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Card
-                    hoverable
-                    cover={
-                      <div style={{ position: 'relative' }}>
-                        <img alt={product.title} src={product.image} style={{ height: 280, objectFit: 'cover' }} />
-                        {product.badge && (
-                          <div style={{
-                            position: 'absolute',
-                            top: 12,
-                            left: 12,
-                            background: '#FF9900',
-                            color: 'white',
-                            padding: '4px 12px',
-                            borderRadius: 4,
-                            fontSize: 12,
-                            fontWeight: 'bold'
-                          }}>
-                            {product.badge}
-                          </div>
-                        )}
-                        {product.discount > 0 && (
-                          <div style={{
-                            position: 'absolute',
-                            top: 12,
-                            right: 12,
-                            background: '#C7511F',
-                            color: 'white',
-                            padding: '4px 8px',
-                            borderRadius: 4,
-                            fontSize: 12,
-                            fontWeight: 'bold'
-                          }}>
-                            -{product.discount}%
-                          </div>
-                        )}
-                        <Button
-                          type="text"
-                          icon={<HeartOutlined />}
+            {deals.map((product) => (
+              <Col xs={12} sm={8} md={6} lg={3} key={product.id}>
+                <Card
+                  hoverable
+                  onClick={() => navigate(`/products/${product.id}`)}
+                  cover={
+                    <div style={{ position: 'relative', paddingTop: '100%', background: '#f5f5f5' }}>
+                      <img
+                        alt={product.title}
+                        src={product.image}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      {product.badge && (
+                        <div
                           style={{
                             position: 'absolute',
-                            top: 12,
-                            right: product.discount > 0 ? 80 : 12,
-                            background: 'white',
-                            borderRadius: '50%',
-                            width: 32,
-                            height: 32,
+                            top: 8,
+                            left: 8,
+                            background: '#CC0C39',
+                            color: 'white',
+                            padding: '4px 8px',
+                            fontSize: 11,
+                            fontWeight: 'bold',
+                            borderRadius: 2
                           }}
-                        />
-                      </div>
-                    }
-                    onClick={() => navigate(`/products/${product.id}`)}
-                    bodyStyle={{ padding: 16 }}
-                  >
-                    <div style={{ marginBottom: 8 }}>
-                      <Space size={4}>
-                        <StarFilled style={{ color: '#FF9900', fontSize: 14 }} />
-                        <Text strong>{product.rating}</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>({product.reviews})</Text>
-                      </Space>
+                        >
+                          {product.badge}
+                        </div>
+                      )}
+                      {product.discount > 0 && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            background: '#B12704',
+                            color: 'white',
+                            padding: '4px 8px',
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                            borderRadius: 2
+                          }}
+                        >
+                          -{product.discount}%
+                        </div>
+                      )}
                     </div>
-                    
-                    <Paragraph 
-                      ellipsis={{ rows: 2 }} 
-                      style={{ marginBottom: 8, minHeight: 44, fontSize: 14 }}
-                    >
-                      {product.title}
-                    </Paragraph>
-                    
-                    <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                      <div>
-                        <Text strong style={{ fontSize: 20, color: '#B12704' }}>
-                          ${product.price}
-                        </Text>
-                        {product.originalPrice && (
-                          <Text delete type="secondary" style={{ marginLeft: 8, fontSize: 14 }}>
-                            ${product.originalPrice}
-                          </Text>
-                        )}
-                      </div>
-                      
-                      <Button 
-                        type="primary" 
-                        icon={<ShoppingCartOutlined />}
-                        block
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Add to cart logic
-                        }}
-                      >
-                        Add to Cart
-                      </Button>
+                  }
+                  bodyStyle={{ padding: 12 }}
+                  style={{ border: '1px solid #DDD' }}
+                >
+                  {product.prime && (
+                    <div style={{ marginBottom: 4 }}>
+                      <span style={{ 
+                        background: '#00A8E1', 
+                        color: 'white', 
+                        padding: '2px 6px', 
+                        fontSize: 10, 
+                        fontWeight: 'bold',
+                        borderRadius: 2
+                      }}>
+                        prime
+                      </span>
+                    </div>
+                  )}
+                  
+                  <Paragraph
+                    ellipsis={{ rows: 2 }}
+                    style={{ 
+                      marginBottom: 8, 
+                      fontSize: 14, 
+                      minHeight: 40,
+                      lineHeight: '1.4'
+                    }}
+                  >
+                    {product.title}
+                  </Paragraph>
+
+                  <div style={{ marginBottom: 4 }}>
+                    <Space size={4} align="center">
+                      <Rate disabled defaultValue={product.rating} style={{ fontSize: 12 }} />
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        ({product.reviews.toLocaleString()})
+                      </Text>
                     </Space>
-                  </Card>
-                </motion.div>
+                  </div>
+
+                  <div style={{ marginBottom: 8 }}>
+                    <Space align="baseline" size={4}>
+                      <Text strong style={{ fontSize: 11, color: '#0F1111' }}>$</Text>
+                      <Text strong style={{ fontSize: 20, color: '#0F1111', lineHeight: 1 }}>
+                        {Math.floor(product.price)}
+                      </Text>
+                      <Text strong style={{ fontSize: 11, color: '#0F1111' }}>
+                        {(product.price % 1).toFixed(2).substring(1)}
+                      </Text>
+                    </Space>
+                    {product.originalPrice && (
+                      <div>
+                        <Text delete type="secondary" style={{ fontSize: 12 }}>
+                          ${product.originalPrice}
+                        </Text>
+                      </div>
+                    )}
+                  </div>
+
+                  {product.prime && (
+                    <div style={{ fontSize: 11, color: '#007185', marginBottom: 8 }}>
+                      FREE delivery Tomorrow
+                    </div>
+                  )}
+
+                  <Button
+                    type="primary"
+                    block
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add to cart
+                    }}
+                    style={{
+                      background: '#FFD814',
+                      borderColor: '#FCD200',
+                      color: '#0F1111',
+                      fontWeight: 600,
+                      fontSize: 13
+                    }}
+                  >
+                    Add to Cart
+                  </Button>
+                </Card>
               </Col>
             ))}
           </Row>
-        </section>
+        </Card>
 
-        <Divider />
-
-        {/* Features */}
-        <section style={{ marginBottom: 48, background: '#F7F8FA', margin: '0 -24px', padding: '40px 24px' }}>
-          <Row gutter={[32, 32]}>
-            {features.map((feature, index) => (
-              <Col xs={24} sm={12} md={6} key={index}>
-                <div style={{ textAlign: 'center' }}>
-                  {feature.icon}
-                  <Title level={4} style={{ marginTop: 16, marginBottom: 8 }}>
-                    {feature.title}
-                  </Title>
-                  <Text type="secondary">{feature.description}</Text>
-                </div>
-              </Col>
-            ))}
+        {/* Service Features */}
+        <Card style={{ background: '#F7F8F8', border: 'none', marginBottom: 24 }} bodyStyle={{ padding: 30 }}>
+          <Row gutter={[24, 24]}>
+            <Col xs={24} sm={12} md={6}>
+              <div style={{ textAlign: 'center' }}>
+                <TruckOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />
+                <Title level={5} style={{ marginBottom: 8 }}>FREE Shipping</Title>
+                <Text type="secondary">Free delivery on orders over $25</Text>
+              </div>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <div style={{ textAlign: 'center' }}>
+                <SafetyOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />
+                <Title level={5} style={{ marginBottom: 8 }}>Secure Payment</Title>
+                <Text type="secondary">100% secure transactions</Text>
+              </div>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <div style={{ textAlign: 'center' }}>
+                <CustomerServiceOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />
+                <Title level={5} style={{ marginBottom: 8 }}>24/7 Support</Title>
+                <Text type="secondary">Dedicated customer service</Text>
+              </div>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <div style={{ textAlign: 'center' }}>
+                <ThunderboltOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />
+                <Title level={5} style={{ marginBottom: 8 }}>Easy Returns</Title>
+                <Text type="secondary">30-day return policy</Text>
+              </div>
+            </Col>
           </Row>
-        </section>
+        </Card>
+      </div>
+
+      {/* Footer */}
+      <div style={{ background: '#232F3E', color: 'white', padding: '40px 20px', marginTop: 40 }}>
+        <div style={{ maxWidth: 1500, margin: '0 auto', textAlign: 'center' }}>
+          <Title level={4} style={{ color: 'white', marginBottom: 8 }}>GROOW</Title>
+          <Text style={{ color: '#DDD' }}>Your one-stop marketplace for everything</Text>
+        </div>
       </div>
     </div>
   );

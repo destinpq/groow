@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Statistic, Typography, Tabs, Table, Space, Button, DatePicker, Select, Alert, Progress } from 'antd';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUpOutlined, DollarOutlined, ShoppingCartOutlined, TeamOutlined, BarChartOutlined, DownloadOutlined, ReloadOutlined } from '@ant-design/icons';
+import { RiseOutlined, DollarOutlined, ShoppingCartOutlined, TeamOutlined, BarChartOutlined, DownloadOutlined, ReloadOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -134,7 +134,7 @@ const AnalyticsDashboard: React.FC = () => {
               precision={2}
               prefix="$"
               valueStyle={{ color: '#52c41a' }}
-              suffix={<TrendingUpOutlined style={{ color: '#52c41a' }} />}
+              suffix={<RiseOutlined style={{ color: '#52c41a' }} />}
             />
           </Card>
         </Col>

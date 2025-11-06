@@ -1,0 +1,273 @@
+[
+  {
+    "name": "Apple iPhone 15 Pro Max",
+    "slug": "apple-iphone-15-pro-max",
+    "description": "The most powerful iPhone ever with A17 Pro chip, titanium design, and advanced camera system",
+    "shortDescription": "Premium flagship smartphone with cutting-edge technology",
+    "sku": "APPL-IP15PM-256-TIT",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "apple",
+    "basePrice": 1199.99,
+    "salePrice": 1149.99,
+    "stockQuantity": 50,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1695048133142-1a20484d2569",
+      "https://images.unsplash.com/photo-1695048133082-1a20484d2569"
+    ],
+    "specifications": [
+      {"key": "Display", "value": "6.7-inch Super Retina XDR"},
+      {"key": "Chip", "value": "A17 Pro"},
+      {"key": "Camera", "value": "48MP Main, 12MP Ultra Wide"},
+      {"key": "Storage", "value": "256GB"},
+      {"key": "Battery", "value": "Up to 29 hours video playback"}
+    ],
+    "status": "active",
+    "rating": 4.8,
+    "reviewCount": 342,
+    "seo": {
+      "title": "Apple iPhone 15 Pro Max - Premium Smartphone",
+      "description": "Buy the latest iPhone 15 Pro Max with titanium design",
+      "keywords": ["iPhone", "Apple", "smartphone", "A17 Pro"]
+    }
+  },
+  {
+    "name": "Samsung Galaxy S24 Ultra",
+    "slug": "samsung-galaxy-s24-ultra",
+    "description": "Ultimate Galaxy experience with S Pen, AI features, and 200MP camera",
+    "shortDescription": "Flagship Android smartphone with advanced AI",
+    "sku": "SAMS-S24U-512-BLK",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "samsung",
+    "basePrice": 1299.99,
+    "salePrice": 1199.99,
+    "stockQuantity": 35,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c"
+    ],
+    "specifications": [
+      {"key": "Display", "value": "6.8-inch Dynamic AMOLED 2X"},
+      {"key": "Processor", "value": "Snapdragon 8 Gen 3"},
+      {"key": "Camera", "value": "200MP Main"},
+      {"key": "Storage", "value": "512GB"},
+      {"key": "S Pen", "value": "Included"}
+    ],
+    "status": "active",
+    "rating": 4.7,
+    "reviewCount": 289
+  },
+  {
+    "name": "Nike Air Max 270",
+    "slug": "nike-air-max-270",
+    "description": "Iconic sneakers with Max Air cushioning for all-day comfort",
+    "shortDescription": "Classic athletic shoes with superior comfort",
+    "sku": "NIKE-AM270-10-BLK",
+    "vendorEmail": "vendor2@groow.com",
+    "categorySlug": "fashion",
+    "brandSlug": "nike",
+    "basePrice": 159.99,
+    "salePrice": 129.99,
+    "stockQuantity": 120,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+    ],
+    "specifications": [
+      {"key": "Material", "value": "Mesh and synthetic upper"},
+      {"key": "Cushioning", "value": "Max Air unit"},
+      {"key": "Sole", "value": "Rubber outsole"},
+      {"key": "Sizes", "value": "US 6-13"}
+    ],
+    "status": "active",
+    "rating": 4.6,
+    "reviewCount": 512
+  },
+  {
+    "name": "Sony WH-1000XM5 Wireless Headphones",
+    "slug": "sony-wh-1000xm5-wireless-headphones",
+    "description": "Industry-leading noise canceling headphones with exceptional sound quality",
+    "shortDescription": "Premium wireless headphones with ANC",
+    "sku": "SONY-WH1000XM5-BLK",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "sony",
+    "basePrice": 399.99,
+    "salePrice": 349.99,
+    "stockQuantity": 45,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1546435770-a3e426bf472b"
+    ],
+    "specifications": [
+      {"key": "Noise Canceling", "value": "Industry-leading ANC"},
+      {"key": "Battery", "value": "30 hours"},
+      {"key": "Audio", "value": "LDAC, DSEE Extreme"},
+      {"key": "Controls", "value": "Touch sensor"}
+    ],
+    "status": "active",
+    "rating": 4.9,
+    "reviewCount": 678
+  },
+  {
+    "name": "Dell XPS 15 Laptop",
+    "slug": "dell-xps-15-laptop",
+    "description": "Powerful laptop with InfinityEdge display and premium build quality",
+    "shortDescription": "Professional laptop for creators and developers",
+    "sku": "DELL-XPS15-I7-16GB",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "dell",
+    "basePrice": 1899.99,
+    "salePrice": 1699.99,
+    "stockQuantity": 25,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed"
+    ],
+    "specifications": [
+      {"key": "Display", "value": "15.6-inch FHD+"},
+      {"key": "Processor", "value": "Intel Core i7-13700H"},
+      {"key": "RAM", "value": "16GB DDR5"},
+      {"key": "Storage", "value": "512GB SSD"},
+      {"key": "GPU", "value": "NVIDIA RTX 4050"}
+    ],
+    "status": "active",
+    "rating": 4.7,
+    "reviewCount": 234
+  },
+  {
+    "name": "Adidas Ultraboost 23",
+    "slug": "adidas-ultraboost-23",
+    "description": "Revolutionary running shoes with Boost cushioning technology",
+    "shortDescription": "High-performance running shoes",
+    "sku": "ADID-UB23-10-WHT",
+    "vendorEmail": "vendor2@groow.com",
+    "categorySlug": "sports-outdoors",
+    "brandSlug": "adidas",
+    "basePrice": 189.99,
+    "salePrice": 159.99,
+    "stockQuantity": 80,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1608231387042-66d1773070a5"
+    ],
+    "specifications": [
+      {"key": "Technology", "value": "Boost cushioning"},
+      {"key": "Upper", "value": "Primeknit+"},
+      {"key": "Outsole", "value": "Continental rubber"},
+      {"key": "Weight", "value": "10.9 oz"}
+    ],
+    "status": "active",
+    "rating": 4.8,
+    "reviewCount": 421
+  },
+  {
+    "name": "Canon EOS R6 Mark II",
+    "slug": "canon-eos-r6-mark-ii",
+    "description": "Full-frame mirrorless camera with advanced autofocus and video capabilities",
+    "shortDescription": "Professional mirrorless camera",
+    "sku": "CANON-R6M2-BODY",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "canon",
+    "basePrice": 2499.99,
+    "stockQuantity": 15,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1606980707146-b5e5a9ec1cca"
+    ],
+    "specifications": [
+      {"key": "Sensor", "value": "24.2MP Full-Frame CMOS"},
+      {"key": "Autofocus", "value": "Dual Pixel CMOS AF II"},
+      {"key": "Video", "value": "6K RAW, 4K 60p"},
+      {"key": "ISO", "value": "100-102400"},
+      {"key": "IBIS", "value": "Up to 8 stops"}
+    ],
+    "status": "active",
+    "rating": 4.9,
+    "reviewCount": 156
+  },
+  {
+    "name": "LG OLED C3 65-inch TV",
+    "slug": "lg-oled-c3-65-inch-tv",
+    "description": "Premium OLED TV with stunning picture quality and gaming features",
+    "shortDescription": "65-inch 4K OLED Smart TV",
+    "sku": "LG-OLEDC3-65",
+    "vendorEmail": "vendor3@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "lg",
+    "basePrice": 2199.99,
+    "salePrice": 1799.99,
+    "stockQuantity": 20,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1593784991095-a205069470b6"
+    ],
+    "specifications": [
+      {"key": "Display", "value": "65-inch OLED 4K"},
+      {"key": "Processor", "value": "α9 Gen6 AI"},
+      {"key": "HDR", "value": "Dolby Vision, HDR10"},
+      {"key": "Refresh Rate", "value": "120Hz"},
+      {"key": "Gaming", "value": "HDMI 2.1, VRR, ALLM"}
+    ],
+    "status": "active",
+    "rating": 4.8,
+    "reviewCount": 389
+  },
+  {
+    "name": "Logitech MX Master 3S",
+    "slug": "logitech-mx-master-3s",
+    "description": "Ergonomic wireless mouse with precision scrolling and app-specific customization",
+    "shortDescription": "Premium wireless productivity mouse",
+    "sku": "LOGI-MXM3S-GRY",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "logitech",
+    "basePrice": 99.99,
+    "salePrice": 79.99,
+    "stockQuantity": 150,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46"
+    ],
+    "specifications": [
+      {"key": "DPI", "value": "200-8000"},
+      {"key": "Connectivity", "value": "Bluetooth, USB-C"},
+      {"key": "Battery", "value": "70 days"},
+      {"key": "Buttons", "value": "7 customizable"}
+    ],
+    "status": "active",
+    "rating": 4.7,
+    "reviewCount": 892
+  },
+  {
+    "name": "Microsoft Surface Pro 9",
+    "slug": "microsoft-surface-pro-9",
+    "description": "Versatile 2-in-1 tablet and laptop with premium design",
+    "shortDescription": "Premium 2-in-1 device",
+    "sku": "MSFT-SP9-I5-256",
+    "vendorEmail": "vendor1@groow.com",
+    "categorySlug": "electronics",
+    "brandSlug": "microsoft",
+    "basePrice": 1299.99,
+    "salePrice": 1099.99,
+    "stockQuantity": 30,
+    "minOrderQuantity": 1,
+    "images": [
+      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0"
+    ],
+    "specifications": [
+      {"key": "Display", "value": "13-inch PixelSense"},
+      {"key": "Processor", "value": "Intel Core i5-1235U"},
+      {"key": "RAM", "value": "8GB"},
+      {"key": "Storage", "value": "256GB SSD"},
+      {"key": "Weight", "value": "1.94 lbs"}
+    ],
+    "status": "active",
+    "rating": 4.6,
+    "reviewCount": 267
+  }
+]

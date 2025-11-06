@@ -220,23 +220,8 @@ export type {
   FlashSaleUpdateRequest,
 } from './flashSales';
 
-// Bulk Operations
-export { bulkOperationsAPI } from './bulkOperations';
-export type {
-  BulkOperation,
-  ImportJob,
-  ExportJob,
-  ImportResult,
-  ExportResult,
-  BulkOperationFilters,
-  ImportOptions,
-  ExportOptions,
-  FieldMapping,
-  ValidationResult,
-  JobProgress,
-  ImportTemplate,
-  ExportTemplate,
-} from './bulkOperations';
+// Bulk Operations (alias to bulkData)
+export { bulkDataAPI } from './bulkData';
 
 // Currency
 export { currencyAPI } from './currency';
@@ -307,6 +292,33 @@ export type {
   LoyaltyCampaign,
 } from './loyalty';
 
+// Security
+export { securityAPI } from './security';
+export type {
+  SecurityThreat,
+  SecurityEvent,
+  BlockedIP,
+  ActivityLog,
+  SecurityMetrics,
+  SecurityConfiguration,
+  SecurityFilters,
+} from './security';
+
+// Affiliate & Referral
+export { affiliateAPI, affiliateAdminAPI } from './affiliate';
+export type {
+  AffiliateProgram,
+  AffiliateAccount,
+  ReferralLink,
+  ReferralActivity,
+  Commission,
+  PayoutRequest as AffiliatePayoutRequest,
+  AffiliateStats,
+  AffiliateFilters,
+  CreateAffiliateData,
+  CreateReferralLinkData,
+} from './affiliate';
+
 // Product Bundles
 export { bundlesAPI } from './bundles';
 export type {
@@ -353,6 +365,23 @@ import { currencyAPI } from './currency';
 import { inventoryAlertsAPI } from './inventoryAlerts';
 import { advancedOrderAPI } from './advancedOrders';
 import { loyaltyAPI } from './loyalty';
+import { securityAPI } from './security';
+import { affiliateAPI, affiliateAdminAPI } from './affiliate';
+import { digitalDownloadsAPI } from './digitalDownloadsAPI';
+import { subscriptionsAPI } from './subscriptions';
+import { cmsAPI } from './cmsAPI';
+import { preOrdersAPI } from './preOrders';
+import { savedSearchesAPI } from './savedSearches';
+import { giftWrappingAPI } from './giftWrapping';
+import { comparisonAPI } from './comparison';
+import { auctionsAPI } from './auctions';
+import { shoppingListsAPI } from './shoppingLists';
+import { sampleRequestsAPI } from './sampleRequests';
+import { storeLocatorAPI } from './storeLocator';
+import { gamificationAPI } from './gamification';
+import { voiceSearchAPI } from './voiceSearch';
+import { taxExemptionAPI } from './taxExemption';
+import { warrantyAPI } from './warranty';
 
 export const API = {
   auth: authAPI,
@@ -387,6 +416,166 @@ export const API = {
   inventoryAlerts: inventoryAlertsAPI,
   advancedOrders: advancedOrderAPI,
   loyalty: loyaltyAPI,
+  security: securityAPI,
+  affiliate: affiliateAPI,
+  affiliateAdmin: affiliateAdminAPI,
+  digitalDownloads: digitalDownloadsAPI,
+  subscriptions: subscriptionsAPI,
+  cms: cmsAPI,
+  preOrders: preOrdersAPI,
+  savedSearches: savedSearchesAPI,
+  giftWrapping: giftWrappingAPI,
+  comparison: comparisonAPI,
+  auctions: auctionsAPI,
+  shoppingLists: shoppingListsAPI,
+  sampleRequests: sampleRequestsAPI,
+  storeLocator: storeLocatorAPI,
+  gamification: gamificationAPI,
+  voiceSearch: voiceSearchAPI,
+  taxExemption: taxExemptionAPI,
+  warranty: warrantyAPI,
 };
 
 export default API;
+
+// Digital Downloads
+export { digitalDownloadsAPI } from './digitalDownloadsAPI';
+export type {
+  DigitalProduct,
+  DigitalProductType,
+  DownloadStatus,
+  LicenseStatus,
+  DownloadHistory,
+  LicenseActivation,
+  DownloadStats,
+  ProductUpdate,
+  CreateDownloadRequest,
+  VerifyLicenseRequest,
+  ActivateLicenseRequest,
+  DeactivateLicenseRequest,
+} from './digitalDownloadsAPI';
+
+// Subscriptions
+export { subscriptionsAPI } from './subscriptions';
+export type {
+  Subscription,
+  SubscriptionPlan,
+  BillingHistory,
+  SubscriptionStats,
+  CreateSubscriptionRequest,
+  UpdateSubscriptionRequest,
+  SubscriptionFilters,
+} from './subscriptions';
+
+// CMS (Content Management System)
+export { cmsAPI } from './cmsAPI';
+export type {
+  CMSPage,
+  CMSBanner,
+  CMSFAQ,
+  CMSMenu,
+  CMSMenuItem,
+  CMSMedia,
+  CMSTestimonial,
+  CMSSocialLink,
+  CMSBlogPost,
+  CMSNewsletter,
+  CMSAnnouncement,
+} from './cmsAPI';
+
+// Pre-Orders
+export { preOrdersAPI } from './preOrders';
+export type {
+  PreOrderProduct,
+  MyPreOrder,
+  CreatePreOrderData,
+  UpdatePreOrderData,
+} from './preOrders';
+
+// Saved Searches
+export { savedSearchesAPI } from './savedSearches';
+export type {
+  SavedSearch,
+  CreateSavedSearchData,
+  UpdateSavedSearchData,
+} from './savedSearches';
+
+// Gift Wrapping
+export { giftWrappingAPI } from './giftWrapping';
+export type {
+  GiftWrap,
+  GiftWrapOrder,
+  CreateGiftWrapOrderData,
+} from './giftWrapping';
+
+// Product Comparison
+export { comparisonAPI } from './comparison';
+export type {
+  ComparisonList,
+  ProductComparison,
+} from './comparison';
+
+// Auctions
+export { auctionsAPI } from './auctions';
+export type {
+  Auction,
+  Bid,
+  CreateBidData,
+} from './auctions';
+
+// Shopping Lists
+export { shoppingListsAPI } from './shoppingLists';
+export type {
+  ShoppingList,
+  ShoppingListItem,
+  CreateShoppingListData,
+  AddItemToListData,
+} from './shoppingLists';
+
+// Sample Requests
+export { sampleRequestsAPI } from './sampleRequests';
+export type {
+  SampleRequest,
+  CreateSampleRequestData,
+} from './sampleRequests';
+
+// Store Locator
+export { storeLocatorAPI } from './storeLocator';
+export type {
+  Store,
+} from './storeLocator';
+
+// Gamification
+export { gamificationAPI } from './gamification';
+export type {
+  UserProfile,
+  Badge,
+  Achievement,
+  Leaderboard,
+  Challenge,
+} from './gamification';
+
+// Voice Search
+export { voiceSearchAPI } from './voiceSearch';
+export type {
+  VoiceSearchResult,
+  VoiceCommand,
+  VoiceSettings,
+} from './voiceSearch';
+
+// Tax Exemption
+export { taxExemptionAPI } from './taxExemption';
+export type {
+  TaxExemption as CustomerTaxExemption,
+  CreateTaxExemptionData,
+  TaxExemptionOrder,
+} from './taxExemption';
+
+// Warranty Management
+export { warrantyAPI } from './warranty';
+export type {
+  Warranty,
+  WarrantyPlan,
+  WarrantyClaim,
+  CreateClaimData,
+} from './warranty';

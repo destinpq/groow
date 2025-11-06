@@ -1,0 +1,66 @@
+[
+  {
+    "customerEmail": "customer1@groow.com",
+    "type": "order",
+    "title": "Order Shipped",
+    "message": "Your order #ORD-001 has been shipped and is on its way!",
+    "isRead": false,
+    "priority": "medium"
+  },
+  {
+    "customerEmail": "customer2@groow.com",
+    "type": "promotion",
+    "title": "Flash Sale Alert!",
+    "message": "50% off on selected electronics. Sale ends tonight!",
+    "isRead": false,
+    "priority": "high"
+  },
+  {
+    "customerEmail": "customer3@groow.com",
+    "type": "order",
+    "title": "Order Delivered",
+    "message": "Your order has been successfully delivered. Thank you for shopping with us!",
+    "isRead": true,
+    "priority": "medium"
+  },
+  {
+    "customerEmail": "customer4@groow.com",
+    "type": "product",
+    "title": "Product Back in Stock",
+    "message": "The item in your wishlist 'Sony WH-1000XM5' is now back in stock!",
+    "isRead": false,
+    "priority": "medium"
+  },
+  {
+    "customerEmail": "customer5@groow.com",
+    "type": "system",
+    "title": "Account Security Update",
+    "message": "We've updated our security features. Please review your account settings.",
+    "isRead": false,
+    "priority": "high"
+  },
+  {
+    "vendorEmail": "vendor1@groow.com",
+    "type": "order",
+    "title": "New Order Received",
+    "message": "You have received a new order #ORD-001. Please process it promptly.",
+    "isRead": false,
+    "priority": "high"
+  },
+  {
+    "vendorEmail": "vendor2@groow.com",
+    "type": "payment",
+    "title": "Payment Processed",
+    "message": "Your weekly payout of $2,450.00 has been processed.",
+    "isRead": true,
+    "priority": "medium"
+  },
+  {
+    "vendorEmail": "vendor3@groow.com",
+    "type": "rfq",
+    "title": "New RFQ Request",
+    "message": "You have received a new Request for Quotation. View details now.",
+    "isRead": false,
+    "priority": "high"
+  }
+]

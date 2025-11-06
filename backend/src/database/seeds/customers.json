@@ -1,0 +1,112 @@
+[
+  {
+    "userEmail": "customer1@groow.com",
+    "phone": "+1-555-1001",
+    "dateOfBirth": "1990-05-15",
+    "avatar": "https://i.pravatar.cc/150?img=1",
+    "address": "100 Main St, Apt 4B, Seattle, WA 98101",
+    "city": "Seattle",
+    "state": "WA",
+    "country": "USA",
+    "postalCode": "98101"
+  },
+  {
+    "userEmail": "customer2@groow.com",
+    "phone": "+1-555-1002",
+    "dateOfBirth": "1988-08-22",
+    "avatar": "https://i.pravatar.cc/150?img=2",
+    "address": "200 Oak Ave, Los Angeles, CA 90001",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "USA",
+    "postalCode": "90001"
+  },
+  {
+    "userEmail": "customer3@groow.com",
+    "phone": "+1-555-1003",
+    "dateOfBirth": "1992-03-10",
+    "avatar": "https://i.pravatar.cc/150?img=3",
+    "address": "300 Pine Rd, Miami, FL 33101",
+    "city": "Miami",
+    "state": "FL",
+    "country": "USA",
+    "postalCode": "33101"
+  },
+  {
+    "userEmail": "customer4@groow.com",
+    "phone": "+1-555-1004",
+    "dateOfBirth": "1985-11-30",
+    "avatar": "https://i.pravatar.cc/150?img=4",
+    "address": "400 Elm St, Austin, TX 78701",
+    "city": "Austin",
+    "state": "TX",
+    "country": "USA",
+    "postalCode": "78701"
+  },
+  {
+    "userEmail": "customer5@groow.com",
+    "phone": "+1-555-1005",
+    "dateOfBirth": "1995-07-18",
+    "avatar": "https://i.pravatar.cc/150?img=5",
+    "address": "500 Maple Dr, Portland, OR 97201",
+    "city": "Portland",
+    "state": "OR",
+    "country": "USA",
+    "postalCode": "97201"
+  },
+  {
+    "userEmail": "customer6@groow.com",
+    "phone": "+1-555-1006",
+    "dateOfBirth": "1987-12-05",
+    "avatar": "https://i.pravatar.cc/150?img=6",
+    "address": "600 Cedar Ln, Phoenix, AZ 85001",
+    "city": "Phoenix",
+    "state": "AZ",
+    "country": "USA",
+    "postalCode": "85001"
+  },
+  {
+    "userEmail": "customer7@groow.com",
+    "phone": "+1-555-1007",
+    "dateOfBirth": "1993-04-25",
+    "avatar": "https://i.pravatar.cc/150?img=7",
+    "address": "700 Birch Ct, Philadelphia, PA 19101",
+    "city": "Philadelphia",
+    "state": "PA",
+    "country": "USA",
+    "postalCode": "19101"
+  },
+  {
+    "userEmail": "customer8@groow.com",
+    "phone": "+1-555-1008",
+    "dateOfBirth": "1991-09-14",
+    "avatar": "https://i.pravatar.cc/150?img=8",
+    "address": "800 Spruce Way, San Diego, CA 92101",
+    "city": "San Diego",
+    "state": "CA",
+    "country": "USA",
+    "postalCode": "92101"
+  },
+  {
+    "userEmail": "customer9@groow.com",
+    "phone": "+1-555-1009",
+    "dateOfBirth": "1989-06-08",
+    "avatar": "https://i.pravatar.cc/150?img=9",
+    "address": "900 Willow Rd, Dallas, TX 75201",
+    "city": "Dallas",
+    "state": "TX",
+    "country": "USA",
+    "postalCode": "75201"
+  },
+  {
+    "userEmail": "customer10@groow.com",
+    "phone": "+1-555-1010",
+    "dateOfBirth": "1994-02-20",
+    "avatar": "https://i.pravatar.cc/150?img=10",
+    "address": "1000 Ash Blvd, San Francisco, CA 94102",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA",
+    "postalCode": "94102"
+  }
+]

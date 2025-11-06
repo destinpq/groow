@@ -1,22 +1,34 @@
 import { ProTable } from '@ant-design/pro-components';
-import type { ProColumns } from '@ant-design/pro-components';
+import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { Button, Space, Tag, Avatar, message } from 'antd';
 import { EyeOutlined, StopOutlined, CheckCircleOutlined } from '@ant-design/icons';
-
-interface CustomerType {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: 'active' | 'suspended';
-  ordersCount: number;
-  totalSpent: number;
-  lastOrder: string;
-  joinedAt: string;
-}
+import { customerAPI, Customer } from '@/services/api';
+import { useRef } from 'react';
 
 const AdminCustomers = () => {
-  const columns: ProColumns<CustomerType>[] = [
+  const actionRef = useRef<ActionType>();
+
+  const handleSuspend = async (id: string) => {
+    try {
+      await customerAPI.toggleActive(id);
+      message.success('Customer suspended successfully');
+      actionRef.current?.reload();
+    } catch (error: any) {
+      message.error(error.message || 'Failed to suspend customer');
+    }
+  };
+
+  const handleActivate = async (id: string) => {
+    try {
+      await customerAPI.toggleActive(id);
+      message.success('Customer activated successfully');
+      actionRef.current?.reload();
+    } catch (error: any) {
+      message.error(error.message || 'Failed to activate customer');
+    }
+  };
+
+  const columns: ProColumns<Customer>[] = [
     {
       title: 'Customer',
       dataIndex: 'name',
@@ -24,7 +36,7 @@ const AdminCustomers = () => {
       width: 200,
       render: (name, record) => (
         <Space>
-          <Avatar>{name[0]}</Avatar>
+          <Avatar>{String(name || '?')[0]}</Avatar>
           <div>
             <div>{name}</div>
             <div style={{ fontSize: 12, color: '#999' }}>{record.email}</div>
@@ -51,21 +63,21 @@ const AdminCustomers = () => {
       dataIndex: 'totalSpent',
       key: 'totalSpent',
       width: 120,
-      render: (spent) => `$${spent.toFixed(2)}`,
+      render: (spent) => `$${Number(spent || 0).toFixed(2)}`,
       sorter: true,
     },
     {
       title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'isActive',
+      key: 'isActive',
       width: 100,
       filters: [
-        { text: 'Active', value: 'active' },
-        { text: 'Suspended', value: 'suspended' },
+        { text: 'Active', value: true },
+        { text: 'Suspended', value: false },
       ],
-      render: (status) => (
-        <Tag color={status === 'active' ? 'success' : 'error'}>
-          {status.toUpperCase()}
+      render: (isActive) => (
+        <Tag color={isActive ? 'success' : 'error'}>
+          {isActive ? 'ACTIVE' : 'SUSPENDED'}
         </Tag>
       ),
     },
@@ -77,8 +89,8 @@ const AdminCustomers = () => {
     },
     {
       title: 'Joined',
-      dataIndex: 'joinedAt',
-      key: 'joinedAt',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
       width: 120,
       valueType: 'date',
     },
@@ -89,7 +101,7 @@ const AdminCustomers = () => {
       render: (_, record) => (
         <Space>
           <Button type="link" icon={<EyeOutlined />}>View</Button>
-          {record.status === 'active' ? (
+          {record.isActive ? (
             <Button type="link" danger icon={<StopOutlined />} onClick={() => handleSuspend(record.id)}>
               Suspend
             </Button>
@@ -103,43 +115,32 @@ const AdminCustomers = () => {
     },
   ];
 
-  const mockData: CustomerType[] = [
-    {
-      id: '1',
-      name: 'Alice Johnson',
-      email: 'alice@example.com',
-      phone: '+1234567890',
-      status: 'active',
-      ordersCount: 15,
-      totalSpent: 3456.78,
-      lastOrder: '2024-11-03',
-      joinedAt: '2024-06-15',
-    },
-    {
-      id: '2',
-      name: 'Bob Williams',
-      email: 'bob@example.com',
-      phone: '+1234567891',
-      status: 'active',
-      ordersCount: 8,
-      totalSpent: 1234.56,
-      lastOrder: '2024-10-28',
-      joinedAt: '2024-08-20',
-    },
-  ];
-
-  const handleSuspend = (id: string) => {
-    message.success('Customer suspended');
-  };
-
-  const handleActivate = (id: string) => {
-    message.success('Customer activated');
-  };
-
   return (
-    <ProTable<CustomerType>
+    <ProTable<Customer>
       columns={columns}
-      dataSource={mockData}
+      actionRef={actionRef}
+      request={async (params, sort, filter) => {
+        try {
+          const response = await customerAPI.getAll({
+            page: params.current || 1,
+            limit: params.pageSize || 10,
+            search: params.keyword,
+            isActive: filter.isActive?.[0] as any,
+          });
+          return {
+            data: response.data,
+            success: true,
+            total: response.total,
+          };
+        } catch (error: any) {
+          message.error(error.message || 'Failed to load customers');
+          return {
+            data: [],
+            success: false,
+            total: 0,
+          };
+        }
+      }}
       rowKey="id"
       search={{
         labelWidth: 'auto',

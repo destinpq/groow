@@ -1,0 +1,130 @@
+[
+  {
+    "email": "admin@groow.com",
+    "password": "Admin@123456",
+    "role": "admin",
+    "firstName": "Admin",
+    "lastName": "User",
+    "isActive": true
+  },
+  {
+    "email": "vendor1@groow.com",
+    "password": "Vendor@123456",
+    "role": "vendor",
+    "firstName": "John",
+    "lastName": "Smith",
+    "isActive": true
+  },
+  {
+    "email": "vendor2@groow.com",
+    "password": "Vendor@123456",
+    "role": "vendor",
+    "firstName": "Sarah",
+    "lastName": "Johnson",
+    "isActive": true
+  },
+  {
+    "email": "vendor3@groow.com",
+    "password": "Vendor@123456",
+    "role": "vendor",
+    "firstName": "Michael",
+    "lastName": "Williams",
+    "isActive": true
+  },
+  {
+    "email": "vendor4@groow.com",
+    "password": "Vendor@123456",
+    "role": "vendor",
+    "firstName": "Emily",
+    "lastName": "Brown",
+    "isActive": true
+  },
+  {
+    "email": "vendor5@groow.com",
+    "password": "Vendor@123456",
+    "role": "vendor",
+    "firstName": "David",
+    "lastName": "Davis",
+    "isActive": true
+  },
+  {
+    "email": "customer1@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Alice",
+    "lastName": "Anderson",
+    "isActive": true
+  },
+  {
+    "email": "customer2@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Bob",
+    "lastName": "Baker",
+    "isActive": true
+  },
+  {
+    "email": "customer3@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Carol",
+    "lastName": "Clark",
+    "isActive": true
+  },
+  {
+    "email": "customer4@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Daniel",
+    "lastName": "Martinez",
+    "isActive": true
+  },
+  {
+    "email": "customer5@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Emma",
+    "lastName": "Garcia",
+    "isActive": true
+  },
+  {
+    "email": "customer6@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Frank",
+    "lastName": "Rodriguez",
+    "isActive": true
+  },
+  {
+    "email": "customer7@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Grace",
+    "lastName": "Wilson",
+    "isActive": true
+  },
+  {
+    "email": "customer8@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Henry",
+    "lastName": "Moore",
+    "isActive": true
+  },
+  {
+    "email": "customer9@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Isabel",
+    "lastName": "Taylor",
+    "isActive": true
+  },
+  {
+    "email": "customer10@groow.com",
+    "password": "Customer@123456",
+    "role": "customer",
+    "firstName": "Jack",
+    "lastName": "Thomas",
+    "isActive": true
+  }
+]

@@ -1,414 +1,778 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  Card,
-  List,
-  Input,
-  Button,
-  Avatar,
-  Badge,
-  Typography,
-  Row,
-  Col,
-  Space,
-  Divider,
-  Tag,
-  Empty,
-  Tooltip,
-  Spin,
-  message as antMessage,
-} from 'antd';
-import {
-  MessageOutlined,
-  SendOutlined,
-  UserOutlined,
-  ShopOutlined,
-  SearchOutlined,
-  PaperClipOutlined,
-  SmileOutlined,
-  MoreOutlined,
-  CheckOutlined,
-  ClockCircleOutlined,
-} from '@ant-design/icons';
-import { chatAPI } from '@/services/api/chat';
-import type { Conversation, Message } from '@/services/api/chat';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Button, Table, Tag, Space, Modal, Form, Input, Select, Upload, message, Badge, Row, Col, Timeline, Avatar, Rate, Divider, Spin, Empty, Tabs, Statistic, Progress, Typography, List, Tooltip, FloatButton } from 'antd';
+import { PlusOutlined, MessageOutlined, SearchOutlined, FilterOutlined, FileTextOutlined, ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, SendOutlined, PaperClipOutlined, CustomerServiceOutlined, StarOutlined, ReloadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { supportTicketsAPI, type SupportTicket, type TicketMessage, type CreateTicketRequest, type TicketStats } from '@/services/api/supportTicketsAPI';
+// import './support-tickets.less';
 
-const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
+const { Option } = Select;
+const { TabPane } = Tabs;
+const { Title, Text } = Typography;
 
-const ChatPage: React.FC = () => {
+// Support Tickets System with Live Chat Integration
+const SupportTicketsSystem: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [messageInput, setMessageInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sending, setSending] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [stats, setStats] = useState<TicketStats | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+  const [messages, setMessages] = useState<TicketMessage[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [showTicketDetails, setShowTicketDetails] = useState(false);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [chatAvailable, setChatAvailable] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [filters, setFilters] = useState({
+    status: undefined,
+    priority: undefined,
+    category: undefined,
+    search: ''
+  });
 
+  const [createForm] = Form.useForm();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<any>(null);
+
+  // Load initial data
   useEffect(() => {
-    fetchConversations();
+    loadTickets();
+    loadStats();
+    checkChatAvailability();
   }, []);
 
+  // Auto-scroll to bottom of messages
   useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation.id);
-    }
-  }, [selectedConversation]);
-
-  const fetchConversations = async () => {
-    try {
-      setLoading(true);
-      const data = await chatAPI.getConversations();
-      setConversations(data);
-    } catch (error) {
-      antMessage.error('Failed to load conversations');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMessages = async (conversationId: string) => {
-    try {
-      const response = await chatAPI.getMessages(conversationId);
-      setMessages(response.data);
-      // Mark conversation as read
-      await chatAPI.markAsRead(conversationId);
-      // Update local state
-      setConversations((prev) =>
-        prev.map((conv) => (conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv))
-      );
-    } catch (error) {
-      antMessage.error('Failed to load messages');
-    }
-  };
+    scrollToBottom();
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const loadTickets = async () => {
+    setLoading(true);
+    try {
+      const response = await supportTicketsAPI.getTickets(filters);
+      if (response.success) {
+        setTickets(response.data.tickets);
+      } else {
+        message.error('Failed to load tickets');
+      }
+    } catch (error) {
+      console.error('Error loading tickets:', error);
+      message.error('Failed to load tickets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const response = await supportTicketsAPI.getTicketStats();
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
+
+  const checkChatAvailability = async () => {
+    try {
+      const response = await supportTicketsAPI.getChatAvailability();
+      if (response.success) {
+        setChatAvailable(response.data.available);
+      }
+    } catch (error) {
+      console.error('Error checking chat availability:', error);
+    }
+  };
+
+  const loadTicketMessages = async (ticketId: string) => {
+    setMessagesLoading(true);
+    try {
+      const response = await supportTicketsAPI.getTicketMessages(ticketId);
+      if (response.success) {
+        setMessages(response.data);
+      } else {
+        message.error('Failed to load messages');
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      message.error('Failed to load messages');
+    } finally {
+      setMessagesLoading(false);
+    }
+  };
+
+  const handleCreateTicket = async (values: any) => {
+    try {
+      const ticketData: CreateTicketRequest = {
+        subject: values.subject,
+        description: values.description,
+        category: values.category,
+        priority: values.priority,
+        orderId: values.orderId
+      };
+
+      const response = await supportTicketsAPI.createTicket(ticketData);
+      if (response.success) {
+        message.success('Support ticket created successfully');
+        setShowCreateModal(false);
+        createForm.resetFields();
+        loadTickets();
+        loadStats();
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      message.error('Failed to create ticket');
+    }
+  };
 
   const handleSendMessage = async () => {
-    if (!messageInput.trim() || !selectedConversation) return;
+    if (!newMessage.trim() || !selectedTicket) return;
 
+    setSendingMessage(true);
     try {
-      setSending(true);
-      const newMessage = await chatAPI.sendMessage({
-        conversationId: selectedConversation.id,
-        text: messageInput.trim(),
-      });
-      
-      // Add message to local state
-      setMessages((prev) => [...prev, newMessage]);
-      
-      // Update conversation last message
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.id === selectedConversation.id
-            ? { 
-                ...conv, 
-                lastMessage: messageInput.trim(), 
-                lastMessageAt: newMessage.createdAt,
-              }
-            : conv
-        )
-      );
-
-      setMessageInput('');
-      antMessage.success('Message sent');
+      const response = await supportTicketsAPI.sendMessage(selectedTicket.id, newMessage);
+      if (response.success) {
+        setMessages([...messages, response.data]);
+        setNewMessage('');
+        loadTickets(); // Refresh tickets to update last activity
+      } else {
+        message.error('Failed to send message');
+      }
     } catch (error) {
-      antMessage.error('Failed to send message');
+      console.error('Error sending message:', error);
+      message.error('Failed to send message');
     } finally {
-      setSending(false);
+      setSendingMessage(false);
     }
   };
 
-  const handleSelectConversation = (conversation: Conversation) => {
-    setSelectedConversation(conversation);
+  const handleTicketSelect = async (ticket: SupportTicket) => {
+    setSelectedTicket(ticket);
+    setShowTicketDetails(true);
+    await loadTicketMessages(ticket.id);
   };
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
+  const handleSubmitRating = async (ticketId: string, rating: number, feedback?: string) => {
+    try {
+      const response = await supportTicketsAPI.submitRating(ticketId, rating, feedback);
+      if (response.success) {
+        message.success('Thank you for your feedback!');
+        loadTickets();
+      } else {
+        message.error('Failed to submit rating');
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      message.error('Failed to submit rating');
+    }
   };
 
-  const formatMessageTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const getStatusColor = (status: SupportTicket['status']) => {
+    const colors = {
+      open: 'blue',
+      in_progress: 'orange',
+      waiting_for_customer: 'purple',
+      resolved: 'green',
+      closed: 'default'
+    };
+    return colors[status];
   };
 
-  const filteredConversations = conversations.filter(
-    (conv) =>
-      conv.vendorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (conv.lastMessage || '').toLowerCase().includes(searchQuery.toLowerCase())
+  const getPriorityColor = (priority: SupportTicket['priority']) => {
+    const colors = {
+      low: 'default',
+      medium: 'blue',
+      high: 'orange',
+      urgent: 'red'
+    };
+    return colors[priority];
+  };
+
+  const ticketColumns = [
+    {
+      title: 'Ticket #',
+      dataIndex: 'ticketNumber',
+      key: 'ticketNumber',
+      render: (text: string, record: SupportTicket) => (
+        <Button type="link" onClick={() => handleTicketSelect(record)}>
+          {text}
+        </Button>
+      )
+    },
+    {
+      title: 'Subject',
+      dataIndex: 'subject',
+      key: 'subject',
+      ellipsis: true
+    },
+    {
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
+      render: (category: string) => (
+        <Tag>{category.replace('_', ' ').toUpperCase()}</Tag>
+      )
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: SupportTicket['status']) => (
+        <Tag color={getStatusColor(status)}>
+          {status.replace('_', ' ').toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Priority',
+      dataIndex: 'priority',
+      key: 'priority',
+      render: (priority: SupportTicket['priority']) => (
+        <Tag color={getPriorityColor(priority)}>
+          {priority.toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Agent',
+      dataIndex: 'assignedAgent',
+      key: 'assignedAgent',
+      render: (agent: SupportTicket['assignedAgent']) => (
+        agent ? (
+          <Space>
+            <Avatar size="small" src={agent.avatar} icon={<CustomerServiceOutlined />} />
+            <span>{agent.name}</span>
+            <Badge status={agent.isOnline ? 'success' : 'default'} />
+          </Space>
+        ) : (
+          <Text type="secondary">Unassigned</Text>
+        )
+      )
+    },
+    {
+      title: 'Last Updated',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      render: (date: string) => (
+        <Tooltip title={new Date(date).toLocaleString()}>
+          {new Date(date).toLocaleDateString()}
+        </Tooltip>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: SupportTicket) => (
+        <Space>
+          <Button 
+            size="small" 
+            icon={<MessageOutlined />}
+            onClick={() => handleTicketSelect(record)}
+          >
+            View
+          </Button>
+          {record.status === 'resolved' && !record.satisfactionRating && (
+            <Button 
+              size="small" 
+              icon={<StarOutlined />}
+              onClick={() => {
+                Modal.confirm({
+                  title: 'Rate this support experience',
+                  content: (
+                    <div>
+                      <p>How satisfied are you with the resolution?</p>
+                      <Rate onChange={(value) => handleSubmitRating(record.id, value)} />
+                    </div>
+                  ),
+                  okText: 'Submit Rating'
+                });
+              }}
+            >
+              Rate
+            </Button>
+          )}
+        </Space>
+      )
+    }
+  ];
+
+  const renderTicketStats = () => (
+    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Total Tickets"
+            value={stats?.total || 0}
+            prefix={<FileTextOutlined />}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Open/In Progress"
+            value={(stats?.open || 0) + (stats?.inProgress || 0)}
+            prefix={<ClockCircleOutlined />}
+            valueStyle={{ color: '#faad14' }}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Avg Response Time"
+            value={stats?.avgResponseTime || 0}
+            suffix="hrs"
+            prefix={<ClockCircleOutlined />}
+            precision={1}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Satisfaction Score"
+            value={stats?.satisfactionScore || 0}
+            prefix={<StarOutlined />}
+            precision={1}
+            suffix="/5"
+            valueStyle={{ color: '#52c41a' }}
+          />
+        </Card>
+      </Col>
+    </Row>
   );
 
-  const getStatusIcon = (status: Message['status']) => {
-    switch (status) {
-      case 'sent':
-        return <CheckOutlined style={{ fontSize: 12, color: '#bfbfbf' }} />;
-      case 'delivered':
-        return (
-          <span style={{ position: 'relative', display: 'inline-block' }}>
-            <CheckOutlined style={{ fontSize: 12, color: '#1890ff' }} />
-            <CheckOutlined style={{ fontSize: 12, color: '#1890ff', position: 'absolute', left: 4 }} />
-          </span>
-        );
-      case 'read':
-        return (
-          <span style={{ position: 'relative', display: 'inline-block' }}>
-            <CheckOutlined style={{ fontSize: 12, color: '#52c41a' }} />
-            <CheckOutlined style={{ fontSize: 12, color: '#52c41a', position: 'absolute', left: 4 }} />
-          </span>
-        );
-    }
+  const renderMessageBubble = (msg: TicketMessage) => {
+    const isCustomer = msg.sender.type === 'customer';
+    return (
+      <div
+        key={msg.id}
+        style={{
+          display: 'flex',
+          justifyContent: isCustomer ? 'flex-end' : 'flex-start',
+          marginBottom: 16
+        }}
+      >
+        <div style={{ maxWidth: '70%' }}>
+          {!isCustomer && (
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+              <Avatar size="small" src={msg.sender.avatar} icon={<CustomerServiceOutlined />} />
+              <Text strong style={{ marginLeft: 8 }}>{msg.sender.name}</Text>
+              {msg.sender.type === 'agent' && (
+                <Tag style={{ marginLeft: 4 }}>Agent</Tag>
+              )}
+            </div>
+          )}
+          <div
+            style={{
+              backgroundColor: isCustomer ? '#1890ff' : '#f0f0f0',
+              color: isCustomer ? 'white' : 'black',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              wordBreak: 'break-word'
+            }}
+          >
+            {msg.message}
+          </div>
+          <div style={{ fontSize: '11px', color: '#999', marginTop: 4, textAlign: isCustomer ? 'right' : 'left' }}>
+            {new Date(msg.sentAt).toLocaleString()}
+          </div>
+        </div>
+      </div>
+    );
   };
 
-  return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <Card style={{ height: 'calc(100vh - 96px)' }}>
-        <Row style={{ height: '100%' }}>
-          {/* Conversations List */}
-          <Col xs={24} sm={8} md={7} style={{ borderRight: '1px solid #f0f0f0', height: '100%' }}>
-            <div style={{ padding: '0 16px 16px 0', height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ marginBottom: 16 }}>
-                <Input
-                  placeholder="Search conversations..."
-                  prefix={<SearchOutlined />}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  allowClear
-                />
+  const renderTicketDetails = () => (
+    <Modal
+      title={
+        <Space>
+          <FileTextOutlined />
+          {selectedTicket?.ticketNumber} - {selectedTicket?.subject}
+        </Space>
+      }
+      open={showTicketDetails}
+      onCancel={() => {
+        setShowTicketDetails(false);
+        setSelectedTicket(null);
+        setMessages([]);
+      }}
+      width={800}
+      footer={null}
+    >
+      {selectedTicket && (
+        <div>
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col span={8}>
+              <Text strong>Status: </Text>
+              <Tag color={getStatusColor(selectedTicket.status)}>
+                {selectedTicket.status.replace('_', ' ').toUpperCase()}
+              </Tag>
+            </Col>
+            <Col span={8}>
+              <Text strong>Priority: </Text>
+              <Tag color={getPriorityColor(selectedTicket.priority)}>
+                {selectedTicket.priority.toUpperCase()}
+              </Tag>
+            </Col>
+            <Col span={8}>
+              <Text strong>Category: </Text>
+              <Tag>{selectedTicket.category.toUpperCase()}</Tag>
+            </Col>
+          </Row>
+
+          {selectedTicket.assignedAgent && (
+            <Card size="small" style={{ marginBottom: 16 }}>
+              <Space>
+                <Avatar src={selectedTicket.assignedAgent.avatar} icon={<CustomerServiceOutlined />} />
+                <div>
+                  <Text strong>{selectedTicket.assignedAgent.name}</Text>
+                  <br />
+                  <Text type="secondary">{selectedTicket.assignedAgent.role}</Text>
+                  <Badge 
+                    status={selectedTicket.assignedAgent.isOnline ? 'success' : 'default'} 
+                    text={selectedTicket.assignedAgent.isOnline ? 'Online' : 'Offline'}
+                    style={{ marginLeft: 8 }}
+                  />
+                </div>
+              </Space>
+            </Card>
+          )}
+
+          <Divider>Conversation</Divider>
+
+          <div style={{ maxHeight: 400, overflowY: 'auto', padding: '0 8px', marginBottom: 16 }}>
+            {messagesLoading ? (
+              <div style={{ textAlign: 'center', padding: 20 }}>
+                <Spin />
               </div>
-              <div style={{ flex: 1, overflow: 'auto' }}>
-                <List
-                  dataSource={filteredConversations}
-                  renderItem={(conversation) => (
-                    <List.Item
-                      onClick={() => handleSelectConversation(conversation)}
-                      style={{
-                        cursor: 'pointer',
-                        background: selectedConversation?.id === conversation.id ? '#e6f7ff' : 'transparent',
-                        borderRadius: 8,
-                        padding: '12px',
-                        marginBottom: 8,
-                      }}
-                    >
-                      <List.Item.Meta
-                        avatar={
-                          <Badge
-                            dot
-                            status={
-                              conversation.status === 'active' ? 'success' : 'default'
-                            }
-                            offset={[-5, 35]}
-                          >
-                            <Avatar src={conversation.vendorAvatar} size={48} icon={<ShopOutlined />} />
-                          </Badge>
-                        }
-                        title={
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text strong ellipsis style={{ flex: 1 }}>
-                              {conversation.vendorName}
-                            </Text>
-                            {conversation.unreadCount > 0 && (
-                              <Badge count={conversation.unreadCount} style={{ marginLeft: 8 }} />
-                            )}
-                          </div>
-                        }
-                        description={
-                          <div>
-                            <Paragraph
-                              ellipsis={{ rows: 1 }}
-                              style={{ margin: 0, fontSize: 12 }}
-                              type={conversation.unreadCount > 0 ? undefined : 'secondary'}
-                            >
-                              {conversation.lastMessage}
-                            </Paragraph>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                              <Text type="secondary" style={{ fontSize: 11 }}>
-                                {formatTimestamp(conversation.lastMessageAt || conversation.createdAt)}
-                              </Text>
-                              {conversation.productContext && (
-                                <Tag style={{ fontSize: 10, padding: '0 4px', margin: 0 }}>
-                                  {conversation.productContext.productName.substring(0, 15)}...
-                                </Tag>
-                              )}
-                            </div>
-                          </div>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                />
+            ) : messages.length > 0 ? (
+              <>
+                {messages.map(renderMessageBubble)}
+                <div ref={messagesEndRef} />
+              </>
+            ) : (
+              <Empty description="No messages yet" />
+            )}
+          </div>
+
+          {selectedTicket.status !== 'closed' && selectedTicket.status !== 'resolved' && (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Input.TextArea
+                ref={messageInputRef}
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                autoSize={{ minRows: 2, maxRows: 4 }}
+                onPressEnter={(e) => {
+                  if (e.shiftKey) return;
+                  e.preventDefault();
+                  handleSendMessage();
+                }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <Button
+                  type="primary"
+                  icon={<SendOutlined />}
+                  onClick={handleSendMessage}
+                  loading={sendingMessage}
+                  disabled={!newMessage.trim()}
+                >
+                  Send
+                </Button>
+                <Button
+                  size="small"
+                  icon={<PaperClipOutlined />}
+                  title="Attach File"
+                >
+                  Attach
+                </Button>
               </div>
             </div>
+          )}
+
+          {selectedTicket.satisfactionRating && (
+            <Card size="small" style={{ marginTop: 16, backgroundColor: '#f6ffed' }}>
+              <Text strong>Customer Rating: </Text>
+              <Rate disabled value={selectedTicket.satisfactionRating.rating} />
+              {selectedTicket.satisfactionRating.feedback && (
+                <div style={{ marginTop: 8 }}>
+                  <Text>"{selectedTicket.satisfactionRating.feedback}"</Text>
+                </div>
+              )}
+            </Card>
+          )}
+        </div>
+      )}
+    </Modal>
+  );
+
+  const renderCreateTicketModal = () => (
+    <Modal
+      title="Create New Support Ticket"
+      open={showCreateModal}
+      onCancel={() => {
+        setShowCreateModal(false);
+        createForm.resetFields();
+      }}
+      footer={null}
+      width={600}
+    >
+      <Form
+        form={createForm}
+        layout="vertical"
+        onFinish={handleCreateTicket}
+      >
+        <Form.Item
+          label="Subject"
+          name="subject"
+          rules={[{ required: true, message: 'Please enter a subject' }]}
+        >
+          <Input placeholder="Brief description of your issue" />
+        </Form.Item>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Category"
+              name="category"
+              rules={[{ required: true, message: 'Please select a category' }]}
+            >
+              <Select placeholder="Select category">
+                <Option value="general">General Inquiry</Option>
+                <Option value="order">Order Issue</Option>
+                <Option value="payment">Payment Problem</Option>
+                <Option value="technical">Technical Support</Option>
+                <Option value="product">Product Question</Option>
+                <Option value="account">Account Issue</Option>
+                <Option value="shipping">Shipping Problem</Option>
+                <Option value="returns">Returns & Refunds</Option>
+              </Select>
+            </Form.Item>
           </Col>
-
-          {/* Chat Window */}
-          <Col xs={24} sm={16} md={17} style={{ height: '100%' }}>
-            {selectedConversation ? (
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingLeft: 16 }}>
-                {/* Chat Header */}
-                <div
-                  style={{
-                    padding: '12px 0',
-                    borderBottom: '1px solid #f0f0f0',
-                    marginBottom: 16,
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Space>
-                      <Badge
-                        dot
-                        status={
-                          selectedConversation.status === 'active' ? 'success' : 'default'
-                        }
-                        offset={[-5, 35]}
-                      >
-                        <Avatar src={selectedConversation.vendorAvatar} size={40} icon={<ShopOutlined />} />
-                      </Badge>
-                      <div>
-                        <Text strong>{selectedConversation.vendorName}</Text>
-                        <div>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            {selectedConversation.status === 'active' ? 'Active' : 'Archived'}
-                          </Text>
-                        </div>
-                      </div>
-                    </Space>
-                    <Button type="text" icon={<MoreOutlined />} />
-                  </div>
-                  {selectedConversation.productContext && (
-                    <div style={{ marginTop: 8 }}>
-                      <Tag icon={<ShopOutlined />} color="blue">
-                        Re: {selectedConversation.productContext.productName}
-                      </Tag>
-                    </div>
-                  )}
-                </div>
-
-                {/* Messages */}
-                <div style={{ flex: 1, overflow: 'auto', paddingRight: 8 }}>
-                  {messages?.map((message) => (
-                    <div
-                      key={message.id}
-                      style={{
-                        display: 'flex',
-                        justifyContent: message.senderType === 'customer' ? 'flex-end' : 'flex-start',
-                        marginBottom: 16,
-                      }}
-                    >
-                      {message.senderType === 'vendor' && (
-                        <Avatar
-                          src={selectedConversation.vendorAvatar}
-                          size={32}
-                          icon={<ShopOutlined />}
-                          style={{ marginRight: 8 }}
-                        />
-                      )}
-                      <div
-                        style={{
-                          maxWidth: '70%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: message.senderType === 'customer' ? 'flex-end' : 'flex-start',
-                        }}
-                      >
-                        <div
-                          style={{
-                            background: message.senderType === 'customer' ? '#1890ff' : '#f0f0f0',
-                            color: message.senderType === 'customer' ? 'white' : 'black',
-                            padding: '8px 12px',
-                            borderRadius: 12,
-                            wordBreak: 'break-word',
-                          }}
-                        >
-                          <Text style={{ color: message.senderType === 'customer' ? 'white' : 'inherit' }}>
-                            {message.text}
-                          </Text>
-                        </div>
-                        <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Text type="secondary" style={{ fontSize: 11 }}>
-                            {formatMessageTime(message.createdAt)}
-                          </Text>
-                          {message.senderType === 'customer' && getStatusIcon(message.status)}
-                        </div>
-                      </div>
-                      {message.senderType === 'customer' && (
-                        <Avatar
-                          size={32}
-                          icon={<UserOutlined />}
-                          style={{ marginLeft: 8, background: '#1890ff' }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Message Input */}
-                <div style={{ paddingTop: 16, borderTop: '1px solid #f0f0f0' }}>
-                  <Space.Compact style={{ width: '100%' }}>
-                    <Tooltip title="Attach file">
-                      <Button icon={<PaperClipOutlined />} />
-                    </Tooltip>
-                    <Tooltip title="Emoji">
-                      <Button icon={<SmileOutlined />} />
-                    </Tooltip>
-                    <TextArea
-                      value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
-                      onPressEnter={(e) => {
-                        if (!e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                      placeholder="Type a message..."
-                      autoSize={{ minRows: 1, maxRows: 4 }}
-                      style={{ flex: 1 }}
-                    />
-                    <Button type="primary" icon={<SendOutlined />} onClick={handleSendMessage}>
-                      Send
-                    </Button>
-                  </Space.Compact>
-                  <Text type="secondary" style={{ fontSize: 11, marginTop: 4, display: 'block' }}>
-                    Press Enter to send, Shift+Enter for new line
-                  </Text>
-                </div>
-              </div>
-            ) : (
-              <div
-                style={{
-                  height: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Empty
-                  image={<MessageOutlined style={{ fontSize: 64, color: '#bfbfbf' }} />}
-                  description="Select a conversation to start chatting"
-                />
-              </div>
-            )}
+          <Col span={12}>
+            <Form.Item
+              label="Priority"
+              name="priority"
+              rules={[{ required: true, message: 'Please select priority' }]}
+            >
+              <Select placeholder="Select priority">
+                <Option value="low">Low</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="high">High</Option>
+                <Option value="urgent">Urgent</Option>
+              </Select>
+            </Form.Item>
           </Col>
         </Row>
+
+        <Form.Item
+          label="Order ID (optional)"
+          name="orderId"
+        >
+          <Input placeholder="Enter order number if related to an order" />
+        </Form.Item>
+
+        <Form.Item
+          label="Description"
+          name="description"
+          rules={[{ required: true, message: 'Please describe your issue' }]}
+        >
+          <TextArea
+            rows={4}
+            placeholder="Please provide detailed information about your issue..."
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Attachments"
+          name="attachments"
+        >
+          <Upload
+            multiple
+            beforeUpload={() => false}
+            fileList={[]}
+          >
+            <Button icon={<PaperClipOutlined />}>
+              Attach Files (Screenshots, Documents)
+            </Button>
+          </Upload>
+        </Form.Item>
+
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Space>
+            <Button onClick={() => setShowCreateModal(false)}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit">
+              Create Ticket
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
+  const renderQuickActions = () => (
+    <Card size="small" style={{ marginBottom: 16 }}>
+      <Space wrap>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setShowCreateModal(true)}
+        >
+          New Ticket
+        </Button>
+        <Button
+          icon={<MessageOutlined />}
+          onClick={() => setShowChatModal(true)}
+          disabled={!chatAvailable}
+        >
+          Live Chat {chatAvailable && <Badge status="success" />}
+        </Button>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={loadTickets}
+          loading={loading}
+        >
+          Refresh
+        </Button>
+        <Button
+          icon={<QuestionCircleOutlined />}
+          onClick={() => window.open('/help-center', '_blank')}
+        >
+          Help Center
+        </Button>
+      </Space>
+    </Card>
+  );
+
+  return (
+    <div className="support-tickets" style={{ padding: '24px', maxWidth: 1400, margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <Title level={2}>
+          <CustomerServiceOutlined /> Support Center
+        </Title>
+        <Text type="secondary">
+          Get help with your orders, technical issues, and general inquiries
+        </Text>
+      </div>
+
+      {/* Stats */}
+      {renderTicketStats()}
+
+      {/* Quick Actions */}
+      {renderQuickActions()}
+
+      {/* Tickets Table */}
+      <Card title="Your Support Tickets">
+        <div style={{ marginBottom: 16 }}>
+          <Row gutter={16}>
+            <Col flex={1}>
+              <Input
+                placeholder="Search tickets..."
+                prefix={<SearchOutlined />}
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                onPressEnter={loadTickets}
+              />
+            </Col>
+            <Col>
+              <Space>
+                <Select
+                  placeholder="Status"
+                  allowClear
+                  style={{ width: 120 }}
+                  value={filters.status}
+                  onChange={(value) => setFilters({ ...filters, status: value })}
+                >
+                  <Option value="open">Open</Option>
+                  <Option value="in_progress">In Progress</Option>
+                  <Option value="waiting_for_customer">Waiting</Option>
+                  <Option value="resolved">Resolved</Option>
+                  <Option value="closed">Closed</Option>
+                </Select>
+                <Select
+                  placeholder="Priority"
+                  allowClear
+                  style={{ width: 100 }}
+                  value={filters.priority}
+                  onChange={(value) => setFilters({ ...filters, priority: value })}
+                >
+                  <Option value="low">Low</Option>
+                  <Option value="medium">Medium</Option>
+                  <Option value="high">High</Option>
+                  <Option value="urgent">Urgent</Option>
+                </Select>
+                <Button icon={<FilterOutlined />} onClick={loadTickets}>
+                  Filter
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+        </div>
+
+        <Table
+          columns={ticketColumns}
+          dataSource={tickets}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `Total ${total} tickets`
+          }}
+        />
       </Card>
+
+      {/* Modals */}
+      {renderCreateTicketModal()}
+      {renderTicketDetails()}
+
+      {/* Live Chat Float Button */}
+      {chatAvailable && (
+        <FloatButton
+          icon={<MessageOutlined />}
+          type="primary"
+          onClick={() => setShowChatModal(true)}
+          tooltip="Start Live Chat"
+        />
+      )}
+
+      {/* Chat Modal */}
+      <Modal
+        title="Live Chat Support"
+        open={showChatModal}
+        onCancel={() => setShowChatModal(false)}
+        footer={null}
+        width={500}
+      >
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <CustomerServiceOutlined style={{ fontSize: 48, color: '#1890ff', marginBottom: 16 }} />
+          <Title level={4}>Connect with Support</Title>
+          <Text>
+            Our support agents are ready to help you with any questions or issues.
+          </Text>
+          <div style={{ margin: '20px 0' }}>
+            <Button type="primary" size="large">
+              Start Chat Session
+            </Button>
+          </div>
+          <Text type="secondary">
+            Average response time: 2 minutes
+          </Text>
+        </div>
+      </Modal>
     </div>
   );
 };
 
-export default ChatPage;
+export default SupportTicketsSystem;

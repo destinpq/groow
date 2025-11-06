@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -19,6 +19,7 @@ import {
   Progress,
   Alert,
   Divider,
+  Spin,
 } from 'antd';
 import {
   CreditCardOutlined,
@@ -33,6 +34,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
+import { walletAPI, WalletTransaction, Wallet } from '@/services/api/wallet';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -169,10 +171,50 @@ const mockTransactions: CreditTransaction[] = [
 ];
 
 const StoreCreditPage: React.FC = () => {
-  const [credits, setCredits] = useState<StoreCredit[]>(mockStoreCredits);
-  const [transactions] = useState<CreditTransaction[]>(mockTransactions);
+  const [credits, setCredits] = useState<StoreCredit[]>([]);
+  const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isRequestModalVisible, setIsRequestModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    loadWalletData();
+  }, []);
+
+  const loadWalletData = async () => {
+    try {
+      setLoading(true);
+      const [walletData, transactionsData] = await Promise.all([
+        walletAPI.getBalance(),
+        walletAPI.getTransactions({ limit: 50 }),
+      ]);
+      
+      setWallet(walletData);
+      
+      // Transform wallet transactions to credit transactions
+      const creditTransactions: CreditTransaction[] = transactionsData.data.map((t, idx) => ({
+        id: idx + 1,
+        type: t.type === 'credit' ? 'earned' : 'spent',
+        amount: t.amount,
+        description: t.description || t.type,
+        timestamp: t.createdAt,
+        balance: walletData.balance,
+      }));
+      
+      setTransactions(creditTransactions);
+      
+      // For now, use empty credits array as the API doesn't provide detailed credit breakdown
+      // In a real implementation, this would come from a dedicated store credit API endpoint
+      setCredits([]);
+      
+    } catch (error) {
+      console.error('Failed to load wallet data:', error);
+      message.error('Failed to load store credit information');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRequestCredit = (values: any) => {
     message.success(
@@ -182,10 +224,8 @@ const StoreCreditPage: React.FC = () => {
     form.resetFields();
   };
 
-  const totalCredits = credits.reduce((sum, c) => sum + c.amount, 0);
-  const availableCredits = credits
-    .filter((c) => !c.isExpired)
-    .reduce((sum, c) => sum + c.remainingAmount, 0);
+  const totalCredits = wallet?.balance || 0;
+  const availableCredits = wallet?.balance || 0;
   const usedCredits = credits.reduce((sum, c) => sum + c.usedAmount, 0);
   const expiredCredits = credits
     .filter((c) => c.isExpired)
@@ -408,16 +448,17 @@ const StoreCreditPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={3}>
-            <CreditCardOutlined style={{ color: '#52c41a' }} /> Store Credit
-          </Title>
-          <Paragraph type="secondary">
-            Manage your store credits and view transaction history
-          </Paragraph>
-        </Col>
+    <Spin spinning={loading} tip="Loading store credit information...">
+      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+          <Col>
+            <Title level={3}>
+              <CreditCardOutlined style={{ color: '#52c41a' }} /> Store Credit
+            </Title>
+            <Paragraph type="secondary">
+              Manage your store credits and view transaction history
+            </Paragraph>
+          </Col>
         <Col>
           <Button
             type="primary"
@@ -608,6 +649,7 @@ const StoreCreditPage: React.FC = () => {
         </Form>
       </Modal>
     </div>
+    </Spin>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -15,6 +15,7 @@ import {
   Tag,
   Radio,
   Divider,
+  Spin,
 } from 'antd';
 import {
   HomeOutlined,
@@ -27,82 +28,34 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { addressAPI, Address } from '@/services/api/account';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
-interface Address {
-  id: number;
-  label: string;
-  name: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  isDefault: boolean;
-  isBilling: boolean;
-  isShipping: boolean;
-  createdAt: string;
-}
-
-const mockAddresses: Address[] = [
-  {
-    id: 1,
-    label: 'Home',
-    name: 'John Doe',
-    phone: '(555) 123-4567',
-    addressLine1: '123 Main Street',
-    addressLine2: 'Apt 4B',
-    city: 'New York',
-    state: 'NY',
-    zip: '10001',
-    country: 'United States',
-    isDefault: true,
-    isBilling: true,
-    isShipping: true,
-    createdAt: dayjs().subtract(180, 'days').format('YYYY-MM-DD'),
-  },
-  {
-    id: 2,
-    label: 'Work',
-    name: 'John Doe',
-    phone: '(555) 987-6543',
-    addressLine1: '456 Business Avenue',
-    addressLine2: 'Suite 200',
-    city: 'New York',
-    state: 'NY',
-    zip: '10022',
-    country: 'United States',
-    isDefault: false,
-    isBilling: false,
-    isShipping: true,
-    createdAt: dayjs().subtract(90, 'days').format('YYYY-MM-DD'),
-  },
-  {
-    id: 3,
-    label: "Parent's House",
-    name: 'Jane Doe',
-    phone: '(555) 456-7890',
-    addressLine1: '789 Elm Street',
-    city: 'Brooklyn',
-    state: 'NY',
-    zip: '11201',
-    country: 'United States',
-    isDefault: false,
-    isBilling: false,
-    isShipping: true,
-    createdAt: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-  },
-];
-
 const SavedAddressesPage: React.FC = () => {
-  const [addresses, setAddresses] = useState<Address[]>(mockAddresses);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    loadAddresses();
+  }, []);
+
+  const loadAddresses = async () => {
+    try {
+      setLoading(true);
+      const response = await addressAPI.getAddresses();
+      setAddresses(response.data || []);
+    } catch (error) {
+      console.error('Failed to load addresses:', error);
+      message.error('Failed to load addresses');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddNew = () => {
     setEditingAddress(null);
@@ -112,11 +65,16 @@ const SavedAddressesPage: React.FC = () => {
 
   const handleEdit = (address: Address) => {
     setEditingAddress(address);
-    form.setFieldsValue(address);
+    form.setFieldsValue({
+      ...address,
+      name: `${address.firstName} ${address.lastName}`,
+      label: address.title,
+      zip: address.postalCode,
+    });
     setIsModalVisible(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
     const address = addresses.find((a) => a.id === id);
     if (address?.isDefault) {
       message.warning('Cannot delete default address. Please set another address as default first.');
@@ -128,66 +86,65 @@ const SavedAddressesPage: React.FC = () => {
       content: 'Are you sure you want to delete this address?',
       okText: 'Delete',
       okType: 'danger',
-      onOk: () => {
-        setAddresses(addresses.filter((a) => a.id !== id));
-        message.success('Address deleted successfully');
+      onOk: async () => {
+        try {
+          await addressAPI.deleteAddress(id);
+          await loadAddresses();
+          message.success('Address deleted successfully');
+        } catch (error) {
+          message.error('Failed to delete address');
+        }
       },
     });
   };
 
-  const handleSetDefault = (id: number) => {
-    setAddresses(
-      addresses.map((a) => ({
-        ...a,
-        isDefault: a.id === id,
-      }))
-    );
-    message.success('Default address updated');
+  const handleSetDefault = async (id: string) => {
+    try {
+      await addressAPI.setDefaultAddress(id, 'shipping');
+      await loadAddresses();
+      message.success('Default address updated');
+    } catch (error) {
+      message.error('Failed to update default address');
+    }
   };
 
-  const handleSubmit = (values: any) => {
-    if (editingAddress) {
-      // Update existing address
-      setAddresses(
-        addresses.map((a) =>
-          a.id === editingAddress.id
-            ? {
-                ...a,
-                ...values,
-                isDefault: values.isDefault ? true : a.isDefault,
-              }
-            : {
-                ...a,
-                isDefault: values.isDefault ? false : a.isDefault,
-              }
-        )
-      );
-      message.success('Address updated successfully');
-    } else {
-      // Add new address
-      const newAddress: Address = {
-        id: Math.max(...addresses.map((a) => a.id)) + 1,
-        ...values,
-        createdAt: dayjs().format('YYYY-MM-DD'),
+  const handleSubmit = async (values: any) => {
+    try {
+      const addressData = {
+        type: 'home' as 'home' | 'work' | 'billing' | 'shipping' | 'other',
+        title: values.label || values.title,
+        firstName: values.name?.split(' ')[0] || values.firstName,
+        lastName: values.name?.split(' ').slice(1).join(' ') || values.lastName,
+        addressLine1: values.addressLine1,
+        addressLine2: values.addressLine2,
+        city: values.city,
+        state: values.state,
+        postalCode: values.zip || values.postalCode,
+        country: values.country,
+        phone: values.phone,
+        isDefault: values.isDefault || false,
       };
 
-      if (values.isDefault) {
-        setAddresses([
-          newAddress,
-          ...addresses.map((a) => ({ ...a, isDefault: false })),
-        ]);
+      if (editingAddress) {
+        // Update existing address
+        await addressAPI.updateAddress(editingAddress.id, addressData);
+        message.success('Address updated successfully');
       } else {
-        setAddresses([newAddress, ...addresses]);
+        // Add new address
+        await addressAPI.createAddress(addressData);
+        message.success('Address added successfully');
       }
-      message.success('Address added successfully');
-    }
 
-    setIsModalVisible(false);
-    form.resetFields();
+      await loadAddresses();
+      setIsModalVisible(false);
+      form.resetFields();
+    } catch (error) {
+      message.error('Failed to save address');
+    }
   };
 
   return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+    <Spin spinning={loading} tip="Loading addresses...">
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
           <Title level={3}>
@@ -235,17 +192,17 @@ const SavedAddressesPage: React.FC = () => {
               <div style={{ marginBottom: 16 }}>
                 <Space>
                   <Tag color="blue" icon={<HomeOutlined />}>
-                    {address.label}
+                    {address.title}
                   </Tag>
-                  {address.isShipping && <Tag color="green">Shipping</Tag>}
-                  {address.isBilling && <Tag color="purple">Billing</Tag>}
+                  {address.type === 'shipping' && <Tag color="green">Shipping</Tag>}
+                  {address.type === 'billing' && <Tag color="purple">Billing</Tag>}
                 </Space>
               </div>
 
               <div style={{ marginBottom: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <UserOutlined style={{ color: '#1890ff' }} />
-                  <Text strong>{address.name}</Text>
+                  <Text strong>{address.firstName} {address.lastName}</Text>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -254,7 +211,7 @@ const SavedAddressesPage: React.FC = () => {
                     <div>{address.addressLine1}</div>
                     {address.addressLine2 && <div>{address.addressLine2}</div>}
                     <div>
-                      {address.city}, {address.state} {address.zip}
+                      {address.city}, {address.state} {address.postalCode}
                     </div>
                     <div>{address.country}</div>
                   </div>
@@ -262,7 +219,7 @@ const SavedAddressesPage: React.FC = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <PhoneOutlined style={{ color: '#722ed1' }} />
-                  <Text>{address.phone}</Text>
+                  <Text>{address.phone || 'N/A'}</Text>
                 </div>
               </div>
 
@@ -465,7 +422,7 @@ const SavedAddressesPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </Spin>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -32,113 +32,30 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
+import { couponsAPI, Coupon } from '@/services/api/coupons';
 
 const { Title, Text, Paragraph } = Typography;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-interface Coupon {
-  id: number;
-  code: string;
-  type: 'percentage' | 'fixed' | 'free_shipping' | 'bogo';
-  value: number;
-  minPurchase: number;
-  maxDiscount: number | null;
-  usageLimit: number;
-  usedCount: number;
-  startDate: string;
-  endDate: string;
-  status: 'active' | 'expired' | 'scheduled';
-  applicableTo: string;
-}
-
-const mockCoupons: Coupon[] = [
-  {
-    id: 1,
-    code: 'SAVE20',
-    type: 'percentage',
-    value: 20,
-    minPurchase: 50,
-    maxDiscount: 100,
-    usageLimit: 1000,
-    usedCount: 456,
-    startDate: dayjs().subtract(7, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(23, 'days').format('YYYY-MM-DD'),
-    status: 'active',
-    applicableTo: 'All Products',
-  },
-  {
-    id: 2,
-    code: 'FLAT50',
-    type: 'fixed',
-    value: 50,
-    minPurchase: 200,
-    maxDiscount: null,
-    usageLimit: 500,
-    usedCount: 234,
-    startDate: dayjs().subtract(3, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(27, 'days').format('YYYY-MM-DD'),
-    status: 'active',
-    applicableTo: 'Electronics',
-  },
-  {
-    id: 3,
-    code: 'FREESHIP',
-    type: 'free_shipping',
-    value: 0,
-    minPurchase: 30,
-    maxDiscount: null,
-    usageLimit: 2000,
-    usedCount: 1456,
-    startDate: dayjs().subtract(14, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(16, 'days').format('YYYY-MM-DD'),
-    status: 'active',
-    applicableTo: 'All Products',
-  },
-  {
-    id: 4,
-    code: 'SUMMER30',
-    type: 'percentage',
-    value: 30,
-    minPurchase: 100,
-    maxDiscount: 150,
-    usageLimit: 500,
-    usedCount: 500,
-    startDate: dayjs().subtract(60, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
-    status: 'expired',
-    applicableTo: 'Fashion',
-  },
-  {
-    id: 5,
-    code: 'NEWUSER15',
-    type: 'percentage',
-    value: 15,
-    minPurchase: 0,
-    maxDiscount: 50,
-    usageLimit: 10000,
-    usedCount: 0,
-    startDate: dayjs().add(3, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().add(33, 'days').format('YYYY-MM-DD'),
-    status: 'scheduled',
-    applicableTo: 'New Customers Only',
-  },
-];
-
 const PromotionsDiscountsPage: React.FC = () => {
-  const [isCreating, setIsCreating] = useState<boolean>(false);
-  const [form] = Form.useForm();
-  const [couponType, setCouponType] = useState<string>('percentage');
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleCreateCoupon = (values: any) => {
-    console.log('Creating coupon:', values);
-    message.success('Coupon created successfully!');
-    setIsCreating(false);
-    form.resetFields();
-  };
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
 
-  const handleDeactivateCoupon = (code: string) => {
-    message.success(`Coupon ${code} deactivated`);
+  const fetchCoupons = async () => {
+    setLoading(true);
+    try {
+      const response = await couponsAPI.getAll();
+      setCoupons(response.data || response);
+    } catch (error) {
+      message.error('Failed to load coupons');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const couponColumns: ColumnsType<Coupon> = [

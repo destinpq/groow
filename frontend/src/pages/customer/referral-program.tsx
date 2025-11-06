@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -21,6 +21,7 @@ import {
   QRCode,
   Modal,
   Badge,
+  Spin,
 } from 'antd';
 import {
   GiftOutlined,
@@ -40,152 +41,98 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
+import { affiliateAPI, AffiliateAccount, ReferralLink, Commission } from '@/services/api/affiliate';
 
 const { Title, Text, Paragraph } = Typography;
 
 interface Referral {
-  id: number;
-  name: string;
-  email: string;
-  status: 'pending' | 'signed_up' | 'purchased' | 'rewarded';
-  signupDate?: string;
-  purchaseDate?: string;
-  rewardAmount: number;
+  id: string;
+  customerEmail: string;
+  status: 'pending' | 'approved' | 'paid' | 'cancelled';
   orderValue?: number;
+  commissionAmount: number;
+  createdAt: string;
 }
-
-interface Reward {
-  id: number;
-  type: 'store_credit' | 'discount' | 'cashback';
-  amount: number;
-  description: string;
-  earnedDate: string;
-  expiryDate?: string;
-  status: 'pending' | 'available' | 'used' | 'expired';
-}
-
-interface ReferralTier {
-  name: string;
-  minReferrals: number;
-  bonusPercentage: number;
-  perks: string[];
-  color: string;
-  icon: React.ReactNode;
-}
-
-const mockReferrals: Referral[] = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@email.com',
-    status: 'rewarded',
-    signupDate: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-    purchaseDate: dayjs().subtract(25, 'days').format('YYYY-MM-DD'),
-    rewardAmount: 25,
-    orderValue: 150,
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@email.com',
-    status: 'purchased',
-    signupDate: dayjs().subtract(15, 'days').format('YYYY-MM-DD'),
-    purchaseDate: dayjs().subtract(10, 'days').format('YYYY-MM-DD'),
-    rewardAmount: 25,
-    orderValue: 200,
-  },
-  {
-    id: 3,
-    name: 'Mike Johnson',
-    email: 'mike@email.com',
-    status: 'signed_up',
-    signupDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
-    rewardAmount: 0,
-  },
-  {
-    id: 4,
-    name: 'Sarah Williams',
-    email: 'sarah@email.com',
-    status: 'pending',
-    rewardAmount: 0,
-  },
-];
-
-const mockRewards: Reward[] = [
-  {
-    id: 1,
-    type: 'store_credit',
-    amount: 25,
-    description: 'Referral reward for John Doe purchase',
-    earnedDate: dayjs().subtract(25, 'days').format('YYYY-MM-DD'),
-    status: 'used',
-  },
-  {
-    id: 2,
-    type: 'store_credit',
-    amount: 25,
-    description: 'Referral reward for Jane Smith purchase',
-    earnedDate: dayjs().subtract(10, 'days').format('YYYY-MM-DD'),
-    expiryDate: dayjs().add(80, 'days').format('YYYY-MM-DD'),
-    status: 'available',
-  },
-];
-
-const referralTiers: ReferralTier[] = [
-  {
-    name: 'Bronze',
-    minReferrals: 0,
-    bonusPercentage: 0,
-    perks: ['$10 per referral', 'Basic rewards'],
-    color: '#CD7F32',
-    icon: <StarOutlined />,
-  },
-  {
-    name: 'Silver',
-    minReferrals: 5,
-    bonusPercentage: 10,
-    perks: ['$10 per referral', '10% bonus rewards', 'Priority support'],
-    color: '#C0C0C0',
-    icon: <StarOutlined />,
-  },
-  {
-    name: 'Gold',
-    minReferrals: 15,
-    bonusPercentage: 20,
-    perks: ['$15 per referral', '20% bonus rewards', 'Exclusive deals', 'Early access'],
-    color: '#FFD700',
-    icon: <TrophyOutlined />,
-  },
-  {
-    name: 'Platinum',
-    minReferrals: 30,
-    bonusPercentage: 30,
-    perks: [
-      '$20 per referral',
-      '30% bonus rewards',
-      'VIP support',
-      'Exclusive events',
-      'Special gifts',
-    ],
-    color: '#E5E4E2',
-    icon: <TrophyOutlined />,
-  },
-];
 
 const ReferralProgramPage: React.FC = () => {
-  const [referrals] = useState<Referral[]>(mockReferrals);
-  const [rewards] = useState<Reward[]>(mockRewards);
+  const [affiliateAccount, setAffiliateAccount] = useState<AffiliateAccount | null>(null);
+  const [referralLinks, setReferralLinks] = useState<ReferralLink[]>([]);
+  const [commissions, setCommissions] = useState<Commission[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isQRModalVisible, setIsQRModalVisible] = useState<boolean>(false);
 
-  const referralCode = 'JOHN2024';
-  const referralLink = `https://shop.com/ref/${referralCode}`;
+  useEffect(() => {
+    loadReferralData();
+  }, []);
 
-  const successfulReferrals = referrals.filter((r) => r.status === 'rewarded').length;
-  const pendingReferrals = referrals.filter((r) => r.status === 'pending' || r.status === 'signed_up').length;
-  const totalEarnings = rewards.reduce((sum, r) => sum + r.amount, 0);
-  const availableBalance = rewards
-    .filter((r) => r.status === 'available')
-    .reduce((sum, r) => sum + r.amount, 0);
+  const loadReferralData = async () => {
+    try {
+      setLoading(true);
+      const [accountResponse, linksResponse, commissionsResponse] = await Promise.all([
+        affiliateAPI.getMyAffiliateAccount(),
+        affiliateAPI.getReferralLinks(),
+        affiliateAPI.getCommissions({ limit: 50 })
+      ]);
+      
+      setAffiliateAccount(accountResponse);
+      setReferralLinks(linksResponse);
+      setCommissions(commissionsResponse.data);
+    } catch (error) {
+      console.error('Failed to load referral data:', error);
+      message.error('Failed to load referral program data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const referralCode = affiliateAccount?.affiliateCode || 'LOADING';
+  const referralLink = referralLinks[0]?.referralUrl || `https://shop.com/ref/${referralCode}`;
+
+  const successfulReferrals = affiliateAccount?.successfulReferrals || 0;
+  const pendingReferrals = (affiliateAccount?.totalReferrals || 0) - successfulReferrals;
+  const totalEarnings = affiliateAccount?.totalEarnings || 0;
+  const availableBalance = affiliateAccount?.pendingEarnings || 0;
+
+  const referralTiers = [
+    {
+      name: 'Bronze',
+      minReferrals: 0,
+      bonusPercentage: 0,
+      perks: ['$10 per referral', 'Basic rewards'],
+      color: '#CD7F32',
+      icon: <StarOutlined />,
+    },
+    {
+      name: 'Silver',
+      minReferrals: 5,
+      bonusPercentage: 10,
+      perks: ['$10 per referral', '10% bonus rewards', 'Priority support'],
+      color: '#C0C0C0',
+      icon: <StarOutlined />,
+    },
+    {
+      name: 'Gold',
+      minReferrals: 15,
+      bonusPercentage: 20,
+      perks: ['$15 per referral', '20% bonus rewards', 'Exclusive deals', 'Early access'],
+      color: '#FFD700',
+      icon: <TrophyOutlined />,
+    },
+    {
+      name: 'Platinum',
+      minReferrals: 30,
+      bonusPercentage: 30,
+      perks: [
+        '$20 per referral',
+        '30% bonus rewards',
+        'VIP support',
+        'Exclusive events',
+        'Special gifts',
+      ],
+      color: '#E5E4E2',
+      icon: <TrophyOutlined />,
+    },
+  ];
 
   const getCurrentTier = () => {
     for (let i = referralTiers.length - 1; i >= 0; i--) {

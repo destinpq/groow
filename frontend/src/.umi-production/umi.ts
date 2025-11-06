@@ -3,7 +3,7 @@
 // DO NOT CHANGE IT MANUALLY!
 import './core/polyfill';
 
-import { renderClient } from '/Users/pratik/Desktop/Work/DestinPQ/Groow/frontend/node_modules/@umijs/renderer-react';
+import { renderClient } from '/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/renderer-react';
 import { getRoutes } from './core/route';
 import { createPluginManager } from './core/plugin';
 import { createHistory } from './core/history';

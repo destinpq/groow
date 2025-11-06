@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Button, Space, Alert, Table, Modal, Form, Input, Select, DatePicker, Switch, Progress, Tag, Tabs, Statistic } from 'antd';
-import { MailOutlined, BellOutlined, TrophyOutlined, PercentageOutlined, SendOutlined, EyeOutlined, ClickOutlined, StarOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Tabs, Typography, Form, Input, Button, Select, DatePicker, Switch, Table, Tag, Space, message, Statistic, Progress, Badge, Radio, Upload } from 'antd';
+import { MailOutlined, BellOutlined, TrophyOutlined, PercentageOutlined, SendOutlined, EyeOutlined, SelectOutlined, StarOutlined } from '@ant-design/icons';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -309,7 +309,7 @@ const VendorMarketingTools: React.FC = () => {
               value={marketingStats.clickRate}
               suffix="%"
               valueStyle={{ color: '#13c2c2' }}
-              prefix={<ClickOutlined />}
+              prefix={<SelectOutlined />}
             />
           </Card>
         </Col>

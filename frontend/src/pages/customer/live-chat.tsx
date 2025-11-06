@@ -1,596 +1,778 @@
-import React, { useState } from 'react';
-import {
-  Card,
-  Row,
-  Col,
-  Typography,
-  Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  Select,
-  message,
-  List,
-  Avatar,
-  Tag,
-  Divider,
-  Alert,
-  Popconfirm,
-} from 'antd';
-import {
-  MessageOutlined,
-  SendOutlined,
-  CustomerServiceOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  UserOutlined,
-  FileTextOutlined,
-} from '@ant-design/icons';
-import dayjs from 'dayjs';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Button, Table, Tag, Space, Modal, Form, Input, Select, Upload, message, Badge, Row, Col, Timeline, Avatar, Rate, Divider, Spin, Empty, Tabs, Statistic, Progress, Typography, List, Tooltip, FloatButton } from 'antd';
+import { PlusOutlined, MessageOutlined, SearchOutlined, FilterOutlined, FileTextOutlined, ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, SendOutlined, PaperClipOutlined, CustomerServiceOutlined, StarOutlined, ReloadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { supportTicketsAPI, type SupportTicket, type TicketMessage, type CreateTicketRequest, type TicketStats } from '@/services/api/supportTicketsAPI';
+// import './support-tickets.less';
 
-const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
+const { Option } = Select;
+const { TabPane } = Tabs;
+const { Title, Text } = Typography;
 
-interface SupportTicket {
-  id: number;
-  ticketNumber: string;
-  subject: string;
-  category: 'order' | 'product' | 'shipping' | 'refund' | 'technical' | 'other';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'open' | 'in-progress' | 'waiting-reply' | 'resolved' | 'closed';
-  createdAt: string;
-  updatedAt: string;
-  messages: TicketMessage[];
-}
-
-interface TicketMessage {
-  id: number;
-  sender: 'customer' | 'support';
-  senderName: string;
-  message: string;
-  timestamp: string;
-  attachments?: string[];
-}
-
-const mockTickets: SupportTicket[] = [
-  {
-    id: 1,
-    ticketNumber: 'TKT-2024-001',
-    subject: 'Order not received',
-    category: 'shipping',
-    priority: 'high',
-    status: 'in-progress',
-    createdAt: dayjs().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
-    updatedAt: dayjs().subtract(1, 'hour').format('YYYY-MM-DD HH:mm'),
-    messages: [
-      {
-        id: 1,
-        sender: 'customer',
-        senderName: 'John Doe',
-        message: 'I ordered a product 10 days ago but still haven\'t received it. Order #ORD-123456.',
-        timestamp: dayjs().subtract(2, 'days').format('YYYY-MM-DD HH:mm'),
-      },
-      {
-        id: 2,
-        sender: 'support',
-        senderName: 'Support Team',
-        message: 'Thank you for contacting us. We are looking into your order status and will update you shortly.',
-        timestamp: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm'),
-      },
-      {
-        id: 3,
-        sender: 'support',
-        senderName: 'Support Team',
-        message: 'We have contacted the shipping carrier. Your package is currently in transit and should arrive within 2 business days.',
-        timestamp: dayjs().subtract(1, 'hour').format('YYYY-MM-DD HH:mm'),
-      },
-    ],
-  },
-  {
-    id: 2,
-    ticketNumber: 'TKT-2024-002',
-    subject: 'Product defect',
-    category: 'product',
-    priority: 'medium',
-    status: 'waiting-reply',
-    createdAt: dayjs().subtract(5, 'days').format('YYYY-MM-DD HH:mm'),
-    updatedAt: dayjs().subtract(3, 'days').format('YYYY-MM-DD HH:mm'),
-    messages: [
-      {
-        id: 1,
-        sender: 'customer',
-        senderName: 'John Doe',
-        message: 'The headphones I received have a defect in the left speaker.',
-        timestamp: dayjs().subtract(5, 'days').format('YYYY-MM-DD HH:mm'),
-      },
-      {
-        id: 2,
-        sender: 'support',
-        senderName: 'Support Team',
-        message: 'We apologize for the inconvenience. We will send you a replacement immediately. Please confirm your shipping address.',
-        timestamp: dayjs().subtract(3, 'days').format('YYYY-MM-DD HH:mm'),
-      },
-    ],
-  },
-  {
-    id: 3,
-    ticketNumber: 'TKT-2024-003',
-    subject: 'Refund request',
-    category: 'refund',
-    priority: 'low',
-    status: 'resolved',
-    createdAt: dayjs().subtract(10, 'days').format('YYYY-MM-DD HH:mm'),
-    updatedAt: dayjs().subtract(7, 'days').format('YYYY-MM-DD HH:mm'),
-    messages: [
-      {
-        id: 1,
-        sender: 'customer',
-        senderName: 'John Doe',
-        message: 'I would like to request a refund for order #ORD-123789.',
-        timestamp: dayjs().subtract(10, 'days').format('YYYY-MM-DD HH:mm'),
-      },
-      {
-        id: 2,
-        sender: 'support',
-        senderName: 'Support Team',
-        message: 'Your refund has been processed. You should receive it within 5-7 business days.',
-        timestamp: dayjs().subtract(7, 'days').format('YYYY-MM-DD HH:mm'),
-      },
-    ],
-  },
-];
-
-const LiveChatSupportPage: React.FC = () => {
-  const [tickets, setTickets] = useState<SupportTicket[]>(mockTickets);
+// Support Tickets System with Live Chat Integration
+const SupportTicketsSystem: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [stats, setStats] = useState<TicketStats | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
-  const [isTicketModalVisible, setIsTicketModalVisible] = useState<boolean>(false);
-  const [isNewTicketModalVisible, setIsNewTicketModalVisible] = useState<boolean>(false);
-  const [form] = Form.useForm();
-  const [messageForm] = Form.useForm();
-  const [isChatActive, setIsChatActive] = useState<boolean>(false);
+  const [messages, setMessages] = useState<TicketMessage[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [showTicketDetails, setShowTicketDetails] = useState(false);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [chatAvailable, setChatAvailable] = useState(false);
+  const [newMessage, setNewMessage] = useState('');
+  const [filters, setFilters] = useState({
+    status: undefined,
+    priority: undefined,
+    category: undefined,
+    search: ''
+  });
 
-  const handleCreateTicket = (values: any) => {
-    console.log('Creating ticket:', values);
-    message.success('Support ticket created successfully');
-    setIsNewTicketModalVisible(false);
-    form.resetFields();
+  const [createForm] = Form.useForm();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageInputRef = useRef<any>(null);
+
+  // Load initial data
+  useEffect(() => {
+    loadTickets();
+    loadStats();
+    checkChatAvailability();
+  }, []);
+
+  // Auto-scroll to bottom of messages
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleViewTicket = (ticket: SupportTicket) => {
+  const loadTickets = async () => {
+    setLoading(true);
+    try {
+      const response = await supportTicketsAPI.getTickets(filters);
+      if (response.success) {
+        setTickets(response.data.tickets);
+      } else {
+        message.error('Failed to load tickets');
+      }
+    } catch (error) {
+      console.error('Error loading tickets:', error);
+      message.error('Failed to load tickets');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const response = await supportTicketsAPI.getTicketStats();
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
+
+  const checkChatAvailability = async () => {
+    try {
+      const response = await supportTicketsAPI.getChatAvailability();
+      if (response.success) {
+        setChatAvailable(response.data.available);
+      }
+    } catch (error) {
+      console.error('Error checking chat availability:', error);
+    }
+  };
+
+  const loadTicketMessages = async (ticketId: string) => {
+    setMessagesLoading(true);
+    try {
+      const response = await supportTicketsAPI.getTicketMessages(ticketId);
+      if (response.success) {
+        setMessages(response.data);
+      } else {
+        message.error('Failed to load messages');
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      message.error('Failed to load messages');
+    } finally {
+      setMessagesLoading(false);
+    }
+  };
+
+  const handleCreateTicket = async (values: any) => {
+    try {
+      const ticketData: CreateTicketRequest = {
+        subject: values.subject,
+        description: values.description,
+        category: values.category,
+        priority: values.priority,
+        orderId: values.orderId
+      };
+
+      const response = await supportTicketsAPI.createTicket(ticketData);
+      if (response.success) {
+        message.success('Support ticket created successfully');
+        setShowCreateModal(false);
+        createForm.resetFields();
+        loadTickets();
+        loadStats();
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      message.error('Failed to create ticket');
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedTicket) return;
+
+    setSendingMessage(true);
+    try {
+      const response = await supportTicketsAPI.sendMessage(selectedTicket.id, newMessage);
+      if (response.success) {
+        setMessages([...messages, response.data]);
+        setNewMessage('');
+        loadTickets(); // Refresh tickets to update last activity
+      } else {
+        message.error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      message.error('Failed to send message');
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
+  const handleTicketSelect = async (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
-    setIsTicketModalVisible(true);
+    setShowTicketDetails(true);
+    await loadTicketMessages(ticket.id);
   };
 
-  const handleSendMessage = (values: any) => {
-    if (!selectedTicket) return;
-
-    const newMessage: TicketMessage = {
-      id: selectedTicket.messages.length + 1,
-      sender: 'customer',
-      senderName: 'John Doe',
-      message: values.message,
-      timestamp: dayjs().format('YYYY-MM-DD HH:mm'),
-    };
-
-    const updatedTicket = {
-      ...selectedTicket,
-      messages: [...selectedTicket.messages, newMessage],
-      status: 'waiting-reply' as const,
-      updatedAt: dayjs().format('YYYY-MM-DD HH:mm'),
-    };
-
-    setSelectedTicket(updatedTicket);
-    setTickets(tickets.map((t) => (t.id === updatedTicket.id ? updatedTicket : t)));
-    messageForm.resetFields();
-    message.success('Message sent');
-  };
-
-  const handleCloseTicket = (ticketId: number) => {
-    setTickets(tickets.map((t) => (t.id === ticketId ? { ...t, status: 'closed' as const } : t)));
-    message.success('Ticket closed');
-    setIsTicketModalVisible(false);
-  };
-
-  const handleStartLiveChat = () => {
-    setIsChatActive(true);
-    message.success('Connected to live chat support');
-  };
-
-  const getCategoryColor = (category: SupportTicket['category']) => {
-    const colors: Record<SupportTicket['category'], string> = {
-      order: 'blue',
-      product: 'green',
-      shipping: 'orange',
-      refund: 'red',
-      technical: 'purple',
-      other: 'default',
-    };
-    return colors[category];
+  const handleSubmitRating = async (ticketId: string, rating: number, feedback?: string) => {
+    try {
+      const response = await supportTicketsAPI.submitRating(ticketId, rating, feedback);
+      if (response.success) {
+        message.success('Thank you for your feedback!');
+        loadTickets();
+      } else {
+        message.error('Failed to submit rating');
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      message.error('Failed to submit rating');
+    }
   };
 
   const getStatusColor = (status: SupportTicket['status']) => {
-    const colors: Record<SupportTicket['status'], string> = {
+    const colors = {
       open: 'blue',
-      'in-progress': 'processing',
-      'waiting-reply': 'warning',
-      resolved: 'success',
-      closed: 'default',
+      in_progress: 'orange',
+      waiting_for_customer: 'purple',
+      resolved: 'green',
+      closed: 'default'
     };
     return colors[status];
   };
 
   const getPriorityColor = (priority: SupportTicket['priority']) => {
-    const colors: Record<SupportTicket['priority'], string> = {
+    const colors = {
       low: 'default',
       medium: 'blue',
       high: 'orange',
-      urgent: 'red',
+      urgent: 'red'
     };
     return colors[priority];
   };
 
-  const openTickets = tickets.filter((t) => ['open', 'in-progress', 'waiting-reply'].includes(t.status));
-  const resolvedTickets = tickets.filter((t) => ['resolved', 'closed'].includes(t.status));
+  const ticketColumns = [
+    {
+      title: 'Ticket #',
+      dataIndex: 'ticketNumber',
+      key: 'ticketNumber',
+      render: (text: string, record: SupportTicket) => (
+        <Button type="link" onClick={() => handleTicketSelect(record)}>
+          {text}
+        </Button>
+      )
+    },
+    {
+      title: 'Subject',
+      dataIndex: 'subject',
+      key: 'subject',
+      ellipsis: true
+    },
+    {
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
+      render: (category: string) => (
+        <Tag>{category.replace('_', ' ').toUpperCase()}</Tag>
+      )
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: SupportTicket['status']) => (
+        <Tag color={getStatusColor(status)}>
+          {status.replace('_', ' ').toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Priority',
+      dataIndex: 'priority',
+      key: 'priority',
+      render: (priority: SupportTicket['priority']) => (
+        <Tag color={getPriorityColor(priority)}>
+          {priority.toUpperCase()}
+        </Tag>
+      )
+    },
+    {
+      title: 'Agent',
+      dataIndex: 'assignedAgent',
+      key: 'assignedAgent',
+      render: (agent: SupportTicket['assignedAgent']) => (
+        agent ? (
+          <Space>
+            <Avatar size="small" src={agent.avatar} icon={<CustomerServiceOutlined />} />
+            <span>{agent.name}</span>
+            <Badge status={agent.isOnline ? 'success' : 'default'} />
+          </Space>
+        ) : (
+          <Text type="secondary">Unassigned</Text>
+        )
+      )
+    },
+    {
+      title: 'Last Updated',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      render: (date: string) => (
+        <Tooltip title={new Date(date).toLocaleString()}>
+          {new Date(date).toLocaleDateString()}
+        </Tooltip>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_: any, record: SupportTicket) => (
+        <Space>
+          <Button 
+            size="small" 
+            icon={<MessageOutlined />}
+            onClick={() => handleTicketSelect(record)}
+          >
+            View
+          </Button>
+          {record.status === 'resolved' && !record.satisfactionRating && (
+            <Button 
+              size="small" 
+              icon={<StarOutlined />}
+              onClick={() => {
+                Modal.confirm({
+                  title: 'Rate this support experience',
+                  content: (
+                    <div>
+                      <p>How satisfied are you with the resolution?</p>
+                      <Rate onChange={(value) => handleSubmitRating(record.id, value)} />
+                    </div>
+                  ),
+                  okText: 'Submit Rating'
+                });
+              }}
+            >
+              Rate
+            </Button>
+          )}
+        </Space>
+      )
+    }
+  ];
 
-  return (
-    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ marginBottom: 24 }}>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={3}>
-              <CustomerServiceOutlined style={{ color: '#1890ff' }} /> Customer Support
-            </Title>
-            <Paragraph type="secondary">
-              Get help from our support team or start a live chat
-            </Paragraph>
+  const renderTicketStats = () => (
+    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Total Tickets"
+            value={stats?.total || 0}
+            prefix={<FileTextOutlined />}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Open/In Progress"
+            value={(stats?.open || 0) + (stats?.inProgress || 0)}
+            prefix={<ClockCircleOutlined />}
+            valueStyle={{ color: '#faad14' }}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Avg Response Time"
+            value={stats?.avgResponseTime || 0}
+            suffix="hrs"
+            prefix={<ClockCircleOutlined />}
+            precision={1}
+          />
+        </Card>
+      </Col>
+      <Col xs={12} sm={6}>
+        <Card size="small">
+          <Statistic
+            title="Satisfaction Score"
+            value={stats?.satisfactionScore || 0}
+            prefix={<StarOutlined />}
+            precision={1}
+            suffix="/5"
+            valueStyle={{ color: '#52c41a' }}
+          />
+        </Card>
+      </Col>
+    </Row>
+  );
+
+  const renderMessageBubble = (msg: TicketMessage) => {
+    const isCustomer = msg.sender.type === 'customer';
+    return (
+      <div
+        key={msg.id}
+        style={{
+          display: 'flex',
+          justifyContent: isCustomer ? 'flex-end' : 'flex-start',
+          marginBottom: 16
+        }}
+      >
+        <div style={{ maxWidth: '70%' }}>
+          {!isCustomer && (
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+              <Avatar size="small" src={msg.sender.avatar} icon={<CustomerServiceOutlined />} />
+              <Text strong style={{ marginLeft: 8 }}>{msg.sender.name}</Text>
+              {msg.sender.type === 'agent' && (
+                <Tag style={{ marginLeft: 4 }}>Agent</Tag>
+              )}
+            </div>
+          )}
+          <div
+            style={{
+              backgroundColor: isCustomer ? '#1890ff' : '#f0f0f0',
+              color: isCustomer ? 'white' : 'black',
+              padding: '8px 12px',
+              borderRadius: '8px',
+              wordBreak: 'break-word'
+            }}
+          >
+            {msg.message}
+          </div>
+          <div style={{ fontSize: '11px', color: '#999', marginTop: 4, textAlign: isCustomer ? 'right' : 'left' }}>
+            {new Date(msg.sentAt).toLocaleString()}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTicketDetails = () => (
+    <Modal
+      title={
+        <Space>
+          <FileTextOutlined />
+          {selectedTicket?.ticketNumber} - {selectedTicket?.subject}
+        </Space>
+      }
+      open={showTicketDetails}
+      onCancel={() => {
+        setShowTicketDetails(false);
+        setSelectedTicket(null);
+        setMessages([]);
+      }}
+      width={800}
+      footer={null}
+    >
+      {selectedTicket && (
+        <div>
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col span={8}>
+              <Text strong>Status: </Text>
+              <Tag color={getStatusColor(selectedTicket.status)}>
+                {selectedTicket.status.replace('_', ' ').toUpperCase()}
+              </Tag>
+            </Col>
+            <Col span={8}>
+              <Text strong>Priority: </Text>
+              <Tag color={getPriorityColor(selectedTicket.priority)}>
+                {selectedTicket.priority.toUpperCase()}
+              </Tag>
+            </Col>
+            <Col span={8}>
+              <Text strong>Category: </Text>
+              <Tag>{selectedTicket.category.toUpperCase()}</Tag>
+            </Col>
+          </Row>
+
+          {selectedTicket.assignedAgent && (
+            <Card size="small" style={{ marginBottom: 16 }}>
+              <Space>
+                <Avatar src={selectedTicket.assignedAgent.avatar} icon={<CustomerServiceOutlined />} />
+                <div>
+                  <Text strong>{selectedTicket.assignedAgent.name}</Text>
+                  <br />
+                  <Text type="secondary">{selectedTicket.assignedAgent.role}</Text>
+                  <Badge 
+                    status={selectedTicket.assignedAgent.isOnline ? 'success' : 'default'} 
+                    text={selectedTicket.assignedAgent.isOnline ? 'Online' : 'Offline'}
+                    style={{ marginLeft: 8 }}
+                  />
+                </div>
+              </Space>
+            </Card>
+          )}
+
+          <Divider>Conversation</Divider>
+
+          <div style={{ maxHeight: 400, overflowY: 'auto', padding: '0 8px', marginBottom: 16 }}>
+            {messagesLoading ? (
+              <div style={{ textAlign: 'center', padding: 20 }}>
+                <Spin />
+              </div>
+            ) : messages.length > 0 ? (
+              <>
+                {messages.map(renderMessageBubble)}
+                <div ref={messagesEndRef} />
+              </>
+            ) : (
+              <Empty description="No messages yet" />
+            )}
+          </div>
+
+          {selectedTicket.status !== 'closed' && selectedTicket.status !== 'resolved' && (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Input.TextArea
+                ref={messageInputRef}
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                autoSize={{ minRows: 2, maxRows: 4 }}
+                onPressEnter={(e) => {
+                  if (e.shiftKey) return;
+                  e.preventDefault();
+                  handleSendMessage();
+                }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <Button
+                  type="primary"
+                  icon={<SendOutlined />}
+                  onClick={handleSendMessage}
+                  loading={sendingMessage}
+                  disabled={!newMessage.trim()}
+                >
+                  Send
+                </Button>
+                <Button
+                  size="small"
+                  icon={<PaperClipOutlined />}
+                  title="Attach File"
+                >
+                  Attach
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {selectedTicket.satisfactionRating && (
+            <Card size="small" style={{ marginTop: 16, backgroundColor: '#f6ffed' }}>
+              <Text strong>Customer Rating: </Text>
+              <Rate disabled value={selectedTicket.satisfactionRating.rating} />
+              {selectedTicket.satisfactionRating.feedback && (
+                <div style={{ marginTop: 8 }}>
+                  <Text>"{selectedTicket.satisfactionRating.feedback}"</Text>
+                </div>
+              )}
+            </Card>
+          )}
+        </div>
+      )}
+    </Modal>
+  );
+
+  const renderCreateTicketModal = () => (
+    <Modal
+      title="Create New Support Ticket"
+      open={showCreateModal}
+      onCancel={() => {
+        setShowCreateModal(false);
+        createForm.resetFields();
+      }}
+      footer={null}
+      width={600}
+    >
+      <Form
+        form={createForm}
+        layout="vertical"
+        onFinish={handleCreateTicket}
+      >
+        <Form.Item
+          label="Subject"
+          name="subject"
+          rules={[{ required: true, message: 'Please enter a subject' }]}
+        >
+          <Input placeholder="Brief description of your issue" />
+        </Form.Item>
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Category"
+              name="category"
+              rules={[{ required: true, message: 'Please select a category' }]}
+            >
+              <Select placeholder="Select category">
+                <Option value="general">General Inquiry</Option>
+                <Option value="order">Order Issue</Option>
+                <Option value="payment">Payment Problem</Option>
+                <Option value="technical">Technical Support</Option>
+                <Option value="product">Product Question</Option>
+                <Option value="account">Account Issue</Option>
+                <Option value="shipping">Shipping Problem</Option>
+                <Option value="returns">Returns & Refunds</Option>
+              </Select>
+            </Form.Item>
           </Col>
-          <Col>
-            <Space>
-              <Button
-                type="primary"
-                icon={<MessageOutlined />}
-                size="large"
-                onClick={handleStartLiveChat}
-              >
-                Start Live Chat
-              </Button>
-              <Button icon={<FileTextOutlined />} onClick={() => setIsNewTicketModalVisible(true)}>
-                Create Ticket
-              </Button>
-            </Space>
+          <Col span={12}>
+            <Form.Item
+              label="Priority"
+              name="priority"
+              rules={[{ required: true, message: 'Please select priority' }]}
+            >
+              <Select placeholder="Select priority">
+                <Option value="low">Low</Option>
+                <Option value="medium">Medium</Option>
+                <Option value="high">High</Option>
+                <Option value="urgent">Urgent</Option>
+              </Select>
+            </Form.Item>
           </Col>
         </Row>
+
+        <Form.Item
+          label="Order ID (optional)"
+          name="orderId"
+        >
+          <Input placeholder="Enter order number if related to an order" />
+        </Form.Item>
+
+        <Form.Item
+          label="Description"
+          name="description"
+          rules={[{ required: true, message: 'Please describe your issue' }]}
+        >
+          <TextArea
+            rows={4}
+            placeholder="Please provide detailed information about your issue..."
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Attachments"
+          name="attachments"
+        >
+          <Upload
+            multiple
+            beforeUpload={() => false}
+            fileList={[]}
+          >
+            <Button icon={<PaperClipOutlined />}>
+              Attach Files (Screenshots, Documents)
+            </Button>
+          </Upload>
+        </Form.Item>
+
+        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+          <Space>
+            <Button onClick={() => setShowCreateModal(false)}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit">
+              Create Ticket
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
+  const renderQuickActions = () => (
+    <Card size="small" style={{ marginBottom: 16 }}>
+      <Space wrap>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => setShowCreateModal(true)}
+        >
+          New Ticket
+        </Button>
+        <Button
+          icon={<MessageOutlined />}
+          onClick={() => setShowChatModal(true)}
+          disabled={!chatAvailable}
+        >
+          Live Chat {chatAvailable && <Badge status="success" />}
+        </Button>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={loadTickets}
+          loading={loading}
+        >
+          Refresh
+        </Button>
+        <Button
+          icon={<QuestionCircleOutlined />}
+          onClick={() => window.open('/help-center', '_blank')}
+        >
+          Help Center
+        </Button>
+      </Space>
+    </Card>
+  );
+
+  return (
+    <div className="support-tickets" style={{ padding: '24px', maxWidth: 1400, margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <Title level={2}>
+          <CustomerServiceOutlined /> Support Center
+        </Title>
+        <Text type="secondary">
+          Get help with your orders, technical issues, and general inquiries
+        </Text>
       </div>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Space direction="vertical" size={0}>
-              <Text type="secondary">Open Tickets</Text>
-              <Text strong style={{ fontSize: 24, color: '#1890ff' }}>
-                {openTickets.length}
-              </Text>
-            </Space>
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Space direction="vertical" size={0}>
-              <Text type="secondary">Avg Response Time</Text>
-              <Text strong style={{ fontSize: 24, color: '#52c41a' }}>
-                2.5 hours
-              </Text>
-            </Space>
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Space direction="vertical" size={0}>
-              <Text type="secondary">Satisfaction Rate</Text>
-              <Text strong style={{ fontSize: 24, color: '#722ed1' }}>
-                98%
-              </Text>
-            </Space>
-          </Card>
-        </Col>
-      </Row>
+      {/* Stats */}
+      {renderTicketStats()}
 
-      <Row gutter={16}>
-        <Col xs={24} lg={16}>
-          <Card title="Support Tickets">
-            <Alert
-              message="Need Immediate Help?"
-              description="For urgent issues, use our live chat feature or call us at 1-800-SUPPORT"
-              type="info"
-              showIcon
-              style={{ marginBottom: 16 }}
-              action={
-                <Button size="small" type="primary" onClick={handleStartLiveChat}>
-                  Live Chat
-                </Button>
-              }
-            />
+      {/* Quick Actions */}
+      {renderQuickActions()}
 
-            <List
-              dataSource={tickets}
-              renderItem={(ticket) => (
-                <List.Item
-                  actions={[
-                    <Button type="link" onClick={() => handleViewTicket(ticket)}>
-                      View Details
-                    </Button>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar icon={<FileTextOutlined />} style={{ background: '#1890ff' }} />}
-                    title={
-                      <Space>
-                        <Text strong>{ticket.subject}</Text>
-                        <Tag color={getCategoryColor(ticket.category)}>
-                          {ticket.category.toUpperCase()}
-                        </Tag>
-                        <Tag color={getPriorityColor(ticket.priority)}>
-                          {ticket.priority.toUpperCase()}
-                        </Tag>
-                      </Space>
-                    }
-                    description={
-                      <Space direction="vertical" size="small">
-                        <Space>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            Ticket: {ticket.ticketNumber}
-                          </Text>
-                          <Text type="secondary" style={{ fontSize: 12 }}>•</Text>
-                          <Tag color={getStatusColor(ticket.status)} style={{ fontSize: 11 }}>
-                            {ticket.status.replace('-', ' ').toUpperCase()}
-                          </Tag>
-                        </Space>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          Created: {ticket.createdAt} • Updated: {ticket.updatedAt}
-                        </Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>
-                          {ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}
-                        </Text>
-                      </Space>
-                    }
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={8}>
-          <Card title="Contact Support" style={{ marginBottom: 16 }}>
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <div>
-                <Space>
-                  <PhoneOutlined style={{ fontSize: 20, color: '#1890ff' }} />
-                  <div>
-                    <Text strong style={{ display: 'block' }}>Phone Support</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>1-800-SUPPORT</Text>
-                    <div>
-                      <Text type="secondary" style={{ fontSize: 11 }}>Mon-Fri 9AM-6PM EST</Text>
-                    </div>
-                  </div>
-                </Space>
-              </div>
-
-              <div>
-                <Space>
-                  <MailOutlined style={{ fontSize: 20, color: '#1890ff' }} />
-                  <div>
-                    <Text strong style={{ display: 'block' }}>Email Support</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>support@example.com</Text>
-                    <div>
-                      <Text type="secondary" style={{ fontSize: 11 }}>Response within 24 hours</Text>
-                    </div>
-                  </div>
-                </Space>
-              </div>
-
-              <div>
-                <Space>
-                  <MessageOutlined style={{ fontSize: 20, color: '#1890ff' }} />
-                  <div>
-                    <Text strong style={{ display: 'block' }}>Live Chat</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>Available now</Text>
-                    <div>
-                      <Button
-                        type="link"
-                        size="small"
-                        style={{ padding: 0 }}
-                        onClick={handleStartLiveChat}
-                      >
-                        Start chatting
-                      </Button>
-                    </div>
-                  </div>
-                </Space>
-              </div>
-            </Space>
-          </Card>
-
-          <Card title="Common Topics">
-            <List
-              size="small"
-              dataSource={[
-                { icon: '📦', title: 'Track My Order', link: '/orders' },
-                { icon: '🔄', title: 'Returns & Refunds', link: '/returns' },
-                { icon: '💳', title: 'Payment Issues', link: '/help/payment' },
-                { icon: '🚚', title: 'Shipping Information', link: '/help/shipping' },
-                { icon: '❓', title: 'FAQs', link: '/help/faq' },
-              ]}
-              renderItem={(item) => (
-                <List.Item>
-                  <Button type="link" block style={{ textAlign: 'left' }}>
-                    {item.icon} {item.title}
-                  </Button>
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Ticket Details Modal */}
-      <Modal
-        title={`Ticket: ${selectedTicket?.ticketNumber}`}
-        open={isTicketModalVisible}
-        onCancel={() => setIsTicketModalVisible(false)}
-        width={700}
-        footer={
-          selectedTicket && selectedTicket.status !== 'closed' ? (
-            <Space>
-              <Popconfirm
-                title="Are you sure you want to close this ticket?"
-                onConfirm={() => handleCloseTicket(selectedTicket.id)}
-              >
-                <Button>Close Ticket</Button>
-              </Popconfirm>
-              <Button onClick={() => setIsTicketModalVisible(false)}>Cancel</Button>
-            </Space>
-          ) : null
-        }
-      >
-        {selectedTicket && (
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <div>
-              <Space wrap>
-                <Tag color={getCategoryColor(selectedTicket.category)}>
-                  {selectedTicket.category.toUpperCase()}
-                </Tag>
-                <Tag color={getPriorityColor(selectedTicket.priority)}>
-                  {selectedTicket.priority.toUpperCase()}
-                </Tag>
-                <Tag color={getStatusColor(selectedTicket.status)}>
-                  {selectedTicket.status.replace('-', ' ').toUpperCase()}
-                </Tag>
-              </Space>
-              <Title level={5} style={{ marginTop: 8 }}>{selectedTicket.subject}</Title>
-            </div>
-
-            <Divider style={{ margin: 0 }} />
-
-            <div style={{ maxHeight: 400, overflowY: 'auto' }}>
-              <List
-                dataSource={selectedTicket.messages}
-                renderItem={(msg) => (
-                  <List.Item style={{ padding: '12px 0' }}>
-                    <List.Item.Meta
-                      avatar={
-                        <Avatar
-                          icon={msg.sender === 'customer' ? <UserOutlined /> : <CustomerServiceOutlined />}
-                          style={{ background: msg.sender === 'customer' ? '#1890ff' : '#52c41a' }}
-                        />
-                      }
-                      title={
-                        <Space>
-                          <Text strong>{msg.senderName}</Text>
-                          <Text type="secondary" style={{ fontSize: 11 }}>{msg.timestamp}</Text>
-                        </Space>
-                      }
-                      description={
-                        <div style={{ marginTop: 4, padding: 12, background: '#f5f5f5', borderRadius: 4 }}>
-                          <Paragraph style={{ margin: 0 }}>{msg.message}</Paragraph>
-                        </div>
-                      }
-                    />
-                  </List.Item>
-                )}
+      {/* Tickets Table */}
+      <Card title="Your Support Tickets">
+        <div style={{ marginBottom: 16 }}>
+          <Row gutter={16}>
+            <Col flex={1}>
+              <Input
+                placeholder="Search tickets..."
+                prefix={<SearchOutlined />}
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                onPressEnter={loadTickets}
               />
-            </div>
+            </Col>
+            <Col>
+              <Space>
+                <Select
+                  placeholder="Status"
+                  allowClear
+                  style={{ width: 120 }}
+                  value={filters.status}
+                  onChange={(value) => setFilters({ ...filters, status: value })}
+                >
+                  <Option value="open">Open</Option>
+                  <Option value="in_progress">In Progress</Option>
+                  <Option value="waiting_for_customer">Waiting</Option>
+                  <Option value="resolved">Resolved</Option>
+                  <Option value="closed">Closed</Option>
+                </Select>
+                <Select
+                  placeholder="Priority"
+                  allowClear
+                  style={{ width: 100 }}
+                  value={filters.priority}
+                  onChange={(value) => setFilters({ ...filters, priority: value })}
+                >
+                  <Option value="low">Low</Option>
+                  <Option value="medium">Medium</Option>
+                  <Option value="high">High</Option>
+                  <Option value="urgent">Urgent</Option>
+                </Select>
+                <Button icon={<FilterOutlined />} onClick={loadTickets}>
+                  Filter
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+        </div>
 
-            {selectedTicket.status !== 'closed' && (
-              <>
-                <Divider style={{ margin: 0 }} />
-                <Form form={messageForm} onFinish={handleSendMessage}>
-                  <Form.Item
-                    name="message"
-                    rules={[{ required: true, message: 'Please enter your message' }]}
-                  >
-                    <TextArea rows={4} placeholder="Type your message..." />
-                  </Form.Item>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" icon={<SendOutlined />}>
-                      Send Message
-                    </Button>
-                  </Form.Item>
-                </Form>
-              </>
-            )}
-          </Space>
-        )}
-      </Modal>
+        <Table
+          columns={ticketColumns}
+          dataSource={tickets}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `Total ${total} tickets`
+          }}
+        />
+      </Card>
 
-      {/* New Ticket Modal */}
+      {/* Modals */}
+      {renderCreateTicketModal()}
+      {renderTicketDetails()}
+
+      {/* Live Chat Float Button */}
+      {chatAvailable && (
+        <FloatButton
+          icon={<MessageOutlined />}
+          type="primary"
+          onClick={() => setShowChatModal(true)}
+          tooltip="Start Live Chat"
+        />
+      )}
+
+      {/* Chat Modal */}
       <Modal
-        title="Create Support Ticket"
-        open={isNewTicketModalVisible}
-        onCancel={() => setIsNewTicketModalVisible(false)}
+        title="Live Chat Support"
+        open={showChatModal}
+        onCancel={() => setShowChatModal(false)}
         footer={null}
-        width={600}
+        width={500}
       >
-        <Form form={form} layout="vertical" onFinish={handleCreateTicket}>
-          <Form.Item
-            label="Subject"
-            name="subject"
-            rules={[{ required: true, message: 'Please enter subject' }]}
-          >
-            <Input placeholder="Brief description of your issue" />
-          </Form.Item>
-
-          <Form.Item
-            label="Category"
-            name="category"
-            rules={[{ required: true, message: 'Please select category' }]}
-          >
-            <Select placeholder="Select category">
-              <Select.Option value="order">Order Issue</Select.Option>
-              <Select.Option value="product">Product Question</Select.Option>
-              <Select.Option value="shipping">Shipping Issue</Select.Option>
-              <Select.Option value="refund">Refund Request</Select.Option>
-              <Select.Option value="technical">Technical Support</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Priority"
-            name="priority"
-            rules={[{ required: true, message: 'Please select priority' }]}
-          >
-            <Select placeholder="Select priority">
-              <Select.Option value="low">Low</Select.Option>
-              <Select.Option value="medium">Medium</Select.Option>
-              <Select.Option value="high">High</Select.Option>
-              <Select.Option value="urgent">Urgent</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            name="description"
-            rules={[{ required: true, message: 'Please describe your issue' }]}
-          >
-            <TextArea rows={6} placeholder="Please provide details about your issue..." />
-          </Form.Item>
-
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                Create Ticket
-              </Button>
-              <Button onClick={() => setIsNewTicketModalVisible(false)}>Cancel</Button>
-            </Space>
-          </Form.Item>
-        </Form>
+        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+          <CustomerServiceOutlined style={{ fontSize: 48, color: '#1890ff', marginBottom: 16 }} />
+          <Title level={4}>Connect with Support</Title>
+          <Text>
+            Our support agents are ready to help you with any questions or issues.
+          </Text>
+          <div style={{ margin: '20px 0' }}>
+            <Button type="primary" size="large">
+              Start Chat Session
+            </Button>
+          </div>
+          <Text type="secondary">
+            Average response time: 2 minutes
+          </Text>
+        </div>
       </Modal>
     </div>
   );
 };
 
-export default LiveChatSupportPage;
+export default SupportTicketsSystem;

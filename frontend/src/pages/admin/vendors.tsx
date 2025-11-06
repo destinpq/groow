@@ -1,46 +1,78 @@
 import { ProTable } from '@ant-design/pro-components';
-import type { ProColumns } from '@ant-design/pro-components';
+import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { Button, Space, Tag, Modal, Descriptions, Avatar, message } from 'antd';
 import { EyeOutlined, CheckCircleOutlined, CloseCircleOutlined, StopOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-
-interface VendorType {
-  id: string;
-  businessName: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-  status: 'pending' | 'verified' | 'rejected' | 'suspended';
-  subscription: string;
-  productsCount: number;
-  ordersCount: number;
-  revenue: number;
-  joinedAt: string;
-}
+import { useState, useRef } from 'react';
+import { vendorAPI, Vendor } from '@/services/api';
 
 const AdminVendors = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [selectedVendor, setSelectedVendor] = useState<VendorType | null>(null);
+  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
+  const actionRef = useRef<ActionType>();
 
   const statusColors = {
     pending: 'warning',
     verified: 'success',
+    active: 'success',
     rejected: 'error',
     suspended: 'default',
+    inactive: 'default',
   };
 
-  const columns: ProColumns<VendorType>[] = [
+  const handleApprove = async (id: string) => {
+    Modal.confirm({
+      title: 'Approve Vendor',
+      content: 'Are you sure you want to approve this vendor?',
+      onOk: async () => {
+        try {
+          await vendorAPI.verify(id);
+          message.success('Vendor approved successfully');
+          actionRef.current?.reload();
+        } catch (error: any) {
+          message.error(error.message || 'Failed to approve vendor');
+        }
+      },
+    });
+  };
+
+  const handleReject = async (id: string) => {
+    Modal.confirm({
+      title: 'Reject Vendor',
+      content: 'Please provide a reason for rejection:',
+      onOk: async () => {
+        try {
+          await vendorAPI.reject(id, 'Does not meet verification requirements');
+          message.success('Vendor rejected');
+          actionRef.current?.reload();
+        } catch (error: any) {
+          message.error(error.message || 'Failed to reject vendor');
+        }
+      },
+    });
+  };
+
+  const handleSuspend = async (id: string) => {
+    Modal.confirm({
+      title: 'Toggle Vendor Status',
+      content: 'Are you sure you want to change this vendor\'s active status?',
+      onOk: async () => {
+        try {
+          await vendorAPI.toggleActive(id);
+          message.success('Vendor status updated');
+          actionRef.current?.reload();
+        } catch (error: any) {
+          message.error(error.message || 'Failed to update vendor status');
+        }
+      },
+    });
+  };
+
+  const columns: ProColumns<Vendor>[] = [
     {
       title: 'Business Name',
       dataIndex: 'businessName',
       key: 'businessName',
       width: 200,
-    },
-    {
-      title: 'Contact Person',
-      dataIndex: 'contactPerson',
-      key: 'contactPerson',
-      width: 150,
     },
     {
       title: 'Email',
@@ -57,41 +89,27 @@ const AdminVendors = () => {
     },
     {
       title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'verificationStatus',
+      key: 'verificationStatus',
       width: 120,
       filters: [
         { text: 'Pending', value: 'pending' },
         { text: 'Verified', value: 'verified' },
         { text: 'Rejected', value: 'rejected' },
-        { text: 'Suspended', value: 'suspended' },
       ],
       render: (status) => (
-        <Tag color={statusColors[status as keyof typeof statusColors]}>
-          {status.toUpperCase()}
+        <Tag color={statusColors[String(status) as keyof typeof statusColors] || 'default'}>
+          {String(status || '').toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: 'Subscription',
-      dataIndex: 'subscription',
-      key: 'subscription',
-      width: 120,
-    },
-    {
       title: 'Products',
-      dataIndex: 'productsCount',
-      key: 'productsCount',
+      dataIndex: 'productCount',
+      key: 'productCount',
       width: 100,
       align: 'center',
-    },
-    {
-      title: 'Revenue',
-      dataIndex: 'revenue',
-      key: 'revenue',
-      width: 120,
-      render: (revenue) => `$${revenue.toFixed(2)}`,
-      sorter: true,
+      render: (count) => count || 0,
     },
     {
       title: 'Actions',
@@ -106,7 +124,7 @@ const AdminVendors = () => {
           }}>
             View
           </Button>
-          {record.status === 'pending' && (
+          {record.verificationStatus === 'pending' && (
             <>
               <Button type="link" icon={<CheckCircleOutlined />} onClick={() => handleApprove(record.id)}>
                 Approve
@@ -116,9 +134,9 @@ const AdminVendors = () => {
               </Button>
             </>
           )}
-          {record.status === 'verified' && (
+          {record.verificationStatus === 'verified' && (
             <Button type="link" danger icon={<StopOutlined />} onClick={() => handleSuspend(record.id)}>
-              Suspend
+              Toggle Status
             </Button>
           )}
         </Space>
@@ -126,64 +144,33 @@ const AdminVendors = () => {
     },
   ];
 
-  const mockData: VendorType[] = [
-    {
-      id: '1',
-      businessName: 'Tech Solutions Ltd',
-      contactPerson: 'John Smith',
-      email: 'john@techsolutions.com',
-      phone: '+1234567890',
-      status: 'pending',
-      subscription: 'Premium',
-      productsCount: 45,
-      ordersCount: 120,
-      revenue: 45678.90,
-      joinedAt: '2024-11-01',
-    },
-    {
-      id: '2',
-      businessName: 'Fashion Hub Inc',
-      contactPerson: 'Jane Doe',
-      email: 'jane@fashionhub.com',
-      phone: '+1234567891',
-      status: 'verified',
-      subscription: 'Basic',
-      productsCount: 89,
-      ordersCount: 340,
-      revenue: 89456.50,
-      joinedAt: '2024-10-15',
-    },
-  ];
-
-  const handleApprove = (id: string) => {
-    Modal.confirm({
-      title: 'Approve Vendor',
-      content: 'Are you sure you want to approve this vendor?',
-      onOk: () => message.success('Vendor approved successfully'),
-    });
-  };
-
-  const handleReject = (id: string) => {
-    Modal.confirm({
-      title: 'Reject Vendor',
-      content: 'Are you sure you want to reject this vendor?',
-      onOk: () => message.success('Vendor rejected'),
-    });
-  };
-
-  const handleSuspend = (id: string) => {
-    Modal.confirm({
-      title: 'Suspend Vendor',
-      content: 'Are you sure you want to suspend this vendor?',
-      onOk: () => message.success('Vendor suspended'),
-    });
-  };
-
   return (
     <div>
-      <ProTable<VendorType>
+      <ProTable<Vendor>
         columns={columns}
-        dataSource={mockData}
+        actionRef={actionRef}
+        request={async (params, sort, filter) => {
+          try {
+            const response = await vendorAPI.getAll({
+              page: params.current || 1,
+              limit: params.pageSize || 10,
+              search: params.keyword,
+              verificationStatus: filter.verificationStatus?.[0] as any,
+            });
+            return {
+              data: response.data,
+              success: true,
+              total: response.total,
+            };
+          } catch (error: any) {
+            message.error(error.message || 'Failed to load vendors');
+            return {
+              data: [],
+              success: false,
+              total: 0,
+            };
+          }
+        }}
         rowKey="id"
         pagination={{
           defaultPageSize: 20,
@@ -206,19 +193,18 @@ const AdminVendors = () => {
         {selectedVendor && (
           <Descriptions bordered column={2}>
             <Descriptions.Item label="Business Name">{selectedVendor.businessName}</Descriptions.Item>
-            <Descriptions.Item label="Contact Person">{selectedVendor.contactPerson}</Descriptions.Item>
             <Descriptions.Item label="Email">{selectedVendor.email}</Descriptions.Item>
-            <Descriptions.Item label="Phone">{selectedVendor.phone}</Descriptions.Item>
+            <Descriptions.Item label="Phone">{selectedVendor.phone || 'N/A'}</Descriptions.Item>
+            <Descriptions.Item label="Business Type">{selectedVendor.businessType}</Descriptions.Item>
             <Descriptions.Item label="Status">
-              <Tag color={statusColors[selectedVendor.status]}>
-                {selectedVendor.status.toUpperCase()}
+              <Tag color={statusColors[selectedVendor.verificationStatus]}>
+                {selectedVendor.verificationStatus.toUpperCase()}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Subscription">{selectedVendor.subscription}</Descriptions.Item>
-            <Descriptions.Item label="Products">{selectedVendor.productsCount}</Descriptions.Item>
-            <Descriptions.Item label="Orders">{selectedVendor.ordersCount}</Descriptions.Item>
-            <Descriptions.Item label="Revenue">${selectedVendor.revenue.toFixed(2)}</Descriptions.Item>
-            <Descriptions.Item label="Joined">{selectedVendor.joinedAt}</Descriptions.Item>
+            <Descriptions.Item label="Products">{selectedVendor.productCount || 0}</Descriptions.Item>
+            <Descriptions.Item label="Orders">{selectedVendor.orderCount || 0}</Descriptions.Item>
+            <Descriptions.Item label="Rating">{selectedVendor.rating.toFixed(1)} ({selectedVendor.reviewCount} reviews)</Descriptions.Item>
+            <Descriptions.Item label="Created">{new Date(selectedVendor.createdAt).toLocaleDateString()}</Descriptions.Item>
           </Descriptions>
         )}
       </Modal>
