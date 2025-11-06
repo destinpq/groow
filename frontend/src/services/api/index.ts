@@ -157,30 +157,21 @@ export type {
 } from './tax';
 
 // Email Templates
-export { emailAPI } from './email';
+export { emailTemplatesAPI } from './emailTemplates';
 export type {
   EmailTemplate,
   CreateEmailTemplateDto,
   UpdateEmailTemplateDto,
-  EmailCampaign,
-  CreateEmailCampaignDto,
-  UpdateEmailCampaignDto,
-  EmailStats,
-  EmailPreview,
-  TestEmailDto,
-} from './email';
+} from './emailTemplates';
 
-// Logs
-export { logsAPI } from './logs';
+// System Logs
+export { systemLogsAPI } from './systemLogs';
 export type {
-  ActivityLog,
-  ErrorLog,
-  SecurityLog,
   SystemLog,
   LogStats,
   LogFilters,
-  LogExportOptions,
-} from './logs';
+  ExportParams,
+} from './systemLogs';
 
 // Returns
 export { returnsAPI } from './returns';

@@ -17,6 +17,7 @@ export default defineConfig({
   // Routes configuration
   routes: [
     { path: '/', component: '@/pages/index' },
+    { path: '/test', component: '@/pages/test' },
     { path: '/login', component: '@/pages/login' },
     { path: '/register', component: '@/pages/register' },
     { path: '/forgot-password', component: '@/pages/forgot-password' },
@@ -85,7 +86,12 @@ export default defineConfig({
         // Settings
         { path: '/admin/settings', component: '@/pages/admin/settings' },
         
-        // Phase 4 Features
+        // Phase 4 Features - Inventory Management
+                  // Phase 4 - Advanced Features
+          { path: '/admin/inventory-management', component: '@/pages/admin/inventory-management' },
+          { path: '/admin/bulk-operations', component: '@/pages/admin/bulk-operations' },
+          { path: '/admin/analytics-dashboard', component: '@/pages/admin/analytics-dashboard' },
+          { path: '/admin/automated-workflows', component: '@/pages/admin/automated-workflows' },
         { path: '/admin/return-management', component: '@/pages/admin/return-management' },
         { path: '/admin/customer-support', component: '@/pages/admin/customer-support' },
         { path: '/admin/flash-sales', component: '@/pages/admin/flash-sales' },
@@ -102,7 +108,11 @@ export default defineConfig({
       routes: [
         { path: '/vendor', redirect: '/vendor/dashboard' },
         { path: '/vendor/dashboard', component: '@/pages/vendor/dashboard' },
-        { path: '/vendor/profile', component: '@/pages/vendor/profile' },
+                    // Phase 5 - Advanced Vendor Features
+          { path: '/vendor/performance-analytics', component: '@/pages/vendor/performance-analytics' },
+          { path: '/vendor/subscription-management', component: '@/pages/vendor/subscription-management' },
+          { path: '/vendor/marketing-tools', component: '@/pages/vendor/marketing-tools' },
+          { path: '/vendor/profile', component: '@/pages/vendor/profile' },
         { path: '/vendor/kyc', component: '@/pages/vendor/kyc' },
         // { path: '/vendor/store', component: '@/pages/vendor/store' }, // File doesn't exist
         { path: '/vendor/products', component: '@/pages/vendor/products' },
@@ -130,6 +140,9 @@ export default defineConfig({
         // { path: '/customer/wallet', component: '@/pages/customer/wallet' }, // File doesn't exist
         { path: '/customer/wishlist', component: '@/pages/customer/wishlist' },
         { path: '/customer/reviews', component: '@/pages/customer/reviews' },
+        { path: '/customer/company-dashboard', component: '@/pages/customer/company-dashboard' },
+        { path: '/customer/bulk-ordering', component: '@/pages/customer/bulk-ordering' },
+        { path: '/customer/credit-management', component: '@/pages/customer/credit-management' },
       ]
     },
     
