@@ -55,40 +55,20 @@ import { SeedModule } from './modules/seed/seed.module';
             type: 'postgres',
             url: cleanUrl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: forceSync, // Allow sync via env var
-            logging: forceSync,     // Enable logging when syncing
-            ssl: false  // Disable SSL completely
+            synchronize: forceSync,
+            logging: forceSync,
+            ssl: false,
+            // FORCE these to undefined to prevent fallback
+            host: undefined,
+            port: undefined,
+            username: undefined,
+            password: undefined,
+            database: undefined
           };
         }
         
-        // Railway PostgreSQL configuration with individual parameters
-        if (isProduction) {
-          console.log('  Using Railway PostgreSQL with individual parameters');
-          
-          // Allow sync to be enabled via environment variable for initial setup
-          const forceSync = config.get('DATABASE_FORCE_SYNC') === 'true';
-          console.log('  Force Sync:', forceSync);
-          
-          return {
-            type: 'postgres',
-            host: config.get('DATABASE_HOST', 'postgres.railway.internal'),
-            port: parseInt(config.get('DATABASE_PORT', '5432')),
-            username: config.get('DATABASE_USER', 'postgres'),
-            password: config.get('DATABASE_PASSWORD'),
-            database: config.get('DATABASE_NAME', 'railway'),
-            entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: forceSync, // Allow sync via env var
-            logging: forceSync,     // Enable logging when syncing
-            ssl: {
-              rejectUnauthorized: false
-            },
-            extra: {
-              ssl: {
-                rejectUnauthorized: false
-              }
-            }
-          };
-        }
+        // If no DATABASE_URL, throw error
+        throw new Error('DATABASE_URL is required in production environment');
         
         // Local development configuration  
         console.log('  Using local development database');
