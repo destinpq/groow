@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://nz-api.destinpq.com',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://groow-api.destinpq.com',
   headers: {
     'Content-Type': 'application/json',
   },

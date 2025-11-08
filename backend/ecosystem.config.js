@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'groow-backend',
       script: 'dist/main.js',
-      cwd: '/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/backend',
+      cwd: '/home/azureuser/Groow/groow/backend',
       instances: 1, // or 'max' for cluster mode
       exec_mode: 'fork', // or 'cluster'
       autorestart: true,
@@ -11,17 +11,17 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'development',
-        PORT: 3001
+        PORT: 21440
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3001,
+        PORT: 21440,
         DATABASE_SYNC: 'false', // Disable sync in production
         DATABASE_LOGGING: 'false'
       },
       env_staging: {
         NODE_ENV: 'staging',
-        PORT: 3001,
+        PORT: 21440,
         DATABASE_SYNC: 'false',
         DATABASE_LOGGING: 'true'
       },
@@ -43,7 +43,7 @@ module.exports = {
       
       // Health monitoring
       health_check: {
-        port: 3001,
+        port: 21440,
         path: '/api/v1/health'
       },
       

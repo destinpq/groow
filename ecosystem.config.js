@@ -4,7 +4,7 @@ module.exports = {
     {
       name: 'groow-backend',
       script: 'dist/main.js',
-      cwd: '/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/backend',
+      cwd: '/home/azureuser/Groow/groow/backend',
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
@@ -12,17 +12,17 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'development',
-        PORT: 3001
+        PORT: 21440
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3001,
+        PORT: 21440,
         DATABASE_SYNC: 'false',
         DATABASE_LOGGING: 'false'
       },
       env_staging: {
         NODE_ENV: 'staging',
-        PORT: 3001,
+        PORT: 21440,
         DATABASE_SYNC: 'false',
         DATABASE_LOGGING: 'true'
       },
@@ -52,7 +52,7 @@ module.exports = {
       name: 'groow-frontend-dev',
       script: 'npm',
       args: 'run dev',
-      cwd: '/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend',
+      cwd: '/home/azureuser/Groow/groow/frontend',
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
@@ -60,7 +60,8 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'development',
-        PORT: 8001,
+        PORT: 21441,
+        HOST: '0.0.0.0',
         UMI_ENV: 'dev'
       },
       // Logging
@@ -79,8 +80,8 @@ module.exports = {
     {
       name: 'groow-frontend-static',
       script: 'serve',
-      args: '-s dist -l 8001',
-      cwd: '/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend',
+      args: '-s dist -l 21441',
+      cwd: '/home/azureuser/Groow/groow/frontend',
       instances: 1,
       exec_mode: 'fork',
       autorestart: true,
@@ -111,7 +112,7 @@ module.exports = {
   deploy: {
     production: {
       user: 'ubuntu',
-      host: ['nz-api.destinpq.com'],
+      host: ['groow-api.destinpq.com'],
       ref: 'origin/main',
       repo: 'git@github.com:destinpq/groow.git',
       path: '/var/www/groow',

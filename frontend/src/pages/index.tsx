@@ -9,7 +9,6 @@ import {
   StarFilled,
   TruckOutlined,
   SafetyOutlined,
-  CustomerServiceOutlined,
   PercentageOutlined,
   ThunderboltOutlined,
   GiftOutlined,
@@ -17,6 +16,7 @@ import {
   UserOutlined,
   EnvironmentOutlined,
 } from '@ant-design/icons';
+import CustomerServiceOutlined from '@ant-design/icons/CustomerServiceOutlined';
 // import './index.less';
 
 const { Title, Text, Paragraph } = Typography;

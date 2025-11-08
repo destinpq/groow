@@ -26,10 +26,10 @@ export default defineConfig({
   // Proxy for development
   proxy: {
     '/api': {
-      target: 'https://nz-api.destinpq.com',
+      target: 'https://groow-api.destinpq.com',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
-      secure: true,
+      secure: false,
     },
   },
   

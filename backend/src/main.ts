@@ -19,7 +19,7 @@ async function bootstrap() {
 
   // CORS - Allow multiple origins
   const allowedOrigins = [
-    'https://nz.destinpq.com',
+    'https://groow.destinpq.com',
     'http://localhost:8001',
     'http://localhost:3000',
     'http://127.0.0.1:8001',
@@ -98,9 +98,9 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = configService.get('PORT', 3001);
-  await app.listen(port);
-  console.log(`🚀 Application running on: http://localhost:${port}`);
-  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Application running on: http://0.0.0.0:${port}`);
+  console.log(`📚 API Documentation: http://0.0.0.0:${port}/api/docs`);
 }
 
 bootstrap();
