@@ -17,8 +17,18 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Database configuration - Use Railway env vars if available, otherwise local
-if [ ! -z "$DATABASE_HOST" ] && [ ! -z "$DATABASE_USER" ] && [ ! -z "$DATABASE_PASSWORD" ] && [ ! -z "$DATABASE_NAME" ]; then
-    echo "🚂 Using Railway database configuration..."
+# Prioritize PG* vars provided by `railway shell` for external connections
+if [ ! -z "$PGHOST" ]; then
+    echo "🚂 Using Railway database configuration (via PG* vars)..."
+    DB_HOST="$PGHOST"
+    DB_PORT="${PGPORT:-5432}"
+    DB_NAME="${PGDATABASE}"
+    DB_USER="${PGUSER}"
+    DB_PASSWORD="${PGPASSWORD}"
+    # PGPASSWORD is set automatically by `railway shell`
+    export PGPASSWORD
+elif [ ! -z "$DATABASE_HOST" ] && [ ! -z "$DATABASE_USER" ] && [ ! -z "$DATABASE_PASSWORD" ] && [ ! -z "$DATABASE_NAME" ]; then
+    echo "🚂 Using Railway database configuration (legacy)..."
     DB_HOST="$DATABASE_HOST"
     DB_PORT="${DATABASE_PORT:-5432}"
     DB_NAME="$DATABASE_NAME"
