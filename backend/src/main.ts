@@ -10,7 +10,7 @@ import { createClient } from 'redis';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  // FORCE REBUILD - Nov 8, 2025 - Fix database connection with individual params
+  // FORCE REBUILD - Nov 8, 2025 - Bootstrap controller deployment
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
