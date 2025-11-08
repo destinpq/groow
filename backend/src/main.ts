@@ -73,8 +73,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     exposedHeaders: ['Authorization'],
     maxAge: 3600,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    preflightContinue: true, // Let NestJS handle the preflight
+    optionsSuccessStatus: 200, // Change to 200
   });
 
   // Add global OPTIONS handler for CORS preflight - MUST be before routes
