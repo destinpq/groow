@@ -41,23 +41,17 @@ import { SeedModule } from './modules/seed/seed.module';
         
         // Railway PostgreSQL configuration with URL
         if (databaseUrl && databaseUrl.length > 10 && isProduction) {
-          const urlWithSsl = databaseUrl + (databaseUrl.includes('?') ? '&' : '?') + 'sslmode=require';
-          console.log('  Using Railway PostgreSQL with DATABASE_URL');
+          // Remove sslmode from URL to disable SSL completely
+          const cleanUrl = databaseUrl.replace(/[?&]sslmode=\w+/g, '');
+          console.log('  Using Railway PostgreSQL with DATABASE_URL (NO SSL)');
           console.log('  Database URL (masked):', databaseUrl.substring(0, 20) + '...');
           return {
             type: 'postgres',
-            url: urlWithSsl,
+            url: cleanUrl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Always false in production
             logging: false,     // Disable logging in production
-            ssl: {
-              rejectUnauthorized: false
-            },
-            extra: {
-              ssl: {
-                rejectUnauthorized: false
-              }
-            }
+            ssl: false  // Disable SSL completely
           };
         }
         
