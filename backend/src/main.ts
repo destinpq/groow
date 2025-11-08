@@ -8,7 +8,6 @@ import * as session from 'express-session';
 import * as RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 import { AppModule } from './app.module';
-import { CorsInterceptor } from './common/interceptors/cors.interceptor';
 
 async function bootstrap() {
   // FORCE REBUILD - Nov 8, 2025 - Fix database connection with individual params
@@ -22,9 +21,6 @@ async function bootstrap() {
   // Security - AFTER CORS
   app.use(helmet());
   app.use(compression());
-
-  // Global CORS interceptor for all responses
-  app.useGlobalInterceptors(new CorsInterceptor());
 
   // Global prefix
   app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));

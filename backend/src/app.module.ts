@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CorsMiddleware } from './common/middleware/cors.middleware';
 
 // Feature modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -149,4 +150,9 @@ import { SeedModule } from './modules/seed/seed.module';
     SeedModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply CORS middleware to all routes - this runs before any route handlers
+    consumer.apply(CorsMiddleware).forRoutes('*');
+  }
+}
