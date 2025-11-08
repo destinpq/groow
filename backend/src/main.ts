@@ -73,10 +73,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  // Global prefix
-  app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
-
-  // Add global OPTIONS handler for CORS preflight
+  // Add global OPTIONS handler for CORS preflight - MUST be before routes
   app.use('*', (req, res, next) => {
     if (req.method === 'OPTIONS') {
       res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -88,6 +85,9 @@ async function bootstrap() {
     }
     next();
   });
+
+  // Global prefix
+  app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
 
   // Validation
   app.useGlobalPipes(
