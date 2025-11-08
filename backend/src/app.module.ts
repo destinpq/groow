@@ -45,12 +45,17 @@ import { SeedModule } from './modules/seed/seed.module';
           const cleanUrl = databaseUrl.replace(/[?&]sslmode=\w+/g, '');
           console.log('  Using Railway PostgreSQL with DATABASE_URL (NO SSL)');
           console.log('  Database URL (masked):', databaseUrl.substring(0, 20) + '...');
+          
+          // Allow sync to be enabled via environment variable for initial setup
+          const forceSync = config.get('DATABASE_FORCE_SYNC') === 'true';
+          console.log('  Force Sync:', forceSync);
+          
           return {
             type: 'postgres',
             url: cleanUrl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: false, // Always false in production
-            logging: false,     // Disable logging in production
+            synchronize: forceSync, // Allow sync via env var
+            logging: forceSync,     // Enable logging when syncing
             ssl: false  // Disable SSL completely
           };
         }
@@ -58,6 +63,11 @@ import { SeedModule } from './modules/seed/seed.module';
         // Railway PostgreSQL configuration with individual parameters
         if (isProduction) {
           console.log('  Using Railway PostgreSQL with individual parameters');
+          
+          // Allow sync to be enabled via environment variable for initial setup
+          const forceSync = config.get('DATABASE_FORCE_SYNC') === 'true';
+          console.log('  Force Sync:', forceSync);
+          
           return {
             type: 'postgres',
             host: config.get('DATABASE_HOST', 'postgres.railway.internal'),
@@ -66,8 +76,8 @@ import { SeedModule } from './modules/seed/seed.module';
             password: config.get('DATABASE_PASSWORD'),
             database: config.get('DATABASE_NAME', 'railway'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: false, // Always false in production
-            logging: false,     // Disable logging in production
+            synchronize: forceSync, // Allow sync via env var
+            logging: forceSync,     // Enable logging when syncing
             ssl: {
               rejectUnauthorized: false
             },
