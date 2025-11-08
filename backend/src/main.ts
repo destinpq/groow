@@ -24,6 +24,8 @@ async function bootstrap() {
     'https://groow-frontend.vercel.app',
     'https://groow-frontend-iftdz6ipx-pratik-destinpqs-projects.vercel.app',
     'https://grooow-api-db.destinpq.com', // Allow same domain requests
+    'https://groow-git-main-pratik-destinpqs-projects.vercel.app', // Current working frontend
+    'https://groow-frontend-cqrljz5r9-pratik-destinpqs-projects.vercel.app', // Latest deployment
   ];
 
   // Add development origins only in non-production environments
