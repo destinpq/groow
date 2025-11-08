@@ -11,6 +11,7 @@
       "setup": "umi setup",
       "start": "npm run dev",
       "serve": "serve -s dist -l 8001",
+      "vercel-build": "umi build",
       "pm2:dev": "pm2 start ../ecosystem.config.js --only groow-frontend-dev",
       "pm2:serve": "npm run build && pm2 start ../ecosystem.config.js --only groow-frontend-static",
       "pm2:stop": "pm2 stop groow-frontend-dev groow-frontend-static",
@@ -61,7 +62,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "preset",
@@ -74,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 8
       },
       "enableBy": "register",
       "type": "preset",
@@ -108,7 +109,7 @@
             1
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -138,7 +139,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -152,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            196
+            189
           ]
         },
-        "register": 8
+        "register": 10
       },
       "enableBy": "register",
       "type": "plugin",
@@ -188,7 +189,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -235,7 +236,7 @@
             0
           ]
         },
-        "register": 2
+        "register": 4
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1087,7 +1088,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1101,10 +1102,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            1
+            0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1130,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 35
+        "register": 36
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1143,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 11
+        "register": 30
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1156,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 9
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1173,7 +1174,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1199,7 +1200,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1213,10 +1214,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            0
+            1
           ]
         },
-        "register": 12
+        "register": 14
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1228,7 +1229,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1241,7 +1242,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/okam/okam.js",
@@ -1283,7 +1284,7 @@
             1
           ]
         },
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill.js",
@@ -1308,7 +1309,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1321,7 +1322,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1360,7 +1361,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1373,7 +1374,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1386,7 +1387,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps.js",
@@ -1450,7 +1451,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1463,7 +1464,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute.js",
@@ -1475,7 +1476,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 8
+        "register": 10
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1539,7 +1540,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
@@ -1568,7 +1569,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/ui/ui.js",
@@ -1593,7 +1594,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack.js",
@@ -1617,7 +1618,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 11
+        "register": 12
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1629,7 +1630,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1642,7 +1643,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1655,7 +1656,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1668,7 +1669,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 14
+        "register": 16
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1682,10 +1683,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            8
+            5
           ]
         },
-        "register": 6
+        "register": 17
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1697,7 +1698,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1736,7 +1737,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1801,7 +1802,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1853,7 +1854,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1866,7 +1867,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -2001,7 +2002,7 @@
     },
     "proxy": {
       "/api": {
-        "target": "https://groow-api.destinpq.com",
+        "target": "https://grooow-api-db.destinpq.com",
         "changeOrigin": true,
         "pathRewrite": {
           "^/api": ""
@@ -2051,7 +2052,7 @@
     },
     "proxy": {
       "/api": {
-        "target": "https://groow-api.destinpq.com",
+        "target": "https://grooow-api-db.destinpq.com",
         "changeOrigin": true,
         "pathRewrite": {
           "^/api": ""

@@ -26,7 +26,7 @@ export default defineConfig({
   // Proxy for development
   proxy: {
     '/api': {
-      target: 'https://groow-api.destinpq.com',
+      target: 'https://grooow-api-db.destinpq.com',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
       secure: false,

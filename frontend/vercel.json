@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://accomplished-kindness-production.up.railway.app/api/$1"
+      "dest": "https://grooow-api-db.destinpq.com/api/$1"
     },
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
@@ -26,7 +26,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "REACT_APP_API_URL": "https://groow-api.destinpq.com"
+    "REACT_APP_API_URL": "https://grooow-api-db.destinpq.com"
   },
   "build": {
     "env": {
