@@ -1,7 +1,7 @@
 // API Base URL
 export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://groow-api.destinpq.com' 
-  : 'https://groow-api.destinpq.com';
+  ? 'https://groow-backend-production.up.railway.app'
+  : 'http://localhost:3001';
 
 // Upload Settings
 export const UPLOAD_CONFIG = {

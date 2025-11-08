@@ -28,26 +28,58 @@ import { HealthModule } from './modules/health/health.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get('DATABASE_HOST'),
-        port: config.get('DATABASE_PORT'),
-        username: config.get('DATABASE_USER'),
-        password: config.get('DATABASE_PASSWORD'),
-        database: config.get('DATABASE_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: config.get('DATABASE_SYNC', false),
-        logging: config.get('DATABASE_LOGGING', false),
-      }),
+      useFactory: (config: ConfigService) => {
+        // Railway provides DATABASE_URL, parse it if available
+        const databaseUrl = config.get('DATABASE_URL');
+        
+        if (databaseUrl) {
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: config.get('DATABASE_SYNC', false),
+            logging: config.get('DATABASE_LOGGING', false),
+            ssl: config.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
+          };
+        }
+        
+        // Fallback to individual config values
+        return {
+          type: 'postgres',
+          host: config.get('DATABASE_HOST'),
+          port: config.get('DATABASE_PORT'),
+          username: config.get('DATABASE_USER'),
+          password: config.get('DATABASE_PASSWORD'),
+          database: config.get('DATABASE_NAME'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: config.get('DATABASE_SYNC', false),
+          logging: config.get('DATABASE_LOGGING', false),
+        };
+      },
     }),
     BullModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        redis: {
-          host: config.get('REDIS_HOST'),
-          port: config.get('REDIS_PORT'),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        // Railway provides REDIS_URL, parse it if available
+        const redisUrl = config.get('REDIS_URL');
+        
+        if (redisUrl) {
+          return {
+            redis: {
+              url: redisUrl,
+            },
+          };
+        }
+        
+        // Fallback to individual config values
+        return {
+          redis: {
+            host: config.get('REDIS_HOST'),
+            port: config.get('REDIS_PORT'),
+            password: config.get('REDIS_PASSWORD'),
+          },
+        };
+      },
     }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),

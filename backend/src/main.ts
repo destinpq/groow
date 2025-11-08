@@ -20,11 +20,19 @@ async function bootstrap() {
   // CORS - Allow multiple origins
   const allowedOrigins = [
     'https://groow.destinpq.com',
+    'https://nz.destinpq.com',
+    'https://groow-frontend.vercel.app',
     'http://localhost:8001',
     'http://localhost:3000',
     'http://127.0.0.1:8001',
     'http://127.0.0.1:3000',
   ];
+
+  // Add CORS_ORIGINS from environment if available
+  const envOrigins = configService.get('CORS_ORIGINS');
+  if (envOrigins) {
+    allowedOrigins.push(...envOrigins.split(','));
+  }
 
   app.enableCors({
     origin: (origin, callback) => {
@@ -98,7 +106,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = configService.get('PORT', 3001);
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port, '0.0.0.0'); // Railway requires 0.0.0.0 binding
   console.log(`🚀 Application running on: http://0.0.0.0:${port}`);
   console.log(`📚 API Documentation: http://0.0.0.0:${port}/api/docs`);
 }
