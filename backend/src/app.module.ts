@@ -35,9 +35,23 @@ import { SeedModule } from './modules/seed/seed.module';
         const isProduction = nodeEnv === 'production';
         
         if (databaseUrl) {
+          // Parse the database URL and ensure proper SSL configuration
+          const url = new URL(databaseUrl);
+          
+          // Clear any existing SSL parameters that might conflict
+          url.searchParams.delete('sslmode');
+          url.searchParams.delete('ssl');
+          url.searchParams.delete('sslcert');
+          url.searchParams.delete('sslkey');
+          url.searchParams.delete('sslrootcert');
+          
           return {
             type: 'postgres',
-            url: databaseUrl,
+            host: url.hostname,
+            port: parseInt(url.port) || 5432,
+            username: url.username,
+            password: url.password,
+            database: url.pathname.slice(1),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
             logging: config.get('DATABASE_LOGGING', 'false') === 'true',
