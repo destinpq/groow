@@ -34,17 +34,23 @@ import { SeedModule } from './modules/seed/seed.module';
         const nodeEnv = config.get('NODE_ENV', 'development');
         const isProduction = nodeEnv === 'production';
         
+        console.log('🔧 Database Configuration:');
+        console.log('  NODE_ENV:', nodeEnv);
+        console.log('  DATABASE_URL present:', !!databaseUrl);
+        console.log('  Is Production:', isProduction);
+        
         // Railway PostgreSQL configuration
         if (databaseUrl && isProduction) {
+          const urlWithSsl = databaseUrl + (databaseUrl.includes('?') ? '&' : '?') + 'sslmode=require';
+          console.log('  Using Railway PostgreSQL with SSL');
           return {
             type: 'postgres',
-            url: databaseUrl,
+            url: urlWithSsl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Always false in production
             logging: false,     // Disable logging in production
             ssl: {
-              rejectUnauthorized: false,
-              sslmode: 'require'
+              rejectUnauthorized: false
             },
             extra: {
               ssl: {
@@ -55,6 +61,7 @@ import { SeedModule } from './modules/seed/seed.module';
         }
         
         // Local development configuration  
+        console.log('  Using local development database');
         return {
           type: 'postgres',
           host: config.get('DATABASE_HOST', 'localhost'),
@@ -73,8 +80,11 @@ import { SeedModule } from './modules/seed/seed.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         const redisUrl = config.get('REDIS_URL');
+        console.log('🔧 Redis Configuration:');
+        console.log('  REDIS_URL present:', !!redisUrl);
         
         if (redisUrl) {
+          console.log('  Using Redis URL connection');
           return {
             redis: {
               url: redisUrl,
@@ -86,6 +96,7 @@ import { SeedModule } from './modules/seed/seed.module';
           };
         }
         
+        console.log('  Using Redis host/port connection');
         return {
           redis: {
             host: config.get('REDIS_HOST', 'localhost'),
