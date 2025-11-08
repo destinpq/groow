@@ -39,13 +39,37 @@ import { SeedModule } from './modules/seed/seed.module';
         console.log('  DATABASE_URL present:', !!databaseUrl);
         console.log('  Is Production:', isProduction);
         
-        // Railway PostgreSQL configuration
-        if (databaseUrl && isProduction) {
+        // Railway PostgreSQL configuration with URL
+        if (databaseUrl && databaseUrl.length > 10 && isProduction) {
           const urlWithSsl = databaseUrl + (databaseUrl.includes('?') ? '&' : '?') + 'sslmode=require';
-          console.log('  Using Railway PostgreSQL with SSL');
+          console.log('  Using Railway PostgreSQL with DATABASE_URL');
           return {
             type: 'postgres',
             url: urlWithSsl,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: false, // Always false in production
+            logging: false,     // Disable logging in production
+            ssl: {
+              rejectUnauthorized: false
+            },
+            extra: {
+              ssl: {
+                rejectUnauthorized: false
+              }
+            }
+          };
+        }
+        
+        // Railway PostgreSQL configuration with individual parameters
+        if (isProduction) {
+          console.log('  Using Railway PostgreSQL with individual parameters');
+          return {
+            type: 'postgres',
+            host: config.get('DATABASE_HOST', 'postgres.railway.internal'),
+            port: parseInt(config.get('DATABASE_PORT', '5432')),
+            username: config.get('DATABASE_USER', 'postgres'),
+            password: config.get('DATABASE_PASSWORD'),
+            database: config.get('DATABASE_NAME', 'railway'),
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: false, // Always false in production
             logging: false,     // Disable logging in production
