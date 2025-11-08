@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import helmet from 'helmet';
+import * as cors from 'cors';
 import * as session from 'express-session';
 import * as RedisStore from 'connect-redis';
 import { createClient } from 'redis';
@@ -13,10 +14,6 @@ async function bootstrap() {
   // FORCE REBUILD - Nov 8, 2025 - Fix database connection with individual params
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-
-  // Get underlying Express app to handle all OPTIONS
-  const httpAdapter = app.getHttpAdapter();
-  const expressApp = httpAdapter.getInstance();
 
   // Security
   app.use(helmet());
@@ -51,7 +48,8 @@ async function bootstrap() {
     allowedOrigins.push(...envOrigins.split(',').map(origin => origin.trim()));
   }
 
-  app.enableCors({
+  // Use Express CORS middleware directly for better OPTIONS handling
+  app.use(cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
@@ -73,32 +71,9 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     exposedHeaders: ['Authorization'],
     maxAge: 3600,
-    preflightContinue: true, // Let NestJS handle the preflight
-    optionsSuccessStatus: 200, // Change to 200
-  });
-
-  // Add global OPTIONS handler for CORS preflight - MUST be before routes
-  app.use('*', (req, res, next) => {
-    if (req.method === 'OPTIONS') {
-      res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Max-Age', '3600');
-      return res.status(204).send();
-    }
-    next();
-  });
-
-  // Also handle via Express app directly
-  expressApp.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Max-Age', '3600');
-    res.status(204).send();
-  });
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  }));
 
   // Global prefix
   app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));

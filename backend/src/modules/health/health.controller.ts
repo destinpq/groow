@@ -1,6 +1,5 @@
-import { Controller, Get, Post, HttpStatus, HttpException, Options, Res } from '@nestjs/common';
+import { Controller, Get, Post, HttpStatus, HttpException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Response } from 'express';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -12,12 +11,6 @@ export class HealthController {
     @InjectDataSource() private dataSource: DataSource,
     private configService: ConfigService,
   ) {}
-
-  @Options('*')
-  @ApiOperation({ summary: 'Handle CORS preflight requests' })
-  handlePreflight(@Res() res: Response) {
-    res.status(200).send();
-  }
 
   @Get()
   @ApiOperation({ summary: 'Health check endpoint for monitoring' })

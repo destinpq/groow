@@ -1,6 +1,5 @@
-import { Controller, Post, Body, UseGuards, Get, Request, Options, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -10,12 +9,6 @@ import { ApiResponse } from '@/common/dto/api-response.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Options('*')
-  @ApiOperation({ summary: 'Handle CORS preflight requests' })
-  handlePreflight(@Res() res: Response) {
-    res.status(200).send();
-  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
