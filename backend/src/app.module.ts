@@ -37,14 +37,15 @@ import { SeedModule } from './modules/seed/seed.module';
         console.log('🔧 Database Configuration:');
         console.log('  NODE_ENV:', nodeEnv);
         console.log('  DATABASE_URL present:', !!databaseUrl);
+        console.log('  DATABASE_URL length:', databaseUrl ? databaseUrl.length : 0);
         console.log('  Is Production:', isProduction);
         
-        // Railway PostgreSQL configuration with URL
-        if (databaseUrl && databaseUrl.length > 10 && isProduction) {
+        // ALWAYS prioritize DATABASE_URL if it exists
+        if (databaseUrl && databaseUrl.includes('postgresql://')) {
           // Remove sslmode from URL to disable SSL completely
           const cleanUrl = databaseUrl.replace(/[?&]sslmode=\w+/g, '');
-          console.log('  Using Railway PostgreSQL with DATABASE_URL (NO SSL)');
-          console.log('  Database URL (masked):', databaseUrl.substring(0, 20) + '...');
+          console.log('  ✅ Using Railway PostgreSQL with DATABASE_URL (NO SSL)');
+          console.log('  Database URL (masked):', databaseUrl.substring(0, 30) + '...');
           
           // Allow sync to be enabled via environment variable for initial setup
           const forceSync = config.get('DATABASE_FORCE_SYNC') === 'true';
