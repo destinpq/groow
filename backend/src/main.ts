@@ -10,6 +10,7 @@ import { createClient } from 'redis';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  // Clean Railway deployment with database connection - Nov 8, 2025
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
