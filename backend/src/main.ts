@@ -4,78 +4,27 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import helmet from 'helmet';
-import * as cors from 'cors';
 import * as session from 'express-session';
 import * as RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 import { AppModule } from './app.module';
+import { CorsInterceptor } from './common/interceptors/cors.interceptor';
 
 async function bootstrap() {
   // FORCE REBUILD - Nov 8, 2025 - Fix database connection with individual params
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // CORS - Allow multiple origins - MUST be defined first
-  const defaultOrigins = [
-    'https://groow.destinpq.com',
-    'https://groow-frontend.vercel.app',
-    'https://groow-frontend-iftdz6ipx-pratik-destinpqs-projects.vercel.app',
-    'https://grooow-api-db.destinpq.com', // Allow same domain requests
-    'https://groow-git-main-pratik-destinpqs-projects.vercel.app', // Current working frontend
-    'https://groow-frontend-cqrljz5r9-pratik-destinpqs-projects.vercel.app', // Latest deployment
-  ];
-
-  // Add development origins only in non-production environments
-  const nodeEnv = configService.get('NODE_ENV', 'development');
-  if (nodeEnv !== 'production') {
-    defaultOrigins.push(
-      'http://localhost:8001',
-      'http://localhost:3000',
-      'http://127.0.0.1:8001',
-      'http://127.0.0.1:3000',
-    );
-  }
-
-  const allowedOrigins = [...defaultOrigins];
-
-  // Add CORS_ORIGINS from environment if available
-  const envOrigins = configService.get('CORS_ORIGINS');
-  if (envOrigins) {
-    allowedOrigins.push(...envOrigins.split(',').map(origin => origin.trim()));
-  }
-
-  // Use Express CORS middleware FIRST before any other middleware
-  app.use(cors({
-    origin: (origin, callback) => {
-      console.log(`CORS: Checking origin: ${origin}`);
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      // Check if origin matches allowed origins or Vercel patterns
-      const isAllowed = allowedOrigins.includes(origin) || 
-                       origin.includes('vercel.app') ||
-                       origin.includes('destinpq.com');
-      
-      if (isAllowed) {
-        console.log(`CORS: Allowing origin: ${origin}`);
-        callback(null, true);
-      } else {
-        console.log(`CORS: Rejecting origin: ${origin}`);
-        callback(null, false);
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    exposedHeaders: ['Authorization'],
-    maxAge: 3600,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  }));
+  // Security - helmet and compression only
+  app.use(helmet());
+  app.use(compression());
 
   // Security - AFTER CORS
   app.use(helmet());
   app.use(compression());
+
+  // Global CORS interceptor for all responses
+  app.useGlobalInterceptors(new CorsInterceptor());
 
   // Global prefix
   app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
