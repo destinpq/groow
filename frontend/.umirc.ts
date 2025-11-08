@@ -12,6 +12,12 @@ export default defineConfig({
   // Fix esbuild helper conflicts
   esbuildMinifyIIFE: true,
   
+  // Define environment variables
+  define: {
+    'process.env.API_URL': 'https://grooow-api-db.destinpq.com/api/v1',
+    'process.env.REACT_APP_API_URL': 'https://grooow-api-db.destinpq.com/api/v1',
+  },
+  
   // Theme configuration
   theme: {
     '@primary-color': '#FF9900',

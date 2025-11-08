@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "groow-frontend",
   "builds": [
     {
       "src": "package.json",
@@ -23,14 +22,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "REACT_APP_API_URL": "https://grooow-api-db.destinpq.com"
-  },
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  }
+  ]
 }

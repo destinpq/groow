@@ -76,6 +76,19 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
 
+  // Add global OPTIONS handler for CORS preflight
+  app.use('*', (req, res, next) => {
+    if (req.method === 'OPTIONS') {
+      res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Max-Age', '3600');
+      return res.status(204).send();
+    }
+    next();
+  });
+
   // Validation
   app.useGlobalPipes(
     new ValidationPipe({
