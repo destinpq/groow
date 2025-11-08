@@ -43,7 +43,7 @@
 - **Status:** ✅ Running successfully 
 - **Port:** 8001
 - **Framework:** UmiJS 4.5.3
-- **Proxy:** Configured /api -> http://localhost:3001
+- **Proxy:** Configured /api -> https://nz-api.destinpq.com
 
 ## Component Architecture Testing
 

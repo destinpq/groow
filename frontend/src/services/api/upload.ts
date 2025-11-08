@@ -122,7 +122,7 @@ export const uploadAPI = {
 
   // Get file URL
   getFileUrl: (path: string): string => {
-    return `${process.env.API_URL || 'http://localhost:3001'}/uploads/${path}`;
+    return `${process.env.API_URL || 'https://nz-api.destinpq.com'}/uploads/${path}`;
   },
 };
 

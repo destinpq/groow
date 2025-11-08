@@ -1992,7 +1992,7 @@
     },
     "proxy": {
       "/api": {
-        "target": "http://localhost:3001",
+        "target": "https://nz-api.destinpq.com",
         "changeOrigin": true,
         "pathRewrite": {
           "^/api": ""
@@ -2040,7 +2040,7 @@
     },
     "proxy": {
       "/api": {
-        "target": "http://localhost:3001",
+        "target": "https://nz-api.destinpq.com",
         "changeOrigin": true,
         "pathRewrite": {
           "^/api": ""

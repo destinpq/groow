@@ -204,7 +204,7 @@ export interface ChatMessage {
 }
 
 class SupportAPI {
-  private baseUrl = 'http://localhost:3001/api';
+  private baseUrl = 'https://nz-api.destinpq.com/api';
 
   // Ticket Management
   async getTickets(filters?: TicketFilters): Promise<{ tickets: SupportTicket[]; total: number }> {

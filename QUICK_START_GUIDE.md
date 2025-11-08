@@ -39,7 +39,7 @@ npm run seed
 ```bash
 cd backend
 npm run start:dev
-# Backend running on http://localhost:3001
+# Backend running on https://nz-api.destinpq.com
 ```
 
 **Terminal 2 - Frontend:**
@@ -447,7 +447,7 @@ PORT=3001
 
 ### Frontend (.env)
 ```env
-API_URL=http://localhost:3001
+API_URL=https://nz-api.destinpq.com
 ```
 
 ---

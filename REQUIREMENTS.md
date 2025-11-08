@@ -828,7 +828,7 @@
 
 **Last Build Status:** ✅ All 143 pages compile successfully  
 **Development Server:** http://localhost:8000  
-**Backend API:** http://localhost:3001 (84 endpoints ready)
+**Backend API:** https://nz-api.destinpq.com (84 endpoints ready)
 
 ---
 

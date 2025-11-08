@@ -57,7 +57,7 @@ npm run seed
 npm run start:dev
 ```
 
-**Backend running at:** http://localhost:3001
+**Backend running at:** https://nz-api.destinpq.com
 
 ---
 
@@ -81,7 +81,7 @@ npm run dev
 ## ✅ Step 4: Verify Installation (2 minutes)
 
 ### 1. Check Backend
-Open http://localhost:3001/api/v1 in your browser. You should see a response.
+Open https://nz-api.destinpq.com/api/v1 in your browser. You should see a response.
 
 ### 2. Check Frontend
 Open http://localhost:8000 in your browser. You should see the homepage.
@@ -234,7 +234,7 @@ lsof -ti:8000 | xargs kill -9
 ## 🔗 Useful URLs
 
 - **Frontend:** http://localhost:8000
-- **Backend API:** http://localhost:3001/api/v1
+- **Backend API:** https://nz-api.destinpq.com/api/v1
 - **Admin Portal:** http://localhost:8000/admin
 - **Vendor Portal:** http://localhost:8000/vendor
 - **Customer Portal:** http://localhost:8000

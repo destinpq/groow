@@ -69,7 +69,7 @@ export class UploadService {
     // Save file to disk
     fs.writeFileSync(filePath, file.buffer);
 
-    const baseUrl = this.configService.get('BASE_URL') || 'http://localhost:3001';
+    const baseUrl = this.configService.get('BASE_URL') || 'https://nz-api.destinpq.com';
     const fileUrl = `${baseUrl}/uploads/${subdir}/${filename}`;
 
     const upload = this.uploadRepository.create({
