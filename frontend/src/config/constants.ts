@@ -1,7 +1,13 @@
 // API Base URL
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://groow-backend-production.up.railway.app'
-  : 'http://localhost:3001';
+export const API_CONFIG = {
+  BASE_URL: process.env.NODE_ENV === 'production' 
+    ? 'https://accomplished-kindness-production.up.railway.app'
+    : 'http://localhost:3001',
+  API_VERSION: '/api/v1',
+  TIMEOUT: 30000,
+};
+
+export const API_BASE_URL = 'https://accomplished-kindness-production.up.railway.app';
 
 // Upload Settings
 export const UPLOAD_CONFIG = {

@@ -62,7 +62,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "preset",
@@ -75,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 9
       },
       "enableBy": "register",
       "type": "preset",
@@ -92,7 +92,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -109,7 +109,7 @@
             1
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -153,7 +153,7 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            227
+            191
           ]
         },
         "register": 11
@@ -169,7 +169,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -236,7 +236,7 @@
             0
           ]
         },
-        "register": 2
+        "register": 6
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1102,10 +1102,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            0
+            1
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1131,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 48
+        "register": 36
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1144,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 12
+        "register": 25
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1157,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 7
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1174,7 +1174,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1277,10 +1277,10 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            0
+            1
           ]
         },
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill.js",
@@ -1344,7 +1344,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1395,7 +1395,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1408,7 +1408,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1447,7 +1447,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1497,7 +1497,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent.js",
@@ -1509,7 +1509,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1535,7 +1535,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
@@ -1564,7 +1564,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/ui/ui.js",
@@ -1576,7 +1576,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1613,7 +1613,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 14
+        "register": 13
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1651,7 +1651,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1664,7 +1664,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 17
+        "register": 15
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1677,7 +1677,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 7
+        "register": 23
       },
       "type": "plugin",
       "path": "/Users/pratik/Desktop/Work/DestinPQ/EXTERNAL/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1754,7 +1754,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1767,7 +1767,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1793,7 +1793,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1910,7 +1910,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1923,7 +1923,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 12
+        "register": 10
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1962,7 +1962,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
