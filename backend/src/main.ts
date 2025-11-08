@@ -48,7 +48,7 @@ async function bootstrap() {
     allowedOrigins.push(...envOrigins.split(',').map(origin => origin.trim()));
   }
 
-  // Use Express CORS middleware directly for better OPTIONS handling
+  // Use Express CORS middleware directly for better OPTIONS handling - MUST be early
   app.use(cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
