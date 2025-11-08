@@ -34,27 +34,14 @@ import { SeedModule } from './modules/seed/seed.module';
         const nodeEnv = config.get('NODE_ENV', 'development');
         const isProduction = nodeEnv === 'production';
         
-        console.log('🔧 Database Configuration:');
-        console.log('- NODE_ENV:', nodeEnv);
-        console.log('- DATABASE_URL exists:', !!databaseUrl);
-        console.log('- Is Production:', isProduction);
-        
         if (databaseUrl) {
-          const shouldUseSSL = isProduction && config.get('DATABASE_SSL', 'true') !== 'false';
-          
-          console.log('- SSL Enabled:', shouldUseSSL);
-          console.log('- DATABASE_SSL setting:', config.get('DATABASE_SSL', 'true'));
-          
           return {
             type: 'postgres',
             url: databaseUrl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
             logging: config.get('DATABASE_LOGGING', 'false') === 'true',
-            ssl: shouldUseSSL ? { 
-              rejectUnauthorized: false,
-              sslmode: 'require'
-            } : false,
+            ssl: isProduction ? { rejectUnauthorized: false } : false,
             extra: {
               max: parseInt(config.get('DATABASE_MAX_CONNECTIONS', '20')),
               idleTimeoutMillis: parseInt(config.get('DATABASE_IDLE_TIMEOUT', '30000')),
@@ -69,7 +56,6 @@ import { SeedModule } from './modules/seed/seed.module';
         }
         
         // Fallback configuration for local development
-        console.log('- Using fallback database configuration for local development');
         return {
           type: 'postgres',
           host: config.get('DATABASE_HOST', 'localhost'),
@@ -80,7 +66,7 @@ import { SeedModule } from './modules/seed/seed.module';
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
           logging: config.get('DATABASE_LOGGING', !isProduction ? 'true' : 'false') === 'true',
-          ssl: false, // Always false for local development
+          ssl: false,
           extra: {
             max: parseInt(config.get('DATABASE_MAX_CONNECTIONS', '10')),
             idleTimeoutMillis: parseInt(config.get('DATABASE_IDLE_TIMEOUT', '30000')),
