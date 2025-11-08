@@ -41,7 +41,7 @@ import { SeedModule } from './modules/seed/seed.module';
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
             logging: config.get('DATABASE_LOGGING', 'false') === 'true',
-            ssl: false,
+            ssl: isProduction ? { rejectUnauthorized: false } : false,
             extra: {
               max: parseInt(config.get('DATABASE_MAX_CONNECTIONS', '20')),
               idleTimeoutMillis: parseInt(config.get('DATABASE_IDLE_TIMEOUT', '30000')),
