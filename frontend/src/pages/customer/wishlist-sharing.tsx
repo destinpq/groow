@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -17,7 +17,6 @@ import {
   Badge,
   Statistic,
   Input,
-  Spin,
 } from 'antd';
 import {
   HeartOutlined,
@@ -33,109 +32,123 @@ import {
   LinkOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { wishlistAPI, WishlistItem as APIWishlistItem } from '@/services/api/cart';
-import { cartAPI } from '@/services/api/cart';
 
 const { Title, Text, Paragraph } = Typography;
 
-interface WishlistItem extends APIWishlistItem {
-  brand?: string;
-  rating?: number;
-  reviews?: number;
-  originalPrice?: number;
-  notes?: string;
+interface WishlistItem {
+  id: number;
+  productId: number;
+  productName: string;
+  brand: string;
+  price: number;
+  originalPrice: number;
+  rating: number;
+  reviews: number;
+  inStock: boolean;
+  image: string;
+  addedDate: string;
+  notes: string;
 }
 
+const mockWishlistItems: WishlistItem[] = [
+  {
+    id: 1,
+    productId: 101,
+    productName: 'Wireless Headphones Pro',
+    brand: 'TechBrand',
+    price: 99,
+    originalPrice: 149,
+    rating: 4.5,
+    reviews: 234,
+    inStock: true,
+    image: '',
+    addedDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
+    notes: 'Wait for sale',
+  },
+  {
+    id: 2,
+    productId: 102,
+    productName: 'Smart Watch Series 5',
+    brand: 'SmartTech',
+    price: 299,
+    originalPrice: 399,
+    rating: 4.8,
+    reviews: 567,
+    inStock: true,
+    image: '',
+    addedDate: dayjs().subtract(10, 'days').format('YYYY-MM-DD'),
+    notes: '',
+  },
+  {
+    id: 3,
+    productId: 103,
+    productName: 'Ergonomic Office Chair',
+    brand: 'ComfortPlus',
+    price: 449,
+    originalPrice: 549,
+    rating: 4.3,
+    reviews: 123,
+    inStock: true,
+    image: '',
+    addedDate: dayjs().subtract(2, 'days').format('YYYY-MM-DD'),
+    notes: 'Birthday gift for mom',
+  },
+  {
+    id: 4,
+    productId: 104,
+    productName: 'Leather Jacket',
+    brand: 'StyleCo',
+    price: 299,
+    originalPrice: 399,
+    rating: 4.6,
+    reviews: 89,
+    inStock: false,
+    image: '',
+    addedDate: dayjs().subtract(15, 'days').format('YYYY-MM-DD'),
+    notes: '',
+  },
+];
+
 const WishlistPage: React.FC = () => {
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>(mockWishlistItems);
   const [isShareModalVisible, setIsShareModalVisible] = useState<boolean>(false);
   const [shareUrl] = useState<string>('https://example.com/wishlist/shared/abc123');
 
-  useEffect(() => {
-    loadWishlist();
-  }, []);
-
-  const loadWishlist = async () => {
-    try {
-      setLoading(true);
-      const response = await wishlistAPI.get();
-      setWishlistItems(response.items.map(item => ({
-        ...item,
-        brand: 'N/A',
-        rating: 0,
-        reviews: 0,
-        originalPrice: item.price,
-        notes: ''
-      })));
-    } catch (error) {
-      console.error('Failed to load wishlist:', error);
-      message.error('Failed to load wishlist');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRemoveItem = async (id: string) => {
+  const handleRemoveItem = (id: number) => {
     Modal.confirm({
       title: 'Remove from Wishlist',
       content: 'Are you sure you want to remove this item from your wishlist?',
-      onOk: async () => {
-        try {
-          await wishlistAPI.removeItem(id);
-          await loadWishlist();
-          message.success('Item removed from wishlist');
-        } catch (error) {
-          message.error('Failed to remove item');
-        }
+      onOk: () => {
+        setWishlistItems(wishlistItems.filter((item) => item.id !== id));
+        message.success('Item removed from wishlist');
       },
     });
   };
 
-  const handleAddToCart = async (item: WishlistItem) => {
+  const handleAddToCart = (item: WishlistItem) => {
     if (!item.inStock) {
       message.warning('This item is currently out of stock');
       return;
     }
-    try {
-      await wishlistAPI.moveToCart(item.id);
-      await loadWishlist();
-      message.success(`${item.productName} added to cart`);
-    } catch (error) {
-      message.error('Failed to add to cart');
-    }
+    message.success(`${item.productName} added to cart`);
   };
 
-  const handleAddAllToCart = async () => {
+  const handleAddAllToCart = () => {
     const inStockItems = wishlistItems.filter((item) => item.inStock);
     if (inStockItems.length === 0) {
       message.warning('No items in stock');
       return;
     }
-    
-    try {
-      for (const item of inStockItems) {
-        await wishlistAPI.moveToCart(item.id);
-      }
-      await loadWishlist();
-      message.success(`${inStockItems.length} items added to cart`);
-    } catch (error) {
-      message.error('Failed to add items to cart');
-    }
+    message.success(`${inStockItems.length} items added to cart`);
   };
 
-  const handleClearWishlist = async () => {
+  const handleClearWishlist = () => {
     Modal.confirm({
       title: 'Clear Wishlist',
       content: 'Are you sure you want to clear all items from your wishlist?',
-      onOk: async () => {
-        try {
-          await wishlistAPI.clear();
-          await loadWishlist();
-          message.success('Wishlist cleared');
-        } catch (error) {
-          message.error('Failed to clear wishlist');
-        }
+      onOk: () => {
+        setWishlistItems([]);
+        message.success('Wishlist cleared');
       },
     });
   };
@@ -155,15 +168,14 @@ const WishlistPage: React.FC = () => {
   };
 
   const totalValue = wishlistItems.reduce((sum, item) => sum + item.price, 0);
-  const totalSavings = wishlistItems.reduce((sum, item) => sum + ((item.originalPrice || item.price) - item.price), 0);
+  const totalSavings = wishlistItems.reduce((sum, item) => sum + (item.originalPrice - item.price), 0);
   const inStockCount = wishlistItems.filter((item) => item.inStock).length;
 
   return (
-    <Spin spinning={loading} tip="Loading wishlist...">
-      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-        <div style={{ marginBottom: 24 }}>
-          <Row justify="space-between" align="middle">
-            <Col>
+    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+      <div style={{ marginBottom: 24 }}>
+        <Row justify="space-between" align="middle">
+          <Col>
             <Title level={3}>
               <HeartFilled style={{ color: '#ff4d4f' }} /> My Wishlist
             </Title>
@@ -284,7 +296,7 @@ const WishlistPage: React.FC = () => {
                             <Tag color="red" style={{ marginTop: 0 }}>
                               Out of Stock
                             </Tag>
-                          ) : item.originalPrice && item.originalPrice > item.price ? (
+                          ) : item.originalPrice > item.price ? (
                             <Tag color="red" style={{ marginTop: 0 }}>
                               {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF
                             </Tag>
@@ -328,7 +340,7 @@ const WishlistPage: React.FC = () => {
                               <Text strong style={{ fontSize: 20, color: '#ff4d4f' }}>
                                 ${item.price}
                               </Text>
-                              {item.originalPrice && item.originalPrice > item.price && (
+                              {item.originalPrice > item.price && (
                                 <Text delete type="secondary">
                                   ${item.originalPrice}
                                 </Text>
@@ -339,14 +351,14 @@ const WishlistPage: React.FC = () => {
                           <Space direction="vertical" size={0}>
                             <Text type="secondary" style={{ fontSize: 12 }}>You Save</Text>
                             <Text strong style={{ color: '#52c41a' }}>
-                              ${item.originalPrice ? item.originalPrice - item.price : 0}
+                              ${item.originalPrice - item.price}
                             </Text>
                           </Space>
                         </Space>
 
                         <Space direction="vertical" size={0}>
                           <Text type="secondary" style={{ fontSize: 11 }}>
-                            Added on {dayjs(item.addedAt).format('MMM DD, YYYY')}
+                            Added on {dayjs(item.addedDate).format('MMM DD, YYYY')}
                           </Text>
                           {item.notes && (
                             <Text italic style={{ fontSize: 12 }}>
@@ -459,8 +471,7 @@ const WishlistPage: React.FC = () => {
           </Row>
         </Space>
       </Modal>
-      </div>
-    </Spin>
+    </div>
   );
 };
 

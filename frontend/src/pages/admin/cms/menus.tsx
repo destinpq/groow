@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Table,
@@ -12,7 +12,6 @@ import {
   message,
   Typography,
   Tree,
-  Switch,
 } from 'antd';
 import {
   PlusOutlined,
@@ -24,45 +23,69 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { DataNode } from 'antd/es/tree';
-import { cmsAPI, CMSMenu, CMSMenuItem } from '@/services/api';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
+interface MenuItem {
+  id: number;
+  label: string;
+  type: string;
+  url: string;
+  location: string;
+  order: number;
+  parentId?: number;
+  children?: MenuItem[];
+}
+
+const mockMenuItems: MenuItem[] = [
+  {
+    id: 1,
+    label: 'Home',
+    type: 'internal',
+    url: '/',
+    location: 'header',
+    order: 1,
+  },
+  {
+    id: 2,
+    label: 'Products',
+    type: 'internal',
+    url: '/products',
+    location: 'header',
+    order: 2,
+  },
+  {
+    id: 3,
+    label: 'About Us',
+    type: 'page',
+    url: '/about-us',
+    location: 'footer',
+    order: 1,
+  },
+  {
+    id: 4,
+    label: 'Contact',
+    type: 'page',
+    url: '/contact',
+    location: 'footer',
+    order: 2,
+  },
+  {
+    id: 5,
+    label: 'Help Center',
+    type: 'external',
+    url: 'https://help.groow.com',
+    location: 'footer',
+    order: 3,
+  },
+];
+
 const AdminMenusPage: React.FC = () => {
-  const [menus, setMenus] = useState<CMSMenu[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(mockMenuItems);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingMenu, setEditingMenu] = useState<CMSMenu | null>(null);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    loadMenus();
-  }, []);
-
-  const loadMenus = async () => {
-    try {
-      setLoading(true);
-      const response = await cmsAPI.menus.getAll();
-      setMenus(response.data || []);
-    } catch (error) {
-      message.error('Failed to load menus');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleToggleStatus = async (id: number, isActive: boolean) => {
-    try {
-      await cmsAPI.menus.update(id, { isActive });
-      message.success(`Menu ${isActive ? 'activated' : 'deactivated'}`);
-      loadMenus();
-    } catch (error) {
-      message.error('Failed to update menu status');
-      console.error(error);
-    }
-  };
 
   const getTypeIcon = (type: string) => {
     const icons: Record<string, any> = {
@@ -82,109 +105,115 @@ const AdminMenusPage: React.FC = () => {
     return colors[type] || 'default';
   };
 
-  const handleAddMenu = () => {
-    setEditingMenu(null);
+  const handleAddMenuItem = () => {
+    setEditingItem(null);
     form.resetFields();
     setModalVisible(true);
   };
 
-  const handleEditMenu = (menu: CMSMenu) => {
-    setEditingMenu(menu);
-    form.setFieldsValue(menu);
+  const handleEditMenuItem = (item: MenuItem) => {
+    setEditingItem(item);
+    form.setFieldsValue(item);
     setModalVisible(true);
   };
 
-  const handleDeleteMenu = async (id: number) => {
+  const handleDeleteMenuItem = (id: number) => {
     Modal.confirm({
-      title: 'Delete Menu',
-      content: 'Are you sure you want to delete this menu?',
+      title: 'Delete Menu Item',
+      content: 'Are you sure you want to delete this menu item?',
       okText: 'Delete',
       okType: 'danger',
-      onOk: async () => {
-        try {
-          await cmsAPI.menus.delete(id);
-          message.success('Menu deleted successfully');
-          loadMenus();
-        } catch (error) {
-          message.error('Failed to delete menu');
-          console.error(error);
-        }
+      onOk: () => {
+        setMenuItems(menuItems.filter((item) => item.id !== id));
+        message.success('Menu item deleted successfully');
       },
     });
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      if (editingMenu) {
-        await cmsAPI.menus.update(editingMenu.id, values);
-        message.success('Menu updated successfully');
-      } else {
-        await cmsAPI.menus.create(values);
-        message.success('Menu created successfully');
-      }
-      setModalVisible(false);
-      form.resetFields();
-      loadMenus();
-    } catch (error) {
-      message.error('Failed to save menu');
-      console.error(error);
+  const handleSubmit = (values: any) => {
+    const itemData = {
+      ...values,
+      id: editingItem?.id || menuItems.length + 1,
+    };
+
+    if (editingItem) {
+      setMenuItems(menuItems.map((item) => (item.id === editingItem.id ? itemData : item)));
+      message.success('Menu item updated successfully');
+    } else {
+      setMenuItems([...menuItems, itemData]);
+      message.success('Menu item created successfully');
     }
+
+    setModalVisible(false);
+    form.resetFields();
   };
 
-  const columns: ColumnsType<CMSMenu> = [
+  const columns: ColumnsType<MenuItem> = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'Label',
+      dataIndex: 'label',
+      key: 'label',
       render: (text: string) => <Text strong>{text}</Text>,
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type: string) => (
+        <Tag color={getTypeColor(type)} icon={getTypeIcon(type)}>
+          {type.toUpperCase()}
+        </Tag>
+      ),
+      filters: [
+        { text: 'Internal Link', value: 'internal' },
+        { text: 'Page Link', value: 'page' },
+        { text: 'External Link', value: 'external' },
+      ],
+      onFilter: (value, record) => record.type === value,
+    },
+    {
+      title: 'URL',
+      dataIndex: 'url',
+      key: 'url',
+      render: (url: string) => (
+        <Text copyable code>
+          {url}
+        </Text>
+      ),
     },
     {
       title: 'Location',
       dataIndex: 'location',
       key: 'location',
       render: (location: string) => (
-        <Tag color={location === 'header' ? 'blue' : location === 'footer' ? 'purple' : 'green'}>
-          {location.toUpperCase()}
-        </Tag>
+        <Tag color={location === 'header' ? 'blue' : 'purple'}>{location.toUpperCase()}</Tag>
       ),
       filters: [
         { text: 'Header', value: 'header' },
         { text: 'Footer', value: 'footer' },
         { text: 'Sidebar', value: 'sidebar' },
-        { text: 'Mobile', value: 'mobile' },
       ],
       onFilter: (value, record) => record.location === value,
     },
     {
-      title: 'Items Count',
-      dataIndex: 'items',
-      key: 'itemsCount',
-      render: (items: CMSMenuItem[]) => items?.length || 0,
-    },
-    {
-      title: 'Status',
-      dataIndex: 'isActive',
-      key: 'isActive',
-      render: (isActive: boolean, record) => (
-        <Switch
-          checked={isActive}
-          onChange={(checked) => handleToggleStatus(record.id, checked)}
-        />
-      ),
+      title: 'Order',
+      dataIndex: 'order',
+      key: 'order',
+      sorter: (a, b) => a.order - b.order,
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button type="link" icon={<EditOutlined />} onClick={() => handleEditMenu(record)}>
+          <Button type="link" icon={<EditOutlined />} onClick={() => handleEditMenuItem(record)}>
             Edit
           </Button>
           <Button
             type="link"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => handleDeleteMenu(record.id)}
+            onClick={() => handleDeleteMenuItem(record.id)}
           >
             Delete
           </Button>
@@ -193,16 +222,15 @@ const AdminMenusPage: React.FC = () => {
     },
   ];
 
+  // Tree data for menu preview
   const getTreeData = (location: string): DataNode[] => {
-    const menu = menus.find((m) => m.location === location);
-    if (!menu || !menu.items) return [];
-
-    return menu.items
-      .sort((a, b) => a.displayOrder - b.displayOrder)
+    return menuItems
+      .filter((item) => item.location === location)
+      .sort((a, b) => a.order - b.order)
       .map((item) => ({
         title: `${item.label} (${item.url})`,
         key: item.id,
-        icon: <LinkOutlined />,
+        icon: getTypeIcon(item.type),
       }));
   };
 
@@ -211,60 +239,113 @@ const AdminMenusPage: React.FC = () => {
       <Card
         title={<Title level={3}>Menu Management</Title>}
         extra={
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAddMenu}>
-            Add Menu
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAddMenuItem}>
+            Add Menu Item
           </Button>
         }
       >
+        {/* Menu Preview */}
+        <Card title="Menu Preview" size="small" style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 24 }}>
+            <div style={{ flex: 1 }}>
+              <Title level={5}>Header Menu</Title>
+              <Tree
+                showIcon
+                defaultExpandAll
+                treeData={getTreeData('header')}
+                style={{ background: '#f5f5f5', padding: 12, borderRadius: 4 }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Title level={5}>Footer Menu</Title>
+              <Tree
+                showIcon
+                defaultExpandAll
+                treeData={getTreeData('footer')}
+                style={{ background: '#f5f5f5', padding: 12, borderRadius: 4 }}
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* Menu Items Table */}
         <Table
           columns={columns}
-          dataSource={menus}
-          loading={loading}
+          dataSource={menuItems}
           rowKey="id"
-          pagination={{ pageSize: 10 }}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showTotal: (total) => `Total ${total} menu items`,
+          }}
         />
       </Card>
 
-      {/* Modal for Add/Edit Menu */}
+      {/* Add/Edit Menu Item Modal */}
       <Modal
-        title={editingMenu ? 'Edit Menu' : 'Add Menu'}
+        title={editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
         open={modalVisible}
-        onOk={() => form.submit()}
-        onCancel={() => {
-          setModalVisible(false);
-          form.resetFields();
-        }}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
         width={600}
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
-            name="name"
-            label="Menu Name"
-            rules={[{ required: true, message: 'Please enter menu name' }]}
+            name="label"
+            label="Menu Label"
+            rules={[{ required: true, message: 'Please enter menu label' }]}
           >
-            <Input placeholder="Enter menu name" />
+            <Input placeholder="e.g., Home" />
           </Form.Item>
 
           <Form.Item
-            name="location"
-            label="Location"
-            rules={[{ required: true, message: 'Please select location' }]}
+            name="type"
+            label="Link Type"
+            rules={[{ required: true, message: 'Please select link type' }]}
           >
-            <Select placeholder="Select location">
-              <Option value="header">Header</Option>
-              <Option value="footer">Footer</Option>
-              <Option value="sidebar">Sidebar</Option>
-              <Option value="mobile">Mobile</Option>
+            <Select placeholder="Select link type">
+              <Option value="internal">Internal Link (Routes in app)</Option>
+              <Option value="page">Page Link (CMS Pages)</Option>
+              <Option value="external">External Link (Outside URL)</Option>
             </Select>
           </Form.Item>
 
           <Form.Item
-            name="isActive"
-            label="Active"
-            valuePropName="checked"
-            initialValue={true}
+            name="url"
+            label="URL"
+            rules={[{ required: true, message: 'Please enter URL' }]}
           >
-            <Switch />
+            <Input placeholder="e.g., /products or https://example.com" />
+          </Form.Item>
+
+          <Form.Item
+            name="location"
+            label="Menu Location"
+            rules={[{ required: true, message: 'Please select location' }]}
+          >
+            <Select placeholder="Select menu location">
+              <Option value="header">Header</Option>
+              <Option value="footer">Footer</Option>
+              <Option value="sidebar">Sidebar</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="order"
+            label="Display Order"
+            rules={[{ required: true, message: 'Please enter order' }]}
+            initialValue={1}
+          >
+            <Input type="number" min={1} placeholder="1" />
+          </Form.Item>
+
+          <Form.Item>
+            <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+              <Button onClick={() => setModalVisible(false)}>Cancel</Button>
+              <Button type="primary" htmlType="submit">
+                {editingItem ? 'Update' : 'Add'} Menu Item
+              </Button>
+            </Space>
           </Form.Item>
         </Form>
       </Modal>

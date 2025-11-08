@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Form,
@@ -9,7 +9,6 @@ import {
   Typography,
   Row,
   Col,
-  Switch,
 } from 'antd';
 import {
   FacebookOutlined,
@@ -19,74 +18,44 @@ import {
   YoutubeOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
-import { cmsAPI, CMSSocialLink } from '@/services/api';
 
 const { Title, Text } = Typography;
+
+interface SocialLinks {
+  facebook: string;
+  twitter: string;
+  instagram: string;
+  linkedin: string;
+  youtube: string;
+  pinterest: string;
+  tiktok: string;
+  whatsapp: string;
+}
 
 const AdminSocialLinksPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [socialLinks, setSocialLinks] = useState<CMSSocialLink[]>([]);
 
-  useEffect(() => {
-    loadSocialLinks();
-  }, []);
-
-  const loadSocialLinks = async () => {
-    try {
-      const response = await cmsAPI.socialLinks.getAll();
-      setSocialLinks(response.data || []);
-      
-      // Set form values from loaded data
-      const formValues: any = {};
-      response.data?.forEach((link: CMSSocialLink) => {
-        formValues[link.platform] = link.url;
-        formValues[`${link.platform}_active`] = link.isActive;
-      });
-      form.setFieldsValue(formValues);
-    } catch (error) {
-      message.error('Failed to load social links');
-      console.error(error);
-    }
+  const initialValues: SocialLinks = {
+    facebook: 'https://facebook.com/groow',
+    twitter: 'https://twitter.com/groow',
+    instagram: 'https://instagram.com/groow',
+    linkedin: 'https://linkedin.com/company/groow',
+    youtube: 'https://youtube.com/@groow',
+    pinterest: '',
+    tiktok: '',
+    whatsapp: '',
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      setLoading(true);
-      
-      // Update or create each social link
-      const platforms: Array<CMSSocialLink['platform']> = [
-        'facebook', 'twitter', 'instagram', 'linkedin', 
-        'youtube', 'pinterest', 'tiktok'
-      ];
-      
-      for (const platform of platforms) {
-        if (values[platform]) {
-          const existing = socialLinks.find(s => s.platform === platform);
-          const linkData = {
-            platform,
-            url: values[platform],
-            isActive: values[`${platform}_active`] ?? true,
-            icon: platform,
-            displayOrder: 0,
-          };
-          
-          if (existing) {
-            await cmsAPI.socialLinks.update(existing.id, linkData);
-          } else {
-            await cmsAPI.socialLinks.create(linkData);
-          }
-        }
-      }
-      
-      message.success('Social media links updated successfully');
-      loadSocialLinks();
-    } catch (error) {
-      message.error('Failed to update social links');
-      console.error(error);
-    } finally {
+  const handleSubmit = (values: SocialLinks) => {
+    setLoading(true);
+    console.log('Social links:', values);
+    
+    // Simulate API call
+    setTimeout(() => {
       setLoading(false);
-    }
+      message.success('Social media links updated successfully');
+    }, 1000);
   };
 
   return (
@@ -101,6 +70,7 @@ const AdminSocialLinksPage: React.FC = () => {
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
+          initialValues={initialValues}
         >
           <Row gutter={16}>
             <Col xs={24} md={12}>

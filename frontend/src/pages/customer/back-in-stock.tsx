@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -31,7 +31,6 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { notificationsAPI, productAPI } from '@/services/api';
 
 dayjs.extend(relativeTime);
 
@@ -39,13 +38,13 @@ const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
 interface StockAlert {
-  id: string;
-  productId: string;
+  id: number;
+  productId: number;
   productName: string;
   productImage: string;
   variant?: string;
   currentStock: number;
-  estimatedRestock?: string;
+  estimatedRestock: string;
   notificationMethod: 'email' | 'sms' | 'both';
   email?: string;
   phone?: string;
@@ -127,80 +126,50 @@ const mockAlerts: StockAlert[] = [
 ];
 
 const BackInStockPage: React.FC = () => {
-  const [alerts, setAlerts] = useState<StockAlert[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [alerts, setAlerts] = useState<StockAlert[]>(mockAlerts);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    loadAlerts();
-  }, []);
-
-  const loadAlerts = async () => {
-    try {
-      setLoading(true);
-      // Using notifications API as a placeholder for stock alerts
-      const response = await notificationsAPI.getAll();
-      // Transform notifications into stock alerts format
-      const transformedAlerts: StockAlert[] = (response || []).slice(0, 10).map((notif: any, index: number) => ({
-        id: notif.id || String(index),
-        productId: String(index + 100),
-        productName: notif.title || 'Product Alert',
-        productImage: 'https://via.placeholder.com/60?text=Product',
-        variant: undefined,
-        currentStock: 0,
-        estimatedRestock: dayjs().add(5, 'days').format('YYYY-MM-DD'),
-        notificationMethod: 'email' as const,
-        email: 'user@example.com',
-        status: 'active' as const,
-        createdAt: notif.createdAt || dayjs().format('YYYY-MM-DD'),
-        category: 'General',
-        price: 99.99,
-        priority: 'medium' as const,
-      }));
-      setAlerts(transformedAlerts);
-    } catch (error) {
-      message.error('Failed to load stock alerts');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateAlert = () => {
     form.resetFields();
     setIsModalVisible(true);
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      // Create notification placeholder for stock alert
-      message.success(
-        `Stock alert created! We'll notify you via ${values.notificationMethod === 'both' ? 'email and SMS' : values.notificationMethod} when the product is back in stock.`
-      );
-      setIsModalVisible(false);
-      loadAlerts();
-    } catch (error) {
-      message.error('Failed to create stock alert');
-      console.error(error);
-    }
+  const handleSubmit = (values: any) => {
+    const newAlert: StockAlert = {
+      id: alerts.length + 1,
+      productId: Math.floor(Math.random() * 1000),
+      productName: values.productName,
+      productImage: 'https://via.placeholder.com/60?text=Product',
+      variant: values.variant,
+      currentStock: 0,
+      estimatedRestock: dayjs().add(10, 'days').format('YYYY-MM-DD'),
+      notificationMethod: values.notificationMethod,
+      email: values.email,
+      phone: values.phone,
+      status: 'active',
+      createdAt: dayjs().format('YYYY-MM-DD'),
+      category: values.category,
+      price: values.price,
+      priority: 'medium',
+    };
+
+    setAlerts([newAlert, ...alerts]);
+    message.success(
+      `Stock alert created! We'll notify you via ${values.notificationMethod === 'both' ? 'email and SMS' : values.notificationMethod} when the product is back in stock.`
+    );
+    setIsModalVisible(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: number) => {
     Modal.confirm({
       title: 'Delete Stock Alert',
       content: 'Are you sure you want to delete this stock alert?',
       okText: 'Delete',
       okType: 'danger',
-      onOk: async () => {
-        try {
-          await notificationsAPI.markAsRead(id);
-          message.success('Stock alert deleted successfully');
-          loadAlerts();
-        } catch (error) {
-          message.error('Failed to delete stock alert');
-          console.error(error);
-        }
+      onOk: () => {
+        setAlerts(alerts.filter((a) => a.id !== id));
+        message.success('Stock alert deleted successfully');
       },
     });
   };

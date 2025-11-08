@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -20,7 +20,6 @@ import {
   Statistic,
   Table,
   Checkbox,
-  message,
 } from 'antd';
 import {
   FolderOutlined,
@@ -41,11 +40,90 @@ import {
 import type { UploadFile, UploadProps } from 'antd';
 import type { MenuProps } from 'antd';
 import type { DataNode } from 'antd/es/tree';
-import { cmsAPI, CMSMedia } from '@/services/api';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
+
+interface MediaFile {
+  id: number;
+  name: string;
+  type: 'image' | 'document' | 'pdf' | 'other';
+  size: number;
+  url: string;
+  uploadedAt: string;
+  folder: string;
+  tags: string[];
+  dimensions?: string;
+}
+
+const mockMediaFiles: MediaFile[] = [
+  {
+    id: 1,
+    name: 'product-banner-1.jpg',
+    type: 'image',
+    size: 245000,
+    url: 'https://via.placeholder.com/400x300?text=Banner+1',
+    uploadedAt: '2025-11-01',
+    folder: 'Banners',
+    tags: ['banner', 'homepage'],
+    dimensions: '1920x1080',
+  },
+  {
+    id: 2,
+    name: 'product-photo-headphones.jpg',
+    type: 'image',
+    size: 156000,
+    url: 'https://via.placeholder.com/400x300?text=Headphones',
+    uploadedAt: '2025-11-02',
+    folder: 'Products',
+    tags: ['product', 'electronics'],
+    dimensions: '800x800',
+  },
+  {
+    id: 3,
+    name: 'logo-primary.png',
+    type: 'image',
+    size: 45000,
+    url: 'https://via.placeholder.com/200x100?text=Logo',
+    uploadedAt: '2025-10-28',
+    folder: 'Branding',
+    tags: ['logo', 'branding'],
+    dimensions: '512x512',
+  },
+  {
+    id: 4,
+    name: 'user-manual.pdf',
+    type: 'pdf',
+    size: 1240000,
+    url: '#',
+    uploadedAt: '2025-10-25',
+    folder: 'Documents',
+    tags: ['manual', 'documentation'],
+  },
+  {
+    id: 5,
+    name: 'category-electronics.jpg',
+    type: 'image',
+    size: 189000,
+    url: 'https://via.placeholder.com/400x300?text=Electronics',
+    uploadedAt: '2025-10-30',
+    folder: 'Categories',
+    tags: ['category', 'electronics'],
+    dimensions: '600x400',
+  },
+  {
+    id: 6,
+    name: 'promotional-banner.jpg',
+    type: 'image',
+    size: 310000,
+    url: 'https://via.placeholder.com/400x300?text=Promotion',
+    uploadedAt: '2025-11-03',
+    folder: 'Banners',
+    tags: ['banner', 'promotion', 'sale'],
+    dimensions: '1920x600',
+  },
+];
 
 const folderTreeData: DataNode[] = [
   {
@@ -63,8 +141,7 @@ const folderTreeData: DataNode[] = [
 ];
 
 const MediaLibraryPage: React.FC = () => {
-  const [mediaFiles, setMediaFiles] = useState<CMSMedia[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>(mockMediaFiles);
   const [selectedFolder, setSelectedFolder] = useState<string>('root');
   const [selectedFiles, setSelectedFiles] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -73,23 +150,6 @@ const MediaLibraryPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    loadMedia();
-  }, []);
-
-  const loadMedia = async () => {
-    try {
-      setLoading(true);
-      const response = await cmsAPI.media.getAll();
-      setMediaFiles(response.data || []);
-    } catch (error) {
-      message.error('Failed to load media files');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getFileIcon = (type: string) => {
     switch (type) {
@@ -114,12 +174,12 @@ const MediaLibraryPage: React.FC = () => {
     const matchesFolder = selectedFolder === 'root' || file.folder === selectedFolder;
     const matchesSearch =
       searchQuery === '' ||
-      file.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      file.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      file.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesFolder && matchesSearch;
   });
 
-  const totalSize = mediaFiles.reduce((sum, file) => sum + file.fileSize, 0);
+  const totalSize = mediaFiles.reduce((sum, file) => sum + file.size, 0);
   const usedSpace = totalSize;
   const totalSpace = 10 * 1024 * 1024 * 1024; // 10GB
   const usedPercentage = (usedSpace / totalSpace) * 100;
@@ -131,25 +191,13 @@ const MediaLibraryPage: React.FC = () => {
     multiple: true,
   };
 
-  const handleUpload = async () => {
-    try {
-      const values = await form.validateFields();
-      
-      for (const file of fileList) {
-        if (file.originFileObj) {
-          await cmsAPI.media.upload(file.originFileObj);
-        }
-      }
-
-      message.success('Files uploaded successfully');
+  const handleUpload = () => {
+    form.validateFields().then(values => {
+      console.log('Upload files:', { files: fileList, ...values });
       setIsUploadModalVisible(false);
       setFileList([]);
       form.resetFields();
-      loadMedia();
-    } catch (error) {
-      message.error('Failed to upload files');
-      console.error(error);
-    }
+    });
   };
 
   const handleCreateFolder = () => {
@@ -160,19 +208,12 @@ const MediaLibraryPage: React.FC = () => {
     });
   };
 
-  const handleDeleteFiles = async () => {
-    try {
-      await Promise.all(selectedFiles.map(id => cmsAPI.media.delete(id)));
-      message.success('Files deleted successfully');
-      setSelectedFiles([]);
-      loadMedia();
-    } catch (error) {
-      message.error('Failed to delete files');
-      console.error(error);
-    }
+  const handleDeleteFiles = () => {
+    setMediaFiles(mediaFiles.filter(file => !selectedFiles.includes(file.id)));
+    setSelectedFiles([]);
   };
 
-  const fileMenuItems = (file: CMSMedia): MenuProps['items'] => [
+  const fileMenuItems = (file: MediaFile): MenuProps['items'] => [
     {
       key: 'view',
       label: 'View',
@@ -206,14 +247,14 @@ const MediaLibraryPage: React.FC = () => {
   const columns = [
     {
       title: 'Name',
-      dataIndex: 'fileName',
-      key: 'fileName',
-      render: (text: string, record: CMSMedia) => (
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string, record: MediaFile) => (
         <Space>
-          {record.mimeType?.startsWith('image/') ? (
+          {record.type === 'image' ? (
             <Image src={record.url} width={40} height={40} style={{ objectFit: 'cover' }} />
           ) : (
-            getFileIcon(record.mimeType || 'other')
+            getFileIcon(record.type)
           )}
           <Text>{text}</Text>
         </Space>
@@ -221,14 +262,14 @@ const MediaLibraryPage: React.FC = () => {
     },
     {
       title: 'Type',
-      dataIndex: 'mimeType',
-      key: 'mimeType',
-      render: (type: string) => <Tag>{type?.split('/')[0]?.toUpperCase() || 'FILE'}</Tag>,
+      dataIndex: 'type',
+      key: 'type',
+      render: (type: string) => <Tag>{type.toUpperCase()}</Tag>,
     },
     {
       title: 'Size',
-      dataIndex: 'fileSize',
-      key: 'fileSize',
+      dataIndex: 'size',
+      key: 'size',
       render: (size: number) => formatFileSize(size),
     },
     {
@@ -238,14 +279,13 @@ const MediaLibraryPage: React.FC = () => {
     },
     {
       title: 'Uploaded',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      dataIndex: 'uploadedAt',
+      key: 'uploadedAt',
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (_: any, record: CMSMedia) => (
+      render: (_: any, record: MediaFile) => (
         <Dropdown menu={{ items: fileMenuItems(record) }} trigger={['click']}>
           <Button type="text" icon={<MoreOutlined />} />
         </Dropdown>
@@ -352,15 +392,15 @@ const MediaLibraryPage: React.FC = () => {
                     <Card
                       hoverable
                       cover={
-                        file.mimeType?.startsWith('image/') ? (
+                        file.type === 'image' ? (
                           <Image
                             src={file.url}
-                            alt={file.fileName}
+                            alt={file.name}
                             style={{ height: 150, objectFit: 'cover' }}
                           />
                         ) : (
                           <div style={{ height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {getFileIcon(file.mimeType || 'other')}
+                            {getFileIcon(file.type)}
                           </div>
                         )
                       }
@@ -383,15 +423,20 @@ const MediaLibraryPage: React.FC = () => {
                     >
                       <Card.Meta
                         title={
-                          <Text ellipsis={{ tooltip: file.fileName }} style={{ fontSize: 12 }}>
-                            {file.fileName}
+                          <Text ellipsis={{ tooltip: file.name }} style={{ fontSize: 12 }}>
+                            {file.name}
                           </Text>
                         }
                         description={
                           <Space direction="vertical" size="small" style={{ width: '100%' }}>
                             <Text type="secondary" style={{ fontSize: 11 }}>
-                              {formatFileSize(file.fileSize)}
+                              {formatFileSize(file.size)}
                             </Text>
+                            {file.dimensions && (
+                              <Text type="secondary" style={{ fontSize: 11 }}>
+                                {file.dimensions}
+                              </Text>
+                            )}
                           </Space>
                         }
                       />

@@ -2,33 +2,23 @@ import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns } from '@ant-design/pro-components';
 import { Button, Space, Modal, Form, Input, Select, message, Switch } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useState, useEffect } from 'react';
-import { cmsAPI, CMSFAQ } from '@/services/api';
+import { useState } from 'react';
+
+interface FAQType {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  order: number;
+  active: boolean;
+  views: number;
+}
 
 const AdminFAQs = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingFaq, setEditingFaq] = useState<CMSFAQ | null>(null);
-  const [faqs, setFaqs] = useState<CMSFAQ[]>([]);
-  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    loadFaqs();
-  }, []);
-
-  const loadFaqs = async () => {
-    try {
-      setLoading(true);
-      const response = await cmsAPI.faqs.getAll();
-      setFaqs(response.data);
-    } catch (error) {
-      message.error('Failed to load FAQs');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const columns: ProColumns<CMSFAQ>[] = [
+  const columns: ProColumns<FAQType>[] = [
     {
       title: 'Question',
       dataIndex: 'question',
@@ -50,24 +40,24 @@ const AdminFAQs = () => {
     },
     {
       title: 'Order',
-      dataIndex: 'displayOrder',
-      key: 'displayOrder',
+      dataIndex: 'order',
+      key: 'order',
       width: 80,
       sorter: true,
     },
     {
       title: 'Views',
-      dataIndex: 'viewCount',
-      key: 'viewCount',
+      dataIndex: 'views',
+      key: 'views',
       width: 100,
       sorter: true,
     },
     {
       title: 'Status',
-      dataIndex: 'isActive',
-      key: 'isActive',
+      dataIndex: 'active',
+      key: 'active',
       width: 100,
-      render: (_, record) => <Switch checked={record.isActive} onChange={() => handleToggle(record.id, record.isActive)} />,
+      render: (active: boolean) => <Switch checked={active} />,
     },
     {
       title: 'Actions',
@@ -82,81 +72,63 @@ const AdminFAQs = () => {
     },
   ];
 
-  const handleToggle = async (id: number, currentStatus: boolean) => {
-    try {
-      await cmsAPI.faqs.update(id, { isActive: !currentStatus });
-      message.success('Status updated');
-      loadFaqs();
-    } catch (error) {
-      message.error('Failed to update status');
-    }
-  };
+  const mockData: FAQType[] = [
+    {
+      id: '1',
+      question: 'How do I track my order?',
+      answer: 'You can track your order by logging into your account and visiting the Orders section.',
+      category: 'orders',
+      order: 1,
+      active: true,
+      views: 1234,
+    },
+    {
+      id: '2',
+      question: 'What is the return policy?',
+      answer: 'We offer a 30-day return policy for most items. Please check the product page for specific details.',
+      category: 'returns',
+      order: 2,
+      active: true,
+      views: 987,
+    },
+  ];
 
-  const handleEdit = (record: CMSFAQ) => {
-    setEditingFaq(record);
+  const handleEdit = (record: FAQType) => {
     form.setFieldsValue(record);
     setModalVisible(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     Modal.confirm({
       title: 'Delete FAQ',
       content: 'Are you sure?',
-      okType: 'danger',
-      onOk: async () => {
-        try {
-          await cmsAPI.faqs.delete(id);
-          message.success('FAQ deleted');
-          loadFaqs();
-        } catch (error) {
-          message.error('Failed to delete FAQ');
-        }
-      },
+      onOk: () => message.success('FAQ deleted'),
     });
-  };
-
-  const handleSubmit = async (values: any) => {
-    try {
-      if (editingFaq) {
-        await cmsAPI.faqs.update(editingFaq.id, values);
-        message.success('FAQ updated');
-      } else {
-        await cmsAPI.faqs.create(values);
-        message.success('FAQ created');
-      }
-      setModalVisible(false);
-      setEditingFaq(null);
-      form.resetFields();
-      loadFaqs();
-    } catch (error) {
-      message.error('Failed to save FAQ');
-    }
   };
 
   return (
     <div>
-      <ProTable<CMSFAQ>
+      <ProTable<FAQType>
         columns={columns}
-        dataSource={faqs}
-        loading={loading}
+        dataSource={mockData}
         rowKey="id"
         search={false}
         headerTitle="FAQs Management"
         toolBarRender={() => [
-          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => { setEditingFaq(null); form.resetFields(); setModalVisible(true); }}>
+          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
             Add FAQ
           </Button>,
         ]}
       />
 
       <Modal
-        title={editingFaq ? "Edit FAQ" : "Add FAQ"}
+        title="FAQ Details"
         open={modalVisible}
-        onCancel={() => { setModalVisible(false); setEditingFaq(null); form.resetFields(); }}
+        onCancel={() => setModalVisible(false)}
         footer={null}
         width={700}
       >
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" onFinish={() => message.success('FAQ saved')}>
           <Form.Item name="question" label="Question" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
@@ -172,16 +144,16 @@ const AdminFAQs = () => {
               <Select.Option value="payment">Payment</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="displayOrder" label="Display Order" rules={[{ required: true }]}>
+          <Form.Item name="order" label="Display Order">
             <Input type="number" />
           </Form.Item>
-          <Form.Item name="isActive" label="Active" valuePropName="checked" initialValue={true}>
+          <Form.Item name="active" label="Active" valuePropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit">{editingFaq ? 'Update' : 'Create'}</Button>
-              <Button onClick={() => { setModalVisible(false); setEditingFaq(null); form.resetFields(); }}>Cancel</Button>
+              <Button type="primary" htmlType="submit">Submit</Button>
+              <Button onClick={() => setModalVisible(false)}>Cancel</Button>
             </Space>
           </Form.Item>
         </Form>

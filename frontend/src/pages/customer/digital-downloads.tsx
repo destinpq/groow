@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -16,7 +16,6 @@ import {
   Statistic,
   Input,
   Tooltip,
-  Spin,
 } from 'antd';
 import {
   DownloadOutlined,
@@ -32,56 +31,107 @@ import {
   FilePdfOutlined,
   FileImageOutlined,
   CodeOutlined,
-  ReloadOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { digitalDownloadsAPI, DigitalProduct, DownloadStats, DigitalProductType } from '@/services/api/digitalDownloadsAPI';
 
 const { Title, Text, Paragraph } = Typography;
 
+interface DigitalProduct {
+  id: number;
+  name: string;
+  type: 'software' | 'ebook' | 'music' | 'video' | 'course' | 'template';
+  orderDate: string;
+  expiryDate?: string;
+  downloadLimit: number;
+  downloadCount: number;
+  fileSize: string;
+  version: string;
+  licenseKey?: string;
+  downloadUrl: string;
+  status: 'active' | 'expired' | 'used_up';
+}
+
+const mockDigitalProducts: DigitalProduct[] = [
+  {
+    id: 1,
+    name: 'Professional Photo Editing Software',
+    type: 'software',
+    orderDate: dayjs().subtract(10, 'days').format('YYYY-MM-DD'),
+    expiryDate: dayjs().add(355, 'days').format('YYYY-MM-DD'),
+    downloadLimit: 5,
+    downloadCount: 2,
+    fileSize: '2.4 GB',
+    version: '2024.1.0',
+    licenseKey: 'XXXX-XXXX-XXXX-XXXX',
+    downloadUrl: 'https://example.com/download/software',
+    status: 'active',
+  },
+  {
+    id: 2,
+    name: 'Complete Web Development Course',
+    type: 'course',
+    orderDate: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
+    downloadLimit: 10,
+    downloadCount: 5,
+    fileSize: '15.8 GB',
+    version: '1.0',
+    licenseKey: 'COURSE-2024-ABC123',
+    downloadUrl: 'https://example.com/download/course',
+    status: 'active',
+  },
+  {
+    id: 3,
+    name: 'Design Templates Bundle',
+    type: 'template',
+    orderDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
+    expiryDate: dayjs().add(25, 'days').format('YYYY-MM-DD'),
+    downloadLimit: 3,
+    downloadCount: 3,
+    fileSize: '450 MB',
+    version: '2.5',
+    downloadUrl: 'https://example.com/download/templates',
+    status: 'used_up',
+  },
+  {
+    id: 4,
+    name: 'JavaScript Programming eBook',
+    type: 'ebook',
+    orderDate: dayjs().subtract(60, 'days').format('YYYY-MM-DD'),
+    expiryDate: dayjs().subtract(5, 'days').format('YYYY-MM-DD'),
+    downloadLimit: 5,
+    downloadCount: 1,
+    fileSize: '12 MB',
+    version: '3rd Edition',
+    downloadUrl: 'https://example.com/download/ebook',
+    status: 'expired',
+  },
+];
+
 const DigitalDownloadsPage: React.FC = () => {
-  const [products, setProducts] = useState<DigitalProduct[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [products, setProducts] = useState<DigitalProduct[]>(mockDigitalProducts);
   const [selectedProduct, setSelectedProduct] = useState<DigitalProduct | null>(null);
   const [isDetailsModalVisible, setIsDetailsModalVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    loadDigitalProducts();
-  }, []);
-
-  const loadDigitalProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await digitalDownloadsAPI.getMyDigitalProducts();
-      setProducts(response);
-    } catch (error) {
-      console.error('Failed to load digital products:', error);
-      message.error('Failed to load digital downloads');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDownload = async (product: DigitalProduct) => {
+  const handleDownload = (product: DigitalProduct) => {
     if (product.status === 'expired') {
       message.error('This download has expired. Please contact support.');
       return;
     }
 
-    if (product.status === 'limit_reached') {
+    if (product.status === 'used_up') {
       message.error('Download limit reached. Please contact support for assistance.');
       return;
     }
 
-    try {
-      const response = await digitalDownloadsAPI.createDownload({ productId: product.id });
-      await loadDigitalProducts(); // Refresh to update download count
-      message.success(`Starting download: ${product.name}`);
-      window.open(response.downloadUrl, '_blank');
-    } catch (error) {
-      message.error('Failed to initiate download');
-    }
+    const updatedProducts = products.map((p) =>
+      p.id === product.id ? { ...p, downloadCount: p.downloadCount + 1 } : p
+    );
+    setProducts(updatedProducts);
+
+    message.success(`Starting download: ${product.name}`);
+    // Simulate download
+    window.open(product.downloadUrl, '_blank');
   };
 
   const handleCopyLicense = (licenseKey: string) => {
@@ -90,15 +140,13 @@ const DigitalDownloadsPage: React.FC = () => {
   };
 
   const getFileIcon = (type: DigitalProduct['type']) => {
-    const icons: Record<DigitalProductType, JSX.Element> = {
+    const icons = {
       software: <CodeOutlined style={{ fontSize: 24, color: '#1890ff' }} />,
       ebook: <FilePdfOutlined style={{ fontSize: 24, color: '#ff4d4f' }} />,
       music: <FileOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
       video: <FileImageOutlined style={{ fontSize: 24, color: '#fa8c16' }} />,
       course: <FileZipOutlined style={{ fontSize: 24, color: '#52c41a' }} />,
       template: <FileOutlined style={{ fontSize: 24, color: '#13c2c2' }} />,
-      plugin: <FileOutlined style={{ fontSize: 24, color: '#1890ff' }} />,
-      theme: <FileOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
     };
     return icons[type];
   };
@@ -140,15 +188,13 @@ const DigitalDownloadsPage: React.FC = () => {
       dataIndex: 'type',
       key: 'type',
       render: (type: DigitalProduct['type']) => {
-        const typeConfig: Record<DigitalProductType, { color: string; text: string }> = {
+        const typeConfig = {
           software: { color: 'blue', text: 'Software' },
           ebook: { color: 'red', text: 'eBook' },
           music: { color: 'purple', text: 'Music' },
           video: { color: 'orange', text: 'Video' },
           course: { color: 'green', text: 'Course' },
           template: { color: 'cyan', text: 'Template' },
-          plugin: { color: 'blue', text: 'Plugin' },
-          theme: { color: 'purple', text: 'Theme' },
         };
         const config = typeConfig[type];
         return <Tag color={config.color}>{config.text}</Tag>;
@@ -215,10 +261,9 @@ const DigitalDownloadsPage: React.FC = () => {
       key: 'status',
       render: (status: DigitalProduct['status']) => {
         const statusConfig = {
-          available: { color: 'success', icon: <CheckCircleOutlined />, text: 'Available' },
+          active: { color: 'success', icon: <CheckCircleOutlined />, text: 'Active' },
           expired: { color: 'error', icon: <ClockCircleOutlined />, text: 'Expired' },
-          limit_reached: { color: 'warning', icon: <ClockCircleOutlined />, text: 'Limit Reached' },
-          pending: { color: 'processing', icon: <ClockCircleOutlined />, text: 'Pending' },
+          used_up: { color: 'warning', icon: <ClockCircleOutlined />, text: 'Limit Reached' },
         };
         const config = statusConfig[status];
         return (
@@ -228,10 +273,9 @@ const DigitalDownloadsPage: React.FC = () => {
         );
       },
       filters: [
-        { text: 'Available', value: 'available' },
+        { text: 'Active', value: 'active' },
         { text: 'Expired', value: 'expired' },
-        { text: 'Limit Reached', value: 'limit_reached' },
-        { text: 'Pending', value: 'pending' },
+        { text: 'Limit Reached', value: 'used_up' },
       ],
       onFilter: (value, record) => record.status === value,
     },
@@ -244,7 +288,7 @@ const DigitalDownloadsPage: React.FC = () => {
             type="primary"
             icon={<DownloadOutlined />}
             onClick={() => handleDownload(record)}
-            disabled={record.status !== 'available'}
+            disabled={record.status !== 'active'}
           >
             Download
           </Button>
@@ -261,7 +305,7 @@ const DigitalDownloadsPage: React.FC = () => {
     },
   ];
 
-  const activeProducts = products.filter((p) => p.status === 'available').length;
+  const activeProducts = products.filter((p) => p.status === 'active').length;
   const totalDownloads = products.reduce((sum, p) => sum + p.downloadCount, 0);
   const expiringProducts = products.filter(
     (p) =>
@@ -271,18 +315,17 @@ const DigitalDownloadsPage: React.FC = () => {
   ).length;
 
   return (
-    <Spin spinning={loading} tip="Loading digital downloads...">
-      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-          <Col>
-            <Title level={3}>
-              <CloudDownloadOutlined style={{ color: '#1890ff' }} /> Digital Downloads
-            </Title>
-            <Paragraph type="secondary">
-              Access and manage your digital product purchases
-            </Paragraph>
-          </Col>
-        </Row>
+    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+        <Col>
+          <Title level={3}>
+            <CloudDownloadOutlined style={{ color: '#1890ff' }} /> Digital Downloads
+          </Title>
+          <Paragraph type="secondary">
+            Access and manage your digital product purchases
+          </Paragraph>
+        </Col>
+      </Row>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={8}>
@@ -362,7 +405,7 @@ const DigitalDownloadsPage: React.FC = () => {
                 setIsDetailsModalVisible(false);
               }
             }}
-            disabled={selectedProduct?.status !== 'available'}
+            disabled={selectedProduct?.status !== 'active'}
           >
             Download Now
           </Button>,
@@ -417,7 +460,7 @@ const DigitalDownloadsPage: React.FC = () => {
               <Descriptions.Item label="Status">
                 <Tag
                   color={
-                    selectedProduct.status === 'available'
+                    selectedProduct.status === 'active'
                       ? 'success'
                       : selectedProduct.status === 'expired'
                       ? 'error'
@@ -471,7 +514,7 @@ const DigitalDownloadsPage: React.FC = () => {
               />
             )}
 
-            {selectedProduct.status === 'limit_reached' && (
+            {selectedProduct.status === 'used_up' && (
               <Alert
                 message="Download Limit Reached"
                 description="You have reached the maximum number of downloads for this product. Contact support if you need additional downloads."
@@ -483,7 +526,6 @@ const DigitalDownloadsPage: React.FC = () => {
         )}
       </Modal>
     </div>
-    </Spin>
   );
 };
 

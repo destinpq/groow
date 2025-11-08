@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Table,
@@ -26,35 +26,61 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { UploadFile } from 'antd/es/upload/interface';
-import { cmsAPI, CMSTestimonial } from '@/services/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
+interface Testimonial {
+  id: number;
+  name: string;
+  designation: string;
+  company: string;
+  rating: number;
+  comment: string;
+  avatar?: string;
+  status: string;
+  createdAt: string;
+}
+
+const mockTestimonials: Testimonial[] = [
+  {
+    id: 1,
+    name: 'John Smith',
+    designation: 'CEO',
+    company: 'Tech Corp',
+    rating: 5,
+    comment: 'Excellent platform! Our sales have increased by 300% since joining.',
+    status: 'published',
+    createdAt: '2024-10-15',
+  },
+  {
+    id: 2,
+    name: 'Sarah Johnson',
+    designation: 'Marketing Director',
+    company: 'Fashion Hub',
+    rating: 4,
+    comment: 'Great customer support and easy to use interface.',
+    status: 'published',
+    createdAt: '2024-09-20',
+  },
+  {
+    id: 3,
+    name: 'Mike Davis',
+    designation: 'Owner',
+    company: 'Electronics Store',
+    rating: 5,
+    comment: 'Best e-commerce platform I have used. Highly recommended!',
+    status: 'draft',
+    createdAt: '2024-11-01',
+  },
+];
+
 const AdminTestimonialsPage: React.FC = () => {
-  const [testimonials, setTestimonials] = useState<CMSTestimonial[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(mockTestimonials);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingTestimonial, setEditingTestimonial] = useState<CMSTestimonial | null>(null);
+  const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-  useEffect(() => {
-    loadTestimonials();
-  }, []);
-
-  const loadTestimonials = async () => {
-    try {
-      setLoading(true);
-      const response = await cmsAPI.testimonials.getAll();
-      setTestimonials(response.data || []);
-    } catch (error) {
-      message.error('Failed to load testimonials');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -71,78 +97,69 @@ const AdminTestimonialsPage: React.FC = () => {
     setModalVisible(true);
   };
 
-  const handleEditTestimonial = (testimonial: CMSTestimonial) => {
+  const handleEditTestimonial = (testimonial: Testimonial) => {
     setEditingTestimonial(testimonial);
     form.setFieldsValue(testimonial);
     setModalVisible(true);
   };
 
-  const handleDeleteTestimonial = async (id: number) => {
+  const handleDeleteTestimonial = (id: number) => {
     Modal.confirm({
       title: 'Delete Testimonial',
       content: 'Are you sure you want to delete this testimonial?',
       okText: 'Delete',
       okType: 'danger',
-      onOk: async () => {
-        try {
-          await cmsAPI.testimonials.delete(id);
-          message.success('Testimonial deleted successfully');
-          loadTestimonials();
-        } catch (error) {
-          message.error('Failed to delete testimonial');
-          console.error(error);
-        }
+      onOk: () => {
+        setTestimonials(testimonials.filter((t) => t.id !== id));
+        message.success('Testimonial deleted successfully');
       },
     });
   };
 
-  const handleToggleStatus = async (id: number, isActive: boolean) => {
-    try {
-      await cmsAPI.testimonials.update(id, { isActive });
-      message.success(`Testimonial ${isActive ? 'published' : 'unpublished'} successfully`);
-      loadTestimonials();
-    } catch (error) {
-      message.error('Failed to update testimonial');
-      console.error(error);
-    }
+  const handleToggleStatus = (id: number, currentStatus: string) => {
+    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+    setTestimonials(
+      testimonials.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
+    );
+    message.success(`Testimonial ${newStatus === 'published' ? 'published' : 'unpublished'} successfully`);
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      if (editingTestimonial) {
-        await cmsAPI.testimonials.update(editingTestimonial.id, values);
-        message.success('Testimonial updated successfully');
-      } else {
-        await cmsAPI.testimonials.create(values);
-        message.success('Testimonial created successfully');
-      }
-      setModalVisible(false);
-      form.resetFields();
-      setFileList([]);
-      loadTestimonials();
-    } catch (error) {
-      message.error('Failed to save testimonial');
-      console.error(error);
+  const handleSubmit = (values: any) => {
+    const testimonialData = {
+      ...values,
+      id: editingTestimonial?.id || testimonials.length + 1,
+      createdAt: editingTestimonial?.createdAt || new Date().toISOString().split('T')[0],
+      avatar: fileList.length > 0 ? URL.createObjectURL(fileList[0] as any) : undefined,
+    };
+
+    if (editingTestimonial) {
+      setTestimonials(
+        testimonials.map((t) => (t.id === editingTestimonial.id ? testimonialData : t))
+      );
+      message.success('Testimonial updated successfully');
+    } else {
+      setTestimonials([...testimonials, testimonialData]);
+      message.success('Testimonial created successfully');
     }
+
+    setModalVisible(false);
+    form.resetFields();
+    setFileList([]);
   };
 
-  const columns: ColumnsType<CMSTestimonial> = [
+  const columns: ColumnsType<Testimonial> = [
     {
       title: 'Customer',
       key: 'customer',
       render: (_, record) => (
         <Space>
-          <Avatar icon={<UserOutlined />} src={record.customerImage} />
+          <Avatar icon={<UserOutlined />} src={record.avatar} />
           <div>
-            <Text strong>{record.customerName}</Text>
-            {record.customerTitle && (
-              <>
-                <br />
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {record.customerTitle}
-                </Text>
-              </>
-            )}
+            <Text strong>{record.name}</Text>
+            <br />
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {record.designation} at {record.company}
+            </Text>
           </div>
         </Space>
       ),
@@ -156,27 +173,30 @@ const AdminTestimonialsPage: React.FC = () => {
     },
     {
       title: 'Testimonial',
-      dataIndex: 'content',
-      key: 'content',
-      render: (content: string) => (
+      dataIndex: 'comment',
+      key: 'comment',
+      render: (comment: string) => (
         <Paragraph
           ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}
           style={{ marginBottom: 0, maxWidth: 400 }}
         >
-          {content}
+          {comment}
         </Paragraph>
       ),
     },
     {
       title: 'Status',
-      dataIndex: 'isActive',
-      key: 'isActive',
-      render: (isActive: boolean, record) => (
-        <Switch
-          checked={isActive}
-          onChange={(checked) => handleToggleStatus(record.id, checked)}
-          size="small"
-        />
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string, record) => (
+        <Space>
+          <Tag color={getStatusColor(status)}>{status.toUpperCase()}</Tag>
+          <Switch
+            checked={status === 'published'}
+            onChange={() => handleToggleStatus(record.id, status)}
+            size="small"
+          />
+        </Space>
       ),
     },
     {

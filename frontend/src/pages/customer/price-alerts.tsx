@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -18,7 +18,6 @@ import {
   Image,
   Alert,
   Progress,
-  Spin,
 } from 'antd';
 import {
   BellOutlined,
@@ -32,7 +31,6 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { wishlistAPI } from '@/services/api/account';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -121,43 +119,36 @@ const mockAlerts: PriceAlert[] = [
 ];
 
 const PriceAlertsPage: React.FC = () => {
-  const [alerts, setAlerts] = useState<PriceAlert[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [alerts, setAlerts] = useState<PriceAlert[]>(mockAlerts);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    loadPriceAlerts();
-  }, []);
-
-  const loadPriceAlerts = async () => {
-    try {
-      setLoading(true);
-      const response = await wishlistAPI.getPriceAlerts();
-      setAlerts(response.data || []);
-    } catch (error) {
-      console.error('Failed to load price alerts:', error);
-      message.error('Failed to load price alerts');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateAlert = () => {
     form.resetFields();
     setIsModalVisible(true);
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      await wishlistAPI.setPriceAlert(values.itemId || '1', values.targetPrice);
-      await loadPriceAlerts();
-      message.success('Price alert created successfully! You will be notified when the price drops.');
-      setIsModalVisible(false);
-      form.resetFields();
-    } catch (error) {
-      message.error('Failed to create price alert');
-    }
+  const handleSubmit = (values: any) => {
+    const newAlert: PriceAlert = {
+      id: alerts.length + 1,
+      productId: Math.floor(Math.random() * 1000),
+      productName: values.productName,
+      productImage: 'https://via.placeholder.com/60?text=Product',
+      currentPrice: values.currentPrice,
+      originalPrice: values.currentPrice,
+      targetPrice: values.targetPrice,
+      alertType: values.alertType,
+      percentageDiscount: values.percentageDiscount,
+      status: 'active',
+      createdAt: dayjs().format('YYYY-MM-DD'),
+      isNotificationEnabled: values.isNotificationEnabled,
+      category: values.category,
+    };
+
+    setAlerts([newAlert, ...alerts]);
+    message.success('Price alert created successfully! You will be notified when the price drops.');
+    setIsModalVisible(false);
+    form.resetFields();
   };
 
   const handleDelete = (id: number) => {
@@ -338,22 +329,21 @@ const PriceAlertsPage: React.FC = () => {
     .reduce((sum, a) => sum + (a.originalPrice - a.currentPrice), 0);
 
   return (
-    <Spin spinning={loading} tip="Loading price alerts...">
-      <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
-        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-          <Col>
-            <Title level={3}>
-              <BellOutlined style={{ color: '#fa8c16' }} /> Price Alerts
-            </Title>
-            <Paragraph type="secondary">
-              Get notified when your favorite products drop in price
-            </Paragraph>
-          </Col>
-          <Col>
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateAlert}>
-              Create Price Alert
-            </Button>
-          </Col>
+    <div style={{ padding: 24, background: '#f0f2f5', minHeight: '100vh' }}>
+      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+        <Col>
+          <Title level={3}>
+            <BellOutlined style={{ color: '#fa8c16' }} /> Price Alerts
+          </Title>
+          <Paragraph type="secondary">
+            Get notified when your favorite products drop in price
+          </Paragraph>
+        </Col>
+        <Col>
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateAlert}>
+            Create Price Alert
+          </Button>
+        </Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
@@ -615,8 +605,7 @@ const PriceAlertsPage: React.FC = () => {
           </Form.Item>
         </Form>
       </Modal>
-      </div>
-    </Spin>
+    </div>
   );
 };
 

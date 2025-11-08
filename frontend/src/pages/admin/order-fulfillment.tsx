@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -34,108 +34,162 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { ordersAPI, Order } from '@/services/api/orders';
 
 const { Title, Text, Paragraph } = Typography;
 const { Step } = Steps;
 
-const OrderFulfillmentPage: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+interface Order {
+  id: number;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  shippingAddress: string;
+  items: OrderItem[];
+  totalAmount: number;
+  paymentStatus: 'paid' | 'pending';
+  fulfillmentStatus: 'pending' | 'picking' | 'packing' | 'ready-to-ship' | 'shipped' | 'delivered';
+  carrier: string;
+  trackingNumber: string;
+  orderDate: string;
+  warehouse: string;
+  assignedTo: string;
+}
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+interface OrderItem {
+  id: number;
+  sku: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  location: string;
+  picked: boolean;
+}
 
-  const fetchOrders = async () => {
-    setLoading(true);
-    try {
-      const response = await ordersAPI.getAll({ status: 'processing,pending' });
-      setOrders(response.data);
-    } catch (error) {
-      message.error('Failed to load orders');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
-    try {
-      await ordersAPI.updateStatus(orderId, newStatus as any);
-      message.success('Order status updated');
-      fetchOrders();
-    } catch (error) {
-      message.error('Failed to update status');
-    }
-  };
-
-  const columns: ColumnsType<Order> = [
-    {
-      title: 'Order #',
-      dataIndex: 'orderNumber',
-      key: 'orderNumber',
-      fixed: 'left',
-      width: 140,
-      render: (orderNumber: string) => (
-        <Text strong style={{ color: '#1890ff' }}>
-          {orderNumber}
-        </Text>
-      ),
-    },
-    {
-      title: 'Customer',
-      key: 'customer',
-      width: 180,
-      render: (order: Order) => (
-        <div>
-          <div>
-            <UserOutlined /> <Text strong>{order.customer?.name || 'Unknown'}</Text>
-          </div>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            {order.customer?.email || 'N/A'}
-          </Text>
-        </div>
-      ),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status: string) => {
-        const statusConfig: Record<string, { color: string; text: string }> = {
-          pending: { color: 'gold', text: 'Pending' },
-          processing: { color: 'blue', text: 'Processing' },
-          completed: { color: 'green', text: 'Completed' },
-          cancelled: { color: 'red', text: 'Cancelled' },
-        };
-        const config = statusConfig[status] || { color: 'default', text: status };
-        return <Tag color={config.color}>{config.text}</Tag>;
+const mockOrders: Order[] = [
+  {
+    id: 1,
+    orderNumber: 'ORD-2024-001',
+    customerName: 'John Doe',
+    customerEmail: 'john@example.com',
+    customerPhone: '+1 234-567-8900',
+    shippingAddress: '123 Main St, New York, NY 10001',
+    items: [
+      {
+        id: 1,
+        sku: 'ELEC-001',
+        productName: 'Wireless Headphones Pro',
+        quantity: 2,
+        price: 99,
+        location: 'A-12-3',
+        picked: true,
       },
-    },
-    {
-      title: 'Total',
-      dataIndex: 'totalAmount',
-      key: 'totalAmount',
-      width: 100,
-      render: (amount: number) => <Text strong>${amount?.toFixed(2) || '0.00'}</Text>,
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      fixed: 'right',
-      width: 120,
-      render: (order: Order) => (
-        <Space>
-          <Button type="primary" size="small" onClick={() => setSelectedOrder(order)}>
-            View
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+      {
+        id: 2,
+        sku: 'ELEC-002',
+        productName: 'Smart Watch Series 5',
+        quantity: 1,
+        price: 299,
+        location: 'B-05-1',
+        picked: false,
+      },
+    ],
+    totalAmount: 497,
+    paymentStatus: 'paid',
+    fulfillmentStatus: 'picking',
+    carrier: 'FedEx',
+    trackingNumber: '',
+    orderDate: dayjs().subtract(2, 'hours').format('YYYY-MM-DD HH:mm'),
+    warehouse: 'Main Warehouse',
+    assignedTo: 'Bob Johnson',
+  },
+  {
+    id: 2,
+    orderNumber: 'ORD-2024-002',
+    customerName: 'Jane Smith',
+    customerEmail: 'jane@example.com',
+    customerPhone: '+1 234-567-8901',
+    shippingAddress: '456 Oak Ave, Los Angeles, CA 90001',
+    items: [
+      {
+        id: 3,
+        sku: 'HOME-003',
+        productName: 'Ergonomic Office Chair',
+        quantity: 1,
+        price: 449,
+        location: 'C-08-2',
+        picked: true,
+      },
+    ],
+    totalAmount: 449,
+    paymentStatus: 'paid',
+    fulfillmentStatus: 'packing',
+    carrier: 'UPS',
+    trackingNumber: '',
+    orderDate: dayjs().subtract(4, 'hours').format('YYYY-MM-DD HH:mm'),
+    warehouse: 'Main Warehouse',
+    assignedTo: 'Alice Williams',
+  },
+  {
+    id: 3,
+    orderNumber: 'ORD-2024-003',
+    customerName: 'Bob Wilson',
+    customerEmail: 'bob@example.com',
+    customerPhone: '+1 234-567-8902',
+    shippingAddress: '789 Elm St, Chicago, IL 60601',
+    items: [
+      {
+        id: 4,
+        sku: 'FASH-004',
+        productName: 'Leather Jacket',
+        quantity: 1,
+        price: 299,
+        location: 'D-03-4',
+        picked: false,
+      },
+    ],
+    totalAmount: 299,
+    paymentStatus: 'paid',
+    fulfillmentStatus: 'pending',
+    carrier: '',
+    trackingNumber: '',
+    orderDate: dayjs().subtract(1, 'hour').format('YYYY-MM-DD HH:mm'),
+    warehouse: 'Main Warehouse',
+    assignedTo: '',
+  },
+  {
+    id: 4,
+    orderNumber: 'ORD-2024-004',
+    customerName: 'Alice Brown',
+    customerEmail: 'alice@example.com',
+    customerPhone: '+1 234-567-8903',
+    shippingAddress: '321 Pine Rd, Miami, FL 33101',
+    items: [
+      {
+        id: 5,
+        sku: 'ELEC-001',
+        productName: 'Wireless Headphones Pro',
+        quantity: 1,
+        price: 99,
+        location: 'A-12-3',
+        picked: true,
+      },
+    ],
+    totalAmount: 99,
+    paymentStatus: 'paid',
+    fulfillmentStatus: 'ready-to-ship',
+    carrier: 'DHL',
+    trackingNumber: 'DHL123456789',
+    orderDate: dayjs().subtract(6, 'hours').format('YYYY-MM-DD HH:mm'),
+    warehouse: 'Main Warehouse',
+    assignedTo: 'Bob Johnson',
+  },
+];
+
+const OrderFulfillmentPage: React.FC = () => {
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isOrderModalVisible, setIsOrderModalVisible] = useState<boolean>(false);
+  const [form] = Form.useForm();
 
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);

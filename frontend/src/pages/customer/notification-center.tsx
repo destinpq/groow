@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -39,13 +39,26 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { notificationsAPI, Notification } from '@/services/api';
 
 dayjs.extend(relativeTime);
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { Search } = Input;
+
+interface Notification {
+  id: number;
+  type: 'order' | 'promotion' | 'shipping' | 'payment' | 'review' | 'wishlist' | 'message' | 'system';
+  title: string;
+  message: string;
+  timestamp: string;
+  isRead: boolean;
+  priority: 'high' | 'medium' | 'low';
+  actionUrl?: string;
+  actionText?: string;
+  image?: string;
+  metadata?: Record<string, any>;
+}
 
 const mockNotifications: Notification[] = [
   {
@@ -169,71 +182,36 @@ const mockNotifications: Notification[] = [
 ];
 
 const NotificationCenterPage: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
   const [filterType, setFilterType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('all');
 
-  useEffect(() => {
-    loadNotifications();
-  }, []);
-
-  const loadNotifications = async () => {
-    try {
-      setLoading(true);
-      const response = await notificationsAPI.getAll();
-      setNotifications(response || []);
-    } catch (error) {
-      message.error('Failed to load notifications');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const typeConfig: Record<string, { icon: React.ReactNode; color: string; label: string }> = {
+  const typeConfig = {
     order: { icon: <ShoppingCartOutlined />, color: '#1890ff', label: 'Orders' },
     promotion: { icon: <GiftOutlined />, color: '#52c41a', label: 'Promotions' },
-    product: { icon: <TruckOutlined />, color: '#fa8c16', label: 'Products' },
+    shipping: { icon: <TruckOutlined />, color: '#fa8c16', label: 'Shipping' },
     payment: { icon: <DollarOutlined />, color: '#722ed1', label: 'Payments' },
     review: { icon: <StarOutlined />, color: '#faad14', label: 'Reviews' },
-    rfq: { icon: <HeartOutlined />, color: '#eb2f96', label: 'RFQ' },
+    wishlist: { icon: <HeartOutlined />, color: '#eb2f96', label: 'Wishlist' },
+    message: { icon: <MessageOutlined />, color: '#13c2c2', label: 'Messages' },
     system: { icon: <WarningOutlined />, color: '#f5222d', label: 'System' },
   };
 
-  const handleMarkAsRead = async (id: string) => {
-    try {
-      await notificationsAPI.markAsRead(id);
-      setNotifications(
-        notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-      );
-    } catch (error) {
-      message.error('Failed to mark as read');
-      console.error(error);
-    }
+  const handleMarkAsRead = (id: number) => {
+    setNotifications(
+      notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    );
   };
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      await notificationsAPI.markAllAsRead();
-      setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
-      message.success('All notifications marked as read');
-    } catch (error) {
-      message.error('Failed to mark all as read');
-      console.error(error);
-    }
+  const handleMarkAllAsRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, isRead: true })));
+    message.success('All notifications marked as read');
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await notificationsAPI.markAsRead(id); // Use markAsRead as delete
-      setNotifications(notifications.filter((n) => n.id !== id));
-      message.success('Notification deleted');
-    } catch (error) {
-      message.error('Failed to delete notification');
-      console.error(error);
-    }
+  const handleDelete = (id: number) => {
+    setNotifications(notifications.filter((n) => n.id !== id));
+    message.success('Notification deleted');
   };
 
   const handleClearAll = () => {
@@ -255,7 +233,9 @@ const NotificationCenterPage: React.FC = () => {
   });
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-  const highPriorityCount = 0; // Priority not in API
+  const highPriorityCount = notifications.filter(
+    (n) => !n.isRead && n.priority === 'high'
+  ).length;
 
   const notificationMenu = (notification: Notification) => (
     <Menu>
@@ -264,7 +244,9 @@ const NotificationCenterPage: React.FC = () => {
         icon={<EyeOutlined />}
         onClick={() => {
           handleMarkAsRead(notification.id);
-          message.info('Viewing notification details');
+          if (notification.actionUrl) {
+            message.info(`Navigating to ${notification.actionUrl}`);
+          }
         }}
       >
         View Details
@@ -516,15 +498,17 @@ const NotificationCenterPage: React.FC = () => {
                       border: notification.isRead ? '1px solid #f0f0f0' : '1px solid #91d5ff',
                     }}
                     actions={[
-                      <Button
-                        type="link"
-                        onClick={() => {
-                          handleMarkAsRead(notification.id);
-                          message.info('Viewing notification');
-                        }}
-                      >
-                        View
-                      </Button>,
+                      notification.actionText && (
+                        <Button
+                          type="link"
+                          onClick={() => {
+                            handleMarkAsRead(notification.id);
+                            message.info(`Navigating to ${notification.actionUrl}`);
+                          }}
+                        >
+                          {notification.actionText}
+                        </Button>
+                      ),
                       <Dropdown overlay={notificationMenu(notification)} trigger={['click']}>
                         <Button type="text" icon={<MoreOutlined />} />
                       </Dropdown>,
@@ -534,6 +518,7 @@ const NotificationCenterPage: React.FC = () => {
                       avatar={
                         <Badge dot={!notification.isRead} offset={[-5, 5]}>
                           <Avatar
+                            src={notification.image}
                             icon={config.icon}
                             style={{ backgroundColor: config.color }}
                             size={48}
@@ -544,6 +529,11 @@ const NotificationCenterPage: React.FC = () => {
                         <Space>
                           <Text strong={!notification.isRead}>{notification.title}</Text>
                           <Tag color={config.color}>{config.label}</Tag>
+                          {notification.priority === 'high' && (
+                            <Tag color="red" icon={<WarningOutlined />}>
+                              High Priority
+                            </Tag>
+                          )}
                         </Space>
                       }
                       description={
@@ -555,7 +545,7 @@ const NotificationCenterPage: React.FC = () => {
                             {notification.message}
                           </Paragraph>
                           <Text type="secondary" style={{ fontSize: 12 }}>
-                            <ClockCircleOutlined /> {dayjs(notification.createdAt).fromNow()}
+                            <ClockCircleOutlined /> {dayjs(notification.timestamp).fromNow()}
                           </Text>
                         </div>
                       }

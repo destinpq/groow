@@ -1,23 +1,34 @@
 import { ProTable } from '@ant-design/pro-components';
-import type { ProColumns, ActionType } from '@ant-design/pro-components';
+import type { ProColumns } from '@ant-design/pro-components';
 import { Button, Space, Tag, Drawer, Descriptions, message, Input } from 'antd';
 import { EyeOutlined, MessageOutlined } from '@ant-design/icons';
-import { useState, useRef } from 'react';
-import { rfqAPI, RFQ } from '@/services/api/rfq';
+import { useState } from 'react';
+
+interface RFQType {
+  id: string;
+  rfqNumber: string;
+  customer: string;
+  title: string;
+  category: string;
+  quantity: number;
+  budget: string;
+  status: 'pending' | 'quoted' | 'approved' | 'rejected';
+  quotesCount: number;
+  createdAt: string;
+}
 
 const AdminRFQ = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [selectedRFQ, setSelectedRFQ] = useState<RFQ | null>(null);
-  const actionRef = useRef<ActionType>();
+  const [selectedRFQ, setSelectedRFQ] = useState<RFQType | null>(null);
 
   const statusColors = {
-    open: 'warning',
+    pending: 'warning',
     quoted: 'processing',
-    closed: 'success',
-    cancelled: 'error',
+    approved: 'success',
+    rejected: 'error',
   };
 
-  const columns: ProColumns<RFQ>[] = [
+  const columns: ProColumns<RFQType>[] = [
     {
       title: 'RFQ #',
       dataIndex: 'rfqNumber',
@@ -34,8 +45,8 @@ const AdminRFQ = () => {
     },
     {
       title: 'Customer',
-      dataIndex: 'customerName',
-      key: 'customerName',
+      dataIndex: 'customer',
+      key: 'customer',
       width: 150,
     },
     {
@@ -56,12 +67,11 @@ const AdminRFQ = () => {
       dataIndex: 'budget',
       key: 'budget',
       width: 120,
-      render: (budget) => budget ? `$${Number(budget).toLocaleString()}` : 'N/A',
     },
     {
       title: 'Quotes',
-      dataIndex: 'quotationCount',
-      key: 'quotationCount',
+      dataIndex: 'quotesCount',
+      key: 'quotesCount',
       width: 100,
       align: 'center',
     },
@@ -71,14 +81,14 @@ const AdminRFQ = () => {
       key: 'status',
       width: 120,
       filters: [
-        { text: 'Open', value: 'open' },
+        { text: 'Pending', value: 'pending' },
         { text: 'Quoted', value: 'quoted' },
-        { text: 'Closed', value: 'closed' },
-        { text: 'Cancelled', value: 'cancelled' },
+        { text: 'Approved', value: 'approved' },
+        { text: 'Rejected', value: 'rejected' },
       ],
-      render: (_: any, record: RFQ) => (
-        <Tag color={statusColors[record.status]}>
-          {record.status?.toUpperCase()}
+      render: (status: string) => (
+        <Tag color={statusColors[status as keyof typeof statusColors]}>
+          {status?.toUpperCase()}
         </Tag>
       ),
     },
@@ -108,69 +118,89 @@ const AdminRFQ = () => {
     },
   ];
 
+  const mockData: RFQType[] = [
+    {
+      id: '1',
+      rfqNumber: 'RFQ-2024-001',
+      customer: 'John Doe',
+      title: 'Bulk order for office furniture',
+      category: 'Furniture',
+      quantity: 100,
+      budget: '$10,000 - $15,000',
+      status: 'pending',
+      quotesCount: 3,
+      createdAt: '2024-11-04',
+    },
+    {
+      id: '2',
+      rfqNumber: 'RFQ-2024-002',
+      customer: 'Jane Smith',
+      title: 'Electronic components wholesale',
+      category: 'Electronics',
+      quantity: 500,
+      budget: '$25,000+',
+      status: 'quoted',
+      quotesCount: 7,
+      createdAt: '2024-11-03',
+    },
+  ];
+
   return (
     <div>
-      <ProTable<RFQ>
+      <ProTable<RFQType>
         columns={columns}
-        actionRef={actionRef}
-        request={async (params, sort, filter) => {
-          try {
-            const response = await rfqAPI.getAll({
-              page: params.current || 1,
-              limit: params.pageSize || 10,
-              status: filter.status?.[0] as any,
-            });
-            return {
-              data: response.data,
-              success: true,
-              total: response.total,
-            };
-          } catch (error: any) {
-            message.error(error.message || 'Failed to load RFQs');
-            return {
-              data: [],
-              success: false,
-              total: 0,
-            };
-          }
-        }}
+        dataSource={mockData}
         rowKey="id"
-        pagination={{
-          defaultPageSize: 20,
-          showSizeChanger: true,
-        }}
         search={{
           labelWidth: 'auto',
         }}
         headerTitle="RFQ Management"
-        scroll={{ x: 1400 }}
+        pagination={{
+          defaultPageSize: 20,
+        }}
+        scroll={{ x: 1200 }}
       />
 
       <Drawer
         title="RFQ Details"
         placement="right"
-        open={drawerVisible}
+        width={720}
         onClose={() => setDrawerVisible(false)}
-        width={600}
+        open={drawerVisible}
       >
         {selectedRFQ && (
-          <Descriptions bordered column={1}>
-            <Descriptions.Item label="RFQ Number">{selectedRFQ.rfqNumber}</Descriptions.Item>
-            <Descriptions.Item label="Customer">{selectedRFQ.customerName}</Descriptions.Item>
-            <Descriptions.Item label="Title">{selectedRFQ.title}</Descriptions.Item>
-            <Descriptions.Item label="Description">{selectedRFQ.description}</Descriptions.Item>
-            <Descriptions.Item label="Category">{selectedRFQ.category}</Descriptions.Item>
-            <Descriptions.Item label="Quantity">{selectedRFQ.quantity}</Descriptions.Item>
-            <Descriptions.Item label="Budget">{selectedRFQ.budget ? `$${selectedRFQ.budget}` : 'N/A'}</Descriptions.Item>
-            <Descriptions.Item label="Deadline">{selectedRFQ.deadline || 'N/A'}</Descriptions.Item>
-            <Descriptions.Item label="Status">
-              <Tag color={statusColors[selectedRFQ.status]}>
-                {selectedRFQ.status.toUpperCase()}
-              </Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label="Quotations">{selectedRFQ.quotationCount}</Descriptions.Item>
-            <Descriptions.Item label="Created">{new Date(selectedRFQ.createdAt).toLocaleString()}</Descriptions.Item>
-          </Descriptions>
+          <div>
+            <Descriptions title="RFQ Information" bordered column={2}>
+              <Descriptions.Item label="RFQ Number">{selectedRFQ.rfqNumber}</Descriptions.Item>
+              <Descriptions.Item label="Status">
+                <Tag color={statusColors[selectedRFQ.status]}>
+                  {selectedRFQ.status.toUpperCase()}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="Customer" span={2}>{selectedRFQ.customer}</Descriptions.Item>
+              <Descriptions.Item label="Title" span={2}>{selectedRFQ.title}</Descriptions.Item>
+              <Descriptions.Item label="Category">{selectedRFQ.category}</Descriptions.Item>
+              <Descriptions.Item label="Quantity">{selectedRFQ.quantity}</Descriptions.Item>
+              <Descriptions.Item label="Budget" span={2}>{selectedRFQ.budget}</Descriptions.Item>
+              <Descriptions.Item label="Quotes Received">{selectedRFQ.quotesCount}</Descriptions.Item>
+              <Descriptions.Item label="Created">{selectedRFQ.createdAt}</Descriptions.Item>
+            </Descriptions>
+
+            <div style={{ marginTop: 24 }}>
+              <h4>Requirements Description</h4>
+              <p>Looking for high-quality office furniture including desks, chairs, and storage units for a new office setup. Need delivery within 2 weeks.</p>
+            </div>
+
+            <div style={{ marginTop: 24 }}>
+              <h4>Vendor Quotes ({selectedRFQ.quotesCount})</h4>
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <div style={{ padding: 16, border: '1px solid #d9d9d9', borderRadius: 4 }}>
+                  <div><strong>Tech Furniture Ltd</strong> - $12,500</div>
+                  <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>Quoted on 2024-11-04</div>
+                </div>
+              </Space>
+            </div>
+          </div>
         )}
       </Drawer>
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, Button, Table, Tag, Space, Modal, Form, Input, Select, Upload, message, Badge, Row, Col, Timeline, Avatar, Rate, Divider, Spin, Empty, Tabs, Statistic, Progress, Typography, List, Tooltip, FloatButton } from 'antd';
 import { PlusOutlined, MessageOutlined, SearchOutlined, FilterOutlined, FileTextOutlined, ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, SendOutlined, PaperClipOutlined, CustomerServiceOutlined, StarOutlined, ReloadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { supportTicketsAPI, type SupportTicket, type TicketMessage, type CreateTicketRequest, type TicketStats } from '../services/api/supportTicketsAPI';
-// import './support-tickets.less';
+import './support-tickets.less';
 
 const { TextArea } = Input;
 const { Option } = Select;

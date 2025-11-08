@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, List, Avatar, Space, Tag, Input, Modal, Form, Select, Upload, message, Row, Col, Tabs, Typography, Badge, Rate, Divider, Tooltip, Empty, Spin, Statistic, Progress, Timeline } from 'antd';
 import { QuestionCircleOutlined, LikeOutlined, DislikeOutlined, MessageOutlined, CheckCircleOutlined, UserOutlined, PlusOutlined, SearchOutlined, FilterOutlined, StarFilled, TrophyOutlined, ClockCircleOutlined, PaperClipOutlined, SendOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { productQAAPI, type ProductQuestion, type ProductAnswer, type CreateQuestionRequest, type QAStats } from '@/services/api/productQAAPI';
-// import './product-qa.less';
+import { productQAAPI, type ProductQuestion, type ProductAnswer, type CreateQuestionRequest, type QAStats } from '../../services/api/productQAAPI';
+import './product-qa.less';
 
 const { TextArea } = Input;
 const { Option } = Select;

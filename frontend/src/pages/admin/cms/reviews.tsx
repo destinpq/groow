@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Table,
@@ -14,7 +14,6 @@ import {
   Image,
   Switch,
   message,
-  Drawer,
 } from 'antd';
 import {
   SearchOutlined,
@@ -25,34 +24,80 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { reviewsAPI, Review } from '@/services/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
+interface Review {
+  id: number;
+  productId: number;
+  productName: string;
+  productImage: string;
+  customerName: string;
+  customerId: number;
+  rating: number;
+  title: string;
+  comment: string;
+  images?: string[];
+  status: string;
+  helpful: number;
+  verified: boolean;
+  createdAt: string;
+}
+
+const mockReviews: Review[] = [
+  {
+    id: 1,
+    productId: 1,
+    productName: 'Premium Wireless Headphones',
+    productImage: 'https://via.placeholder.com/60',
+    customerName: 'John Doe',
+    customerId: 101,
+    rating: 5,
+    title: 'Excellent quality!',
+    comment: 'These headphones are amazing! Great sound quality and very comfortable.',
+    images: ['https://via.placeholder.com/200'],
+    status: 'approved',
+    helpful: 24,
+    verified: true,
+    createdAt: '2024-10-25',
+  },
+  {
+    id: 2,
+    productId: 2,
+    productName: 'Smart Watch Pro',
+    productImage: 'https://via.placeholder.com/60',
+    customerName: 'Sarah Smith',
+    customerId: 102,
+    rating: 4,
+    title: 'Good product',
+    comment: 'Nice watch but battery life could be better.',
+    status: 'pending',
+    helpful: 8,
+    verified: true,
+    createdAt: '2024-11-01',
+  },
+  {
+    id: 3,
+    productId: 1,
+    productName: 'Premium Wireless Headphones',
+    productImage: 'https://via.placeholder.com/60',
+    customerName: 'Mike Johnson',
+    customerId: 103,
+    rating: 2,
+    title: 'Disappointed',
+    comment: 'Not worth the price. Sound quality is mediocre.',
+    status: 'rejected',
+    helpful: 3,
+    verified: false,
+    createdAt: '2024-10-30',
+  },
+];
+
 const AdminReviewsPage: React.FC = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>(mockReviews);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-
-  useEffect(() => {
-    loadReviews();
-  }, []);
-
-  const loadReviews = async () => {
-    try {
-      setLoading(true);
-      const response = await reviewsAPI.getCustomerReviews();
-      setReviews(response.data || []);
-    } catch (error) {
-      message.error('Failed to load reviews');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -68,53 +113,26 @@ const AdminReviewsPage: React.FC = () => {
     setDrawerVisible(true);
   };
 
-  const handleApproveReview = async (id: string) => {
-    try {
-      await reviewsAPI.approve(id);
-      message.success('Review approved');
-      loadReviews();
-    } catch (error) {
-      message.error('Failed to approve review');
-      console.error(error);
-    }
+  const handleApproveReview = (id: number) => {
+    setReviews(reviews.map((r) => (r.id === id ? { ...r, status: 'approved' } : r)));
+    message.success('Review approved');
   };
 
-  const handleRejectReview = (id: string) => {
+  const handleRejectReview = (id: number) => {
     Modal.confirm({
       title: 'Reject Review',
       content: 'Are you sure you want to reject this review?',
       okText: 'Reject',
       okType: 'danger',
-      onOk: async () => {
-        try {
-          await reviewsAPI.reject(id);
-          message.success('Review rejected');
-          loadReviews();
-        } catch (error) {
-          message.error('Failed to reject review');
-          console.error(error);
-        }
+      onOk: () => {
+        setReviews(reviews.map((r) => (r.id === id ? { ...r, status: 'rejected' } : r)));
+        message.success('Review rejected');
       },
     });
   };
 
-  const handleDeleteReview = async (id: string) => {
-    Modal.confirm({
-      title: 'Delete Review',
-      content: 'Are you sure you want to delete this review permanently?',
-      okText: 'Delete',
-      okType: 'danger',
-      onOk: async () => {
-        try {
-          await reviewsAPI.delete(id);
-          message.success('Review deleted');
-          loadReviews();
-        } catch (error) {
-          message.error('Failed to delete review');
-          console.error(error);
-        }
-      },
-    });
+  const handleToggleFeatured = (id: number) => {
+    message.success('Review featured status toggled');
   };
 
   const columns: ColumnsType<Review> = [
@@ -123,8 +141,8 @@ const AdminReviewsPage: React.FC = () => {
       key: 'product',
       render: (_, record) => (
         <Space>
-          <Image src={record.product?.images?.[0]} width={50} height={50} style={{ borderRadius: 4 }} />
-          <Text>{record.product?.name || 'N/A'}</Text>
+          <Image src={record.productImage} width={50} height={50} style={{ borderRadius: 4 }} />
+          <Text>{record.productName}</Text>
         </Space>
       ),
     },
@@ -135,8 +153,8 @@ const AdminReviewsPage: React.FC = () => {
         <Space>
           <Avatar icon={<UserOutlined />} />
           <div>
-            <Text>{record.customer?.name || 'N/A'}</Text>
-            {record.isVerified && (
+            <Text>{record.customerName}</Text>
+            {record.verified && (
               <div>
                 <Tag color="blue" style={{ fontSize: 10 }}>
                   VERIFIED PURCHASE

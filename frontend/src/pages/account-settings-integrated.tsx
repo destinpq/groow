@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Form, Input, Button, Switch, Select, Upload, Avatar, Row, Col, Space, Divider, Modal, List, Tag, Badge, Progress, message, Radio, InputNumber, Popconfirm } from 'antd';
 import { UserOutlined, MailOutlined, PhoneOutlined, LockOutlined, BellOutlined, SafetyCertificateOutlined, CreditCardOutlined, GiftOutlined, DeleteOutlined, EditOutlined, PlusOutlined, CameraOutlined, HomeOutlined, EnvironmentOutlined, GlobalOutlined, SecurityScanOutlined, EyeInvisibleOutlined, StarOutlined } from '@ant-design/icons';
 import { accountSettingsAPI, type UserProfile, type Address, type NotificationPreferences, type PrivacySettings, type SecuritySettings, type PaymentMethod, type LoyaltyInfo } from '../services/api/accountSettingsAPI';
-// import './account-settings.less';
+import './account-settings.less';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
