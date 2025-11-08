@@ -14,6 +14,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  // Get underlying Express app to handle all OPTIONS
+  const httpAdapter = app.getHttpAdapter();
+  const expressApp = httpAdapter.getInstance();
+
   // Security
   app.use(helmet());
   app.use(compression());
@@ -84,6 +88,16 @@ async function bootstrap() {
       return res.status(204).send();
     }
     next();
+  });
+
+  // Also handle via Express app directly
+  expressApp.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '3600');
+    res.status(204).send();
   });
 
   // Global prefix
