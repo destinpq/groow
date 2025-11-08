@@ -37,13 +37,11 @@ import { SeedModule } from './modules/seed/seed.module';
         if (databaseUrl) {
           return {
             type: 'postgres',
-            url: databaseUrl + '?sslmode=require',
+            url: databaseUrl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
             synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
             logging: config.get('DATABASE_LOGGING', 'false') === 'true',
-            ssl: {
-              rejectUnauthorized: false
-            },
+            ssl: false,
             extra: {
               max: parseInt(config.get('DATABASE_MAX_CONNECTIONS', '20')),
               idleTimeoutMillis: parseInt(config.get('DATABASE_IDLE_TIMEOUT', '30000')),
