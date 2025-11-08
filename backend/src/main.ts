@@ -8,9 +8,14 @@ import * as session from 'express-session';
 import * as RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 import { AppModule } from './app.module';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync('/etc/letsencrypt/live/groow.destinpq.com/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem'),
+  };
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   const configService = app.get(ConfigService);
 
   // Security

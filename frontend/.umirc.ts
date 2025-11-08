@@ -3,6 +3,12 @@ import { defineConfig } from 'umi';
 export default defineConfig({
   npmClient: 'npm',
   
+  // HTTPS configuration
+  https: {
+    key: '/etc/letsencrypt/live/groow.destinpq.com/privkey.pem',
+    cert: '/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem',
+  },
+  
   // Disable MFSU - it's breaking React loading
   mfsu: false,
   
