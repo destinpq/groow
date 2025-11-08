@@ -34,28 +34,27 @@ import { SeedModule } from './modules/seed/seed.module';
         const nodeEnv = config.get('NODE_ENV', 'development');
         const isProduction = nodeEnv === 'production';
         
-        if (databaseUrl) {
+        // Railway PostgreSQL configuration
+        if (databaseUrl && isProduction) {
           return {
             type: 'postgres',
             url: databaseUrl,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
-            synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
-            logging: config.get('DATABASE_LOGGING', 'false') === 'true',
-            ssl: isProduction ? { rejectUnauthorized: false } : false,
+            synchronize: false, // Always false in production
+            logging: false,     // Disable logging in production
+            ssl: {
+              rejectUnauthorized: false,
+              sslmode: 'require'
+            },
             extra: {
-              max: parseInt(config.get('DATABASE_MAX_CONNECTIONS', '20')),
-              idleTimeoutMillis: parseInt(config.get('DATABASE_IDLE_TIMEOUT', '30000')),
-              connectionTimeoutMillis: parseInt(config.get('DATABASE_CONNECTION_TIMEOUT', '10000')),
-              acquireTimeoutMillis: parseInt(config.get('DATABASE_ACQUIRE_TIMEOUT', '60000')),
-              createTimeoutMillis: parseInt(config.get('DATABASE_CREATE_TIMEOUT', '30000')),
-              destroyTimeoutMillis: parseInt(config.get('DATABASE_DESTROY_TIMEOUT', '5000')),
-              reapIntervalMillis: parseInt(config.get('DATABASE_REAP_INTERVAL', '1000')),
-              createRetryIntervalMillis: parseInt(config.get('DATABASE_CREATE_RETRY_INTERVAL', '200')),
+              ssl: {
+                rejectUnauthorized: false
+              }
             }
           };
         }
         
-        // Fallback configuration for local development
+        // Local development configuration  
         return {
           type: 'postgres',
           host: config.get('DATABASE_HOST', 'localhost'),
@@ -64,14 +63,9 @@ import { SeedModule } from './modules/seed/seed.module';
           password: config.get('DATABASE_PASSWORD', 'password'),
           database: config.get('DATABASE_NAME', 'groow'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: config.get('DATABASE_SYNC', 'false') === 'true',
-          logging: config.get('DATABASE_LOGGING', !isProduction ? 'true' : 'false') === 'true',
-          ssl: false,
-          extra: {
-            max: parseInt(config.get('DATABASE_MAX_CONNECTIONS', '10')),
-            idleTimeoutMillis: parseInt(config.get('DATABASE_IDLE_TIMEOUT', '30000')),
-            connectionTimeoutMillis: parseInt(config.get('DATABASE_CONNECTION_TIMEOUT', '10000')),
-          }
+          synchronize: true,  // Enable for development
+          logging: true,      // Enable for development
+          ssl: false
         };
       },
     }),
