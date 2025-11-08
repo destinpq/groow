@@ -17,46 +17,62 @@ export class SeedController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Seed initial data with auto table creation' })
+  @ApiOperation({ summary: 'Seed initial data with manual table creation' })
   async seed() {
     try {
-      // Force create tables if they don't exist
-      console.log('🔄 Synchronizing database schema...');
-      await this.dataSource.synchronize();
-      console.log('✅ Database schema synchronized');
+      // Create users table if it doesn't exist
+      console.log('🔄 Creating users table...');
+      await this.dataSource.query(`
+        CREATE TABLE IF NOT EXISTS users (
+          id SERIAL PRIMARY KEY,
+          email VARCHAR(255) UNIQUE NOT NULL,
+          password VARCHAR(255) NOT NULL,
+          "firstName" VARCHAR(255),
+          "lastName" VARCHAR(255),
+          role VARCHAR(50) DEFAULT 'customer',
+          status VARCHAR(50) DEFAULT 'pending',
+          "emailVerified" BOOLEAN DEFAULT FALSE,
+          "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      console.log('✅ Users table ready');
 
       // Check if admin already exists
-      const existingAdmin = await this.userRepository.findOne({
-        where: { email: 'admin@groow.com' }
-      });
+      const result = await this.dataSource.query('SELECT * FROM users WHERE email = $1', ['admin@groow.com']);
 
-      if (existingAdmin) {
-        return { message: 'Database already seeded', admin: existingAdmin.email };
+      if (result.length > 0) {
+        return { 
+          message: 'Database already seeded', 
+          admin: result[0].email,
+          note: 'Admin user already exists - you can login!'
+        };
       }
 
       // Create admin user
       const hashedPassword = await bcrypt.hash('Admin@123456', 12);
       
-      const admin = this.userRepository.create({
-        email: 'admin@groow.com',
-        password: hashedPassword,
-        firstName: 'Admin',
-        lastName: 'User',
-        role: UserRole.ADMIN,
-        status: UserStatus.ACTIVE,
-        emailVerified: true,
-      });
-
-      await this.userRepository.save(admin);
+      await this.dataSource.query(`
+        INSERT INTO users (email, password, "firstName", "lastName", role, status, "emailVerified")
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `, [
+        'admin@groow.com',
+        hashedPassword,
+        'Admin',
+        'User', 
+        'admin',
+        'active',
+        true
+      ]);
 
       return { 
         message: '🎉 Database seeded successfully!',
         admin: {
-          email: admin.email,
-          role: admin.role,
+          email: 'admin@groow.com',
+          role: 'admin',
           password: 'Admin@123456'
         },
-        note: 'Tables created and admin user added. You can now login!'
+        note: 'Tables created and admin user added. You can now login at groow.destinpq.com!'
       };
     } catch (error) {
       console.error('❌ Seeding error:', error);
