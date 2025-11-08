@@ -7,7 +7,13 @@
     "build": "umi build",
     "postinstall": "umi setup",
     "setup": "umi setup",
-    "start": "npm run dev"
+    "start": "npm run dev",
+    "serve": "serve -s dist -l 8001",
+    "pm2:dev": "pm2 start ../ecosystem.config.js --only groow-frontend-dev",
+    "pm2:serve": "npm run build && pm2 start ../ecosystem.config.js --only groow-frontend-static",
+    "pm2:stop": "pm2 stop groow-frontend-dev groow-frontend-static",
+    "pm2:restart": "pm2 restart groow-frontend-dev groow-frontend-static",
+    "pm2:logs": "pm2 logs groow-frontend-dev groow-frontend-static"
   },
   "dependencies": {
     "@ant-design/charts": "^2.0.3",
@@ -42,6 +48,8 @@
     "@types/react-dom": "^18.2.18",
     "@types/react-slick": "^0.23.13",
     "@umijs/lint": "^4.1.0",
+    "pm2": "^6.0.13",
+    "serve": "^14.2.5",
     "typescript": "^5.3.3"
   }
 }
