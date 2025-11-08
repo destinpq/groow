@@ -8,12 +8,16 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --omit=dev
+# Install ALL dependencies for build (including devDependencies for nest CLI)
+RUN npm install
 
 COPY . .
 
 # Ensure TypeScript is compiled into dist
 RUN npm run build
+
+# Remove devDependencies after build to reduce image size
+RUN npm prune --production
 
 EXPOSE 3001
 
