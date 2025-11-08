@@ -15,11 +15,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // Security
-  app.use(helmet());
-  app.use(compression());
-
-  // CORS - Allow multiple origins
+  // CORS - Allow multiple origins - MUST be defined first
   const defaultOrigins = [
     'https://groow.destinpq.com',
     'https://groow-frontend.vercel.app',
@@ -48,9 +44,10 @@ async function bootstrap() {
     allowedOrigins.push(...envOrigins.split(',').map(origin => origin.trim()));
   }
 
-  // Use Express CORS middleware directly for better OPTIONS handling - MUST be early
+  // Use Express CORS middleware FIRST before any other middleware
   app.use(cors({
     origin: (origin, callback) => {
+      console.log(`CORS: Checking origin: ${origin}`);
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
@@ -60,6 +57,7 @@ async function bootstrap() {
                        origin.includes('destinpq.com');
       
       if (isAllowed) {
+        console.log(`CORS: Allowing origin: ${origin}`);
         callback(null, true);
       } else {
         console.log(`CORS: Rejecting origin: ${origin}`);
@@ -74,6 +72,10 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   }));
+
+  // Security - AFTER CORS
+  app.use(helmet());
+  app.use(compression());
 
   // Global prefix
   app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
