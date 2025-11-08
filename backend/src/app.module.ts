@@ -43,6 +43,7 @@ import { SeedModule } from './modules/seed/seed.module';
         if (databaseUrl && databaseUrl.length > 10 && isProduction) {
           const urlWithSsl = databaseUrl + (databaseUrl.includes('?') ? '&' : '?') + 'sslmode=require';
           console.log('  Using Railway PostgreSQL with DATABASE_URL');
+          console.log('  Database URL (masked):', databaseUrl.substring(0, 20) + '...');
           return {
             type: 'postgres',
             url: urlWithSsl,
