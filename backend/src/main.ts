@@ -52,9 +52,15 @@ async function bootstrap() {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      if (allowedOrigins.includes(origin)) {
+      // Check if origin matches allowed origins or Vercel patterns
+      const isAllowed = allowedOrigins.includes(origin) || 
+                       origin.includes('vercel.app') ||
+                       origin.includes('destinpq.com');
+      
+      if (isAllowed) {
         callback(null, true);
       } else {
+        console.log(`CORS: Rejecting origin: ${origin}`);
         callback(null, false);
       }
     },
@@ -63,6 +69,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     exposedHeaders: ['Authorization'],
     maxAge: 3600,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Global prefix
