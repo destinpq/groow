@@ -23,6 +23,7 @@ async function bootstrap() {
     'https://groow.destinpq.com',
     'https://groow-frontend.vercel.app',
     'https://groow-frontend-iftdz6ipx-pratik-destinpqs-projects.vercel.app',
+    'https://grooow-api-db.destinpq.com', // Allow same domain requests
   ];
 
   // Add development origins only in non-production environments

@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const apiClient = axios.create({
   baseURL: process.env.NODE_ENV === 'production' 
-    ? 'https://accomplished-kindness-production.up.railway.app/api/v1'
+    ? 'https://grooow-api-db.destinpq.com/api/v1'
     : 'http://localhost:3001/api/v1',
   headers: {
     'Content-Type': 'application/json',
