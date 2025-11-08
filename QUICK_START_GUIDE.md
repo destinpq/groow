@@ -39,7 +39,7 @@ npm run seed
 ```bash
 cd backend
 npm run start:dev
-# Backend running on https://groow-api.destinpq.com
+# Backend running on https://groow-api-db.destinpq.com
 ```
 
 **Terminal 2 - Frontend:**
@@ -447,7 +447,7 @@ PORT=3001
 
 ### Frontend (.env)
 ```env
-API_URL=https://groow-api.destinpq.com
+API_URL=https://groow-api-db.destinpq.com
 ```
 
 ---

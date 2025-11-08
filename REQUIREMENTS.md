@@ -828,7 +828,7 @@
 
 **Last Build Status:** ✅ All 143 pages compile successfully  
 **Development Server:** http://localhost:8000  
-**Backend API:** https://groow-api.destinpq.com (84 endpoints ready)
+**Backend API:** https://groow-api-db.destinpq.com (84 endpoints ready)
 
 ---
 

@@ -43,7 +43,7 @@
 - **Status:** ✅ Running successfully 
 - **Port:** 8001
 - **Framework:** UmiJS 4.5.3
-- **Proxy:** Configured /api -> https://groow-api.destinpq.com
+- **Proxy:** Configured /api -> https://groow-api-db.destinpq.com
 
 ## Component Architecture Testing
 

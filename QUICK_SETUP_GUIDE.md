@@ -4,7 +4,7 @@
 
 ### 1. **Domain Structure Updated**
 - **Frontend**: `https://groow.destinpq.com`
-- **Backend API**: `https://groow-api.destinpq.com`
+- **Backend API**: `https://groow-api-db.destinpq.com`
 - **Server**: `20.40.56.175` (Azure VM)
 
 ### 2. **Files Updated**
@@ -68,10 +68,10 @@ This will:
 **Change your frontend API base URL from:**
 ```javascript
 // OLD
-const API_URL = 'https://groow-api.destinpq.com/api/v1'
+const API_URL = 'https://groow-api-db.destinpq.com/api/v1'
 
 // NEW
-const API_URL = 'https://groow-api.destinpq.com/api/v1'
+const API_URL = 'https://groow-api-db.destinpq.com/api/v1'
 ```
 
 ### Step 4: Test Everything
@@ -80,7 +80,7 @@ After DNS propagates (2-5 minutes), test:
 
 ```bash
 # Test API health
-curl https://groow-api.destinpq.com/api/v1/health
+curl https://groow-api-db.destinpq.com/api/v1/health
 
 # Test frontend domain
 curl -I https://groow.destinpq.com
@@ -97,7 +97,7 @@ dig groow-api.destinpq.com
 
 1. **Your login error will be fixed** - The ERR_NAME_NOT_RESOLVED will disappear
 2. **Frontend will be accessible** at `https://groow.destinpq.com`
-3. **Backend API will be accessible** at `https://groow-api.destinpq.com/api/v1`
+3. **Backend API will be accessible** at `https://groow-api-db.destinpq.com/api/v1`
 4. **HTTPS will work automatically** through Cloudflare
 5. **CORS will be properly configured** for the new domains
 
@@ -105,10 +105,10 @@ dig groow-api.destinpq.com
 
 ```bash
 # Should return API health status
-curl https://groow-api.destinpq.com/api/v1/health
+curl https://groow-api-db.destinpq.com/api/v1/health
 
 # Should show API documentation
-open https://groow-api.destinpq.com/api/docs
+open https://groow-api-db.destinpq.com/api/docs
 
 # Should resolve to Cloudflare IPs
 nslookup groow-api.destinpq.com

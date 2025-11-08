@@ -1,9 +1,9 @@
 # Caddyfile for GROOW E-Commerce Platform
-# Backend on https://groow-api.destinpq.com (port 443) -> proxies to localhost:21440
+# Backend on https://groow-api-db.destinpq.com (port 443) -> proxies to localhost:21440
 # Frontend on https://groow.destinpq.com (port 443) -> proxies to localhost:21441
 
 # Backend API Server
-https://groow-api.destinpq.com {
+https://groow-api-db.destinpq.com {
     tls /etc/letsencrypt/live/groow.destinpq.com/fullchain.pem /etc/letsencrypt/live/groow.destinpq.com/privkey.pem
     
     # Add CORS headers for API access

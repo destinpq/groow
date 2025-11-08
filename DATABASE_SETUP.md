@@ -138,7 +138,7 @@ This creates:
 npm run start:dev
 ```
 
-The server will start on `https://groow-api.destinpq.com`
+The server will start on `https://groow-api-db.destinpq.com`
 
 ---
 
@@ -455,5 +455,5 @@ Your GROOW e-commerce platform is now ready for backend integration.
 
 Next steps:
 1. Start frontend: `cd frontend && npm run dev`
-2. Test API endpoints: Visit https://groow-api.destinpq.com/api/v1
-3. View API docs: Visit https://groow-api.destinpq.com/api/docs (if Swagger enabled)
+2. Test API endpoints: Visit https://groow-api-db.destinpq.com/api/v1
+3. View API docs: Visit https://groow-api-db.destinpq.com/api/docs (if Swagger enabled)

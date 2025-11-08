@@ -131,8 +131,8 @@ Remaining Work:           ░░░░░░░░░░░░░░░░░░
 
 ### **Backend (NestJS 10.3.0)** ✅ 100% Operational
 ```
-🚀 Running on: https://groow-api.destinpq.com
-📚 API Documentation: https://groow-api.destinpq.com/api/docs
+🚀 Running on: https://groow-api-db.destinpq.com
+📚 API Documentation: https://groow-api-db.destinpq.com/api/docs
 ✅ 84+ RESTful endpoints active
 ✅ PostgreSQL database connected (groow_db)
 ✅ TypeORM synchronized
