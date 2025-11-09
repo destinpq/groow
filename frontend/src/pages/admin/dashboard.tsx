@@ -234,23 +234,32 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       
-      // Fetch comprehensive dashboard analytics from new report endpoints
-      const [dashboardAnalytics, recentActivities, systemHealth, marketingStats] = await Promise.all([
-        api.get<any>('/reports/dashboard', { params: { period: '7d' } }),
-        api.get<any>('/reports/recent-activities', { params: { limit: 10 } }),
-        api.get<any>('/reports/system-health'),
+      // Fetch comprehensive dashboard analytics with error handling
+      const apiCalls = [
+        api.get<any>('/reports/dashboard', { params: { period: '7d' } }).catch(err => {
+          console.warn('Dashboard analytics endpoint not available:', err.response?.status);
+          return { data: { data: null } };
+        }),
+        api.get<any>('/reports/recent-activities', { params: { limit: 10 } }).catch(err => {
+          console.warn('Recent activities endpoint not available:', err.response?.status);
+          return { data: { data: [] } };
+        }),
+        api.get<any>('/reports/system-health').catch(err => {
+          console.warn('System health endpoint not available:', err.response?.status);
+          return { data: { data: null } };
+        }),
         Promise.allSettled([
-          dealsAPI.getStats(),
-          couponsAPI.getStats(), 
-          promotionsAPI.getStats(),
+          dealsAPI.getStats().catch(() => ({ active: 0, totalRevenue: 0, avgConversionRate: 0 })),
+          couponsAPI.getStats().catch(() => ({ active: 0 })), 
+          promotionsAPI.getStats().catch(() => ({ active: 0 })),
         ]),
-      ]);
+      ];
 
-      console.log('Real Dashboard Analytics:', dashboardAnalytics.data);
-      console.log('Recent Activities:', recentActivities.data);
-      console.log('System Health:', systemHealth.data);
+      const [dashboardAnalytics, recentActivities, systemHealth, marketingStats] = await Promise.all(apiCalls);
 
-      // Extract real data from comprehensive analytics
+      console.log('Dashboard Analytics Response:', dashboardAnalytics.data);
+
+      // Extract real data from comprehensive analytics with fallbacks
       const analytics = dashboardAnalytics.data?.data;
       
       // Extract marketing stats
@@ -407,7 +416,7 @@ const AdminDashboard = () => {
     color: '#1890ff',
     point: {
       size: 5,
-      shape: 'diamond',
+      shape: 'circle',
     },
     label: {
       style: {

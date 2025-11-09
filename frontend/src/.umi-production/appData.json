@@ -62,7 +62,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "preset",
@@ -75,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 6
       },
       "enableBy": "register",
       "type": "preset",
@@ -89,10 +89,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            1
+            0
           ]
         },
-        "register": 6
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -109,7 +109,7 @@
             4
           ]
         },
-        "register": 3
+        "register": 4
       },
       "enableBy": "register",
       "type": "plugin",
@@ -123,7 +123,7 @@
       "time": {
         "hooks": {
           "modifyRoutes": [
-            0
+            1
           ]
         },
         "register": 1
@@ -139,7 +139,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -153,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            713
+            740
           ]
         },
-        "register": 34
+        "register": 36
       },
       "enableBy": "register",
       "type": "plugin",
@@ -169,7 +169,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -186,10 +186,10 @@
             0
           ],
           "onCheck": [
-            1
+            0
           ]
         },
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -203,7 +203,7 @@
       "time": {
         "hooks": {
           "onCheck": [
-            0
+            1
           ]
         },
         "register": 1
@@ -219,7 +219,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -360,7 +360,7 @@
       "enableBy": "register",
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       }
     },
     "virtual: config-metas": {
@@ -1102,7 +1102,7 @@
       "time": {
         "hooks": {
           "onStart": [
-            0
+            1
           ]
         },
         "register": 1
@@ -1131,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 135
+        "register": 137
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1144,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 46
+        "register": 47
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1171,7 +1171,7 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            0
+            1
           ]
         },
         "register": 1
@@ -1187,7 +1187,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1200,7 +1200,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1213,7 +1213,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 54
+        "register": 55
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1263,7 +1263,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1277,7 +1277,7 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            1
+            0
           ]
         },
         "register": 2
@@ -1292,7 +1292,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1318,7 +1318,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1331,7 +1331,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1344,7 +1344,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1472,7 +1472,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 36
+        "register": 38
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1613,7 +1613,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 43
+        "register": 44
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1625,7 +1625,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1638,7 +1638,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1664,7 +1664,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 73
+        "register": 80
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1677,7 +1677,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 40
+        "register": 31
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1689,7 +1689,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1754,7 +1754,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1819,7 +1819,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1845,7 +1845,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1923,7 +1923,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 35
+        "register": 37
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1936,7 +1936,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1949,7 +1949,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -3358,7 +3358,7 @@
       "id": "admin/dashboard",
       "file": "admin/dashboard.tsx",
       "absPath": "/admin/dashboard",
-      "__content": "import { useState, useEffect } from 'react';\nimport { useNavigate } from 'umi';\nimport { \n  Card, Row, Col, Statistic, Spin, message, Table, Tag, Progress, \n  Timeline, List, Avatar, Button, Space, Tooltip, Alert, Badge\n} from 'antd';\nimport { \n  UserOutlined, \n  ShoppingOutlined, \n  ShoppingCartOutlined, \n  DollarOutlined,\n  TeamOutlined,\n  ShopOutlined,\n  RiseOutlined,\n  WarningOutlined,\n  CheckCircleOutlined,\n  CloseCircleOutlined,\n  SyncOutlined,\n  EyeOutlined,\n  EditOutlined,\n  GiftOutlined,\n  FireOutlined,\n  PercentageOutlined,\n  ThunderboltOutlined,\n} from '@ant-design/icons';\nimport { Line, Column, Pie } from '@ant-design/charts';\nimport { productAPI } from '@/services/api/products';\nimport { dealsAPI } from '@/services/api/deals';\nimport { couponsAPI } from '@/services/api/coupons';\nimport { promotionsAPI } from '@/services/api/promotions';\nimport { useAuthStore } from '@/store/auth';\nimport api from '@/services/api/client';\n\ninterface OrderStats {\n  totalOrders: number;\n  newOrders: number;\n  deliveredOrders: number;\n  totalRevenue: number;\n}\n\ninterface DashboardStats {\n  totalProducts: number;\n  totalCustomers: number;\n  totalVendors: number;\n  orderStats: OrderStats;\n  marketingStats: {\n    activeDeals: number;\n    activeCoupons: number;\n    activePromotions: number;\n    totalMarketingRevenue: number;\n    avgConversionRate: number;\n  };\n}\n\ninterface RecentActivity {\n  id: string;\n  type: 'order' | 'user' | 'product' | 'payment';\n  title: string;\n  description: string;\n  timestamp: string;\n  status: 'success' | 'warning' | 'error' | 'info';\n}\n\ninterface RecentOrder {\n  key: string;\n  orderNumber: string;\n  customer: string;\n  amount: number;\n  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';\n  date: string;\n}\n\n// Mock data for charts and recent activity\nconst salesData = [\n  { month: 'Jan', sales: 45000, orders: 123 },\n  { month: 'Feb', sales: 52000, orders: 145 },\n  { month: 'Mar', sales: 48000, orders: 134 },\n  { month: 'Apr', sales: 61000, orders: 167 },\n  { month: 'May', sales: 55000, orders: 156 },\n  { month: 'Jun', sales: 67000, orders: 189 },\n  { month: 'Jul', sales: 73000, orders: 201 },\n  { month: 'Aug', sales: 69000, orders: 193 },\n  { month: 'Sep', sales: 78000, orders: 218 },\n  { month: 'Oct', sales: 84000, orders: 234 },\n  { month: 'Nov', sales: 91000, orders: 251 },\n];\n\nconst categoryData = [\n  { category: 'Electronics', value: 45, color: '#1890ff' },\n  { category: 'Clothing', value: 25, color: '#52c41a' },\n  { category: 'Books', value: 15, color: '#faad14' },\n  { category: 'Home & Garden', value: 10, color: '#f5222d' },\n  { category: 'Sports', value: 5, color: '#722ed1' },\n];\n\nconst recentActivities: RecentActivity[] = [\n  {\n    id: '1',\n    type: 'order',\n    title: 'New Order #ORD-001234',\n    description: 'Order placed by John Doe for $156.99',\n    timestamp: '2 minutes ago',\n    status: 'success'\n  },\n  {\n    id: '2',\n    type: 'user',\n    title: 'New Customer Registration',\n    description: 'Sarah Wilson registered as a customer',\n    timestamp: '15 minutes ago',\n    status: 'info'\n  },\n  {\n    id: '3',\n    type: 'payment',\n    title: 'Payment Failed',\n    description: 'Payment failed for order #ORD-001233',\n    timestamp: '1 hour ago',\n    status: 'error'\n  },\n  {\n    id: '4',\n    type: 'product',\n    title: 'Low Stock Alert',\n    description: 'iPhone 15 Pro is running low (5 items left)',\n    timestamp: '2 hours ago',\n    status: 'warning'\n  },\n  {\n    id: '5',\n    type: 'order',\n    title: 'Order Shipped',\n    description: 'Order #ORD-001230 has been shipped',\n    timestamp: '3 hours ago',\n    status: 'success'\n  }\n];\n\nconst recentOrders: RecentOrder[] = [\n  {\n    key: '1',\n    orderNumber: 'ORD-001234',\n    customer: 'John Doe',\n    amount: 156.99,\n    status: 'pending',\n    date: '2025-11-09'\n  },\n  {\n    key: '2',\n    orderNumber: 'ORD-001233',\n    customer: 'Sarah Wilson',\n    amount: 89.50,\n    status: 'processing',\n    date: '2025-11-09'\n  },\n  {\n    key: '3',\n    orderNumber: 'ORD-001232',\n    customer: 'Mike Johnson',\n    amount: 245.00,\n    status: 'shipped',\n    date: '2025-11-08'\n  },\n  {\n    key: '4',\n    orderNumber: 'ORD-001231',\n    customer: 'Emily Davis',\n    amount: 78.25,\n    status: 'delivered',\n    date: '2025-11-08'\n  },\n  {\n    key: '5',\n    orderNumber: 'ORD-001230',\n    customer: 'Robert Brown',\n    amount: 189.99,\n    status: 'cancelled',\n    date: '2025-11-07'\n  }\n];\n\nconst AdminDashboard = () => {\n  const { isAuthenticated, user } = useAuthStore();\n  const navigate = useNavigate();\n  const [stats, setStats] = useState<DashboardStats>({\n    totalProducts: 1247,\n    totalCustomers: 3891,\n    totalVendors: 156,\n    orderStats: {\n      totalOrders: 5467,\n      newOrders: 23,\n      deliveredOrders: 4892,\n      totalRevenue: 284750.50,\n    },\n    marketingStats: {\n      activeDeals: 12,\n      activeCoupons: 25,\n      activePromotions: 8,\n      totalMarketingRevenue: 45230.75,\n      avgConversionRate: 8.5,\n    },\n  });\n  \n  // Add dynamic state for real data\n  const [recentActivitiesState, setRecentActivities] = useState<RecentActivity[]>(recentActivities);\n  const [salesTrendsData, setSalesTrendsData] = useState(salesData);\n  const [recentOrdersState, setRecentOrders] = useState<RecentOrder[]>(recentOrders);\n  const [loading, setLoading] = useState(false);\n\n  // Mock data fallback function\n  const setMockData = () => {\n    setRecentActivities(recentActivities);\n    setSalesTrendsData(salesData);  \n    setRecentOrders(recentOrders);\n  };\n\n  useEffect(() => {\n    // Only fetch stats if user is authenticated and is an admin\n    if (isAuthenticated && user?.role === 'admin') {\n      // Small delay to ensure token is properly stored\n      const timer = setTimeout(() => {\n        fetchStats();\n      }, 100);\n      return () => clearTimeout(timer);\n    } else if (isAuthenticated && user?.role !== 'admin') {\n      message.error('Access denied. Admin privileges required.');\n      setLoading(false);\n    } else {\n      setLoading(false);\n    }\n  }, [isAuthenticated, user]);\n\n  const fetchStats = async () => {\n    try {\n      setLoading(true);\n      \n      // Fetch comprehensive dashboard analytics from new report endpoints\n      const [dashboardAnalytics, recentActivities, systemHealth, marketingStats] = await Promise.all([\n        api.get<any>('/reports/dashboard', { params: { period: '7d' } }),\n        api.get<any>('/reports/recent-activities', { params: { limit: 10 } }),\n        api.get<any>('/reports/system-health'),\n        Promise.allSettled([\n          dealsAPI.getStats(),\n          couponsAPI.getStats(), \n          promotionsAPI.getStats(),\n        ]),\n      ]);\n\n      console.log('Real Dashboard Analytics:', dashboardAnalytics.data);\n      console.log('Recent Activities:', recentActivities.data);\n      console.log('System Health:', systemHealth.data);\n\n      // Extract real data from comprehensive analytics\n      const analytics = dashboardAnalytics.data?.data;\n      \n      // Extract marketing stats\n      let dealStats: any = { active: 0, totalRevenue: 0, avgConversionRate: 0 };\n      let couponStats: any = { active: 0 };\n      let promotionStats: any = { active: 0 };\n      \n      marketingStats.forEach((result, index) => {\n        if (result.status === 'fulfilled') {\n          switch (index) {\n            case 0:\n              dealStats = { ...dealStats, ...result.value };\n              break;\n            case 1:\n              couponStats = { ...couponStats, ...result.value };\n              break;\n            case 2:\n              promotionStats = { ...promotionStats, ...result.value };\n              break;\n          }\n        }\n      });\n      \n      setStats({\n        totalProducts: analytics?.productStats?.data?.totalProducts || 0,\n        totalCustomers: analytics?.userStats?.data?.totalCustomers || 0,\n        totalVendors: analytics?.userStats?.data?.totalVendors || 0,\n        orderStats: {\n          totalOrders: analytics?.salesSummary?.data?.summary?.totalOrders || 0,\n          newOrders: analytics?.salesSummary?.data?.statusBreakdown?.find((s: any) => s.status === 'NEW')?.count || 0,\n          deliveredOrders: analytics?.salesSummary?.data?.statusBreakdown?.find((s: any) => s.status === 'DELIVERED')?.count || 0,\n          totalRevenue: analytics?.salesSummary?.data?.summary?.totalRevenue || 0,\n        },\n        marketingStats: {\n          activeDeals: dealStats.active || 0,\n          activeCoupons: couponStats.active || 0,\n          activePromotions: promotionStats.active || 0,\n          totalMarketingRevenue: dealStats.totalRevenue || 0,\n          avgConversionRate: dealStats.avgConversionRate || 0,\n        },\n      });\n\n      // Set real recent activities\n      const activities = recentActivities.data?.data || [];\n      setRecentActivities(activities.map((activity: any) => ({\n        id: activity.id,\n        type: activity.type,\n        title: activity.title,\n        description: activity.description,\n        timestamp: activity.timestamp,\n        status: activity.status,\n      })));\n\n      // Set real sales trends data for chart\n      const salesTrends = analytics?.salesSummary?.data?.salesTrends || [];\n      setSalesTrendsData(salesTrends.map((trend: any) => ({\n        date: trend.date,\n        revenue: parseFloat(trend.revenue || 0),\n        orders: parseInt(trend.orders || 0),\n      })));\n\n      // Set real recent orders\n      const recentOrdersData = analytics?.recentOrders?.data || [];\n      setRecentOrders(recentOrdersData.slice(0, 10).map((order: any, index: number) => ({\n        key: order.id || index.toString(),\n        orderNumber: order.orderNumber || `ORD-${1000 + index}`,\n        customer: order.customer?.user ? \n          `${order.customer.user.firstName || ''} ${order.customer.user.lastName || ''}`.trim() : \n          'Unknown Customer',\n        amount: order.total || 0,\n        status: order.status || 'NEW',\n        date: order.createdAt || new Date().toISOString(),\n      })));\n\n      message.success('Dashboard loaded with real analytics data');\n    } catch (error: any) {\n      console.error('Failed to fetch analytics:', error);\n      // Keep mock data on error  \n      message.info('Using demo data - analytics endpoints are being initialized');\n      setMockData();\n    } finally {\n      setLoading(false);\n    }\n  };  const orderColumns = [\n    {\n      title: 'Order Number',\n      dataIndex: 'orderNumber',\n      key: 'orderNumber',\n      render: (text: string) => <Button type=\"link\">{text}</Button>,\n    },\n    {\n      title: 'Customer',\n      dataIndex: 'customer',\n      key: 'customer',\n    },\n    {\n      title: 'Amount',\n      dataIndex: 'amount',\n      key: 'amount',\n      render: (amount: number) => `$${amount.toFixed(2)}`,\n    },\n    {\n      title: 'Status',\n      dataIndex: 'status',\n      key: 'status',\n      render: (status: string) => {\n        const statusConfig = {\n          pending: { color: 'orange', text: 'Pending' },\n          processing: { color: 'blue', text: 'Processing' },\n          shipped: { color: 'purple', text: 'Shipped' },\n          delivered: { color: 'green', text: 'Delivered' },\n          cancelled: { color: 'red', text: 'Cancelled' },\n        };\n        const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;\n        return <Tag color={config.color}>{config.text}</Tag>;\n      },\n    },\n    {\n      title: 'Date',\n      dataIndex: 'date',\n      key: 'date',\n    },\n    {\n      title: 'Actions',\n      key: 'actions',\n      render: () => (\n        <Space>\n          <Tooltip title=\"View Details\">\n            <Button type=\"text\" icon={<EyeOutlined />} size=\"small\" />\n          </Tooltip>\n          <Tooltip title=\"Edit\">\n            <Button type=\"text\" icon={<EditOutlined />} size=\"small\" />\n          </Tooltip>\n        </Space>\n      ),\n    },\n  ];\n\n  const getActivityIcon = (type: string, status: string) => {\n    const iconProps = { style: { fontSize: '16px' } };\n    \n    switch (status) {\n      case 'success': return <CheckCircleOutlined style={{ ...iconProps.style, color: '#52c41a' }} />;\n      case 'error': return <CloseCircleOutlined style={{ ...iconProps.style, color: '#f5222d' }} />;\n      case 'warning': return <WarningOutlined style={{ ...iconProps.style, color: '#faad14' }} />;\n      default: return <SyncOutlined style={{ ...iconProps.style, color: '#1890ff' }} />;\n    }\n  };\n\n  const salesChartConfig = {\n    data: salesTrendsData,\n    xField: 'date',\n    yField: 'revenue',\n    color: '#1890ff',\n    point: {\n      size: 5,\n      shape: 'diamond',\n    },\n    label: {\n      style: {\n        fill: '#aaa',\n      },\n    },\n  };\n\n  const categoryChartConfig = {\n    appendPadding: 10,\n    data: categoryData,\n    angleField: 'value',\n    colorField: 'category',\n    radius: 1,\n    label: {\n      type: 'inner',\n      offset: '-30%',\n      content: ({ percent }: any) => `${(percent * 100).toFixed(0)}%`,\n      style: {\n        fontSize: 14,\n        textAlign: 'center',\n      },\n    },\n    interactions: [\n      {\n        type: 'element-active',\n      },\n    ],\n  };\n\n  return (\n    <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>\n      <div style={{ marginBottom: '24px' }}>\n        <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>Admin Dashboard</h1>\n        <p style={{ color: '#666', margin: '4px 0 0 0' }}>Welcome back, {user?.name || 'Admin'}! Here's what's happening with your store today.</p>\n      </div>\n\n      {/* System Health Alert */}\n      <Alert\n        message=\"System Status: All Systems Operational\"\n        description=\"Last updated 2 minutes ago • API Response: 156ms • Database: Healthy • CDN: Active\"\n        type=\"success\"\n        showIcon\n        style={{ marginBottom: '24px' }}\n        action={\n          <Button size=\"small\" type=\"text\">\n            View Details\n          </Button>\n        }\n      />\n\n      {!isAuthenticated ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Please log in to access the admin dashboard.</p>\n        </div>\n      ) : user?.role !== 'admin' ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Access denied. Admin privileges required.</p>\n        </div>\n      ) : (\n        <Spin spinning={loading}>\n          {/* Key Metrics Row */}\n          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Revenue\"\n                  value={stats.orderStats.totalRevenue}\n                  prefix={<DollarOutlined style={{ color: '#52c41a' }} />}\n                  precision={2}\n                  valueStyle={{ color: '#52c41a', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <RiseOutlined style={{ color: '#52c41a', marginRight: '4px' }} />\n                  +12.5% from last month\n                </div>\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Orders\"\n                  value={stats.orderStats.totalOrders}\n                  prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}\n                  valueStyle={{ color: '#1890ff', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <Badge \n                    count={stats.orderStats.newOrders} \n                    style={{ backgroundColor: '#faad14' }}\n                  >\n                    <span style={{ marginRight: '8px' }}>New today</span>\n                  </Badge>\n                </div>\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Active Customers\"\n                  value={stats.totalCustomers}\n                  prefix={<TeamOutlined style={{ color: '#722ed1' }} />}\n                  valueStyle={{ color: '#722ed1', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <Progress \n                    percent={75} \n                    size=\"small\" \n                    showInfo={false}\n                    strokeColor=\"#722ed1\"\n                  />\n                  75% engagement rate\n                </div>\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Active Products\"\n                  value={stats.totalProducts}\n                  prefix={<ShoppingOutlined style={{ color: '#faad14' }} />}\n                  valueStyle={{ color: '#faad14', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <span style={{ color: '#52c41a' }}>{stats.totalVendors}</span> vendors\n                </div>\n              </Card>\n            </Col>\n          </Row>\n\n          {/* Marketing Performance Row */}\n          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>\n            <Col span={24}>\n              <Card \n                title={\n                  <Space>\n                    <FireOutlined style={{ color: '#ff4d4f' }} />\n                    Marketing Performance\n                  </Space>\n                }\n                extra={<Button type=\"link\" onClick={() => navigate('/admin/marketing-analytics')}>View Details</Button>}\n              >\n                <Row gutter={[16, 16]}>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Active Deals\"\n                        value={stats.marketingStats.activeDeals}\n                        prefix={<FireOutlined style={{ color: '#ff4d4f' }} />}\n                        valueStyle={{ color: '#ff4d4f' }}\n                      />\n                    </Card>\n                  </Col>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Active Coupons\"\n                        value={stats.marketingStats.activeCoupons}\n                        prefix={<GiftOutlined style={{ color: '#52c41a' }} />}\n                        valueStyle={{ color: '#52c41a' }}\n                      />\n                    </Card>\n                  </Col>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Active Campaigns\"\n                        value={stats.marketingStats.activePromotions}\n                        prefix={<ThunderboltOutlined style={{ color: '#1890ff' }} />}\n                        valueStyle={{ color: '#1890ff' }}\n                      />\n                    </Card>\n                  </Col>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Marketing Revenue\"\n                        value={stats.marketingStats.totalMarketingRevenue}\n                        prefix=\"$\"\n                        precision={0}\n                        valueStyle={{ color: '#722ed1' }}\n                      />\n                    </Card>\n                  </Col>\n                </Row>\n                <div style={{ marginTop: 16, textAlign: 'center' }}>\n                  <Space>\n                    <Button icon={<FireOutlined />} onClick={() => navigate('/admin/deals-management')}>\n                      Create Deal\n                    </Button>\n                    <Button icon={<GiftOutlined />} onClick={() => navigate('/admin/coupon-management')}>\n                      Generate Coupon\n                    </Button>\n                    <Button icon={<ThunderboltOutlined />} onClick={() => navigate('/admin/promotions-campaigns')}>\n                      Launch Campaign\n                    </Button>\n                  </Space>\n                </div>\n              </Card>\n            </Col>\n          </Row>\n\n          {/* Charts Row */}\n          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>\n            <Col xs={24} lg={16}>\n              <Card title=\"Sales Trends\" extra={<Button type=\"link\">View Report</Button>}>\n                <Line {...salesChartConfig} height={300} />\n              </Card>\n            </Col>\n            <Col xs={24} lg={8}>\n              <Card title=\"Sales by Category\">\n                <Pie {...categoryChartConfig} height={300} />\n              </Card>\n            </Col>\n          </Row>\n\n          {/* Data Tables and Activity Row */}\n          <Row gutter={[16, 16]}>\n            <Col xs={24} lg={16}>\n              <Card \n                title=\"Recent Orders\" \n                extra={\n                  <Space>\n                    <Button type=\"link\">View All Orders</Button>\n                    <Button type=\"primary\" size=\"small\">Export</Button>\n                  </Space>\n                }\n              >\n                <Table \n                  columns={orderColumns} \n                  dataSource={recentOrdersState} \n                  pagination={false}\n                  size=\"small\"\n                />\n              </Card>\n            </Col>\n            \n            <Col xs={24} lg={8}>\n              <Card title=\"Recent Activity\" extra={<Button type=\"link\">View All</Button>}>\n                <List\n                  itemLayout=\"horizontal\"\n                  dataSource={recentActivitiesState}\n                  renderItem={(item) => (\n                    <List.Item>\n                      <List.Item.Meta\n                        avatar={<Avatar icon={getActivityIcon(item.type, item.status)} size=\"small\" />}\n                        title={<span style={{ fontSize: '14px' }}>{item.title}</span>}\n                        description={\n                          <div>\n                            <div style={{ fontSize: '12px', color: '#666' }}>{item.description}</div>\n                            <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{item.timestamp}</div>\n                          </div>\n                        }\n                      />\n                    </List.Item>\n                  )}\n                />\n              </Card>\n\n              {/* Quick Actions */}\n              <Card title=\"Quick Actions\" style={{ marginTop: '16px' }}>\n                <Space direction=\"vertical\" style={{ width: '100%' }} size=\"small\">\n                  <Button block type=\"primary\">Add New Product</Button>\n                  <Button block>Manage Users</Button>\n                  <Button block>View Reports</Button>\n                  <Button block>System Settings</Button>\n                </Space>\n              </Card>\n            </Col>\n          </Row>\n        </Spin>\n      )}\n    </div>\n  );\n};\n\nexport default AdminDashboard;\n",
+      "__content": "import { useState, useEffect } from 'react';\nimport { useNavigate } from 'umi';\nimport { \n  Card, Row, Col, Statistic, Spin, message, Table, Tag, Progress, \n  Timeline, List, Avatar, Button, Space, Tooltip, Alert, Badge\n} from 'antd';\nimport { \n  UserOutlined, \n  ShoppingOutlined, \n  ShoppingCartOutlined, \n  DollarOutlined,\n  TeamOutlined,\n  ShopOutlined,\n  RiseOutlined,\n  WarningOutlined,\n  CheckCircleOutlined,\n  CloseCircleOutlined,\n  SyncOutlined,\n  EyeOutlined,\n  EditOutlined,\n  GiftOutlined,\n  FireOutlined,\n  PercentageOutlined,\n  ThunderboltOutlined,\n} from '@ant-design/icons';\nimport { Line, Column, Pie } from '@ant-design/charts';\nimport { productAPI } from '@/services/api/products';\nimport { dealsAPI } from '@/services/api/deals';\nimport { couponsAPI } from '@/services/api/coupons';\nimport { promotionsAPI } from '@/services/api/promotions';\nimport { useAuthStore } from '@/store/auth';\nimport api from '@/services/api/client';\n\ninterface OrderStats {\n  totalOrders: number;\n  newOrders: number;\n  deliveredOrders: number;\n  totalRevenue: number;\n}\n\ninterface DashboardStats {\n  totalProducts: number;\n  totalCustomers: number;\n  totalVendors: number;\n  orderStats: OrderStats;\n  marketingStats: {\n    activeDeals: number;\n    activeCoupons: number;\n    activePromotions: number;\n    totalMarketingRevenue: number;\n    avgConversionRate: number;\n  };\n}\n\ninterface RecentActivity {\n  id: string;\n  type: 'order' | 'user' | 'product' | 'payment';\n  title: string;\n  description: string;\n  timestamp: string;\n  status: 'success' | 'warning' | 'error' | 'info';\n}\n\ninterface RecentOrder {\n  key: string;\n  orderNumber: string;\n  customer: string;\n  amount: number;\n  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';\n  date: string;\n}\n\n// Mock data for charts and recent activity\nconst salesData = [\n  { month: 'Jan', sales: 45000, orders: 123 },\n  { month: 'Feb', sales: 52000, orders: 145 },\n  { month: 'Mar', sales: 48000, orders: 134 },\n  { month: 'Apr', sales: 61000, orders: 167 },\n  { month: 'May', sales: 55000, orders: 156 },\n  { month: 'Jun', sales: 67000, orders: 189 },\n  { month: 'Jul', sales: 73000, orders: 201 },\n  { month: 'Aug', sales: 69000, orders: 193 },\n  { month: 'Sep', sales: 78000, orders: 218 },\n  { month: 'Oct', sales: 84000, orders: 234 },\n  { month: 'Nov', sales: 91000, orders: 251 },\n];\n\nconst categoryData = [\n  { category: 'Electronics', value: 45, color: '#1890ff' },\n  { category: 'Clothing', value: 25, color: '#52c41a' },\n  { category: 'Books', value: 15, color: '#faad14' },\n  { category: 'Home & Garden', value: 10, color: '#f5222d' },\n  { category: 'Sports', value: 5, color: '#722ed1' },\n];\n\nconst recentActivities: RecentActivity[] = [\n  {\n    id: '1',\n    type: 'order',\n    title: 'New Order #ORD-001234',\n    description: 'Order placed by John Doe for $156.99',\n    timestamp: '2 minutes ago',\n    status: 'success'\n  },\n  {\n    id: '2',\n    type: 'user',\n    title: 'New Customer Registration',\n    description: 'Sarah Wilson registered as a customer',\n    timestamp: '15 minutes ago',\n    status: 'info'\n  },\n  {\n    id: '3',\n    type: 'payment',\n    title: 'Payment Failed',\n    description: 'Payment failed for order #ORD-001233',\n    timestamp: '1 hour ago',\n    status: 'error'\n  },\n  {\n    id: '4',\n    type: 'product',\n    title: 'Low Stock Alert',\n    description: 'iPhone 15 Pro is running low (5 items left)',\n    timestamp: '2 hours ago',\n    status: 'warning'\n  },\n  {\n    id: '5',\n    type: 'order',\n    title: 'Order Shipped',\n    description: 'Order #ORD-001230 has been shipped',\n    timestamp: '3 hours ago',\n    status: 'success'\n  }\n];\n\nconst recentOrders: RecentOrder[] = [\n  {\n    key: '1',\n    orderNumber: 'ORD-001234',\n    customer: 'John Doe',\n    amount: 156.99,\n    status: 'pending',\n    date: '2025-11-09'\n  },\n  {\n    key: '2',\n    orderNumber: 'ORD-001233',\n    customer: 'Sarah Wilson',\n    amount: 89.50,\n    status: 'processing',\n    date: '2025-11-09'\n  },\n  {\n    key: '3',\n    orderNumber: 'ORD-001232',\n    customer: 'Mike Johnson',\n    amount: 245.00,\n    status: 'shipped',\n    date: '2025-11-08'\n  },\n  {\n    key: '4',\n    orderNumber: 'ORD-001231',\n    customer: 'Emily Davis',\n    amount: 78.25,\n    status: 'delivered',\n    date: '2025-11-08'\n  },\n  {\n    key: '5',\n    orderNumber: 'ORD-001230',\n    customer: 'Robert Brown',\n    amount: 189.99,\n    status: 'cancelled',\n    date: '2025-11-07'\n  }\n];\n\nconst AdminDashboard = () => {\n  const { isAuthenticated, user } = useAuthStore();\n  const navigate = useNavigate();\n  const [stats, setStats] = useState<DashboardStats>({\n    totalProducts: 1247,\n    totalCustomers: 3891,\n    totalVendors: 156,\n    orderStats: {\n      totalOrders: 5467,\n      newOrders: 23,\n      deliveredOrders: 4892,\n      totalRevenue: 284750.50,\n    },\n    marketingStats: {\n      activeDeals: 12,\n      activeCoupons: 25,\n      activePromotions: 8,\n      totalMarketingRevenue: 45230.75,\n      avgConversionRate: 8.5,\n    },\n  });\n  \n  // Add dynamic state for real data\n  const [recentActivitiesState, setRecentActivities] = useState<RecentActivity[]>(recentActivities);\n  const [salesTrendsData, setSalesTrendsData] = useState(salesData);\n  const [recentOrdersState, setRecentOrders] = useState<RecentOrder[]>(recentOrders);\n  const [loading, setLoading] = useState(false);\n\n  // Mock data fallback function\n  const setMockData = () => {\n    setRecentActivities(recentActivities);\n    setSalesTrendsData(salesData);  \n    setRecentOrders(recentOrders);\n  };\n\n  useEffect(() => {\n    // Only fetch stats if user is authenticated and is an admin\n    if (isAuthenticated && user?.role === 'admin') {\n      // Small delay to ensure token is properly stored\n      const timer = setTimeout(() => {\n        fetchStats();\n      }, 100);\n      return () => clearTimeout(timer);\n    } else if (isAuthenticated && user?.role !== 'admin') {\n      message.error('Access denied. Admin privileges required.');\n      setLoading(false);\n    } else {\n      setLoading(false);\n    }\n  }, [isAuthenticated, user]);\n\n  const fetchStats = async () => {\n    try {\n      setLoading(true);\n      \n      // Fetch comprehensive dashboard analytics with error handling\n      const apiCalls = [\n        api.get<any>('/reports/dashboard', { params: { period: '7d' } }).catch(err => {\n          console.warn('Dashboard analytics endpoint not available:', err.response?.status);\n          return { data: { data: null } };\n        }),\n        api.get<any>('/reports/recent-activities', { params: { limit: 10 } }).catch(err => {\n          console.warn('Recent activities endpoint not available:', err.response?.status);\n          return { data: { data: [] } };\n        }),\n        api.get<any>('/reports/system-health').catch(err => {\n          console.warn('System health endpoint not available:', err.response?.status);\n          return { data: { data: null } };\n        }),\n        Promise.allSettled([\n          dealsAPI.getStats().catch(() => ({ active: 0, totalRevenue: 0, avgConversionRate: 0 })),\n          couponsAPI.getStats().catch(() => ({ active: 0 })), \n          promotionsAPI.getStats().catch(() => ({ active: 0 })),\n        ]),\n      ];\n\n      const [dashboardAnalytics, recentActivities, systemHealth, marketingStats] = await Promise.all(apiCalls);\n\n      console.log('Dashboard Analytics Response:', dashboardAnalytics.data);\n\n      // Extract real data from comprehensive analytics with fallbacks\n      const analytics = dashboardAnalytics.data?.data;\n      \n      // Extract marketing stats\n      let dealStats: any = { active: 0, totalRevenue: 0, avgConversionRate: 0 };\n      let couponStats: any = { active: 0 };\n      let promotionStats: any = { active: 0 };\n      \n      marketingStats.forEach((result, index) => {\n        if (result.status === 'fulfilled') {\n          switch (index) {\n            case 0:\n              dealStats = { ...dealStats, ...result.value };\n              break;\n            case 1:\n              couponStats = { ...couponStats, ...result.value };\n              break;\n            case 2:\n              promotionStats = { ...promotionStats, ...result.value };\n              break;\n          }\n        }\n      });\n      \n      setStats({\n        totalProducts: analytics?.productStats?.data?.totalProducts || 0,\n        totalCustomers: analytics?.userStats?.data?.totalCustomers || 0,\n        totalVendors: analytics?.userStats?.data?.totalVendors || 0,\n        orderStats: {\n          totalOrders: analytics?.salesSummary?.data?.summary?.totalOrders || 0,\n          newOrders: analytics?.salesSummary?.data?.statusBreakdown?.find((s: any) => s.status === 'NEW')?.count || 0,\n          deliveredOrders: analytics?.salesSummary?.data?.statusBreakdown?.find((s: any) => s.status === 'DELIVERED')?.count || 0,\n          totalRevenue: analytics?.salesSummary?.data?.summary?.totalRevenue || 0,\n        },\n        marketingStats: {\n          activeDeals: dealStats.active || 0,\n          activeCoupons: couponStats.active || 0,\n          activePromotions: promotionStats.active || 0,\n          totalMarketingRevenue: dealStats.totalRevenue || 0,\n          avgConversionRate: dealStats.avgConversionRate || 0,\n        },\n      });\n\n      // Set real recent activities\n      const activities = recentActivities.data?.data || [];\n      setRecentActivities(activities.map((activity: any) => ({\n        id: activity.id,\n        type: activity.type,\n        title: activity.title,\n        description: activity.description,\n        timestamp: activity.timestamp,\n        status: activity.status,\n      })));\n\n      // Set real sales trends data for chart\n      const salesTrends = analytics?.salesSummary?.data?.salesTrends || [];\n      setSalesTrendsData(salesTrends.map((trend: any) => ({\n        date: trend.date,\n        revenue: parseFloat(trend.revenue || 0),\n        orders: parseInt(trend.orders || 0),\n      })));\n\n      // Set real recent orders\n      const recentOrdersData = analytics?.recentOrders?.data || [];\n      setRecentOrders(recentOrdersData.slice(0, 10).map((order: any, index: number) => ({\n        key: order.id || index.toString(),\n        orderNumber: order.orderNumber || `ORD-${1000 + index}`,\n        customer: order.customer?.user ? \n          `${order.customer.user.firstName || ''} ${order.customer.user.lastName || ''}`.trim() : \n          'Unknown Customer',\n        amount: order.total || 0,\n        status: order.status || 'NEW',\n        date: order.createdAt || new Date().toISOString(),\n      })));\n\n      message.success('Dashboard loaded with real analytics data');\n    } catch (error: any) {\n      console.error('Failed to fetch analytics:', error);\n      // Keep mock data on error  \n      message.info('Using demo data - analytics endpoints are being initialized');\n      setMockData();\n    } finally {\n      setLoading(false);\n    }\n  };  const orderColumns = [\n    {\n      title: 'Order Number',\n      dataIndex: 'orderNumber',\n      key: 'orderNumber',\n      render: (text: string) => <Button type=\"link\">{text}</Button>,\n    },\n    {\n      title: 'Customer',\n      dataIndex: 'customer',\n      key: 'customer',\n    },\n    {\n      title: 'Amount',\n      dataIndex: 'amount',\n      key: 'amount',\n      render: (amount: number) => `$${amount.toFixed(2)}`,\n    },\n    {\n      title: 'Status',\n      dataIndex: 'status',\n      key: 'status',\n      render: (status: string) => {\n        const statusConfig = {\n          pending: { color: 'orange', text: 'Pending' },\n          processing: { color: 'blue', text: 'Processing' },\n          shipped: { color: 'purple', text: 'Shipped' },\n          delivered: { color: 'green', text: 'Delivered' },\n          cancelled: { color: 'red', text: 'Cancelled' },\n        };\n        const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;\n        return <Tag color={config.color}>{config.text}</Tag>;\n      },\n    },\n    {\n      title: 'Date',\n      dataIndex: 'date',\n      key: 'date',\n    },\n    {\n      title: 'Actions',\n      key: 'actions',\n      render: () => (\n        <Space>\n          <Tooltip title=\"View Details\">\n            <Button type=\"text\" icon={<EyeOutlined />} size=\"small\" />\n          </Tooltip>\n          <Tooltip title=\"Edit\">\n            <Button type=\"text\" icon={<EditOutlined />} size=\"small\" />\n          </Tooltip>\n        </Space>\n      ),\n    },\n  ];\n\n  const getActivityIcon = (type: string, status: string) => {\n    const iconProps = { style: { fontSize: '16px' } };\n    \n    switch (status) {\n      case 'success': return <CheckCircleOutlined style={{ ...iconProps.style, color: '#52c41a' }} />;\n      case 'error': return <CloseCircleOutlined style={{ ...iconProps.style, color: '#f5222d' }} />;\n      case 'warning': return <WarningOutlined style={{ ...iconProps.style, color: '#faad14' }} />;\n      default: return <SyncOutlined style={{ ...iconProps.style, color: '#1890ff' }} />;\n    }\n  };\n\n  const salesChartConfig = {\n    data: salesTrendsData,\n    xField: 'date',\n    yField: 'revenue',\n    color: '#1890ff',\n    point: {\n      size: 5,\n      shape: 'circle',\n    },\n    label: {\n      style: {\n        fill: '#aaa',\n      },\n    },\n  };\n\n  const categoryChartConfig = {\n    appendPadding: 10,\n    data: categoryData,\n    angleField: 'value',\n    colorField: 'category',\n    radius: 1,\n    label: {\n      type: 'inner',\n      offset: '-30%',\n      content: ({ percent }: any) => `${(percent * 100).toFixed(0)}%`,\n      style: {\n        fontSize: 14,\n        textAlign: 'center',\n      },\n    },\n    interactions: [\n      {\n        type: 'element-active',\n      },\n    ],\n  };\n\n  return (\n    <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>\n      <div style={{ marginBottom: '24px' }}>\n        <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>Admin Dashboard</h1>\n        <p style={{ color: '#666', margin: '4px 0 0 0' }}>Welcome back, {user?.name || 'Admin'}! Here's what's happening with your store today.</p>\n      </div>\n\n      {/* System Health Alert */}\n      <Alert\n        message=\"System Status: All Systems Operational\"\n        description=\"Last updated 2 minutes ago • API Response: 156ms • Database: Healthy • CDN: Active\"\n        type=\"success\"\n        showIcon\n        style={{ marginBottom: '24px' }}\n        action={\n          <Button size=\"small\" type=\"text\">\n            View Details\n          </Button>\n        }\n      />\n\n      {!isAuthenticated ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Please log in to access the admin dashboard.</p>\n        </div>\n      ) : user?.role !== 'admin' ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Access denied. Admin privileges required.</p>\n        </div>\n      ) : (\n        <Spin spinning={loading}>\n          {/* Key Metrics Row */}\n          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Revenue\"\n                  value={stats.orderStats.totalRevenue}\n                  prefix={<DollarOutlined style={{ color: '#52c41a' }} />}\n                  precision={2}\n                  valueStyle={{ color: '#52c41a', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <RiseOutlined style={{ color: '#52c41a', marginRight: '4px' }} />\n                  +12.5% from last month\n                </div>\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Orders\"\n                  value={stats.orderStats.totalOrders}\n                  prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}\n                  valueStyle={{ color: '#1890ff', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <Badge \n                    count={stats.orderStats.newOrders} \n                    style={{ backgroundColor: '#faad14' }}\n                  >\n                    <span style={{ marginRight: '8px' }}>New today</span>\n                  </Badge>\n                </div>\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Active Customers\"\n                  value={stats.totalCustomers}\n                  prefix={<TeamOutlined style={{ color: '#722ed1' }} />}\n                  valueStyle={{ color: '#722ed1', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <Progress \n                    percent={75} \n                    size=\"small\" \n                    showInfo={false}\n                    strokeColor=\"#722ed1\"\n                  />\n                  75% engagement rate\n                </div>\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Active Products\"\n                  value={stats.totalProducts}\n                  prefix={<ShoppingOutlined style={{ color: '#faad14' }} />}\n                  valueStyle={{ color: '#faad14', fontSize: '24px' }}\n                />\n                <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>\n                  <span style={{ color: '#52c41a' }}>{stats.totalVendors}</span> vendors\n                </div>\n              </Card>\n            </Col>\n          </Row>\n\n          {/* Marketing Performance Row */}\n          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>\n            <Col span={24}>\n              <Card \n                title={\n                  <Space>\n                    <FireOutlined style={{ color: '#ff4d4f' }} />\n                    Marketing Performance\n                  </Space>\n                }\n                extra={<Button type=\"link\" onClick={() => navigate('/admin/marketing-analytics')}>View Details</Button>}\n              >\n                <Row gutter={[16, 16]}>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Active Deals\"\n                        value={stats.marketingStats.activeDeals}\n                        prefix={<FireOutlined style={{ color: '#ff4d4f' }} />}\n                        valueStyle={{ color: '#ff4d4f' }}\n                      />\n                    </Card>\n                  </Col>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Active Coupons\"\n                        value={stats.marketingStats.activeCoupons}\n                        prefix={<GiftOutlined style={{ color: '#52c41a' }} />}\n                        valueStyle={{ color: '#52c41a' }}\n                      />\n                    </Card>\n                  </Col>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Active Campaigns\"\n                        value={stats.marketingStats.activePromotions}\n                        prefix={<ThunderboltOutlined style={{ color: '#1890ff' }} />}\n                        valueStyle={{ color: '#1890ff' }}\n                      />\n                    </Card>\n                  </Col>\n                  <Col xs={12} sm={6} lg={6}>\n                    <Card size=\"small\" style={{ textAlign: 'center' }}>\n                      <Statistic\n                        title=\"Marketing Revenue\"\n                        value={stats.marketingStats.totalMarketingRevenue}\n                        prefix=\"$\"\n                        precision={0}\n                        valueStyle={{ color: '#722ed1' }}\n                      />\n                    </Card>\n                  </Col>\n                </Row>\n                <div style={{ marginTop: 16, textAlign: 'center' }}>\n                  <Space>\n                    <Button icon={<FireOutlined />} onClick={() => navigate('/admin/deals-management')}>\n                      Create Deal\n                    </Button>\n                    <Button icon={<GiftOutlined />} onClick={() => navigate('/admin/coupon-management')}>\n                      Generate Coupon\n                    </Button>\n                    <Button icon={<ThunderboltOutlined />} onClick={() => navigate('/admin/promotions-campaigns')}>\n                      Launch Campaign\n                    </Button>\n                  </Space>\n                </div>\n              </Card>\n            </Col>\n          </Row>\n\n          {/* Charts Row */}\n          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>\n            <Col xs={24} lg={16}>\n              <Card title=\"Sales Trends\" extra={<Button type=\"link\">View Report</Button>}>\n                <Line {...salesChartConfig} height={300} />\n              </Card>\n            </Col>\n            <Col xs={24} lg={8}>\n              <Card title=\"Sales by Category\">\n                <Pie {...categoryChartConfig} height={300} />\n              </Card>\n            </Col>\n          </Row>\n\n          {/* Data Tables and Activity Row */}\n          <Row gutter={[16, 16]}>\n            <Col xs={24} lg={16}>\n              <Card \n                title=\"Recent Orders\" \n                extra={\n                  <Space>\n                    <Button type=\"link\">View All Orders</Button>\n                    <Button type=\"primary\" size=\"small\">Export</Button>\n                  </Space>\n                }\n              >\n                <Table \n                  columns={orderColumns} \n                  dataSource={recentOrdersState} \n                  pagination={false}\n                  size=\"small\"\n                />\n              </Card>\n            </Col>\n            \n            <Col xs={24} lg={8}>\n              <Card title=\"Recent Activity\" extra={<Button type=\"link\">View All</Button>}>\n                <List\n                  itemLayout=\"horizontal\"\n                  dataSource={recentActivitiesState}\n                  renderItem={(item) => (\n                    <List.Item>\n                      <List.Item.Meta\n                        avatar={<Avatar icon={getActivityIcon(item.type, item.status)} size=\"small\" />}\n                        title={<span style={{ fontSize: '14px' }}>{item.title}</span>}\n                        description={\n                          <div>\n                            <div style={{ fontSize: '12px', color: '#666' }}>{item.description}</div>\n                            <div style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{item.timestamp}</div>\n                          </div>\n                        }\n                      />\n                    </List.Item>\n                  )}\n                />\n              </Card>\n\n              {/* Quick Actions */}\n              <Card title=\"Quick Actions\" style={{ marginTop: '16px' }}>\n                <Space direction=\"vertical\" style={{ width: '100%' }} size=\"small\">\n                  <Button block type=\"primary\">Add New Product</Button>\n                  <Button block>Manage Users</Button>\n                  <Button block>View Reports</Button>\n                  <Button block>System Settings</Button>\n                </Space>\n              </Card>\n            </Col>\n          </Row>\n        </Spin>\n      )}\n    </div>\n  );\n};\n\nexport default AdminDashboard;\n",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/groow/groow/frontend/src/pages/admin/dashboard.tsx"
     },
