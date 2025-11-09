@@ -86,4 +86,50 @@ export class NotificationService {
     // Can integrate with Firebase Cloud Messaging, OneSignal, etc.
     console.log(`Push notification to ${userId}: ${title} - ${body}`);
   }
+
+  // Enhanced notification methods for order management
+  
+  async sendOrderStatusUpdate(customerId: string, orderId: string, status: string) {
+    const statusMessages = {
+      'manifested': 'Your order has been manifested and will be shipped soon',
+      'shipped': 'Your order has been shipped and is on its way',
+      'delivered': 'Your order has been delivered successfully',
+      'cancelled': 'Your order has been cancelled',
+      'hold': 'Your order is currently on hold'
+    };
+
+    const message = statusMessages[status] || `Your order status has been updated to ${status}`;
+    
+    await this.sendPushNotification(customerId, 'Order Update', message);
+  }
+
+  async sendShippingUpdate(customerId: string, orderId: string, trackingNumber: string) {
+    const message = `Your order has been shipped! Track it using: ${trackingNumber}`;
+    await this.sendPushNotification(customerId, 'Order Shipped', message);
+  }
+
+  async sendOrderHold(customerId: string, orderId: string, reason: string) {
+    const message = `Your order has been put on hold. Reason: ${reason}`;
+    await this.sendPushNotification(customerId, 'Order Hold', message);
+  }
+
+  async sendDisputeNotification(customerId: string, orderId: string, reason: string) {
+    const message = `A dispute has been raised for your order. Reason: ${reason}`;
+    await this.sendPushNotification(customerId, 'Order Dispute', message);
+  }
+
+  async sendReturnNotification(customerId: string, orderId: string) {
+    const message = 'Your return request has been received and is being processed';
+    await this.sendPushNotification(customerId, 'Return Request', message);
+  }
+
+  async sendRefundNotification(customerId: string, orderId: string, amount: number) {
+    const message = `Your refund of $${amount.toFixed(2)} has been processed`;
+    await this.sendPushNotification(customerId, 'Refund Processed', message);
+  }
+
+  async sendDeliveryUpdate(customerId: string, orderId: string, status: string) {
+    const message = `Delivery update for your order: ${status}`;
+    await this.sendPushNotification(customerId, 'Delivery Update', message);
+  }
 }
