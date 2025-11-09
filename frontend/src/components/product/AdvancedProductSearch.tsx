@@ -34,7 +34,7 @@ import {
   TagsOutlined,
   ShoppingOutlined,
   CheckCircleOutlined,
-  TrendingUpOutlined,
+  RiseOutlined,
   HeartOutlined,
   SwapOutlined,
   SortAscendingOutlined,
@@ -161,13 +161,13 @@ const AdvancedProductSearch: React.FC<AdvancedProductSearchProps> = ({
   // Sort options
   const sortOptions: { value: ProductSortOption; label: string; icon?: React.ReactNode }[] = [
     { value: 'relevance', label: 'Relevance', icon: <SearchOutlined /> },
-    { value: 'popularity', label: 'Popularity', icon: <TrendingUpOutlined /> },
+    { value: 'popularity', label: 'Popularity', icon: <RiseOutlined /> },
     { value: 'newest', label: 'Newest First' },
     { value: 'price-low', label: 'Price: Low to High', icon: <SortAscendingOutlined /> },
     { value: 'price-high', label: 'Price: High to Low', icon: <SortAscendingOutlined /> },
     { value: 'rating', label: 'Highest Rated', icon: <StarOutlined /> },
     { value: 'reviews', label: 'Most Reviews' },
-    { value: 'trending', label: 'Trending', icon: <TrendingUpOutlined /> },
+    { value: 'trending', label: 'Trending', icon: <RiseOutlined /> },
     { value: 'bestsellers', label: 'Best Sellers', icon: <ShoppingOutlined /> },
     { value: 'featured', label: 'Featured' },
     { value: 'discount', label: 'Highest Discount', icon: <TagsOutlined /> },
@@ -510,7 +510,7 @@ const AdvancedProductSearch: React.FC<AdvancedProductSearchProps> = ({
               onChange={(e) => updateFilter('trending', e.target.checked || undefined)}
             >
               <Space>
-                <TrendingUpOutlined />
+                <RiseOutlined />
                 Trending Now
               </Space>
             </Checkbox>
