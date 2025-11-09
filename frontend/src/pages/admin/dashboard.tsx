@@ -9,6 +9,7 @@ import {
   ShopOutlined 
 } from '@ant-design/icons';
 import { productAPI } from '@/services/api/products';
+import { useAuthStore } from '@/store/auth';
 import api from '@/services/api/client';
 
 interface OrderStats {
@@ -26,6 +27,7 @@ interface DashboardStats {
 }
 
 const AdminDashboard = () => {
+  const { isAuthenticated, user } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalCustomers: 0,
@@ -40,8 +42,16 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    // Only fetch stats if user is authenticated and is an admin
+    if (isAuthenticated && user?.role === 'admin') {
+      fetchStats();
+    } else if (isAuthenticated && user?.role !== 'admin') {
+      message.error('Access denied. Admin privileges required.');
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, user]);
 
   const fetchStats = async () => {
     try {
@@ -77,94 +87,104 @@ const AdminDashboard = () => {
   return (
     <div>
       <h1>Admin Dashboard</h1>
-      <Spin spinning={loading}>
-        <Row gutter={16} style={{ marginTop: 24 }}>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Total Products"
-                value={stats.totalProducts}
-                prefix={<ShoppingOutlined />}
-                valueStyle={{ color: '#1890ff' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Total Orders"
-                value={stats.orderStats.totalOrders}
-                prefix={<ShoppingCartOutlined />}
-                valueStyle={{ color: '#cf1322' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Total Revenue"
-                value={stats.orderStats.totalRevenue}
-                prefix={<DollarOutlined />}
-                precision={2}
-                valueStyle={{ color: '#3f8600' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="New Orders"
-                value={stats.orderStats.newOrders}
-                prefix={<ShoppingCartOutlined />}
-                valueStyle={{ color: '#faad14' }}
-              />
-            </Card>
-          </Col>
-        </Row>
-        
-        <Row gutter={16} style={{ marginTop: 16 }}>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Total Customers"
-                value={stats.totalCustomers}
-                prefix={<TeamOutlined />}
-                valueStyle={{ color: '#52c41a' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Total Vendors"
-                value={stats.totalVendors}
-                prefix={<ShopOutlined />}
-                valueStyle={{ color: '#722ed1' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Delivered Orders"
-                value={stats.orderStats.deliveredOrders}
-                prefix={<ShoppingCartOutlined />}
-                valueStyle={{ color: '#52c41a' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card>
-              <Statistic
-                title="Active Products"
-                value={stats.totalProducts}
-                prefix={<ShoppingOutlined />}
-                valueStyle={{ color: '#1890ff' }}
-              />
-            </Card>
-          </Col>
-        </Row>
-      </Spin>
+      {!isAuthenticated ? (
+        <div style={{ textAlign: 'center', marginTop: 50 }}>
+          <p>Please log in to access the admin dashboard.</p>
+        </div>
+      ) : user?.role !== 'admin' ? (
+        <div style={{ textAlign: 'center', marginTop: 50 }}>
+          <p>Access denied. Admin privileges required.</p>
+        </div>
+      ) : (
+        <Spin spinning={loading}>
+          <Row gutter={16} style={{ marginTop: 24 }}>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Total Products"
+                  value={stats.totalProducts}
+                  prefix={<ShoppingOutlined />}
+                  valueStyle={{ color: '#1890ff' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Total Orders"
+                  value={stats.orderStats.totalOrders}
+                  prefix={<ShoppingCartOutlined />}
+                  valueStyle={{ color: '#cf1322' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Total Revenue"
+                  value={stats.orderStats.totalRevenue}
+                  prefix={<DollarOutlined />}
+                  precision={2}
+                  valueStyle={{ color: '#3f8600' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="New Orders"
+                  value={stats.orderStats.newOrders}
+                  prefix={<ShoppingCartOutlined />}
+                  valueStyle={{ color: '#faad14' }}
+                />
+              </Card>
+            </Col>
+          </Row>
+          
+          <Row gutter={16} style={{ marginTop: 16 }}>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Total Customers"
+                  value={stats.totalCustomers}
+                  prefix={<TeamOutlined />}
+                  valueStyle={{ color: '#52c41a' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Total Vendors"
+                  value={stats.totalVendors}
+                  prefix={<ShopOutlined />}
+                  valueStyle={{ color: '#722ed1' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Delivered Orders"
+                  value={stats.orderStats.deliveredOrders}
+                  prefix={<ShoppingCartOutlined />}
+                  valueStyle={{ color: '#52c41a' }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Card>
+                <Statistic
+                  title="Active Products"
+                  value={stats.totalProducts}
+                  prefix={<ShoppingOutlined />}
+                  valueStyle={{ color: '#1890ff' }}
+                />
+              </Card>
+            </Col>
+          </Row>
+        </Spin>
+      )}
     </div>
   );
 };

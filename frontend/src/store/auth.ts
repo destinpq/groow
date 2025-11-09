@@ -26,23 +26,27 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       login: (token: string, user: User) => {
-        localStorage.setItem('access_token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('access_token', token);
+          localStorage.setItem('user', JSON.stringify(user));
+        }
         set({ user, token, isAuthenticated: true });
       },
 
       logout: () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+        }
         set({ user: null, token: null, isAuthenticated: false });
       },
     }),
     {
       name: 'auth-storage',
-      // Custom hydration to read tokens from localStorage
+      // Custom hydration to read tokens from localStorage on page load
       onRehydrateStorage: () => (state) => {
-        if (state) {
+        if (typeof window !== 'undefined' && state) {
           const token = localStorage.getItem('access_token');
           const userStr = localStorage.getItem('user');
           
@@ -56,6 +60,7 @@ export const useAuthStore = create<AuthState>()(
               console.error('Failed to parse user from localStorage:', error);
               localStorage.removeItem('access_token');
               localStorage.removeItem('user');
+              localStorage.removeItem('refresh_token');
             }
           }
         }

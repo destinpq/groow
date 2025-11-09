@@ -12,13 +12,18 @@ const LoginPage = () => {
   const onFinish = async (values: any) => {
     try {
       const response = await authAPI.login(values);
-      const { access_token, refresh_token, user } = response.data;
+      const { access_token, refresh_token, user } = response;
       
       // Create user object with proper name field
       const userWithName = {
         ...user,
         name: `${user.firstName} ${user.lastName}` // Combine first and last name
       };
+      
+      // Store refresh token
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('refresh_token', refresh_token);
+      }
       
       // Use the auth store login method (it will handle token storage)
       login(access_token, userWithName);
@@ -59,14 +64,22 @@ const LoginPage = () => {
               { type: 'email', message: 'Please enter a valid email!' }
             ]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Email" />
+            <Input 
+              prefix={<UserOutlined />} 
+              placeholder="Email" 
+              autoComplete="email"
+            />
           </Form.Item>
 
           <Form.Item
             name="password"
             rules={[{ required: true, message: 'Please input your password!' }]}
           >
-            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+            <Input.Password 
+              prefix={<LockOutlined />} 
+              placeholder="Password" 
+              autoComplete="current-password"
+            />
           </Form.Item>
 
           <Form.Item>
