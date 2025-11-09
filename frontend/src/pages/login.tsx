@@ -12,13 +12,16 @@ const LoginPage = () => {
   const onFinish = async (values: any) => {
     try {
       const response = await authAPI.login(values);
-      const { accessToken, refreshToken, user } = response.data;
+      const { access_token, refresh_token, user } = response.data;
       
-      // Store tokens
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      // Create user object with proper name field
+      const userWithName = {
+        ...user,
+        name: `${user.firstName} ${user.lastName}` // Combine first and last name
+      };
       
-      login(accessToken, user);
+      // Use the auth store login method (it will handle token storage)
+      login(access_token, userWithName);
       message.success('Login successful!');
       
       // Redirect based on user role

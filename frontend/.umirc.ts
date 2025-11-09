@@ -14,8 +14,8 @@ export default defineConfig({
   
   // Define environment variables
   define: {
-    'process.env.API_URL': 'https://grooow-api-db.destinpq.com/api/v1',
-    'process.env.REACT_APP_API_URL': 'https://grooow-api-db.destinpq.com/api/v1',
+    'process.env.API_URL': 'https://groow-api.destinpq.com/api/v1',
+    'process.env.REACT_APP_API_URL': 'https://groow-api.destinpq.com/api/v1',
   },
   
   // Theme configuration
@@ -32,7 +32,7 @@ export default defineConfig({
   // Proxy for development
   proxy: {
     '/api': {
-      target: 'https://grooow-api-db.destinpq.com',
+      target: 'https://groow-api.destinpq.com',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
       secure: false,

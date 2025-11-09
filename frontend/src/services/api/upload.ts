@@ -122,7 +122,7 @@ export const uploadAPI = {
 
   // Get file URL
   getFileUrl: (path: string): string => {
-    return `${process.env.API_URL || 'https://grooow-api-db.destinpq.com'}/uploads/${path}`;
+    return `${process.env.API_URL || 'https://groow-api.destinpq.com'}/uploads/${path}`;
   },
 };
 

@@ -42,12 +42,6 @@ export const authAPI = {
   // Login
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', credentials);
-    
-    // Store tokens
-    localStorage.setItem('access_token', response.data.access_token);
-    localStorage.setItem('refresh_token', response.data.refresh_token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    
     return response.data;
   },
 

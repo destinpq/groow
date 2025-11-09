@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 import { message } from 'antd';
 
 // API Base URL
-const API_BASE_URL = process.env.API_URL || 'https://grooow-api-db.destinpq.com/api/v1';
+const API_BASE_URL = process.env.API_URL || 'https://groow-api.destinpq.com/api/v1';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({

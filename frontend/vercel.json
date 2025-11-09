@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://grooow-api-db.destinpq.com/api/$1"
+      "dest": "https://groow-api.destinpq.com/api/$1"
     },
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",

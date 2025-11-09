@@ -204,7 +204,7 @@ export interface ChatMessage {
 }
 
 class SupportAPI {
-  private baseUrl = 'https://grooow-api-db.destinpq.com/api';
+  private baseUrl = 'https://groow-api.destinpq.com/api';
 
   // Ticket Management
   async getTickets(filters?: TicketFilters): Promise<{ tickets: SupportTicket[]; total: number }> {
