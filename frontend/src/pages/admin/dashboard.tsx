@@ -44,7 +44,11 @@ const AdminDashboard = () => {
   useEffect(() => {
     // Only fetch stats if user is authenticated and is an admin
     if (isAuthenticated && user?.role === 'admin') {
-      fetchStats();
+      // Small delay to ensure token is properly stored
+      const timer = setTimeout(() => {
+        fetchStats();
+      }, 100);
+      return () => clearTimeout(timer);
     } else if (isAuthenticated && user?.role !== 'admin') {
       message.error('Access denied. Admin privileges required.');
       setLoading(false);

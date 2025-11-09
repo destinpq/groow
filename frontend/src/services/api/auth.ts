@@ -41,8 +41,16 @@ export interface User {
 export const authAPI = {
   // Login
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    return response.data;
+    const response = await api.post<{success: boolean, data: AuthResponse}>('/auth/login', credentials);
+    
+    // Store tokens immediately
+    if (response.data?.success && response.data?.data) {
+      localStorage.setItem('access_token', response.data.data.access_token);
+      localStorage.setItem('refresh_token', response.data.data.refresh_token);
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    }
+    
+    return response.data?.data;
   },
 
   // Register

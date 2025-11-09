@@ -29,6 +29,8 @@ apiClient.interceptors.request.use(
         method: config.method?.toUpperCase(),
         url: config.url,
         data: config.data,
+        hasToken: !!token,
+        tokenPreview: token ? token.substring(0, 50) + '...' : null
       });
     }
     
@@ -65,20 +67,23 @@ apiClient.interceptors.response.use(
         // Try to refresh token
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
+          console.log('🔄 Attempting token refresh...');
           const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
             refreshToken,
           });
 
-          const { access_token } = response.data;
+          const { access_token } = response.data?.data || response.data;
           localStorage.setItem('access_token', access_token);
 
           // Retry original request with new token
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${access_token}`;
           }
+          console.log('✅ Token refreshed successfully');
           return apiClient(originalRequest);
         }
       } catch (refreshError) {
+        console.error('❌ Token refresh failed:', refreshError);
         // Refresh failed - logout user
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
@@ -86,6 +91,15 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
+    }
+
+    // Handle other errors or if refresh failed
+    if (error.response?.status === 401) {
+      console.log('🚪 Unauthorized - redirecting to login');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token'); 
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
 
     // Handle other errors

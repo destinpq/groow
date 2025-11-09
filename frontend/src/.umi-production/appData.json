@@ -62,7 +62,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "preset",
@@ -92,7 +92,7 @@
             0
           ]
         },
-        "register": 4
+        "register": 5
       },
       "enableBy": "register",
       "type": "plugin",
@@ -153,7 +153,7 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            679
+            681
           ]
         },
         "register": 35
@@ -189,7 +189,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1088,7 +1088,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1144,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 47
+        "register": 46
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1171,7 +1171,7 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            1
+            0
           ]
         },
         "register": 1
@@ -1263,7 +1263,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1277,10 +1277,10 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            1
+            0
           ]
         },
-        "register": 2
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill.js",
@@ -1318,7 +1318,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1331,7 +1331,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1395,7 +1395,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1472,7 +1472,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 35
+        "register": 36
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1551,7 +1551,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1576,7 +1576,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1625,7 +1625,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1638,7 +1638,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1664,7 +1664,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 74
+        "register": 75
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1677,7 +1677,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 40
+        "register": 38
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1715,7 +1715,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1728,7 +1728,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1858,7 +1858,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1910,7 +1910,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1936,7 +1936,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1949,7 +1949,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -3313,7 +3313,7 @@
       "id": "admin/dashboard",
       "file": "admin/dashboard.tsx",
       "absPath": "/admin/dashboard",
-      "__content": "import { useState, useEffect } from 'react';\nimport { Card, Row, Col, Statistic, Spin, message } from 'antd';\nimport { \n  UserOutlined, \n  ShoppingOutlined, \n  ShoppingCartOutlined, \n  DollarOutlined,\n  TeamOutlined,\n  ShopOutlined \n} from '@ant-design/icons';\nimport { productAPI } from '@/services/api/products';\nimport { useAuthStore } from '@/store/auth';\nimport api from '@/services/api/client';\n\ninterface OrderStats {\n  totalOrders: number;\n  newOrders: number;\n  deliveredOrders: number;\n  totalRevenue: number;\n}\n\ninterface DashboardStats {\n  totalProducts: number;\n  totalCustomers: number;\n  totalVendors: number;\n  orderStats: OrderStats;\n}\n\nconst AdminDashboard = () => {\n  const { isAuthenticated, user } = useAuthStore();\n  const [stats, setStats] = useState<DashboardStats>({\n    totalProducts: 0,\n    totalCustomers: 0,\n    totalVendors: 0,\n    orderStats: {\n      totalOrders: 0,\n      newOrders: 0,\n      deliveredOrders: 0,\n      totalRevenue: 0,\n    },\n  });\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    // Only fetch stats if user is authenticated and is an admin\n    if (isAuthenticated && user?.role === 'admin') {\n      fetchStats();\n    } else if (isAuthenticated && user?.role !== 'admin') {\n      message.error('Access denied. Admin privileges required.');\n      setLoading(false);\n    } else {\n      setLoading(false);\n    }\n  }, [isAuthenticated, user]);\n\n  const fetchStats = async () => {\n    try {\n      setLoading(true);\n\n      // Fetch all stats in parallel\n      const [productsRes, orderStatsRes, customersRes, vendorsRes] = await Promise.all([\n        productAPI.getAll({ page: 1, limit: 1 }),\n        api.get<OrderStats>('/orders/stats'),\n        api.get<any>('/users', { params: { role: 'customer', page: 1, limit: 1 } }),\n        api.get<any>('/users', { params: { role: 'vendor', page: 1, limit: 1 } }),\n      ]);\n\n      setStats({\n        totalProducts: productsRes.total || 0,\n        totalCustomers: customersRes.data?.total || 0,\n        totalVendors: vendorsRes.data?.total || 0,\n        orderStats: orderStatsRes.data || {\n          totalOrders: 0,\n          newOrders: 0,\n          deliveredOrders: 0,\n          totalRevenue: 0,\n        },\n      });\n    } catch (error: any) {\n      console.error('Failed to fetch stats:', error);\n      message.error(error?.response?.data?.message || 'Failed to load dashboard statistics');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <div>\n      <h1>Admin Dashboard</h1>\n      {!isAuthenticated ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Please log in to access the admin dashboard.</p>\n        </div>\n      ) : user?.role !== 'admin' ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Access denied. Admin privileges required.</p>\n        </div>\n      ) : (\n        <Spin spinning={loading}>\n          <Row gutter={16} style={{ marginTop: 24 }}>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Products\"\n                  value={stats.totalProducts}\n                  prefix={<ShoppingOutlined />}\n                  valueStyle={{ color: '#1890ff' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Orders\"\n                  value={stats.orderStats.totalOrders}\n                  prefix={<ShoppingCartOutlined />}\n                  valueStyle={{ color: '#cf1322' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Revenue\"\n                  value={stats.orderStats.totalRevenue}\n                  prefix={<DollarOutlined />}\n                  precision={2}\n                  valueStyle={{ color: '#3f8600' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"New Orders\"\n                  value={stats.orderStats.newOrders}\n                  prefix={<ShoppingCartOutlined />}\n                  valueStyle={{ color: '#faad14' }}\n                />\n              </Card>\n            </Col>\n          </Row>\n          \n          <Row gutter={16} style={{ marginTop: 16 }}>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Customers\"\n                  value={stats.totalCustomers}\n                  prefix={<TeamOutlined />}\n                  valueStyle={{ color: '#52c41a' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Vendors\"\n                  value={stats.totalVendors}\n                  prefix={<ShopOutlined />}\n                  valueStyle={{ color: '#722ed1' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Delivered Orders\"\n                  value={stats.orderStats.deliveredOrders}\n                  prefix={<ShoppingCartOutlined />}\n                  valueStyle={{ color: '#52c41a' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Active Products\"\n                  value={stats.totalProducts}\n                  prefix={<ShoppingOutlined />}\n                  valueStyle={{ color: '#1890ff' }}\n                />\n              </Card>\n            </Col>\n          </Row>\n        </Spin>\n      )}\n    </div>\n  );\n};\n\nexport default AdminDashboard;\n",
+      "__content": "import { useState, useEffect } from 'react';\nimport { Card, Row, Col, Statistic, Spin, message } from 'antd';\nimport { \n  UserOutlined, \n  ShoppingOutlined, \n  ShoppingCartOutlined, \n  DollarOutlined,\n  TeamOutlined,\n  ShopOutlined \n} from '@ant-design/icons';\nimport { productAPI } from '@/services/api/products';\nimport { useAuthStore } from '@/store/auth';\nimport api from '@/services/api/client';\n\ninterface OrderStats {\n  totalOrders: number;\n  newOrders: number;\n  deliveredOrders: number;\n  totalRevenue: number;\n}\n\ninterface DashboardStats {\n  totalProducts: number;\n  totalCustomers: number;\n  totalVendors: number;\n  orderStats: OrderStats;\n}\n\nconst AdminDashboard = () => {\n  const { isAuthenticated, user } = useAuthStore();\n  const [stats, setStats] = useState<DashboardStats>({\n    totalProducts: 0,\n    totalCustomers: 0,\n    totalVendors: 0,\n    orderStats: {\n      totalOrders: 0,\n      newOrders: 0,\n      deliveredOrders: 0,\n      totalRevenue: 0,\n    },\n  });\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    // Only fetch stats if user is authenticated and is an admin\n    if (isAuthenticated && user?.role === 'admin') {\n      // Small delay to ensure token is properly stored\n      const timer = setTimeout(() => {\n        fetchStats();\n      }, 100);\n      return () => clearTimeout(timer);\n    } else if (isAuthenticated && user?.role !== 'admin') {\n      message.error('Access denied. Admin privileges required.');\n      setLoading(false);\n    } else {\n      setLoading(false);\n    }\n  }, [isAuthenticated, user]);\n\n  const fetchStats = async () => {\n    try {\n      setLoading(true);\n\n      // Fetch all stats in parallel\n      const [productsRes, orderStatsRes, customersRes, vendorsRes] = await Promise.all([\n        productAPI.getAll({ page: 1, limit: 1 }),\n        api.get<OrderStats>('/orders/stats'),\n        api.get<any>('/users', { params: { role: 'customer', page: 1, limit: 1 } }),\n        api.get<any>('/users', { params: { role: 'vendor', page: 1, limit: 1 } }),\n      ]);\n\n      setStats({\n        totalProducts: productsRes.total || 0,\n        totalCustomers: customersRes.data?.total || 0,\n        totalVendors: vendorsRes.data?.total || 0,\n        orderStats: orderStatsRes.data || {\n          totalOrders: 0,\n          newOrders: 0,\n          deliveredOrders: 0,\n          totalRevenue: 0,\n        },\n      });\n    } catch (error: any) {\n      console.error('Failed to fetch stats:', error);\n      message.error(error?.response?.data?.message || 'Failed to load dashboard statistics');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <div>\n      <h1>Admin Dashboard</h1>\n      {!isAuthenticated ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Please log in to access the admin dashboard.</p>\n        </div>\n      ) : user?.role !== 'admin' ? (\n        <div style={{ textAlign: 'center', marginTop: 50 }}>\n          <p>Access denied. Admin privileges required.</p>\n        </div>\n      ) : (\n        <Spin spinning={loading}>\n          <Row gutter={16} style={{ marginTop: 24 }}>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Products\"\n                  value={stats.totalProducts}\n                  prefix={<ShoppingOutlined />}\n                  valueStyle={{ color: '#1890ff' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Orders\"\n                  value={stats.orderStats.totalOrders}\n                  prefix={<ShoppingCartOutlined />}\n                  valueStyle={{ color: '#cf1322' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Revenue\"\n                  value={stats.orderStats.totalRevenue}\n                  prefix={<DollarOutlined />}\n                  precision={2}\n                  valueStyle={{ color: '#3f8600' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"New Orders\"\n                  value={stats.orderStats.newOrders}\n                  prefix={<ShoppingCartOutlined />}\n                  valueStyle={{ color: '#faad14' }}\n                />\n              </Card>\n            </Col>\n          </Row>\n          \n          <Row gutter={16} style={{ marginTop: 16 }}>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Customers\"\n                  value={stats.totalCustomers}\n                  prefix={<TeamOutlined />}\n                  valueStyle={{ color: '#52c41a' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Total Vendors\"\n                  value={stats.totalVendors}\n                  prefix={<ShopOutlined />}\n                  valueStyle={{ color: '#722ed1' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Delivered Orders\"\n                  value={stats.orderStats.deliveredOrders}\n                  prefix={<ShoppingCartOutlined />}\n                  valueStyle={{ color: '#52c41a' }}\n                />\n              </Card>\n            </Col>\n            <Col xs={24} sm={12} lg={6}>\n              <Card>\n                <Statistic\n                  title=\"Active Products\"\n                  value={stats.totalProducts}\n                  prefix={<ShoppingOutlined />}\n                  valueStyle={{ color: '#1890ff' }}\n                />\n              </Card>\n            </Col>\n          </Row>\n        </Spin>\n      )}\n    </div>\n  );\n};\n\nexport default AdminDashboard;\n",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/groow/groow/frontend/src/pages/admin/dashboard.tsx"
     },
@@ -3620,7 +3620,7 @@
       "id": "login",
       "file": "login.tsx",
       "absPath": "/login",
-      "__content": "import { Form, Input, Button, Card, message } from 'antd';\nimport { UserOutlined, LockOutlined } from '@ant-design/icons';\nimport { useNavigate } from 'umi';\nimport { useAuthStore } from '@/store/auth';\nimport { authAPI } from '@/services/api';\n\nconst LoginPage = () => {\n  const navigate = useNavigate();\n  const { login } = useAuthStore();\n  const [form] = Form.useForm();\n\n  const onFinish = async (values: any) => {\n    try {\n      const response = await authAPI.login(values);\n      const { access_token, refresh_token, user } = response;\n      \n      // Create user object with proper name field\n      const userWithName = {\n        ...user,\n        name: `${user.firstName} ${user.lastName}` // Combine first and last name\n      };\n      \n      // Store refresh token\n      if (typeof window !== 'undefined') {\n        localStorage.setItem('refresh_token', refresh_token);\n      }\n      \n      // Use the auth store login method (it will handle token storage)\n      login(access_token, userWithName);\n      message.success('Login successful!');\n      \n      // Redirect based on user role\n      if (user.role === 'admin') {\n        navigate('/admin');\n      } else if (user.role === 'vendor') {\n        navigate('/vendor');\n      } else {\n        navigate('/');\n      }\n    } catch (error: any) {\n      message.error(error.response?.data?.message || 'Login failed');\n    }\n  };\n\n  return (\n    <div style={{ \n      display: 'flex', \n      justifyContent: 'center', \n      alignItems: 'center', \n      minHeight: '100vh',\n      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',\n    }}>\n      <Card title=\"Login to Groow\" style={{ width: 400 }}>\n        <Form\n          form={form}\n          name=\"login\"\n          onFinish={onFinish}\n          autoComplete=\"off\"\n        >\n          <Form.Item\n            name=\"email\"\n            rules={[\n              { required: true, message: 'Please input your email!' },\n              { type: 'email', message: 'Please enter a valid email!' }\n            ]}\n          >\n            <Input \n              prefix={<UserOutlined />} \n              placeholder=\"Email\" \n              autoComplete=\"email\"\n            />\n          </Form.Item>\n\n          <Form.Item\n            name=\"password\"\n            rules={[{ required: true, message: 'Please input your password!' }]}\n          >\n            <Input.Password \n              prefix={<LockOutlined />} \n              placeholder=\"Password\" \n              autoComplete=\"current-password\"\n            />\n          </Form.Item>\n\n          <Form.Item>\n            <Button type=\"primary\" htmlType=\"submit\" block>\n              Log in\n            </Button>\n          </Form.Item>\n        </Form>\n        <div style={{ textAlign: 'center' }}>\n          Don't have an account? <a onClick={() => navigate('/register')}>Register now</a>\n        </div>\n      </Card>\n    </div>\n  );\n};\n\nexport default LoginPage;\n",
+      "__content": "import { Form, Input, Button, Card, message } from 'antd';\nimport { UserOutlined, LockOutlined } from '@ant-design/icons';\nimport { useNavigate } from 'umi';\nimport { useAuthStore } from '@/store/auth';\nimport { authAPI } from '@/services/api';\n\nconst LoginPage = () => {\n  const navigate = useNavigate();\n  const { login } = useAuthStore();\n  const [form] = Form.useForm();\n\n  const onFinish = async (values: any) => {\n    try {\n      const response = await authAPI.login(values);\n      const { access_token, refresh_token, user } = response;\n      \n      // Store tokens first\n      if (typeof window !== 'undefined') {\n        localStorage.setItem('access_token', access_token);\n        localStorage.setItem('refresh_token', refresh_token);\n        localStorage.setItem('user', JSON.stringify(user));\n      }\n      \n      // Create user object with proper name field\n      const userWithName = {\n        ...user,\n        name: `${user.firstName} ${user.lastName}` // Combine first and last name\n      };\n      \n      // Use the auth store login method\n      login(access_token, userWithName);\n      message.success('Login successful!');\n      \n      // Small delay before navigation to ensure state is updated\n      setTimeout(() => {\n        // Redirect based on user role\n        if (user.role === 'admin') {\n          navigate('/admin');\n        } else if (user.role === 'vendor') {\n          navigate('/vendor');\n        } else {\n          navigate('/');\n        }\n      }, 50);\n    } catch (error: any) {\n      console.error('Login error:', error);\n      message.error(error.response?.data?.message || 'Login failed');\n    }\n  };\n\n  return (\n    <div style={{ \n      display: 'flex', \n      justifyContent: 'center', \n      alignItems: 'center', \n      minHeight: '100vh',\n      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',\n    }}>\n      <Card title=\"Login to Groow\" style={{ width: 400 }}>\n        <Form\n          form={form}\n          name=\"login\"\n          onFinish={onFinish}\n          autoComplete=\"off\"\n        >\n          <Form.Item\n            name=\"email\"\n            rules={[\n              { required: true, message: 'Please input your email!' },\n              { type: 'email', message: 'Please enter a valid email!' }\n            ]}\n          >\n            <Input \n              prefix={<UserOutlined />} \n              placeholder=\"Email\" \n              autoComplete=\"email\"\n            />\n          </Form.Item>\n\n          <Form.Item\n            name=\"password\"\n            rules={[{ required: true, message: 'Please input your password!' }]}\n          >\n            <Input.Password \n              prefix={<LockOutlined />} \n              placeholder=\"Password\" \n              autoComplete=\"current-password\"\n            />\n          </Form.Item>\n\n          <Form.Item>\n            <Button type=\"primary\" htmlType=\"submit\" block>\n              Log in\n            </Button>\n          </Form.Item>\n        </Form>\n        <div style={{ textAlign: 'center' }}>\n          Don't have an account? <a onClick={() => navigate('/register')}>Register now</a>\n        </div>\n      </Card>\n    </div>\n  );\n};\n\nexport default LoginPage;\n",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/groow/groow/frontend/src/pages/login.tsx"
     },

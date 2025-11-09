@@ -14,30 +14,36 @@ const LoginPage = () => {
       const response = await authAPI.login(values);
       const { access_token, refresh_token, user } = response;
       
+      // Store tokens first
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      
       // Create user object with proper name field
       const userWithName = {
         ...user,
         name: `${user.firstName} ${user.lastName}` // Combine first and last name
       };
       
-      // Store refresh token
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('refresh_token', refresh_token);
-      }
-      
-      // Use the auth store login method (it will handle token storage)
+      // Use the auth store login method
       login(access_token, userWithName);
       message.success('Login successful!');
       
-      // Redirect based on user role
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else if (user.role === 'vendor') {
-        navigate('/vendor');
-      } else {
-        navigate('/');
-      }
+      // Small delay before navigation to ensure state is updated
+      setTimeout(() => {
+        // Redirect based on user role
+        if (user.role === 'admin') {
+          navigate('/admin');
+        } else if (user.role === 'vendor') {
+          navigate('/vendor');
+        } else {
+          navigate('/');
+        }
+      }, 50);
     } catch (error: any) {
+      console.error('Login error:', error);
       message.error(error.response?.data?.message || 'Login failed');
     }
   };
