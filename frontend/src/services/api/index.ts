@@ -12,7 +12,11 @@
  */
 
 // Core API Client
-export { default as api } from './client';
+// Enhanced APIs
+export { enhancedProductAPI } from './enhanced-product';
+
+// Existing APIs
+export { default as apiClient } from './client';
 
 // Authentication
 export { authAPI } from './auth';
@@ -142,6 +146,31 @@ export type {
   ValidateCouponDto,
   CouponValidation,
 } from './coupons';
+
+// Deals
+export { dealsAPI } from './deals';
+export type {
+  Deal,
+  CreateDealDto,
+  UpdateDealDto,
+  DealFilters,
+  DealStats,
+  DealAnalytics,
+  DealUsage,
+} from './deals';
+
+// Promotions
+export { promotionsAPI } from './promotions';
+export type {
+  Promotion,
+  CreatePromotionDto,
+  UpdatePromotionDto,
+  PromotionFilters,
+  PromotionStats,
+  PromotionAnalytics,
+  PromotionTemplate,
+  CampaignCalendar,
+} from './promotions';
 
 // Tax
 export { taxAPI } from './tax';
@@ -353,6 +382,8 @@ import { chatAPI } from './chat';
 import { shippingAPI } from './shipping';
 import { analyticsAPI } from './analytics';
 import { couponsAPI } from './coupons';
+import { dealsAPI } from './deals';
+import { promotionsAPI } from './promotions';
 import { taxAPI } from './tax';
 import { emailAPI } from './email';
 import { logsAPI } from './logs';
@@ -404,6 +435,8 @@ export const API = {
   shipping: shippingAPI,
   analytics: analyticsAPI,
   coupons: couponsAPI,
+  deals: dealsAPI,
+  promotions: promotionsAPI,
   tax: taxAPI,
   email: emailAPI,
   logs: logsAPI,
