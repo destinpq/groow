@@ -1,5 +1,216 @@
 import apiClient from './client';
 
+// Backend POJO imports - Marketing Module  
+interface PromotionDto {
+  id: string;
+  name: string;
+  description: string;
+  type: string; // banner, popup, email_campaign, sms_campaign, social_media, referral_program
+  status: string; // draft, scheduled, active, paused, completed, cancelled
+  campaign: {
+    objective: string; // brand_awareness, traffic, conversions, retention
+    budget?: number;
+    targetAudience: string[]; // customer_segments
+    channels: string[]; // email, sms, social, in-app, website
+    frequency: string; // one_time, daily, weekly, monthly
+  };
+  content?: {
+    title: string;
+    message: string;
+    imageUrl?: string;
+    videoUrl?: string;
+    ctaText?: string;
+    ctaUrl?: string;
+    emailTemplate?: string;
+    smsTemplate?: string;
+  };
+  scheduling?: {
+    startDate: string;
+    endDate: string;
+    timezone: string;
+    sendTimes?: string[];
+    frequency?: string;
+    recurring?: boolean;
+  };
+  targeting?: {
+    customerSegments: string[];
+    demographics: {
+      ageRange?: { min: number; max: number };
+      gender?: string;
+      location?: string[];
+    };
+    behavioral: {
+      purchaseHistory?: string[];
+      categoryInterests?: string[];
+      lastActivityDays?: number;
+      avgOrderValue?: { min: number; max: number };
+    };
+    customFilters?: Record<string, any>;
+  };
+  rules?: {
+    displayRules?: {
+      maxImpressionsPerUser?: number;
+      cooldownPeriod?: number;
+      deviceTypes?: string[];
+      browserTypes?: string[];
+    };
+    eligibilityRules?: {
+      minOrderValue?: number;
+      excludedCustomers?: string[];
+      requiredActions?: string[];
+    };
+  };
+  metrics: {
+    impressions: number;
+    clicks: number;
+    conversions: number;
+    reach: number;
+    engagement: number;
+    ctr: number;
+    conversionRate: number;
+    costPerClick?: number;
+    costPerConversion?: number;
+    roi?: number;
+  };
+  performance: {
+    emailsSent?: number;
+    emailsOpened?: number;
+    emailsClicked?: number;
+    smsDelivered?: number;
+    smsClicked?: number;
+    socialShares?: number;
+    socialLikes?: number;
+    websiteVisits?: number;
+    appInstalls?: number;
+  };
+  associatedDeals?: string[];
+  associatedCoupons?: string[];
+  budget?: number;
+  spent: number;
+  revenueGenerated: number;
+  abTesting?: {
+    enabled: boolean;
+    variants?: {
+      name: string;
+      content: any;
+      traffic: number;
+      performance: any;
+    }[];
+    winner?: string;
+  };
+  createdById: string;
+  tags?: string[];
+  notes?: string;
+  launchedAt?: Date;
+  completedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// API Response wrappers
+interface PromotionsAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+interface PaginatedPromotionsResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// Request types
+export interface CreatePromotionRequest {
+  name: string;
+  description: string;
+  type: string;
+  campaign: {
+    objective: string;
+    budget?: number;
+    targetAudience: string[];
+    channels: string[];
+    frequency: string;
+  };
+  content?: {
+    title: string;
+    message: string;
+    imageUrl?: string;
+    videoUrl?: string;
+    ctaText?: string;
+    ctaUrl?: string;
+    emailTemplate?: string;
+    smsTemplate?: string;
+  };
+  scheduling?: {
+    startDate: string;
+    endDate: string;
+    timezone: string;
+    sendTimes?: string[];
+    frequency?: string;
+    recurring?: boolean;
+  };
+  targeting?: {
+    customerSegments: string[];
+    demographics: {
+      ageRange?: { min: number; max: number };
+      gender?: string;
+      location?: string[];
+    };
+    behavioral: {
+      purchaseHistory?: string[];
+      categoryInterests?: string[];
+      lastActivityDays?: number;
+      avgOrderValue?: { min: number; max: number };
+    };
+    customFilters?: Record<string, any>;
+  };
+  rules?: {
+    displayRules?: {
+      maxImpressionsPerUser?: number;
+      cooldownPeriod?: number;
+      deviceTypes?: string[];
+      browserTypes?: string[];
+    };
+    eligibilityRules?: {
+      minOrderValue?: number;
+      excludedCustomers?: string[];
+      requiredActions?: string[];
+    };
+  };
+  associatedDeals?: string[];
+  associatedCoupons?: string[];
+  budget?: number;
+  abTesting?: {
+    enabled: boolean;
+    variants?: {
+      name: string;
+      content: any;
+      traffic: number;
+    }[];
+  };
+  tags?: string[];
+  notes?: string;
+}
+
+export interface UpdatePromotionRequest extends Partial<CreatePromotionRequest> {
+  status?: string;
+}
+
+export interface GetPromotionsResponse {
+  promotions: PromotionDto[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+// Legacy interfaces for backward compatibility
 export interface Promotion {
   id: number;
   name: string;
@@ -225,128 +436,132 @@ export interface CampaignCalendar {
 
 export const promotionsAPI = {
   // Get all promotions with filters
-  getAll: async (filters?: PromotionFilters) => {
-    const response = await apiClient.get('/promotions', { params: filters });
-    return response.data;
+  getAll: async (filters?: PromotionFilters): Promise<GetPromotionsResponse> => {
+    const response = await apiClient.get<PaginatedPromotionsResponse<PromotionDto>>('/promotions', { params: filters });
+    return {
+      promotions: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
   },
 
   // Get promotion by ID
-  getById: async (id: number) => {
-    const response = await apiClient.get(`/promotions/${id}`);
-    return response.data;
+  getById: async (id: number): Promise<PromotionDto> => {
+    const response = await apiClient.get<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}`);
+    return response.data.data;
   },
 
   // Create new promotion
-  create: async (data: CreatePromotionDto) => {
-    const response = await apiClient.post('/promotions', data);
-    return response.data;
+  create: async (data: CreatePromotionRequest): Promise<PromotionDto> => {
+    const response = await apiClient.post<PromotionsAPIResponse<PromotionDto>>('/promotions', data);
+    return response.data.data;
   },
 
   // Update promotion
-  update: async (id: number, data: UpdatePromotionDto) => {
-    const response = await apiClient.put(`/promotions/${id}`, data);
-    return response.data;
+  update: async (id: number, data: UpdatePromotionRequest): Promise<PromotionDto> => {
+    const response = await apiClient.put<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}`, data);
+    return response.data.data;
   },
 
   // Delete promotion
-  delete: async (id: number) => {
-    const response = await apiClient.delete(`/promotions/${id}`);
-    return response.data;
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/promotions/${id}`);
   },
 
   // Get promotion statistics
-  getStats: async () => {
-    const response = await apiClient.get<PromotionStats>('/promotions/stats');
-    return response.data;
+  getStats: async (): Promise<PromotionStats> => {
+    const response = await apiClient.get<PromotionsAPIResponse<PromotionStats>>('/promotions/stats');
+    return response.data.data;
   },
 
   // Get promotion analytics
-  getAnalytics: async (id: number, startDate?: string, endDate?: string) => {
-    const response = await apiClient.get<PromotionAnalytics>(`/promotions/${id}/analytics`, {
+  getAnalytics: async (id: number, startDate?: string, endDate?: string): Promise<PromotionAnalytics> => {
+    const response = await apiClient.get<PromotionsAPIResponse<PromotionAnalytics>>(`/promotions/${id}/analytics`, {
       params: { startDate, endDate },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Launch promotion
-  launch: async (id: number) => {
-    const response = await apiClient.patch(`/promotions/${id}/launch`);
-    return response.data;
+  launch: async (id: number): Promise<PromotionDto> => {
+    const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/launch`);
+    return response.data.data;
   },
 
   // Pause promotion
-  pause: async (id: number) => {
-    const response = await apiClient.patch(`/promotions/${id}/pause`);
-    return response.data;
+  pause: async (id: number): Promise<PromotionDto> => {
+    const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/pause`);
+    return response.data.data;
   },
 
   // Resume promotion
-  resume: async (id: number) => {
-    const response = await apiClient.patch(`/promotions/${id}/resume`);
-    return response.data;
+  resume: async (id: number): Promise<PromotionDto> => {
+    const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/resume`);
+    return response.data.data;
   },
 
   // Cancel promotion
-  cancel: async (id: number, reason?: string) => {
-    const response = await apiClient.patch(`/promotions/${id}/cancel`, { reason });
-    return response.data;
+  cancel: async (id: number, reason?: string): Promise<PromotionDto> => {
+    const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/cancel`, { reason });
+    return response.data.data;
   },
 
   // Complete promotion
-  complete: async (id: number) => {
-    const response = await apiClient.patch(`/promotions/${id}/complete`);
-    return response.data;
+  complete: async (id: number): Promise<PromotionDto> => {
+    const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/complete`);
+    return response.data.data;
   },
 
   // Duplicate promotion
-  duplicate: async (id: number, name?: string) => {
-    const response = await apiClient.post(`/promotions/${id}/duplicate`, { name });
-    return response.data;
+  duplicate: async (id: number, name?: string): Promise<PromotionDto> => {
+    const response = await apiClient.post<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/duplicate`, { name });
+    return response.data.data;
   },
 
   // Preview promotion
-  preview: async (id: number, variantId?: string) => {
-    const response = await apiClient.get(`/promotions/${id}/preview`, {
+  preview: async (id: number, variantId?: string): Promise<any> => {
+    const response = await apiClient.get<PromotionsAPIResponse<any>>(`/promotions/${id}/preview`, {
       params: { variantId },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Test promotion
-  sendTest: async (id: number, testEmails: string[], variantId?: string) => {
-    const response = await apiClient.post(`/promotions/${id}/test`, {
+  sendTest: async (id: number, testEmails: string[], variantId?: string): Promise<any> => {
+    const response = await apiClient.post<PromotionsAPIResponse<any>>(`/promotions/${id}/test`, {
       testEmails,
       variantId,
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Get promotion templates
-  getTemplates: async (type?: string, objective?: string) => {
-    const response = await apiClient.get('/promotions/templates', {
+  getTemplates: async (type?: string, objective?: string): Promise<PromotionTemplate[]> => {
+    const response = await apiClient.get<PromotionsAPIResponse<PromotionTemplate[]>>('/promotions/templates', {
       params: { type, objective },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Create promotion from template
-  createFromTemplate: async (templateId: number, customizations: any) => {
-    const response = await apiClient.post(`/promotions/templates/${templateId}/create`, customizations);
-    return response.data;
+  createFromTemplate: async (templateId: number, customizations: any): Promise<PromotionDto> => {
+    const response = await apiClient.post<PromotionsAPIResponse<PromotionDto>>(`/promotions/templates/${templateId}/create`, customizations);
+    return response.data.data;
   },
 
   // Get campaign calendar
-  getCalendar: async (month: string, year: number) => {
-    const response = await apiClient.get<CampaignCalendar[]>('/promotions/calendar', {
+  getCalendar: async (month: string, year: number): Promise<CampaignCalendar[]> => {
+    const response = await apiClient.get<PromotionsAPIResponse<CampaignCalendar[]>>('/promotions/calendar', {
       params: { month, year },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Get audience segments
-  getAudienceSegments: async () => {
-    const response = await apiClient.get('/promotions/audience-segments');
-    return response.data;
+  getAudienceSegments: async (): Promise<any[]> => {
+    const response = await apiClient.get<PromotionsAPIResponse<any[]>>('/promotions/audience-segments');
+    return response.data.data;
   },
 
   // Create audience segment
@@ -354,43 +569,43 @@ export const promotionsAPI = {
     name: string;
     description: string;
     criteria: any;
-  }) => {
-    const response = await apiClient.post('/promotions/audience-segments', data);
-    return response.data;
+  }): Promise<any> => {
+    const response = await apiClient.post<PromotionsAPIResponse<any>>('/promotions/audience-segments', data);
+    return response.data.data;
   },
 
   // Get A/B test results
-  getABTestResults: async (promotionId: number) => {
-    const response = await apiClient.get(`/promotions/${promotionId}/ab-test-results`);
-    return response.data;
+  getABTestResults: async (promotionId: number): Promise<any> => {
+    const response = await apiClient.get<PromotionsAPIResponse<any>>(`/promotions/${promotionId}/ab-test-results`);
+    return response.data.data;
   },
 
   // Declare A/B test winner
-  declareABTestWinner: async (promotionId: number, variantId: string) => {
-    const response = await apiClient.patch(`/promotions/${promotionId}/ab-test-winner`, {
+  declareABTestWinner: async (promotionId: number, variantId: string): Promise<any> => {
+    const response = await apiClient.patch<PromotionsAPIResponse<any>>(`/promotions/${promotionId}/ab-test-winner`, {
       variantId,
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Upload promotion assets
-  uploadAssets: async (promotionId: number, files: File[], type: 'images' | 'videos') => {
+  uploadAssets: async (promotionId: number, files: File[], type: 'images' | 'videos'): Promise<any> => {
     const formData = new FormData();
     files.forEach((file, index) => {
       formData.append(`${type}[${index}]`, file);
     });
-    const response = await apiClient.post(`/promotions/${promotionId}/upload-assets`, formData, {
+    const response = await apiClient.post<PromotionsAPIResponse<any>>(`/promotions/${promotionId}/upload-assets`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Get promotion performance report
-  getPerformanceReport: async (startDate: string, endDate: string, filters?: any) => {
-    const response = await apiClient.get('/promotions/performance-report', {
+  getPerformanceReport: async (startDate: string, endDate: string, filters?: any): Promise<any> => {
+    const response = await apiClient.get<PromotionsAPIResponse<any>>('/promotions/performance-report', {
       params: { startDate, endDate, ...filters },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Export promotion data
@@ -403,32 +618,32 @@ export const promotionsAPI = {
   },
 
   // Bulk operations
-  bulkDelete: async (ids: number[]) => {
-    const response = await apiClient.post('/promotions/bulk-delete', { ids });
-    return response.data;
+  bulkDelete: async (ids: number[]): Promise<any> => {
+    const response = await apiClient.post<PromotionsAPIResponse<any>>('/promotions/bulk-delete', { ids });
+    return response.data.data;
   },
 
-  bulkUpdateStatus: async (ids: number[], status: string) => {
-    const response = await apiClient.post('/promotions/bulk-update-status', {
+  bulkUpdateStatus: async (ids: number[], status: string): Promise<any> => {
+    const response = await apiClient.post<PromotionsAPIResponse<any>>('/promotions/bulk-update-status', {
       ids,
       status,
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Get promotion recommendations
-  getRecommendations: async (type?: string, objective?: string) => {
-    const response = await apiClient.get('/promotions/recommendations', {
+  getRecommendations: async (type?: string, objective?: string): Promise<any> => {
+    const response = await apiClient.get<PromotionsAPIResponse<any>>('/promotions/recommendations', {
       params: { type, objective },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Get competitor analysis
-  getCompetitorAnalysis: async (industry?: string, region?: string) => {
-    const response = await apiClient.get('/promotions/competitor-analysis', {
+  getCompetitorAnalysis: async (industry?: string, region?: string): Promise<any> => {
+    const response = await apiClient.get<PromotionsAPIResponse<any>>('/promotions/competitor-analysis', {
       params: { industry, region },
     });
-    return response.data;
+    return response.data.data;
   },
 };

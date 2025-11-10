@@ -30,6 +30,7 @@ import { couponsAPI } from '@/services/api/coupons';
 import { promotionsAPI } from '@/services/api/promotions';
 import { useAuthStore } from '@/store/auth';
 import api from '@/services/api/client';
+import { API_ENDPOINTS } from '@/config/api-endpoints';
 
 interface OrderStats {
   totalOrders: number;
@@ -236,16 +237,16 @@ const AdminDashboard = () => {
       
       // Fetch comprehensive dashboard analytics with error handling
       const apiCalls = [
-        api.get<any>('/reports/dashboard', { params: { period: '7d' } }).catch(err => {
-          console.warn('Dashboard analytics endpoint not available:', err.response?.status);
+        api.get<any>(API_ENDPOINTS.REPORTS.BACKEND_DASHBOARD, { params: { period: '7d' } }).catch(err => {
+          console.error('Dashboard API Error:', err);
           return { data: { data: null } };
         }),
-        api.get<any>('/reports/recent-activities', { params: { limit: 10 } }).catch(err => {
-          console.warn('Recent activities endpoint not available:', err.response?.status);
+        api.get<any>(API_ENDPOINTS.REPORTS.BACKEND_RECENT_ACTIVITIES, { params: { limit: 10 } }).catch(err => {
+          console.error('Recent Activities API Error:', err);
           return { data: { data: [] } };
         }),
-        api.get<any>('/reports/system-health').catch(err => {
-          console.warn('System health endpoint not available:', err.response?.status);
+        api.get<any>(API_ENDPOINTS.REPORTS.BACKEND_SYSTEM_HEALTH).catch(err => {
+          console.error('System Health API Error:', err);
           return { data: { data: null } };
         }),
         Promise.allSettled([
@@ -431,9 +432,8 @@ const AdminDashboard = () => {
     angleField: 'value',
     colorField: 'category',
     radius: 1,
+    innerRadius: 0.4,
     label: {
-      type: 'inner',
-      offset: '-30%',
       content: ({ percent }: any) => `${(percent * 100).toFixed(0)}%`,
       style: {
         fontSize: 14,

@@ -9,7 +9,7 @@ module.exports = {
       watch: false,
       max_memory_restart: '1G',
       env: {
-        NODE_ENV: 'production',
+        NODE_ENV: 'development',
         PORT: 3000,
         DATABASE_URL: 'postgresql://groow_user:groow_password@localhost:5432/groow_db'
       },

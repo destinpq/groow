@@ -1,52 +1,30 @@
-import request from '../../utils/request';
+import api from './client';
+import { PaginatedResponse } from '../../types/api/common';
+import {
+  Customer,
+  Address as CustomerAddress,
+  CustomerWishlist,
+  CustomerReview,
+  LoyaltyProgram,
+  LoyaltyTransaction,
+  CustomerStatus,
+  CustomerSegment,
+  AddressType,
+  GetCustomerResponse,
+  UpdateCustomerRequest,
+  UpdateCustomerResponse,
+  CreateAddressRequest,
+  CreateAddressResponse,
+  GetAddressesResponse
+} from '../../types/api/customer';
 
-// Account Management API Types
-export interface CustomerProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  dateOfBirth?: Date;
-  gender?: 'male' | 'female' | 'other';
-  avatar?: string;
-  isEmailVerified: boolean;
-  isPhoneVerified: boolean;
-  preferredLanguage: string;
-  timezone: string;
-  currency: string;
-  newsletter: boolean;
-  smsNotifications: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  lastLoginAt?: Date;
-}
+// Re-export and compatibility types with unique names
+export type CustomerProfile = Customer;
+export type Address = CustomerAddress;
+export type WishlistItem = CustomerWishlist;
+export type ReviewData = CustomerReview;
 
-export interface Address {
-  id: string;
-  customerId: string;
-  type: 'home' | 'work' | 'billing' | 'shipping' | 'other';
-  title: string;
-  firstName: string;
-  lastName: string;
-  company?: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  phone?: string;
-  isDefault: boolean;
-  instructions?: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
-
+// Keep existing interfaces for backward compatibility (but rename to avoid conflicts)
 export interface PaymentMethod {
   id: string;
   customerId: string;
@@ -64,7 +42,7 @@ export interface PaymentMethod {
   updatedAt: Date;
 }
 
-export interface AccountPreferences {
+export interface AccountPreferencesLegacy {
   customerId: string;
   notifications: {
     email: {
@@ -201,37 +179,40 @@ export interface ReviewData {
   updatedAt: Date;
 }
 
-// Profile API
+// Profile API with typed POJOs
 export const profileAPI = {
   // Get customer profile
-  getProfile: async () => {
-    return request.get('/customer/profile');
+  getProfile: async (): Promise<CustomerProfile> => {
+    const response = await api.get<GetCustomerResponse>('/customer/profile');
+    return response.data.customer;
   },
 
   // Update customer profile
-  updateProfile: async (data: Partial<CustomerProfile>) => {
-    return request.put('/customer/profile', data);
+  updateProfile: async (data: UpdateCustomerRequest): Promise<CustomerProfile> => {
+    const response = await api.put<UpdateCustomerResponse>('/customer/profile', data);
+    return response.data.customer;
   },
 
   // Upload avatar
-  uploadAvatar: async (file: File) => {
+  uploadAvatar: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append('avatar', file);
-    return request.post('/customer/profile/avatar', formData, {
+    const response = await api.post<{ url: string }>('/customer/profile/avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+    return response.data;
   },
 
   // Verify email
-  verifyEmail: async (token: string) => {
-    return request.post('/customer/profile/verify-email', { token });
+  verifyEmail: async (token: string): Promise<void> => {
+    await api.post('/customer/profile/verify-email', { token });
   },
 
   // Resend email verification
-  resendEmailVerification: async () => {
-    return request.post('/customer/profile/resend-email-verification');
+  resendEmailVerification: async (): Promise<void> => {
+    await api.post('/customer/profile/resend-email-verification');
   },
 
   // Verify phone
@@ -259,46 +240,52 @@ export const profileAPI = {
   },
 };
 
-// Address API
+// Address API with typed POJOs
 export const addressAPI = {
   // Get all addresses
-  getAddresses: async () => {
-    return request.get('/customer/addresses');
+  getAddresses: async (): Promise<Address[]> => {
+    const response = await api.get<GetAddressesResponse>('/customer/addresses');
+    return response.data.addresses;
   },
 
   // Get single address
-  getAddress: async (id: string) => {
-    return request.get(`/customer/addresses/${id}`);
+  getAddress: async (id: string): Promise<Address> => {
+    const response = await api.get<{ address: Address }>(`/customer/addresses/${id}`);
+    return response.data.address;
   },
 
   // Create address
-  createAddress: async (data: Omit<Address, 'id' | 'customerId' | 'createdAt' | 'updatedAt'>) => {
-    return request.post('/customer/addresses', data);
+  createAddress: async (data: CreateAddressRequest): Promise<Address> => {
+    const response = await api.post<CreateAddressResponse>('/customer/addresses', data);
+    return response.data.address;
   },
 
   // Update address
-  updateAddress: async (id: string, data: Partial<Address>) => {
-    return request.put(`/customer/addresses/${id}`, data);
+  updateAddress: async (id: string, data: Partial<CreateAddressRequest>): Promise<Address> => {
+    const response = await api.put<CreateAddressResponse>(`/customer/addresses/${id}`, data);
+    return response.data.address;
   },
 
   // Delete address
-  deleteAddress: async (id: string) => {
-    return request.delete(`/customer/addresses/${id}`);
+  deleteAddress: async (id: string): Promise<void> => {
+    await api.delete(`/customer/addresses/${id}`);
   },
 
   // Set default address
-  setDefaultAddress: async (id: string, type: 'shipping' | 'billing') => {
-    return request.post(`/customer/addresses/${id}/set-default`, { type });
+  setDefaultAddress: async (id: string, type: 'shipping' | 'billing'): Promise<void> => {
+    await api.post(`/customer/addresses/${id}/set-default`, { type });
   },
 
   // Validate address
-  validateAddress: async (address: Partial<Address>) => {
-    return request.post('/customer/addresses/validate', address);
+  validateAddress: async (address: Partial<Address>): Promise<any> => {
+    const response = await api.post('/customer/addresses/validate', address);
+    return response.data;
   },
 
   // Get address suggestions
-  getAddressSuggestions: async (query: string) => {
-    return request.get('/customer/addresses/suggestions', { params: { query } });
+  getAddressSuggestions: async (query: string): Promise<any> => {
+    const response = await api.get('/customer/addresses/suggestions', { params: { query } });
+    return response.data;
   },
 };
 

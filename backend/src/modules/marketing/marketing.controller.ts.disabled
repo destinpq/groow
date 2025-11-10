@@ -27,6 +27,13 @@ export class MarketingController {
   constructor(private readonly marketingService: MarketingService) {}
 
   // DEALS MANAGEMENT (REQ-080)
+  @Get('deals/stats')
+  @Roles(UserRole.ADMIN)
+  @ApiResponse({ status: 200, description: 'Get deals statistics' })
+  async getDealsStats() {
+    return this.marketingService.getDealsStats();
+  }
+
   @Get('deals')
   @Roles(UserRole.ADMIN)
   @ApiResponse({ status: 200, description: 'Get all deals with filters' })
@@ -144,6 +151,13 @@ export class MarketingController {
   }
 
   // COUPONS MANAGEMENT (REQ-081)
+  @Get('coupons/stats')
+  @Roles(UserRole.ADMIN)
+  @ApiResponse({ status: 200, description: 'Get coupons statistics' })
+  async getCouponsStats() {
+    return this.marketingService.getCouponsStats();
+  }
+
   @Get('coupons')
   @Roles(UserRole.ADMIN)
   @ApiResponse({ status: 200, description: 'Get all coupons with filters' })

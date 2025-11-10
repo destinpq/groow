@@ -1,156 +1,168 @@
 import api from './client';
+import { 
+  Product,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ProductFilterRequest,
+  ProductStatusUpdateRequest,
+  ProductStockUpdateRequest,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+  CreateBrandRequest,
+  UpdateBrandRequest,
+  ProductResponse,
+  ProductsResponse,
+  ProductListResponse,
+  CategoryResponse,
+  CategoryListResponse,
+  CategoriesResponse,
+  CategoryHierarchyResponse,
+  BrandResponse,
+  BrandListResponse,
+  type ProductAPI
+} from '@/types/api/products';
+import { ApiResponse, BaseFilter } from '@/types/api/common';
 
-// Types
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  comparePrice?: number;
-  sku: string;
-  stock: number;
-  images: string[];
-  categoryId: string;
-  brandId: string;
-  vendorId: string;
-  isActive: boolean;
-  isFeatured: boolean;
-  rating: number;
-  reviewCount: number;
-  tags?: string[];
-  specifications?: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
-}
+// Product API Service Implementation
+export const productAPI: ProductAPI = {
+  // Product CRUD
+  createProduct: async (request: CreateProductRequest): Promise<ProductResponse> => {
+    const response = await api.post<ProductResponse>('/api/v1/products', request);
+    return response.data;
+  },
 
-export interface ProductFilters {
-  search?: string;
-  categoryId?: string;
-  brandId?: string;
-  vendorId?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  minRating?: number;
-  inStock?: boolean;
-  tags?: string[];
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'ASC' | 'DESC';
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export interface CreateProductData {
-  name: string;
-  description: string;
-  price: number;
-  comparePrice?: number;
-  sku: string;
-  stock: number;
-  categoryId: string;
-  brandId: string;
-  images?: string[];
-  specifications?: Record<string, any>;
-  tags?: string[];
-}
-
-// Product API Service
-export const productAPI = {
-  // Get all products with filters
-  getAll: async (filters?: ProductFilters): Promise<PaginatedResponse<Product>> => {
-    const response = await api.get<PaginatedResponse<Product>>('/products', {
+  getProducts: async (filters?: ProductFilterRequest): Promise<ProductListResponse> => {
+    const response = await api.get<ProductListResponse>('/api/v1/products', {
       params: filters,
     });
     return response.data;
   },
 
-  // Get product by ID
-  getById: async (id: string): Promise<Product> => {
-    const response = await api.get<Product>(`/products/${id}`);
-    return response.data;
-  },
-
-  // Get product by slug
-  getBySlug: async (slug: string): Promise<Product> => {
-    const response = await api.get<Product>(`/products/slug/${slug}`);
-    return response.data;
-  },
-
-  // Create product (vendor/admin)
-  create: async (data: CreateProductData): Promise<Product> => {
-    const response = await api.post<Product>('/products', data);
-    return response.data;
-  },
-
-  // Update product
-  update: async (id: string, data: Partial<CreateProductData>): Promise<Product> => {
-    const response = await api.put<Product>(`/products/${id}`, data);
-    return response.data;
-  },
-
-  // Delete product
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/products/${id}`);
-  },
-
-  // Toggle product active status
-  toggleActive: async (id: string): Promise<Product> => {
-    const response = await api.patch<Product>(`/products/${id}/toggle-active`);
-    return response.data;
-  },
-
-  // Get featured products
-  getFeatured: async (limit = 10): Promise<Product[]> => {
-    const response = await api.get<Product[]>('/products/featured', {
+  getFeaturedProducts: async (limit?: number): Promise<ProductsResponse> => {
+    const response = await api.get<ProductsResponse>('/api/v1/products/featured', {
       params: { limit },
     });
     return response.data;
   },
 
-  // Get related products
-  getRelated: async (productId: string, limit = 10): Promise<Product[]> => {
-    const response = await api.get<Product[]>(`/products/${productId}/related`, {
+  getRecommendedProducts: async (limit?: number): Promise<ProductsResponse> => {
+    const response = await api.get<ProductsResponse>('/api/v1/products/recommended', {
       params: { limit },
     });
     return response.data;
   },
 
-  // Search products
-  search: async (query: string, filters?: ProductFilters): Promise<PaginatedResponse<Product>> => {
-    const response = await api.get<PaginatedResponse<Product>>('/products/search', {
-      params: { q: query, ...filters },
-    });
-    return response.data;
-  },
-
-  // Get vendor products
-  getVendorProducts: async (vendorId: string, filters?: ProductFilters): Promise<PaginatedResponse<Product>> => {
-    const response = await api.get<PaginatedResponse<Product>>(`/vendors/${vendorId}/products`, {
+  getProductsByVendor: async (vendorId: string, filters?: ProductFilterRequest): Promise<ProductListResponse> => {
+    const response = await api.get<ProductListResponse>(`/api/v1/products/vendor/${vendorId}`, {
       params: filters,
     });
     return response.data;
   },
 
-  // Bulk import products (CSV)
-  bulkImport: async (file: File): Promise<{ success: number; failed: number; errors: string[] }> => {
-    const response = await api.upload<{ success: number; failed: number; errors: string[] }>(
-      '/products/bulk-import',
-      file
-    );
+  getProductBySlug: async (slug: string): Promise<ProductResponse> => {
+    const response = await api.get<ProductResponse>(`/api/v1/products/slug/${slug}`);
     return response.data;
   },
 
-  // Bulk export products (CSV)
-  bulkExport: async (filters?: ProductFilters): Promise<void> => {
-    await api.download('/products/bulk-export', 'products.csv');
+  getProductById: async (id: string): Promise<ProductResponse> => {
+    const response = await api.get<ProductResponse>(`/api/v1/products/${id}`);
+    return response.data;
+  },
+
+  updateProduct: async (id: string, request: UpdateProductRequest): Promise<ProductResponse> => {
+    const response = await api.patch<ProductResponse>(`/api/v1/products/${id}`, request);
+    return response.data;
+  },
+
+  updateProductStatus: async (id: string, request: ProductStatusUpdateRequest): Promise<ProductResponse> => {
+    const response = await api.patch<ProductResponse>(`/api/v1/products/${id}/status`, request);
+    return response.data;
+  },
+
+  updateProductStock: async (id: string, request: ProductStockUpdateRequest): Promise<ProductResponse> => {
+    const response = await api.patch<ProductResponse>(`/api/v1/products/${id}/stock`, request);
+    return response.data;
+  },
+
+  deleteProduct: async (id: string): Promise<ApiResponse> => {
+    const response = await api.delete<ApiResponse>(`/api/v1/products/${id}`);
+    return response.data;
+  },
+
+  // Category endpoints
+  createCategory: async (request: CreateCategoryRequest): Promise<CategoryResponse> => {
+    const response = await api.post<CategoryResponse>('/api/v1/categories', request);
+    return response.data;
+  },
+
+  getCategories: async (filters?: BaseFilter): Promise<CategoryListResponse> => {
+    const response = await api.get<CategoryListResponse>('/api/v1/categories', {
+      params: filters,
+    });
+    return response.data;
+  },
+
+  getCategoryHierarchy: async (): Promise<CategoryHierarchyResponse> => {
+    const response = await api.get<CategoryHierarchyResponse>('/api/v1/categories/hierarchy');
+    return response.data;
+  },
+
+  getSubcategories: async (id: string): Promise<CategoriesResponse> => {
+    const response = await api.get<CategoriesResponse>(`/api/v1/categories/${id}/subcategories`);
+    return response.data;
+  },
+
+  getCategoryBySlug: async (slug: string): Promise<CategoryResponse> => {
+    const response = await api.get<CategoryResponse>(`/api/v1/categories/slug/${slug}`);
+    return response.data;
+  },
+
+  getCategoryById: async (id: string): Promise<CategoryResponse> => {
+    const response = await api.get<CategoryResponse>(`/api/v1/categories/${id}`);
+    return response.data;
+  },
+
+  updateCategory: async (id: string, request: UpdateCategoryRequest): Promise<CategoryResponse> => {
+    const response = await api.patch<CategoryResponse>(`/api/v1/categories/${id}`, request);
+    return response.data;
+  },
+
+  deleteCategory: async (id: string): Promise<ApiResponse> => {
+    const response = await api.delete<ApiResponse>(`/api/v1/categories/${id}`);
+    return response.data;
+  },
+
+  // Brand endpoints
+  createBrand: async (request: CreateBrandRequest): Promise<BrandResponse> => {
+    const response = await api.post<BrandResponse>('/api/v1/brands', request);
+    return response.data;
+  },
+
+  getBrands: async (filters?: BaseFilter): Promise<BrandListResponse> => {
+    const response = await api.get<BrandListResponse>('/api/v1/brands', {
+      params: filters,
+    });
+    return response.data;
+  },
+
+  getBrandBySlug: async (slug: string): Promise<BrandResponse> => {
+    const response = await api.get<BrandResponse>(`/api/v1/brands/slug/${slug}`);
+    return response.data;
+  },
+
+  getBrandById: async (id: string): Promise<BrandResponse> => {
+    const response = await api.get<BrandResponse>(`/api/v1/brands/${id}`);
+    return response.data;
+  },
+
+  updateBrand: async (id: string, request: UpdateBrandRequest): Promise<BrandResponse> => {
+    const response = await api.patch<BrandResponse>(`/api/v1/brands/${id}`, request);
+    return response.data;
+  },
+
+  deleteBrand: async (id: string): Promise<ApiResponse> => {
+    const response = await api.delete<ApiResponse>(`/api/v1/brands/${id}`);
+    return response.data;
   },
 };
 

@@ -1,5 +1,24 @@
 import api from './client';
 
+// API Response wrapper types
+export interface SampleRequestAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface PaginatedSampleRequestResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
 // Types
 export interface SampleRequest {
   id: string;
@@ -56,26 +75,32 @@ export const sampleRequestsAPI = {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<SampleRequest>> => {
-    const response = await api.get<PaginatedResponse<SampleRequest>>('/sample-requests/my-requests', { params });
-    return response.data;
+    const response = await api.get<PaginatedSampleRequestResponse<SampleRequest>>('/sample-requests/my-requests', { params });
+    return {
+      data: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: params?.limit || 10,
+      totalPages: response.data.data.totalPages
+    };
   },
 
   // Get sample request by ID
   getById: async (id: string): Promise<SampleRequest> => {
-    const response = await api.get<SampleRequest>(`/sample-requests/${id}`);
-    return response.data;
+    const response = await api.get<SampleRequestAPIResponse<SampleRequest>>(`/sample-requests/${id}`);
+    return response.data.data;
   },
 
   // Create sample request
   create: async (data: CreateSampleRequestData): Promise<SampleRequest> => {
-    const response = await api.post<SampleRequest>('/sample-requests', data);
-    return response.data;
+    const response = await api.post<SampleRequestAPIResponse<SampleRequest>>('/sample-requests', data);
+    return response.data.data;
   },
 
   // Cancel sample request
   cancel: async (id: string): Promise<SampleRequest> => {
-    const response = await api.put<SampleRequest>(`/sample-requests/${id}/cancel`);
-    return response.data;
+    const response = await api.put<SampleRequestAPIResponse<SampleRequest>>(`/sample-requests/${id}/cancel`);
+    return response.data.data;
   },
 
   // Check if product is eligible for sample
@@ -84,12 +109,12 @@ export const sampleRequestsAPI = {
     reason?: string;
     maxQuantity?: number;
   }> => {
-    const response = await api.get<{
+    const response = await api.get<SampleRequestAPIResponse<{
       eligible: boolean;
       reason?: string;
       maxQuantity?: number;
-    }>(`/sample-requests/check-eligibility/${productId}`);
-    return response.data;
+    }>>(`/sample-requests/check-eligibility/${productId}`);
+    return response.data.data;
   },
 };
 

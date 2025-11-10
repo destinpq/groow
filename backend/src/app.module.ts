@@ -29,7 +29,7 @@ import { MarketingModule } from './modules/marketing/marketing.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.railway', '.env.production', '.env'],
+      envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -71,8 +71,10 @@ import { MarketingModule } from './modules/marketing/marketing.module';
           };
         }
         
-        // If no DATABASE_URL, throw error
-        throw new Error('DATABASE_URL is required in production environment');
+        // If no DATABASE_URL and in production, throw error
+        if (isProduction) {
+          throw new Error('DATABASE_URL is required in production environment');
+        }
         
         // Local development configuration  
         console.log('  Using local development database');

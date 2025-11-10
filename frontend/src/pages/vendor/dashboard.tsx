@@ -124,7 +124,7 @@ const VendorDashboard = () => {
     data: salesData,
     xField: 'month',
     yField: 'sales',
-    point: { size: 5, shape: 'diamond' },
+    point: { size: 5, shape: 'circle' },
     smooth: true,
     color: '#1890ff',
   };

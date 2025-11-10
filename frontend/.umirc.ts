@@ -29,15 +29,7 @@ export default defineConfig({
     '@border-radius-base': '4px',
   },
   
-  // Proxy for development
-  proxy: {
-    '/api': {
-      target: 'https://groow-api.destinpq.com',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-      secure: false,
-    },
-  },
+  // Remove proxy - let API calls go directly to groow-api.destinpq.com
   
   // Title and metadata
   title: 'Groow - E-Commerce Platform',

@@ -1,5 +1,24 @@
 import client from './client';
 
+// API Response wrapper types
+export interface EmailTemplatesAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface PaginatedEmailTemplatesResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
 export interface EmailTemplate {
   id: string;
   name: string;
@@ -26,60 +45,60 @@ export interface UpdateEmailTemplateDto extends Partial<CreateEmailTemplateDto> 
 
 export const emailTemplatesAPI = {
   // Get all email templates
-  async getAll(): Promise<{ data: EmailTemplate[] }> {
-    const response = await client.get('/email-templates');
-    return response.data;
+  getAll: async (): Promise<EmailTemplate[]> => {
+    const response = await client.get<EmailTemplatesAPIResponse<EmailTemplate[]>>('/email-templates');
+    return response.data.data;
   },
 
   // Get email template by ID
-  async getById(id: string): Promise<{ data: EmailTemplate }> {
-    const response = await client.get(`/email-templates/${id}`);
-    return response.data;
+  getById: async (id: string): Promise<EmailTemplate> => {
+    const response = await client.get<EmailTemplatesAPIResponse<EmailTemplate>>(`/email-templates/${id}`);
+    return response.data.data;
   },
 
   // Create new email template
-  async create(data: CreateEmailTemplateDto): Promise<{ data: EmailTemplate }> {
-    const response = await client.post('/email-templates', data);
-    return response.data;
+  create: async (data: CreateEmailTemplateDto): Promise<EmailTemplate> => {
+    const response = await client.post<EmailTemplatesAPIResponse<EmailTemplate>>('/email-templates', data);
+    return response.data.data;
   },
 
   // Update email template
-  async update(id: string, data: UpdateEmailTemplateDto): Promise<{ data: EmailTemplate }> {
-    const response = await client.put(`/email-templates/${id}`, data);
-    return response.data;
+  update: async (id: string, data: UpdateEmailTemplateDto): Promise<EmailTemplate> => {
+    const response = await client.put<EmailTemplatesAPIResponse<EmailTemplate>>(`/email-templates/${id}`, data);
+    return response.data.data;
   },
 
   // Delete email template
-  async delete(id: string): Promise<void> {
+  delete: async (id: string): Promise<void> => {
     await client.delete(`/email-templates/${id}`);
   },
 
   // Toggle template status
-  async toggleStatus(id: string, isActive: boolean): Promise<{ data: EmailTemplate }> {
-    const response = await client.patch(`/email-templates/${id}/status`, { isActive });
-    return response.data;
+  toggleStatus: async (id: string, isActive: boolean): Promise<EmailTemplate> => {
+    const response = await client.patch<EmailTemplatesAPIResponse<EmailTemplate>>(`/email-templates/${id}/status`, { isActive });
+    return response.data.data;
   },
 
   // Get template by type
-  async getByType(type: string): Promise<{ data: EmailTemplate[] }> {
-    const response = await client.get(`/email-templates/type/${type}`);
-    return response.data;
+  getByType: async (type: string): Promise<EmailTemplate[]> => {
+    const response = await client.get<EmailTemplatesAPIResponse<EmailTemplate[]>>(`/email-templates/type/${type}`);
+    return response.data.data;
   },
 
   // Send test email
-  async sendTest(id: string, email: string): Promise<void> {
+  sendTest: async (id: string, email: string): Promise<void> => {
     await client.post(`/email-templates/${id}/test`, { email });
   },
 
   // Get template variables
-  async getVariables(): Promise<{ data: string[] }> {
-    const response = await client.get('/email-templates/variables');
-    return response.data;
+  getVariables: async (): Promise<string[]> => {
+    const response = await client.get<EmailTemplatesAPIResponse<string[]>>('/email-templates/variables');
+    return response.data.data;
   },
 
   // Preview template with sample data
-  async preview(id: string, sampleData?: Record<string, any>): Promise<{ data: { subject: string; content: string } }> {
-    const response = await client.post(`/email-templates/${id}/preview`, { sampleData });
-    return response.data;
+  preview: async (id: string, sampleData?: Record<string, any>): Promise<{ subject: string; content: string }> => {
+    const response = await client.post<EmailTemplatesAPIResponse<{ subject: string; content: string }>>(`/email-templates/${id}/preview`, { sampleData });
+    return response.data.data;
   },
 };

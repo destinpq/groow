@@ -1,6 +1,197 @@
 import api from './client';
 
-// Types
+// Backend POJO imports - Shipping Module
+import {
+  ShippingCarrierEntity,
+  ShippingMethodEntity,
+  ShippingZoneEntity,
+  ShippingRateEntity,
+  ShippingLabelEntity,
+  ShippingTrackingEntity,
+  ShippingPickupEntity,
+  ShippingManifestEntity,
+  ShippingPreferenceEntity,
+  CalculateShippingRateRequest,
+  CreateShippingLabelRequest,
+  SchedulePickupRequest,
+  UpdateTrackingRequest
+} from '../../types/backend/shipping';
+
+// API Response wrappers
+interface ShippingAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+interface PaginatedShippingResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// Request types
+export interface CreateCarrierRequest {
+  name: string;
+  code: string;
+  config: {
+    apiKey?: string;
+    apiSecret?: string;
+    baseUrl?: string;
+    testMode?: boolean;
+    webhookUrl?: string;
+  };
+  capabilities: {
+    trackingEnabled?: boolean;
+    pickupAvailable?: boolean;
+    internationalShipping?: boolean;
+    signatureRequired?: boolean;
+    insuranceAvailable?: boolean;
+  };
+  supportedCountries?: string[];
+  supportedServices?: string[];
+  logo?: string;
+}
+
+export interface UpdateCarrierRequest extends Partial<CreateCarrierRequest> {
+  isActive?: boolean;
+}
+
+export interface CreateMethodRequest {
+  carrierId: string;
+  name: string;
+  code: string;
+  description?: string;
+  serviceType: string;
+  estimatedDays: {
+    min: number;
+    max: number;
+  };
+  pricing: {
+    baseRate: number;
+    freeShippingThreshold?: number;
+    weightMultiplier?: number;
+    dimensionMultiplier?: number;
+    minimumCharge?: number;
+    maximumCharge?: number;
+  };
+  restrictions?: {
+    maxWeight?: number;
+    maxDimensions?: {
+      length: number;
+      width: number;
+      height: number;
+    };
+    prohibitedItems?: string[];
+    requiredDocuments?: string[];
+  };
+  availableZones?: string[];
+}
+
+export interface UpdateMethodRequest extends Partial<CreateMethodRequest> {
+  isActive?: boolean;
+}
+
+export interface CreateZoneRequest {
+  name: string;
+  description?: string;
+  coverage: {
+    countries: string[];
+    states?: string[];
+    regions?: string[];
+    postalCodes?: string[];
+    cities?: string[];
+  };
+  restrictions?: {
+    excludedAreas?: string[];
+    specialRequirements?: string[];
+  };
+  priority?: number;
+}
+
+export interface UpdateZoneRequest extends Partial<CreateZoneRequest> {
+  isActive?: boolean;
+}
+
+// Response types
+export interface GetCarriersResponse {
+  carriers: ShippingCarrierEntity[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface GetMethodsResponse {
+  methods: ShippingMethodEntity[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface GetZonesResponse {
+  zones: ShippingZoneEntity[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface CalculateRatesResponse {
+  rates: {
+    methodId: string;
+    methodName: string;
+    carrierId: string;
+    carrierName: string;
+    serviceType: string;
+    price: number;
+    estimatedDays: {
+      min: number;
+      max: number;
+    };
+    deliveryDate?: Date;
+    freeShipping: boolean;
+    transitTime: string;
+    features: string[];
+  }[];
+  origin: {
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+  };
+  destination: {
+    city: string;
+    state: string;
+    country: string;
+    postalCode: string;
+  };
+  packages: any[];
+}
+
+export interface TrackingResponse {
+  tracking: ShippingTrackingEntity;
+  realTimeUpdates: boolean;
+  nextUpdate?: Date;
+}
+
+export interface CreateLabelResponse {
+  label: ShippingLabelEntity;
+  tracking: ShippingTrackingEntity;
+  estimatedDelivery?: Date;
+}
+
+export interface SchedulePickupResponse {
+  pickup: ShippingPickupEntity;
+  confirmationCode: string;
+  instructions?: string;
+}
+
+// Legacy compatibility types
 export interface ShippingCarrier {
   id: string;
   name: string;
@@ -109,102 +300,473 @@ export interface CreateMethodData {
   freeShippingThreshold?: number;
 }
 
-// Shipping API Service
+// Shipping API Service with backend POJOs integration
 export const shippingAPI = {
-  // Carriers
-  getCarriers: async (): Promise<ShippingCarrier[]> => {
-    const response = await api.get<ShippingCarrier[]>('/shipping/carriers');
-    return response.data;
+  // ========================================
+  // Carrier Management with typed POJOs
+  // ========================================
+  getCarriers: async (filters?: {
+    isActive?: boolean;
+    trackingEnabled?: boolean;
+    pickupAvailable?: boolean;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<GetCarriersResponse> => {
+    const response = await api.get<PaginatedShippingResponse<ShippingCarrierEntity>>('/shipping/carriers', {
+      params: filters,
+    });
+    return {
+      carriers: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
   },
 
-  getCarrier: async (id: string): Promise<ShippingCarrier> => {
-    const response = await api.get<ShippingCarrier>(`/shipping/carriers/${id}`);
-    return response.data;
+  getCarrier: async (id: string): Promise<ShippingCarrierEntity> => {
+    const response = await api.get<ShippingAPIResponse<ShippingCarrierEntity>>(`/shipping/carriers/${id}`);
+    return response.data.data;
   },
 
-  createCarrier: async (data: CreateCarrierData): Promise<ShippingCarrier> => {
-    const response = await api.post<ShippingCarrier>('/shipping/carriers', data);
-    return response.data;
+  createCarrier: async (data: CreateCarrierRequest): Promise<ShippingCarrierEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingCarrierEntity>>('/shipping/carriers', data);
+    return response.data.data;
   },
 
-  updateCarrier: async (id: string, data: Partial<CreateCarrierData>): Promise<ShippingCarrier> => {
-    const response = await api.put<ShippingCarrier>(`/shipping/carriers/${id}`, data);
-    return response.data;
+  updateCarrier: async (id: string, data: UpdateCarrierRequest): Promise<ShippingCarrierEntity> => {
+    const response = await api.put<ShippingAPIResponse<ShippingCarrierEntity>>(`/shipping/carriers/${id}`, data);
+    return response.data.data;
   },
 
   deleteCarrier: async (id: string): Promise<void> => {
     await api.delete(`/shipping/carriers/${id}`);
   },
 
-  toggleCarrier: async (id: string, enabled: boolean): Promise<ShippingCarrier> => {
-    const response = await api.patch<ShippingCarrier>(`/shipping/carriers/${id}/toggle`, { enabled });
-    return response.data;
+  toggleCarrier: async (id: string, isActive: boolean): Promise<ShippingCarrierEntity> => {
+    const response = await api.patch<ShippingAPIResponse<ShippingCarrierEntity>>(`/shipping/carriers/${id}/toggle`, { isActive });
+    return response.data.data;
   },
 
-  // Shipping Methods
-  getMethods: async (carrierId?: string): Promise<ShippingMethod[]> => {
-    const response = await api.get<ShippingMethod[]>('/shipping/methods', {
-      params: { carrierId },
+  testCarrierConnection: async (id: string): Promise<{ connected: boolean; error?: string }> => {
+    const response = await api.post<ShippingAPIResponse<{ connected: boolean; error?: string }>>(`/shipping/carriers/${id}/test-connection`);
+    return response.data.data;
+  },
+
+  // ========================================
+  // Shipping Methods with typed POJOs
+  // ========================================
+  getMethods: async (filters?: {
+    carrierId?: string;
+    isActive?: boolean;
+    zoneId?: string;
+    serviceType?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<GetMethodsResponse> => {
+    const response = await api.get<PaginatedShippingResponse<ShippingMethodEntity>>('/shipping/methods', {
+      params: filters,
     });
-    return response.data;
+    return {
+      methods: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
   },
 
-  getMethod: async (id: string): Promise<ShippingMethod> => {
-    const response = await api.get<ShippingMethod>(`/shipping/methods/${id}`);
-    return response.data;
+  getMethod: async (id: string): Promise<ShippingMethodEntity> => {
+    const response = await api.get<ShippingAPIResponse<ShippingMethodEntity>>(`/shipping/methods/${id}`);
+    return response.data.data;
   },
 
-  createMethod: async (data: CreateMethodData): Promise<ShippingMethod> => {
-    const response = await api.post<ShippingMethod>('/shipping/methods', data);
-    return response.data;
+  createMethod: async (data: CreateMethodRequest): Promise<ShippingMethodEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingMethodEntity>>('/shipping/methods', data);
+    return response.data.data;
   },
 
-  updateMethod: async (id: string, data: Partial<CreateMethodData>): Promise<ShippingMethod> => {
-    const response = await api.put<ShippingMethod>(`/shipping/methods/${id}`, data);
-    return response.data;
+  updateMethod: async (id: string, data: UpdateMethodRequest): Promise<ShippingMethodEntity> => {
+    const response = await api.put<ShippingAPIResponse<ShippingMethodEntity>>(`/shipping/methods/${id}`, data);
+    return response.data.data;
   },
 
   deleteMethod: async (id: string): Promise<void> => {
     await api.delete(`/shipping/methods/${id}`);
   },
 
-  toggleMethod: async (id: string, enabled: boolean): Promise<ShippingMethod> => {
-    const response = await api.patch<ShippingMethod>(`/shipping/methods/${id}/toggle`, { enabled });
-    return response.data;
+  toggleMethod: async (id: string, isActive: boolean): Promise<ShippingMethodEntity> => {
+    const response = await api.patch<ShippingAPIResponse<ShippingMethodEntity>>(`/shipping/methods/${id}/toggle`, { isActive });
+    return response.data.data;
   },
 
-  // Rate Calculation
-  calculateRates: async (data: CalculateRateData): Promise<ShippingRate[]> => {
-    const response = await api.post<ShippingRate[]>('/shipping/calculate-rates', data);
-    return response.data;
-  },
-
-  // Tracking
-  trackShipment: async (trackingNumber: string, carrier?: string): Promise<TrackingInfo> => {
-    const response = await api.get<TrackingInfo>('/shipping/track', {
-      params: { trackingNumber, carrier },
+  // ========================================
+  // Shipping Zones with typed POJOs
+  // ========================================
+  getZones: async (filters?: {
+    isActive?: boolean;
+    country?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<GetZonesResponse> => {
+    const response = await api.get<PaginatedShippingResponse<ShippingZoneEntity>>('/shipping/zones', {
+      params: filters,
     });
-    return response.data;
+    return {
+      zones: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
   },
 
-  // Shipping Zones
-  getZones: async (): Promise<ShippingZone[]> => {
-    const response = await api.get<ShippingZone[]>('/shipping/zones');
-    return response.data;
+  getZone: async (id: string): Promise<ShippingZoneEntity> => {
+    const response = await api.get<ShippingAPIResponse<ShippingZoneEntity>>(`/shipping/zones/${id}`);
+    return response.data.data;
   },
 
-  createZone: async (data: Omit<ShippingZone, 'id' | 'createdAt' | 'updatedAt'>): Promise<ShippingZone> => {
-    const response = await api.post<ShippingZone>('/shipping/zones', data);
-    return response.data;
+  createZone: async (data: CreateZoneRequest): Promise<ShippingZoneEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingZoneEntity>>('/shipping/zones', data);
+    return response.data.data;
   },
 
-  updateZone: async (id: string, data: Partial<Omit<ShippingZone, 'id' | 'createdAt' | 'updatedAt'>>): Promise<ShippingZone> => {
-    const response = await api.put<ShippingZone>(`/shipping/zones/${id}`, data);
-    return response.data;
+  updateZone: async (id: string, data: UpdateZoneRequest): Promise<ShippingZoneEntity> => {
+    const response = await api.put<ShippingAPIResponse<ShippingZoneEntity>>(`/shipping/zones/${id}`, data);
+    return response.data.data;
   },
 
   deleteZone: async (id: string): Promise<void> => {
     await api.delete(`/shipping/zones/${id}`);
+  },
+
+  toggleZone: async (id: string, isActive: boolean): Promise<ShippingZoneEntity> => {
+    const response = await api.patch<ShippingAPIResponse<ShippingZoneEntity>>(`/shipping/zones/${id}/toggle`, { isActive });
+    return response.data.data;
+  },
+
+  // ========================================
+  // Rate Calculation with typed POJOs
+  // ========================================
+  calculateRates: async (data: CalculateShippingRateRequest): Promise<CalculateRatesResponse> => {
+    const response = await api.post<ShippingAPIResponse<CalculateRatesResponse>>('/shipping/calculate-rates', data);
+    return response.data.data;
+  },
+
+  compareMethods: async (data: CalculateShippingRateRequest): Promise<{
+    comparison: {
+      cheapest: any;
+      fastest: any;
+      recommended: any;
+      allRates: any[];
+    };
+  }> => {
+    const response = await api.post<ShippingAPIResponse<{
+      comparison: {
+        cheapest: any;
+        fastest: any;
+        recommended: any;
+        allRates: any[];
+      };
+    }>>('/shipping/compare-methods', data);
+    return response.data.data;
+  },
+
+  validateAddress: async (address: {
+    address1: string;
+    address2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  }): Promise<{
+    valid: boolean;
+    suggestions?: any[];
+    normalized?: any;
+  }> => {
+    const response = await api.post<ShippingAPIResponse<{
+      valid: boolean;
+      suggestions?: any[];
+      normalized?: any;
+    }>>('/shipping/validate-address', { address });
+    return response.data.data;
+  },
+
+  // ========================================
+  // Tracking with typed POJOs
+  // ========================================
+  trackShipment: async (trackingNumber: string, carrierId?: string): Promise<TrackingResponse> => {
+    const response = await api.get<ShippingAPIResponse<TrackingResponse>>('/shipping/track', {
+      params: { trackingNumber, carrierId },
+    });
+    return response.data.data;
+  },
+
+  trackMultiple: async (trackingNumbers: string[]): Promise<TrackingResponse[]> => {
+    const response = await api.post<ShippingAPIResponse<TrackingResponse[]>>('/shipping/track-multiple', {
+      trackingNumbers,
+    });
+    return response.data.data;
+  },
+
+  updateTrackingInfo: async (trackingNumber: string, data: UpdateTrackingRequest): Promise<ShippingTrackingEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingTrackingEntity>>(`/shipping/track/${trackingNumber}/update`, data);
+    return response.data.data;
+  },
+
+  // ========================================
+  // Label Generation with typed POJOs
+  // ========================================
+  createLabel: async (data: CreateShippingLabelRequest): Promise<CreateLabelResponse> => {
+    const response = await api.post<ShippingAPIResponse<CreateLabelResponse>>('/shipping/labels', data);
+    return response.data.data;
+  },
+
+  getLabel: async (id: string): Promise<ShippingLabelEntity> => {
+    const response = await api.get<ShippingAPIResponse<ShippingLabelEntity>>(`/shipping/labels/${id}`);
+    return response.data.data;
+  },
+
+  voidLabel: async (id: string, reason?: string): Promise<ShippingLabelEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingLabelEntity>>(`/shipping/labels/${id}/void`, { reason });
+    return response.data.data;
+  },
+
+  downloadLabel: async (id: string, format?: string): Promise<Blob> => {
+    const response = await api.get(`/shipping/labels/${id}/download`, {
+      params: { format },
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  // ========================================
+  // Pickup Management with typed POJOs
+  // ========================================
+  schedulePickup: async (data: SchedulePickupRequest): Promise<SchedulePickupResponse> => {
+    const response = await api.post<ShippingAPIResponse<SchedulePickupResponse>>('/shipping/pickups', data);
+    return response.data.data;
+  },
+
+  getPickups: async (filters?: {
+    status?: string;
+    carrierId?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    pickups: ShippingPickupEntity[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> => {
+    const response = await api.get<PaginatedShippingResponse<ShippingPickupEntity>>('/shipping/pickups', {
+      params: filters,
+    });
+    return {
+      pickups: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
+  },
+
+  getPickup: async (id: string): Promise<ShippingPickupEntity> => {
+    const response = await api.get<ShippingAPIResponse<ShippingPickupEntity>>(`/shipping/pickups/${id}`);
+    return response.data.data;
+  },
+
+  cancelPickup: async (id: string, reason?: string): Promise<ShippingPickupEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingPickupEntity>>(`/shipping/pickups/${id}/cancel`, { reason });
+    return response.data.data;
+  },
+
+  // ========================================
+  // Manifest Management with typed POJOs
+  // ========================================
+  createManifest: async (data: {
+    carrierId: string;
+    date: Date;
+    shipmentIds: string[];
+  }): Promise<ShippingManifestEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingManifestEntity>>('/shipping/manifests', data);
+    return response.data.data;
+  },
+
+  getManifests: async (filters?: {
+    carrierId?: string;
+    status?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    manifests: ShippingManifestEntity[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> => {
+    const response = await api.get<PaginatedShippingResponse<ShippingManifestEntity>>('/shipping/manifests', {
+      params: filters,
+    });
+    return {
+      manifests: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
+  },
+
+  submitManifest: async (id: string): Promise<ShippingManifestEntity> => {
+    const response = await api.post<ShippingAPIResponse<ShippingManifestEntity>>(`/shipping/manifests/${id}/submit`);
+    return response.data.data;
+  },
+
+  downloadManifest: async (id: string): Promise<Blob> => {
+    const response = await api.get(`/shipping/manifests/${id}/download`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  // ========================================
+  // Preferences with typed POJOs
+  // ========================================
+  getPreferences: async (userId?: string): Promise<ShippingPreferenceEntity> => {
+    const response = await api.get<ShippingAPIResponse<ShippingPreferenceEntity>>('/shipping/preferences', {
+      params: { userId },
+    });
+    return response.data.data;
+  },
+
+  updatePreferences: async (data: Partial<ShippingPreferenceEntity>): Promise<ShippingPreferenceEntity> => {
+    const response = await api.put<ShippingAPIResponse<ShippingPreferenceEntity>>('/shipping/preferences', data);
+    return response.data.data;
+  },
+
+  // ========================================
+  // Analytics & Reports with typed POJOs
+  // ========================================
+  getShippingAnalytics: async (filters?: {
+    startDate?: Date;
+    endDate?: Date;
+    carrierId?: string;
+    methodId?: string;
+  }): Promise<{
+    overview: {
+      totalShipments: number;
+      totalCost: number;
+      averageCost: number;
+      onTimeDelivery: number;
+    };
+    carrierPerformance: {
+      carrierId: string;
+      carrierName: string;
+      shipments: number;
+      cost: number;
+      onTimeRate: number;
+      avgTransitTime: number;
+    }[];
+    methodUsage: {
+      methodId: string;
+      methodName: string;
+      usage: number;
+      percentage: number;
+      avgCost: number;
+    }[];
+    trends: {
+      date: string;
+      shipments: number;
+      cost: number;
+    }[];
+  }> => {
+    const response = await api.get<ShippingAPIResponse<any>>('/shipping/analytics', {
+      params: filters,
+    });
+    return response.data.data;
+  },
+
+  getCostAnalysis: async (filters?: {
+    startDate?: Date;
+    endDate?: Date;
+    groupBy?: 'carrier' | 'method' | 'zone';
+  }): Promise<{
+    totalCost: number;
+    savings: number;
+    breakdown: {
+      category: string;
+      cost: number;
+      percentage: number;
+      shipments: number;
+    }[];
+    recommendations: string[];
+  }> => {
+    const response = await api.get<ShippingAPIResponse<any>>('/shipping/cost-analysis', {
+      params: filters,
+    });
+    return response.data.data;
+  },
+
+  // ========================================
+  // Legacy Compatibility Methods
+  // ========================================
+  // Legacy rate calculation for backward compatibility
+  calculateRatesLegacy: async (data: CalculateRateData): Promise<ShippingRate[]> => {
+    const requestData: CalculateShippingRateRequest = {
+      origin: {
+        postalCode: data.origin.postalCode,
+        city: data.origin.city,
+        state: data.origin.state,
+        country: data.origin.country,
+      },
+      destination: {
+        postalCode: data.destination.postalCode,
+        city: data.destination.city,
+        state: data.destination.state,
+        country: data.destination.country,
+      },
+      packages: data.packages.map(pkg => ({
+        weight: pkg.weight,
+        dimensions: {
+          length: pkg.length,
+          width: pkg.width,
+          height: pkg.height,
+        },
+      })),
+    };
+
+    const response = await shippingAPI.calculateRates(requestData);
+    
+    // Transform to legacy format
+    return response.rates.map((rate: any) => ({
+      methodId: rate.methodId,
+      methodName: rate.methodName,
+      carrierName: rate.carrierName,
+      price: rate.price,
+      estimatedDays: `${rate.estimatedDays.min}-${rate.estimatedDays.max} days`,
+      freeShipping: rate.freeShipping,
+    }));
+  },
+
+  // Legacy tracking for backward compatibility
+  trackShipmentLegacy: async (trackingNumber: string, carrier?: string): Promise<TrackingInfo> => {
+    const response = await shippingAPI.trackShipment(trackingNumber, carrier);
+    
+    // Transform to legacy format
+    return {
+      trackingNumber: response.tracking.trackingNumber,
+      carrier: response.tracking.carrierId,
+      carrierCode: response.tracking.carrierId,
+      status: response.tracking.status as any,
+      estimatedDelivery: response.tracking.estimatedDelivery?.toISOString(),
+      events: response.tracking.events.map((event: any) => ({
+        timestamp: event.timestamp.toISOString(),
+        location: event.location,
+        description: event.description,
+        status: event.status,
+      })),
+    };
   },
 };
 

@@ -610,7 +610,7 @@ const AffiliateReferralPage: React.FC = () => {
               xField="month"
               yField="referrals"
               height={250}
-              point={{ size: 5, shape: 'diamond' }}
+              point={{ size: 5, shape: 'circle' }}
               label={{
                 style: {
                   fill: '#1890ff',

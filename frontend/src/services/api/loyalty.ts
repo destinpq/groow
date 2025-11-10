@@ -1,5 +1,24 @@
 import { apiClient } from './client';
 
+// API Response wrapper types
+export interface LoyaltyAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface PaginatedLoyaltyResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
 // Loyalty Program Types
 export interface LoyaltyProgram {
   id: string;
@@ -179,23 +198,23 @@ export interface LoyaltyCampaign {
 class LoyaltyAPI {
   // Loyalty Programs
   async getPrograms(): Promise<LoyaltyProgram[]> {
-    const response = await apiClient.get('/loyalty/programs');
-    return response.data;
+    const response = await apiClient.get<LoyaltyAPIResponse<LoyaltyProgram[]>>('/loyalty/programs');
+    return response.data.data;
   }
 
   async getProgram(id: string): Promise<LoyaltyProgram> {
-    const response = await apiClient.get(`/loyalty/programs/${id}`);
-    return response.data;
+    const response = await apiClient.get<LoyaltyAPIResponse<LoyaltyProgram>>(`/loyalty/programs/${id}`);
+    return response.data.data;
   }
 
   async createProgram(program: Omit<LoyaltyProgram, 'id' | 'createdAt' | 'updatedAt'>): Promise<LoyaltyProgram> {
-    const response = await apiClient.post('/loyalty/programs', program);
-    return response.data;
+    const response = await apiClient.post<LoyaltyAPIResponse<LoyaltyProgram>>('/loyalty/programs', program);
+    return response.data.data;
   }
 
   async updateProgram(id: string, program: Partial<LoyaltyProgram>): Promise<LoyaltyProgram> {
-    const response = await apiClient.put(`/loyalty/programs/${id}`, program);
-    return response.data;
+    const response = await apiClient.put<LoyaltyAPIResponse<LoyaltyProgram>>(`/loyalty/programs/${id}`, program);
+    return response.data.data;
   }
 
   async deleteProgram(id: string): Promise<void> {
@@ -203,13 +222,13 @@ class LoyaltyAPI {
   }
 
   async activateProgram(id: string): Promise<LoyaltyProgram> {
-    const response = await apiClient.post(`/loyalty/programs/${id}/activate`);
-    return response.data;
+    const response = await apiClient.post<LoyaltyAPIResponse<LoyaltyProgram>>(`/loyalty/programs/${id}/activate`);
+    return response.data.data;
   }
 
   async deactivateProgram(id: string): Promise<LoyaltyProgram> {
-    const response = await apiClient.post(`/loyalty/programs/${id}/deactivate`);
-    return response.data;
+    const response = await apiClient.post<LoyaltyAPIResponse<LoyaltyProgram>>(`/loyalty/programs/${id}/deactivate`);
+    return response.data.data;
   }
 
   // Loyalty Tiers
@@ -257,8 +276,13 @@ class LoyaltyAPI {
     page: number;
     totalPages: number;
   }> {
-    const response = await apiClient.get('/loyalty/rewards', { params });
-    return response.data;
+    const response = await apiClient.get<PaginatedLoyaltyResponse<LoyaltyReward>>('/loyalty/rewards', { params });
+    return {
+      rewards: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
   }
 
   async getReward(id: string): Promise<LoyaltyReward> {
@@ -304,8 +328,13 @@ class LoyaltyAPI {
     page: number;
     totalPages: number;
   }> {
-    const response = await apiClient.get('/loyalty/customers', { params });
-    return response.data;
+    const response = await apiClient.get<PaginatedLoyaltyResponse<CustomerLoyalty>>('/loyalty/customers', { params });
+    return {
+      customers: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      totalPages: response.data.data.totalPages
+    };
   }
 
   async getCustomerLoyaltyById(customerId: string): Promise<CustomerLoyalty> {
@@ -434,8 +463,8 @@ class LoyaltyAPI {
     endDate?: string;
     granularity?: 'day' | 'week' | 'month';
   }): Promise<LoyaltyAnalytics> {
-    const response = await apiClient.get('/loyalty/analytics', { params });
-    return response.data;
+    const response = await apiClient.get<LoyaltyAPIResponse<LoyaltyAnalytics>>('/loyalty/analytics', { params });
+    return response.data.data;
   }
 
   async getTierAnalytics(tierId: string, params?: {

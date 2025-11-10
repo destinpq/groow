@@ -1,4 +1,4 @@
-// src/.umi-production/core/routeProps.ts
+// src/.umi/core/routeProps.ts
 var routeProps_default = {};
 export {
   routeProps_default as default

@@ -775,10 +775,10 @@ export class SupportService {
       data: {
         period,
         slaTargets,
-        compliance: {
-          firstResponse: parseFloat(firstResponseCompliance),
-          resolution: parseFloat(resolutionCompliance),
-          overall: ((parseFloat(firstResponseCompliance) + parseFloat(resolutionCompliance)) / 2).toFixed(1),
+        slaCompliance: {
+          firstResponse: parseFloat(String(firstResponseCompliance)),
+          resolution: parseFloat(String(resolutionCompliance)),
+          overall: ((parseFloat(String(firstResponseCompliance)) + parseFloat(String(resolutionCompliance))) / 2).toFixed(1),
         },
         stats: slaStats,
       },

@@ -1,5 +1,27 @@
 import api from './client';
 
+// API Response wrapper types
+export interface ShoppingListsAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface PaginatedShoppingListsResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// Note: Backend currently only has WishlistItem entity, not full ShoppingList
+// This frontend service provides extended shopping list functionality
+
 // Types
 export interface ShoppingList {
   id: string;
@@ -53,32 +75,37 @@ export const shoppingListsAPI = {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<ShoppingList>> => {
-    const response = await api.get<PaginatedResponse<ShoppingList>>('/shopping-lists', { params });
-    return response.data;
+    const response = await api.get<PaginatedShoppingListsResponse<ShoppingList>>('/shopping-lists', { params });
+    return {
+      data: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: params?.limit || 10,
+      totalPages: response.data.data.totalPages
+    };
   },
 
   // Get list by ID
   getById: async (id: string): Promise<ShoppingList> => {
-    const response = await api.get<ShoppingList>(`/shopping-lists/${id}`);
-    return response.data;
+    const response = await api.get<ShoppingListsAPIResponse<ShoppingList>>(`/shopping-lists/${id}`);
+    return response.data.data;
   },
 
   // Create list
   create: async (data: CreateShoppingListData): Promise<ShoppingList> => {
-    const response = await api.post<ShoppingList>('/shopping-lists', data);
-    return response.data;
+    const response = await api.post<ShoppingListsAPIResponse<ShoppingList>>('/shopping-lists', data);
+    return response.data.data;
   },
 
   // Update list
   update: async (id: string, data: Partial<CreateShoppingListData>): Promise<ShoppingList> => {
-    const response = await api.put<ShoppingList>(`/shopping-lists/${id}`, data);
-    return response.data;
+    const response = await api.put<ShoppingListsAPIResponse<ShoppingList>>(`/shopping-lists/${id}`, data);
+    return response.data.data;
   },
 
   // Delete list
   delete: async (id: string): Promise<void> => {
-    const response = await api.delete<void>(`/shopping-lists/${id}`);
-    return response.data;
+    await api.delete(`/shopping-lists/${id}`);
   },
 
   // Get list items
@@ -86,44 +113,49 @@ export const shoppingListsAPI = {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<ShoppingListItem>> => {
-    const response = await api.get<PaginatedResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items`, { params });
-    return response.data;
+    const response = await api.get<PaginatedShoppingListsResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items`, { params });
+    return {
+      data: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: params?.limit || 10,
+      totalPages: response.data.data.totalPages
+    };
   },
 
   // Add item to list
   addItem: async (listId: string, data: AddItemToListData): Promise<ShoppingListItem> => {
-    const response = await api.post<ShoppingListItem>(`/shopping-lists/${listId}/items`, data);
-    return response.data;
+    const response = await api.post<ShoppingListsAPIResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items`, data);
+    return response.data.data;
   },
 
   // Update item
   updateItem: async (listId: string, itemId: string, data: Partial<AddItemToListData>): Promise<ShoppingListItem> => {
-    const response = await api.put<ShoppingListItem>(`/shopping-lists/${listId}/items/${itemId}`, data);
-    return response.data;
+    const response = await api.put<ShoppingListsAPIResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items/${itemId}`, data);
+    return response.data.data;
   },
 
   // Remove item
   removeItem: async (listId: string, itemId: string): Promise<void> => {
-    const response = await api.delete<void>(`/shopping-lists/${listId}/items/${itemId}`);
-    return response.data;
+    await api.delete(`/shopping-lists/${listId}/items/${itemId}`);
   },
 
   // Mark item as purchased
   markPurchased: async (listId: string, itemId: string, purchased: boolean): Promise<ShoppingListItem> => {
-    const response = await api.patch<ShoppingListItem>(`/shopping-lists/${listId}/items/${itemId}/purchased`, { purchased });
-    return response.data;
+    const response = await api.patch<ShoppingListsAPIResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items/${itemId}/purchased`, { purchased });
+    return response.data.data;
   },
 
   // Add all items to cart
   addAllToCart: async (listId: string): Promise<{ addedItems: number }> => {
-    const response = await api.post<{ addedItems: number }>(`/shopping-lists/${listId}/add-to-cart`);
-    return response.data;
+    const response = await api.post<ShoppingListsAPIResponse<{ addedItems: number }>>(`/shopping-lists/${listId}/add-to-cart`);
+    return response.data.data;
   },
 
   // Share list
   share: async (listId: string): Promise<{ shareUrl: string }> => {
-    const response = await api.post<{ shareUrl: string }>(`/shopping-lists/${listId}/share`);
-    return response.data;
+    const response = await api.post<ShoppingListsAPIResponse<{ shareUrl: string }>>(`/shopping-lists/${listId}/share`);
+    return response.data.data;
   },
 };
 

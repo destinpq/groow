@@ -6,5 +6,8 @@ groow-api.destinpq.com {
     reverse_proxy localhost:3000
 }
 
-# Frontend Server - Served by Vercel, no longer needed locally
-# https://groow.destinpq.com is now served by Vercel
+# Frontend Server - Development server
+groow.destinpq.com {
+    # Reverse proxy to the frontend development server on port 8000
+    reverse_proxy localhost:8000
+}

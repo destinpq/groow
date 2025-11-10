@@ -1,13 +1,11 @@
 // API Base URL
 export const API_CONFIG = {
-  BASE_URL: process.env.NODE_ENV === 'production' 
-    ? 'https://groow-api.destinpq.com'
-    : 'http://localhost:3001',
+  BASE_URL: process.env.API_URL || 'https://groow-api.destinpq.com',
   API_VERSION: '/api/v1',
   TIMEOUT: 30000,
 };
 
-export const API_BASE_URL = 'https://groow-api.destinpq.com';
+export const API_BASE_URL = process.env.API_URL || 'https://groow-api.destinpq.com';
 
 // Upload Settings
 export const UPLOAD_CONFIG = {
