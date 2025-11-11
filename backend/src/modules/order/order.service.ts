@@ -6,6 +6,7 @@ import { CartItem } from '@/modules/customer/entities/cart-item.entity';
 import { CreateOrderDto, UpdateOrderStatusDto, OrderFilterDto } from './dto/order.dto';
 import { OrderStatus, PaymentStatus } from '@/common/enums';
 import { NotificationService } from '@/modules/notification/notification.service';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class OrderService {
@@ -85,6 +86,7 @@ export class OrderService {
 
   async findAll(filters: OrderFilterDto) {
     const { page = 1, limit = 10, status, customerId, vendorId, search } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
 
     const query = this.orderRepository.createQueryBuilder('order')
       .leftJoinAndSelect('order.customer', 'customer');
@@ -103,19 +105,14 @@ export class OrderService {
 
     query.orderBy('order.createdAt', 'DESC');
 
-    const skip = (page - 1) * limit;
-    query.skip(skip).take(limit);
+    const skip = calculateSkip(pageNum, limitNum);
+    query.skip(skip).take(limitNum);
 
     const [orders, total] = await query.getManyAndCount();
 
     return {
       data: orders,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      meta: createPaginationResult(total, pageNum, limitNum),
     };
   }
 

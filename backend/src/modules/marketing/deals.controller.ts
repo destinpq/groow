@@ -7,6 +7,7 @@ import { RolesGuard } from '@/modules/auth/guards/roles.guard';
 import { Roles } from '@/modules/auth/decorators/roles.decorator';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { UserRole } from '@/common/enums';
+import { GetDealsDto } from './dto/marketing-query.dto';
 
 @ApiTags('Deals')
 @ApiBearerAuth()
@@ -18,7 +19,7 @@ export class DealsController {
   @Get()
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get all deals' })
-  async getAllDeals(@Query() filters: any) {
+  async getAllDeals(@Query() filters: GetDealsDto) {
     return this.marketingService.getAllDeals(filters);
   }
 

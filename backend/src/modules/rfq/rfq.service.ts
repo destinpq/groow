@@ -6,6 +6,7 @@ import { Quotation } from './entities/quotation.entity';
 import { CreateRfqDto, CreateQuotationDto, RfqFilterDto } from './dto/rfq.dto';
 import { RfqStatus } from '@/common/enums';
 import { NotificationService } from '@/modules/notification/notification.service';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class RfqService {
@@ -36,6 +37,7 @@ export class RfqService {
 
   async findAll(filters: RfqFilterDto) {
     const { page = 1, limit = 10, status, customerId } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
 
     const query = this.rfqRepository.createQueryBuilder('rfq')
       .leftJoinAndSelect('rfq.customer', 'customer')
@@ -51,19 +53,14 @@ export class RfqService {
 
     query.orderBy('rfq.createdAt', 'DESC');
 
-    const skip = (page - 1) * limit;
-    query.skip(skip).take(limit);
+    const skip = calculateSkip(pageNum, limitNum);
+    query.skip(skip).take(limitNum);
 
     const [rfqs, total] = await query.getManyAndCount();
 
     return {
       data: rfqs,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      meta: createPaginationResult(total, pageNum, limitNum),
     };
   }
 

@@ -6,6 +6,7 @@ import { StaffRole } from './entities/staff-role.entity';
 import { StaffRoleAssignment } from './entities/staff-role-assignment.entity';
 import { User } from '@/modules/auth/entities/user.entity';
 import { NotificationService } from '@/modules/notification/notification.service';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class StaffService {
@@ -24,6 +25,7 @@ export class StaffService {
   // Staff HRMS (REQ-073)
   async getAllStaff(filters: any) {
     const { page, limit, search, department, status, role } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
     
     const queryBuilder = this.staffRepository.createQueryBuilder('staff')
       .leftJoinAndSelect('staff.user', 'user')
@@ -51,19 +53,14 @@ export class StaffService {
 
     const [staff, total] = await queryBuilder
       .orderBy('staff.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip(calculateSkip(pageNum, limitNum))
+      .take(limitNum)
       .getManyAndCount();
 
     return {
       success: true,
       data: staff,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      pagination: createPaginationResult(total, pageNum, limitNum),
     };
   }
 

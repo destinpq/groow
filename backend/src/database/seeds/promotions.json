@@ -1,0 +1,265 @@
+[
+  {
+    "name": "Black Friday Email Campaign",
+    "description": "Email marketing campaign for Black Friday mega sale targeting all customer segments",
+    "type": "email_campaign",
+    "status": "active",
+    "campaign": {
+      "objective": "conversions",
+      "budget": 5000,
+      "targetAudience": ["all_customers", "inactive_customers"],
+      "channels": ["email"],
+      "frequency": "one_time"
+    },
+    "content": {
+      "title": "🔥 Black Friday Mega Sale - Up to 50% Off Everything!",
+      "message": "Don't miss out on our biggest sale of the year! Shop now and save big on electronics, fashion, home goods and more.",
+      "imageUrl": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da",
+      "ctaText": "Shop Now",
+      "ctaUrl": "/deals/black-friday",
+      "emailTemplate": "black_friday_promotion"
+    },
+    "scheduling": {
+      "startDate": "2025-11-15T00:00:00Z",
+      "endDate": "2025-11-30T23:59:59Z",
+      "timezone": "UTC"
+    },
+    "targeting": {
+      "customerSegments": ["all_customers", "high_value", "dormant"],
+      "demographics": {
+        "ageRange": { "min": 18, "max": 65 }
+      },
+      "geoTargeting": ["US", "CA", "UK"]
+    },
+    "rules": {
+      "frequencyCap": 2,
+      "exclusions": ["opted_out"]
+    },
+    "associatedDeals": [],
+    "associatedCoupons": ["WELCOME10", "SAVE25NOW"],
+    "budget": 5000,
+    "abTesting": {
+      "enabled": true,
+      "variants": [
+        { "name": "Version A", "weight": 50 },
+        { "name": "Version B", "weight": 50 }
+      ]
+    },
+    "tags": ["black-friday", "email", "high-priority"],
+    "metrics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reach": 0,
+      "engagement": 0,
+      "ctr": 0,
+      "conversionRate": 0
+    }
+  },
+  {
+    "name": "Holiday Shopping Banner Campaign",
+    "description": "Website banner promotion for holiday shopping season with festive themes",
+    "type": "banner",
+    "status": "scheduled",
+    "campaign": {
+      "objective": "brand_awareness",
+      "budget": 3000,
+      "targetAudience": ["website_visitors"],
+      "channels": ["website", "mobile_app"],
+      "frequency": "daily"
+    },
+    "content": {
+      "title": "🎄 Holiday Sale - Perfect Gifts Await!",
+      "message": "Find the perfect gifts for everyone on your list with our holiday collection",
+      "imageUrl": "https://images.unsplash.com/photo-1512389142860-9c449e58a543",
+      "ctaText": "Browse Gifts",
+      "ctaUrl": "/categories/gifts"
+    },
+    "scheduling": {
+      "startDate": "2025-12-01T00:00:00Z",
+      "endDate": "2025-12-25T23:59:59Z",
+      "timezone": "UTC"
+    },
+    "targeting": {
+      "customerSegments": ["all_customers"],
+      "demographics": {},
+      "geoTargeting": ["US", "CA"]
+    },
+    "rules": {
+      "frequencyCap": 5,
+      "exclusions": []
+    },
+    "associatedDeals": [],
+    "associatedCoupons": ["FREESHIP50"],
+    "budget": 3000,
+    "abTesting": {
+      "enabled": false
+    },
+    "tags": ["holiday", "banner", "seasonal"],
+    "metrics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reach": 0,
+      "engagement": 0,
+      "ctr": 0,
+      "conversionRate": 0
+    }
+  },
+  {
+    "name": "Welcome SMS Series",
+    "description": "Automated SMS campaign for new customer onboarding and welcome offers",
+    "type": "sms_campaign",
+    "status": "active",
+    "campaign": {
+      "objective": "retention",
+      "budget": 1500,
+      "targetAudience": ["new_customers"],
+      "channels": ["sms"],
+      "frequency": "weekly"
+    },
+    "content": {
+      "title": "Welcome to Groow! 🎉",
+      "message": "Thanks for joining us! Use code WELCOME10 for 10% off your first order. Start shopping now!",
+      "ctaText": "Shop Now",
+      "ctaUrl": "/welcome-offer",
+      "smsTemplate": "welcome_series_template"
+    },
+    "scheduling": {
+      "startDate": "2025-11-01T00:00:00Z",
+      "endDate": "2025-12-31T23:59:59Z",
+      "timezone": "UTC"
+    },
+    "targeting": {
+      "customerSegments": ["new_customers"],
+      "demographics": {
+        "ageRange": { "min": 18, "max": 60 }
+      },
+      "geoTargeting": ["US"]
+    },
+    "rules": {
+      "frequencyCap": 1,
+      "exclusions": ["sms_opted_out"]
+    },
+    "associatedDeals": [],
+    "associatedCoupons": ["WELCOME10"],
+    "budget": 1500,
+    "abTesting": {
+      "enabled": false
+    },
+    "tags": ["welcome", "sms", "onboarding", "automation"],
+    "metrics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reach": 0,
+      "engagement": 0,
+      "ctr": 0,
+      "conversionRate": 0
+    }
+  },
+  {
+    "name": "Referral Program Launch",
+    "description": "Social media and in-app promotion for new referral program launch",
+    "type": "referral_program",
+    "status": "draft",
+    "campaign": {
+      "objective": "traffic",
+      "budget": 2000,
+      "targetAudience": ["existing_customers", "social_followers"],
+      "channels": ["social_media", "mobile_app", "email"],
+      "frequency": "monthly"
+    },
+    "content": {
+      "title": "Refer Friends, Earn Rewards! 💰",
+      "message": "Share the love and earn $20 for every friend who makes their first purchase. Your friends get 15% off too!",
+      "imageUrl": "https://images.unsplash.com/photo-1559526324-593bc073d938",
+      "ctaText": "Start Referring",
+      "ctaUrl": "/referral-program"
+    },
+    "scheduling": {
+      "startDate": "2025-12-01T00:00:00Z",
+      "endDate": "2026-02-28T23:59:59Z",
+      "timezone": "UTC"
+    },
+    "targeting": {
+      "customerSegments": ["active_customers", "high_value"],
+      "demographics": {},
+      "geoTargeting": ["US", "CA"]
+    },
+    "rules": {
+      "frequencyCap": 3,
+      "exclusions": []
+    },
+    "associatedDeals": [],
+    "associatedCoupons": [],
+    "budget": 2000,
+    "abTesting": {
+      "enabled": true,
+      "variants": [
+        { "name": "Social Focus", "weight": 60 },
+        { "name": "App Focus", "weight": 40 }
+      ]
+    },
+    "tags": ["referral", "social", "rewards"],
+    "metrics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reach": 0,
+      "engagement": 0,
+      "ctr": 0,
+      "conversionRate": 0
+    }
+  },
+  {
+    "name": "Flash Sale Popup",
+    "description": "Limited-time popup promotion for flash sales with urgency messaging",
+    "type": "popup",
+    "status": "paused",
+    "campaign": {
+      "objective": "conversions",
+      "budget": 800,
+      "targetAudience": ["cart_abandoners", "browsers"],
+      "channels": ["website"],
+      "frequency": "one_time"
+    },
+    "content": {
+      "title": "⚡ Flash Sale - Only 2 Hours Left!",
+      "message": "Don't miss out! Extra 30% off selected items. Sale ends soon!",
+      "imageUrl": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d",
+      "ctaText": "Shop Flash Sale",
+      "ctaUrl": "/flash-sale"
+    },
+    "scheduling": {
+      "startDate": "2025-11-20T12:00:00Z",
+      "endDate": "2025-11-20T14:00:00Z",
+      "timezone": "UTC"
+    },
+    "targeting": {
+      "customerSegments": ["cart_abandoners", "browsers"],
+      "demographics": {},
+      "geoTargeting": ["US"]
+    },
+    "rules": {
+      "frequencyCap": 1,
+      "exclusions": ["recently_purchased"]
+    },
+    "associatedDeals": [],
+    "associatedCoupons": ["SAVE25NOW"],
+    "budget": 800,
+    "abTesting": {
+      "enabled": false
+    },
+    "tags": ["flash-sale", "popup", "urgency", "short-term"],
+    "metrics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "reach": 0,
+      "engagement": 0,
+      "ctr": 0,
+      "conversionRate": 0
+    }
+  }
+]

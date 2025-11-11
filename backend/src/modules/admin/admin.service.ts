@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThanOrEqual } from 'typeorm';
 import { User } from '@/modules/auth/entities/user.entity';
 import { UserRole, UserStatus } from '@/common/enums';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 interface UserFilter {
   role?: UserRole;
@@ -22,6 +23,7 @@ export class AdminService {
   async getUsers(filters: UserFilter) {
     try {
       const { role, page, limit, status } = filters;
+      const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
       
       // Build where conditions
       const whereConditions: any = {};
@@ -36,17 +38,14 @@ export class AdminService {
       const [users, total] = await this.userRepository.findAndCount({
         where: whereConditions,
         order: { createdAt: 'DESC' },
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: calculateSkip(pageNum, limitNum),
+        take: limitNum,
       });
 
       return {
         success: true,
         data: users,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        pagination: createPaginationResult(total, pageNum, limitNum),
       };
     } catch (error) {
       console.error('Error in getUsers:', error);

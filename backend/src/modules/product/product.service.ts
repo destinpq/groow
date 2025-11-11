@@ -6,6 +6,7 @@ import { Category } from './entities/category.entity';
 import { Brand } from './entities/brand.entity';
 import { CreateProductDto, UpdateProductDto, ProductFilterDto } from './dto/product.dto';
 import { ProductStatus } from '@/common/enums';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class ProductService {
@@ -53,6 +54,8 @@ export class ProductService {
       sortBy = 'createdAt',
       sortOrder = 'DESC'
     } = filters;
+    
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
 
     const query = this.productRepository.createQueryBuilder('product')
       .leftJoinAndSelect('product.vendor', 'vendor')
@@ -102,19 +105,14 @@ export class ProductService {
     query.orderBy(`product.${sortBy}`, sortOrder);
 
     // Pagination
-    const skip = (page - 1) * limit;
-    query.skip(skip).take(limit);
+    const skip = calculateSkip(pageNum, limitNum);
+    query.skip(skip).take(limitNum);
 
     const [products, total] = await query.getManyAndCount();
 
     return {
       data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      meta: createPaginationResult(total, pageNum, limitNum),
     };
   }
 

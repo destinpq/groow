@@ -28,6 +28,8 @@ async function seed() {
     const vendorsData = loadJSON('vendors.json');
     const customersData = loadJSON('customers.json');
     const dealsData = loadJSON('deals.json');
+    const couponsData = loadJSON('coupons.json');
+    const promotionsData = loadJSON('promotions.json');
     console.log('✅ JSON files loaded\n');
 
     console.log('🏷️  Clearing existing data...');
@@ -35,6 +37,8 @@ async function seed() {
     await dataSource.query('TRUNCATE TABLE categories CASCADE');
     await dataSource.query('TRUNCATE TABLE brands CASCADE');
     await dataSource.query('TRUNCATE TABLE deals CASCADE');
+    await dataSource.query('TRUNCATE TABLE coupons CASCADE');
+    await dataSource.query('TRUNCATE TABLE promotions CASCADE');
     console.log('✅ Data cleared\n');
 
     console.log('👤 Creating users...');
@@ -124,6 +128,70 @@ async function seed() {
     }
     console.log(`✅ Created ${dealCount} deals\n`);
 
+    console.log('🎫 Creating coupons...');
+    let couponCount = 0;
+    for (const coupon of couponsData) {
+      await dataSource.query(
+        `INSERT INTO coupons (
+          code, name, description, type, "discountValue", conditions, 
+          "validFrom", "validUntil", "isActive", "usageLimit", "usageLimitPerCustomer", 
+          generation, distribution, analytics, tags, "createdById"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+        [
+          coupon.code,
+          coupon.name,
+          coupon.description,
+          coupon.type,
+          JSON.stringify(coupon.discountValue),
+          JSON.stringify(coupon.conditions),
+          coupon.validFrom,
+          coupon.validUntil,
+          coupon.isActive,
+          coupon.usageLimit,
+          coupon.usageLimitPerCustomer,
+          JSON.stringify(coupon.generation),
+          JSON.stringify(coupon.distribution),
+          JSON.stringify(coupon.analytics),
+          JSON.stringify(coupon.tags || []),
+          adminUserId
+        ]
+      );
+      couponCount++;
+    }
+    console.log(`✅ Created ${couponCount} coupons\n`);
+
+    console.log('📢 Creating promotions...');
+    let promotionCount = 0;
+    for (const promotion of promotionsData) {
+      await dataSource.query(
+        `INSERT INTO promotions (
+          name, description, type, status, campaign, content, 
+          scheduling, targeting, rules, "associatedDeals", "associatedCoupons", 
+          budget, "abTesting", tags, metrics, "createdById"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+        [
+          promotion.name,
+          promotion.description,
+          promotion.type,
+          promotion.status,
+          JSON.stringify(promotion.campaign),
+          JSON.stringify(promotion.content),
+          JSON.stringify(promotion.scheduling),
+          JSON.stringify(promotion.targeting),
+          JSON.stringify(promotion.rules),
+          JSON.stringify(promotion.associatedDeals),
+          JSON.stringify(promotion.associatedCoupons),
+          promotion.budget,
+          JSON.stringify(promotion.abTesting),
+          JSON.stringify(promotion.tags || []),
+          JSON.stringify(promotion.metrics),
+          adminUserId
+        ]
+      );
+      promotionCount++;
+    }
+    console.log(`✅ Created ${promotionCount} promotions\n`);
+
     console.log('========================================');
     console.log('✅ Database seeding completed!');
     console.log('========================================\n');
@@ -134,6 +202,8 @@ async function seed() {
     console.log(`  ✓ ${vendorCount} Vendors`);
     console.log(`  ✓ ${customerCount} Customers`);
     console.log(`  ✓ ${dealCount} Deals`);
+    console.log(`  ✓ ${couponCount} Coupons`);
+    console.log(`  ✓ ${promotionCount} Promotions`);
     console.log('\n📝 Login Credentials:');
     console.log('  Admin:     admin@groow.com / Admin@123456');
     console.log('  Vendors:   vendor1-5@groow.com / Vendor@123456');

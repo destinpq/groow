@@ -5,6 +5,7 @@ import { SupportTicket } from './entities/support-ticket.entity';
 import { TicketMessage } from './entities/ticket-message.entity';
 import { Staff } from '@/modules/staff/entities/staff.entity';
 import { NotificationService } from '@/modules/notification/notification.service';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class SupportService {
@@ -21,6 +22,7 @@ export class SupportService {
   // Support Center - Ticket Management (REQ-075)
   async getAllTickets(filters: any) {
     const { page, limit, status, priority, category, assignedTo, search } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
     
     const queryBuilder = this.ticketRepository.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.customer', 'customer')
@@ -52,24 +54,20 @@ export class SupportService {
 
     const [tickets, total] = await queryBuilder
       .orderBy('ticket.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip(calculateSkip(pageNum, limitNum))
+      .take(limitNum)
       .getManyAndCount();
 
     return {
       success: true,
       data: tickets,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      pagination: createPaginationResult(total, pageNum, limitNum),
     };
   }
 
   async getCustomerTickets(customerId: string, filters: any) {
     const { page, limit, status } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
     
     const queryBuilder = this.ticketRepository.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.assignedTo', 'assignedTo')
@@ -82,19 +80,14 @@ export class SupportService {
 
     const [tickets, total] = await queryBuilder
       .orderBy('ticket.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip(calculateSkip(pageNum, limitNum))
+      .take(limitNum)
       .getManyAndCount();
 
     return {
       success: true,
       data: tickets,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      pagination: createPaginationResult(total, pageNum, limitNum),
     };
   }
 
@@ -109,6 +102,7 @@ export class SupportService {
     }
 
     const { page, limit, status } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
     
     const queryBuilder = this.ticketRepository.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.customer', 'customer')
@@ -120,19 +114,14 @@ export class SupportService {
 
     const [tickets, total] = await queryBuilder
       .orderBy('ticket.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip(calculateSkip(pageNum, limitNum))
+      .take(limitNum)
       .getManyAndCount();
 
     return {
       success: true,
       data: tickets,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      pagination: createPaginationResult(total, pageNum, limitNum),
     };
   }
 

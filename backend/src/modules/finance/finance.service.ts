@@ -6,6 +6,7 @@ import { VendorPayout } from './entities/vendor-payout.entity';
 import { Refund } from './entities/refund.entity';
 import { Order } from '@/modules/order/entities/order.entity';
 import { TransactionType } from '@/common/enums';
+import { parsePaginationParams, calculateSkip, createPaginationResult } from '@/common/utils/pagination.util';
 
 @Injectable()
 export class FinanceService {
@@ -23,6 +24,7 @@ export class FinanceService {
   // Transaction History and Reporting (REQ-077)
   async getTransactions(filters: any) {
     const { page, limit, type, status, startDate, endDate } = filters;
+    const { page: pageNum, limit: limitNum } = parsePaginationParams(page, limit);
     
     const queryBuilder = this.transactionRepository.createQueryBuilder('transaction')
       .leftJoinAndSelect('transaction.user', 'user')
@@ -45,8 +47,8 @@ export class FinanceService {
 
     const [transactions, total] = await queryBuilder
       .orderBy('transaction.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip(calculateSkip(pageNum, limitNum))
+      .take(limitNum)
       .getManyAndCount();
 
     return {
