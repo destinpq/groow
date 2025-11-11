@@ -18,7 +18,9 @@ import {
   List,
   Avatar,
   Divider,
-  Alert
+  Alert,
+  Select,
+  Statistic
 } from 'antd';
 import {
   SearchOutlined,
@@ -36,7 +38,8 @@ import {
   BookOutlined,
   ArrowRightOutlined,
   CheckCircleOutlined,
-  BulbOutlined
+  BulbOutlined,
+  BarChartOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { helpCenterAPI } from '../services/api/helpCenterAPI';
@@ -51,6 +54,10 @@ const HelpCenterPage: React.FC = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [userFeedback, setUserFeedback] = useState<Record<string, { helpful: boolean; rating: number }>>({});
+  const [viewedArticles, setViewedArticles] = useState<Set<string>>(new Set());
+  const [expandedFAQs, setExpandedFAQs] = useState<Set<string>>(new Set());
   
   // Data states
   const [categories, setCategories] = useState<HelpCategory[]>([]);
@@ -85,7 +92,16 @@ const HelpCenterPage: React.FC = () => {
       ]);
 
       if (categoriesRes.success) setCategories(categoriesRes.data);
-      if (faqsRes.success) setFaqs(faqsRes.data);
+      if (faqsRes.success) {
+        // Map FaqDto to FAQ format
+        const mappedFaqs = faqsRes.data.map(faq => ({
+          ...faq,
+          order: faq.displayOrder,
+          createdAt: faq.createdAt.toString(),
+          updatedAt: faq.updatedAt.toString()
+        }));
+        setFaqs(mappedFaqs);
+      }
       if (articlesRes.success) setPopularArticles(articlesRes.data);
       if (bannersRes.success) setBanners(bannersRes.data);
 
@@ -117,6 +133,66 @@ const HelpCenterPage: React.FC = () => {
       message.error('Search failed');
     } finally {
       setSearchLoading(false);
+    }
+  };
+
+  // Enhanced user interaction functions
+  const handleFAQFeedback = async (faqId: string, helpful: boolean) => {
+    try {
+      setUserFeedback(prev => ({
+        ...prev,
+        [faqId]: { ...prev[faqId], helpful }
+      }));
+      
+      // Track analytics (would integrate with analytics API)
+      console.log(`FAQ ${faqId} marked as ${helpful ? 'helpful' : 'not helpful'}`);
+      message.success(`Thank you for your feedback!`);
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      message.error('Failed to submit feedback');
+    }
+  };
+
+  const handleArticleView = (articleId: string) => {
+    setViewedArticles(prev => new Set(prev).add(articleId));
+    // Track view analytics
+    console.log(`Article ${articleId} viewed`);
+  };
+
+  const handleFAQExpand = (faqId: string) => {
+    setExpandedFAQs(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(faqId)) {
+        newSet.delete(faqId);
+      } else {
+        newSet.add(faqId);
+      }
+      return newSet;
+    });
+    // Track FAQ expansion analytics
+    console.log(`FAQ ${faqId} ${expandedFAQs.has(faqId) ? 'collapsed' : 'expanded'}`);
+  };
+
+  const handleCategoryFilter = async (categorySlug: string) => {
+    setSelectedCategory(categorySlug);
+    try {
+      const response = await helpCenterAPI.getFAQs({ 
+        category: categorySlug, 
+        active: true, 
+        limit: 20 
+      });
+      if (response.success) {
+        const mappedFaqs = response.data.map(faq => ({
+          ...faq,
+          order: faq.displayOrder,
+          createdAt: faq.createdAt.toString(),
+          updatedAt: faq.updatedAt.toString()
+        }));
+        setFaqs(mappedFaqs);
+      }
+    } catch (error) {
+      console.error('Error filtering by category:', error);
+      message.error('Failed to filter content');
     }
   };
 
@@ -358,14 +434,32 @@ const HelpCenterPage: React.FC = () => {
                       <Card
                         size="small"
                         hoverable
-                        onClick={() => navigate(`/help/${article.slug}`)}
+                        onClick={() => {
+                          handleArticleView(article.id);
+                          navigate(`/help/${article.slug}`);
+                        }}
+                        style={{
+                          border: viewedArticles.has(article.id) ? '2px solid #52c41a' : undefined
+                        }}
                       >
                         <Space align="start">
-                          <Avatar icon={<BookOutlined />} />
+                          <Avatar 
+                            icon={<BookOutlined />}
+                            style={{
+                              backgroundColor: viewedArticles.has(article.id) ? '#52c41a' : '#1890ff'
+                            }}
+                          />
                           <div style={{ flex: 1 }}>
-                            <Title level={5} style={{ margin: 0 }}>
-                              {article.title}
-                            </Title>
+                            <Space>
+                              <Title level={5} style={{ margin: 0 }}>
+                                {article.title}
+                              </Title>
+                              {viewedArticles.has(article.id) && (
+                                <Tag color="success">
+                                  <CheckCircleOutlined /> Read
+                                </Tag>
+                              )}
+                            </Space>
                             <Text type="secondary">
                               <ClockCircleOutlined /> {new Date(article.createdAt).toLocaleDateString()}
                               {article.views && (
@@ -374,6 +468,13 @@ const HelpCenterPage: React.FC = () => {
                                   <EyeOutlined /> {article.views} views
                                 </>
                               )}
+                              <Divider type="vertical" />
+                              <BulbOutlined />
+                              <Rate 
+                                disabled 
+                                defaultValue={4.5} 
+                                style={{ fontSize: 12 }}
+                              />
                             </Text>
                           </div>
                         </Space>
@@ -384,39 +485,228 @@ const HelpCenterPage: React.FC = () => {
               </Card>
             )}
 
-            {/* Frequently Asked Questions */}
+            {/* Enhanced Frequently Asked Questions */}
             <Card 
               title={
                 <Space>
                   <QuestionCircleOutlined />
                   Frequently Asked Questions
+                  <Badge count={faqs.length} style={{ backgroundColor: '#1890ff' }} />
                 </Space>
+              }
+              extra={
+                <Select
+                  placeholder="Filter by category"
+                  style={{ width: 200 }}
+                  allowClear
+                  value={selectedCategory}
+                  onChange={handleCategoryFilter}
+                >
+                  {categories.map(category => (
+                    <Select.Option key={category.slug} value={category.slug}>
+                      {category.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               }
               style={{ marginBottom: 24 }}
             >
               {faqs.length > 0 ? (
-                <Collapse ghost>
+                <div>
                   {faqs.map(faq => (
-                    <Panel
-                      header={faq.question}
+                    <Card 
                       key={faq.id}
+                      size="small"
+                      style={{ marginBottom: 12 }}
+                      title={
+                        <div 
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleFAQExpand(faq.id)}
+                        >
+                          <Space>
+                            <QuestionCircleOutlined />
+                            {faq.question}
+                            <Tag color={faq.category === 'general' ? 'blue' : 'green'}>
+                              {faq.category}
+                            </Tag>
+                          </Space>
+                        </div>
+                      }
                       extra={
-                        <Space>
-                          <LikeOutlined />
-                          <Text type="secondary">Helpful</Text>
-                        </Space>
+                        expandedFAQs.has(faq.id) ? (
+                          <Space>
+                            <Text type="secondary">Was this helpful?</Text>
+                            <Button 
+                              type="text" 
+                              icon={<LikeOutlined />}
+                              size="small"
+                              style={{ 
+                                color: userFeedback[faq.id]?.helpful === true ? '#52c41a' : undefined 
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFAQFeedback(faq.id, true);
+                              }}
+                            >
+                              Yes
+                            </Button>
+                            <Button 
+                              type="text" 
+                              size="small"
+                              style={{ 
+                                color: userFeedback[faq.id]?.helpful === false ? '#ff4d4f' : undefined 
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFAQFeedback(faq.id, false);
+                              }}
+                            >
+                              No
+                            </Button>
+                          </Space>
+                        ) : (
+                          <Space>
+                            <EyeOutlined />
+                            <Text type="secondary">Click to expand</Text>
+                          </Space>
+                        )
                       }
                     >
-                      <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
-                    </Panel>
+                      {expandedFAQs.has(faq.id) && (
+                        <div>
+                          <div 
+                            dangerouslySetInnerHTML={{ __html: faq.answer }} 
+                            style={{ marginBottom: 16 }}
+                          />
+                          <div style={{ 
+                            background: '#f5f5f5', 
+                            padding: 12, 
+                            borderRadius: 6,
+                            fontSize: '12px',
+                            color: '#666'
+                          }}>
+                            <Space>
+                              <ClockCircleOutlined />
+                              Last updated: {new Date(faq.updatedAt).toLocaleDateString()}
+                              {userFeedback[faq.id] && (
+                                <>
+                                  <Divider type="vertical" />
+                                  <CheckCircleOutlined style={{ color: '#52c41a' }} />
+                                  Thank you for your feedback!
+                                </>
+                              )}
+                            </Space>
+                          </div>
+                        </div>
+                      )}
+                    </Card>
                   ))}
-                </Collapse>
+                </div>
               ) : (
                 <Empty 
                   description="No FAQs available yet"
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  style={{ padding: '40px 0' }}
+                >
+                  <Button type="primary" icon={<CustomerServiceOutlined />}>
+                    Contact Support
+                  </Button>
+                </Empty>
+              )}
+            </Card>
+
+            {/* Help Center Analytics & User Insights */}
+            <Card 
+              title={
+                <Space>
+                  <BarChartOutlined />
+                  Your Help Center Activity
+                </Space>
+              }
+              style={{ marginBottom: 24 }}
+            >
+              <Row gutter={[16, 16]}>
+                <Col xs={12} sm={6}>
+                  <Card size="small" style={{ textAlign: 'center' }}>
+                    <Statistic 
+                      title="Articles Read"
+                      value={viewedArticles.size}
+                      prefix={<BookOutlined />}
+                      valueStyle={{ color: '#1890ff' }}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={12} sm={6}>
+                  <Card size="small" style={{ textAlign: 'center' }}>
+                    <Statistic 
+                      title="FAQs Explored"
+                      value={expandedFAQs.size}
+                      prefix={<QuestionCircleOutlined />}
+                      valueStyle={{ color: '#52c41a' }}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={12} sm={6}>
+                  <Card size="small" style={{ textAlign: 'center' }}>
+                    <Statistic 
+                      title="Feedback Given"
+                      value={Object.keys(userFeedback).length}
+                      prefix={<LikeOutlined />}
+                      valueStyle={{ color: '#faad14' }}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={12} sm={6}>
+                  <Card size="small" style={{ textAlign: 'center' }}>
+                    <Statistic 
+                      title="Help Score"
+                      value={Math.round(((Object.keys(userFeedback).length + viewedArticles.size) / Math.max(faqs.length + popularArticles.length, 1)) * 100)}
+                      suffix="%"
+                      prefix={<RocketOutlined />}
+                      valueStyle={{ color: '#722ed1' }}
+                    />
+                  </Card>
+                </Col>
+              </Row>
+              
+              {/* User feedback summary */}
+              {Object.keys(userFeedback).length > 0 && (
+                <Alert
+                  style={{ marginTop: 16 }}
+                  message="Thank you for your feedback!"
+                  description={`You've provided feedback on ${Object.keys(userFeedback).length} FAQ${Object.keys(userFeedback).length > 1 ? 's' : ''}. Your input helps us improve our help content.`}
+                  type="success"
+                  showIcon
+                  icon={<CheckCircleOutlined />}
                 />
               )}
+
+              {/* Quick action suggestions */}
+              <div style={{ marginTop: 16 }}>
+                <Title level={5}>
+                  <BulbOutlined style={{ color: '#faad14' }} /> Suggested Actions
+                </Title>
+                <Space wrap>
+                  {viewedArticles.size === 0 && (
+                    <Tag color="blue" style={{ cursor: 'pointer' }}>
+                      <ArrowRightOutlined /> Read Popular Articles
+                    </Tag>
+                  )}
+                  {expandedFAQs.size < 3 && faqs.length > 0 && (
+                    <Tag color="green" style={{ cursor: 'pointer' }}>
+                      <ArrowRightOutlined /> Explore More FAQs
+                    </Tag>
+                  )}
+                  {Object.keys(userFeedback).length === 0 && (
+                    <Tag color="orange" style={{ cursor: 'pointer' }}>
+                      <ArrowRightOutlined /> Provide Feedback
+                    </Tag>
+                  )}
+                  <Tag color="purple" style={{ cursor: 'pointer' }} onClick={() => setSearchQuery('')}>
+                    <ArrowRightOutlined /> Try Search
+                  </Tag>
+                </Space>
+              </div>
             </Card>
 
             {/* Contact Support */}

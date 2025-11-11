@@ -1,5 +1,25 @@
 import apiClient from './client';
 
+// API Response wrapper types  
+export interface LogsAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  timestamp?: string;
+}
+
+export interface PaginatedLogsResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    limit: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
 // ============================================================================
 // Interfaces
 // ============================================================================
@@ -107,39 +127,54 @@ export interface LogExportOptions {
 
 export const logsAPI = {
   // Activity Logs
-  getActivityLogs: (filters?: LogFilters) => {
-    return apiClient.get<{
-      logs: ActivityLog[];
-      total: number;
-      page: number;
-      limit: number;
-    }>('/logs/activity', { params: filters });
+  getActivityLogs: async (filters?: LogFilters): Promise<{
+    logs: ActivityLog[];
+    total: number;
+    page: number;
+    limit: number;
+  }> => {
+    const response = await apiClient.get<PaginatedLogsResponse<ActivityLog>>('/logs/activity', { params: filters });
+    return {
+      logs: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: response.data.data.limit
+    };
   },
 
-  getActivityLogById: (id: string) => {
-    return apiClient.get<ActivityLog>(`/logs/activity/${id}`);
+  getActivityLogById: async (id: string): Promise<ActivityLog> => {
+    const response = await apiClient.get<LogsAPIResponse<ActivityLog>>(`/logs/activity/${id}`);
+    return response.data.data;
   },
 
-  deleteActivityLogs: (ids: string[]) => {
-    return apiClient.delete('/logs/activity', { data: { ids } });
+  deleteActivityLogs: async (ids: string[]): Promise<void> => {
+    await apiClient.delete('/logs/activity', { data: { ids } });
   },
 
   // Error Logs
-  getErrorLogs: (filters?: LogFilters) => {
-    return apiClient.get<{
-      logs: ErrorLog[];
-      total: number;
-      page: number;
-      limit: number;
-    }>('/logs/errors', { params: filters });
+  getErrorLogs: async (filters?: LogFilters): Promise<{
+    logs: ErrorLog[];
+    total: number;
+    page: number;
+    limit: number;
+  }> => {
+    const response = await apiClient.get<PaginatedLogsResponse<ErrorLog>>('/logs/errors', { params: filters });
+    return {
+      logs: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: response.data.data.limit
+    };
   },
 
-  getErrorLogById: (id: string) => {
-    return apiClient.get<ErrorLog>(`/logs/errors/${id}`);
+  getErrorLogById: async (id: string): Promise<ErrorLog> => {
+    const response = await apiClient.get<LogsAPIResponse<ErrorLog>>(`/logs/errors/${id}`);
+    return response.data.data;
   },
 
-  resolveErrorLog: (id: string, resolvedBy: string) => {
-    return apiClient.patch<ErrorLog>(`/logs/errors/${id}/resolve`, { resolvedBy });
+  resolveErrorLog: async (id: string, resolvedBy: string): Promise<ErrorLog> => {
+    const response = await apiClient.patch<LogsAPIResponse<ErrorLog>>(`/logs/errors/${id}/resolve`, { resolvedBy });
+    return response.data.data;
   },
 
   deleteErrorLogs: (ids: string[]) => {
@@ -187,15 +222,17 @@ export const logsAPI = {
   },
 
   // Statistics
-  getLogStats: () => {
-    return apiClient.get<LogStats>('/logs/stats');
+  getLogStats: async (): Promise<LogStats> => {
+    const response = await apiClient.get<LogsAPIResponse<LogStats>>('/logs/stats');
+    return response.data.data;
   },
 
   // Export
-  exportLogs: (options: LogExportOptions) => {
-    return apiClient.post('/logs/export', options, {
+  exportLogs: async (options: LogExportOptions): Promise<Blob> => {
+    const response = await apiClient.post('/logs/export', options, {
       responseType: 'blob',
     });
+    return response.data;
   },
 
   // Bulk Operations

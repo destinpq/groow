@@ -12,24 +12,51 @@ const LoginPage = () => {
   const onFinish = async (values: any) => {
     try {
       const response = await authAPI.login(values);
-      const { accessToken, refreshToken, user } = response.data;
+      console.log('Login response:', response);
       
-      // Store tokens
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      // The auth service already transforms the response structure
+      const { token: access_token, refreshToken: refresh_token, user } = response;
       
-      login(accessToken, user);
+      // Check if user data is available
+      if (!user) {
+        console.error('User data missing from response');
+        throw new Error('User data not received in login response');
+      }
+      
+      console.log('User data:', user);
+      
+      // Store tokens first
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      
+      // Create user object with proper name field
+      const userWithName = {
+        ...user,
+        name: user.firstName && user.lastName 
+          ? `${user.firstName} ${user.lastName}` 
+          : user.email.split('@')[0] // fallback to email username if names are missing
+      };
+      
+      // Use the auth store login method
+      login(access_token, userWithName);
       message.success('Login successful!');
       
-      // Redirect based on user role
-      if (user.role === 'admin') {
-        navigate('/admin');
-      } else if (user.role === 'vendor') {
-        navigate('/vendor');
-      } else {
-        navigate('/');
-      }
+      // Small delay before navigation to ensure state is updated
+      setTimeout(() => {
+        // Redirect based on user role
+        if (user && user.role === 'admin') {
+          navigate('/admin');
+        } else if (user && user.role === 'vendor') {
+          navigate('/vendor');
+        } else {
+          navigate('/');
+        }
+      }, 50);
     } catch (error: any) {
+      console.error('Login error:', error);
       message.error(error.response?.data?.message || 'Login failed');
     }
   };
@@ -56,14 +83,22 @@ const LoginPage = () => {
               { type: 'email', message: 'Please enter a valid email!' }
             ]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Email" />
+            <Input 
+              prefix={<UserOutlined />} 
+              placeholder="Email" 
+              autoComplete="email"
+            />
           </Form.Item>
 
           <Form.Item
             name="password"
             rules={[{ required: true, message: 'Please input your password!' }]}
           >
-            <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+            <Input.Password 
+              prefix={<LockOutlined />} 
+              placeholder="Password" 
+              autoComplete="current-password"
+            />
           </Form.Item>
 
           <Form.Item>

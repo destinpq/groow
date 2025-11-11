@@ -1,9 +1,96 @@
 import { api } from './client';
 
-// Help Center API Integration with CMS Backend
-// Maps frontend help interfaces to backend CMS endpoints
+// Backend POJO imports - CMS Module
+interface FaqDto {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-// FAQ Integration
+interface PageDto {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string[];
+  isPublished: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface BannerDto {
+  id: string;
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  link?: string;
+  displayOrder: number;
+  isActive: boolean;
+  startDate?: Date;
+  endDate?: Date;
+  placement: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// API Response wrappers
+interface HelpCenterAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+interface PaginatedHelpCenterResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// Request types
+export interface CreateFaqRequest {
+  question: string;
+  answer: string;
+  category?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CreatePageRequest {
+  slug: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string[];
+  isPublished?: boolean;
+}
+
+export interface CreateBannerRequest {
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  link?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+  startDate?: string;
+  endDate?: string;
+  placement?: string;
+}
+
+// Legacy interfaces for backward compatibility (Help Center API Integration)
 export interface FAQ {
   id: string;
   question: string;
@@ -56,16 +143,20 @@ export const helpCenterAPI = {
     category?: string;
     limit?: number;
     active?: boolean;
-  } = {}) => {
+  } = {}): Promise<{
+    success: boolean;
+    data: FaqDto[];
+    message: string;
+  }> => {
     try {
       const endpoint = params.active ? '/cms/faqs/active' : '/cms/faqs';
-      const response = await api.get<FAQ[]>(endpoint, { 
+      const response = await api.get<HelpCenterAPIResponse<FaqDto[]>>(endpoint, { 
         params: params.category ? { category: params.category } : undefined 
       });
       
       return {
         success: true,
-        data: response.data || [],
+        data: response.data.data || [],
         message: 'FAQs retrieved successfully'
       };
     } catch (error) {
@@ -76,6 +167,23 @@ export const helpCenterAPI = {
         message: 'Failed to fetch FAQs'
       };
     }
+  },
+
+  // Create FAQ
+  createFAQ: async (data: CreateFaqRequest): Promise<FaqDto> => {
+    const response = await api.post<HelpCenterAPIResponse<FaqDto>>('/cms/faqs', data);
+    return response.data.data;
+  },
+
+  // Update FAQ
+  updateFAQ: async (id: string, data: Partial<CreateFaqRequest>): Promise<FaqDto> => {
+    const response = await api.put<HelpCenterAPIResponse<FaqDto>>(`/cms/faqs/${id}`, data);
+    return response.data.data;
+  },
+
+  // Delete FAQ
+  deleteFAQ: async (id: string): Promise<void> => {
+    await api.delete(`/cms/faqs/${id}`);
   },
 
   // Help Articles - using CMS pages

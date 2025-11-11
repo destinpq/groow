@@ -1,5 +1,13 @@
 import api from './client';
 
+// API Response wrapper types
+export interface TaxExemptionAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  timestamp?: string;
+}
+
 // Types
 export interface TaxExemption {
   id: string;
@@ -38,14 +46,14 @@ export interface TaxExemptionOrder {
 export const taxExemptionAPI = {
   // Get all exemptions
   getAll: async (): Promise<TaxExemption[]> => {
-    const response = await api.get<TaxExemption[]>('/tax-exemptions');
-    return response.data;
+    const response = await api.get<TaxExemptionAPIResponse<TaxExemption[]>>('/tax-exemptions');
+    return response.data.data;
   },
 
   // Get exemption by ID
   getById: async (id: string): Promise<TaxExemption> => {
-    const response = await api.get<TaxExemption>(`/tax-exemptions/${id}`);
-    return response.data;
+    const response = await api.get<TaxExemptionAPIResponse<TaxExemption>>(`/tax-exemptions/${id}`);
+    return response.data.data;
   },
 
   // Create exemption
@@ -58,10 +66,10 @@ export const taxExemptionAPI = {
     data.documents.forEach((file) => {
       formData.append('documents', file);
     });
-    const response = await api.post<TaxExemption>('/tax-exemptions', formData, {
+    const response = await api.post<TaxExemptionAPIResponse<TaxExemption>>('/tax-exemptions', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Update exemption
@@ -76,31 +84,30 @@ export const taxExemptionAPI = {
         formData.append('documents', file);
       });
     }
-    const response = await api.put<TaxExemption>(`/tax-exemptions/${id}`, formData, {
+    const response = await api.put<TaxExemptionAPIResponse<TaxExemption>>(`/tax-exemptions/${id}`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Delete exemption
   delete: async (id: string): Promise<void> => {
-    const response = await api.delete<void>(`/tax-exemptions/${id}`);
-    return response.data;
+    await api.delete(`/tax-exemptions/${id}`);
   },
 
   // Apply to order
   applyToOrder: async (orderId: string, exemptionId: string): Promise<TaxExemptionOrder> => {
-    const response = await api.post<TaxExemptionOrder>('/tax-exemptions/apply', {
+    const response = await api.post<TaxExemptionAPIResponse<TaxExemptionOrder>>('/tax-exemptions/apply', {
       orderId,
       exemptionId,
     });
-    return response.data;
+    return response.data.data;
   },
 
   // Get orders with exemptions
   getExemptedOrders: async (): Promise<TaxExemptionOrder[]> => {
-    const response = await api.get<TaxExemptionOrder[]>('/tax-exemptions/orders');
-    return response.data;
+    const response = await api.get<TaxExemptionAPIResponse<TaxExemptionOrder[]>>('/tax-exemptions/orders');
+    return response.data.data;
   },
 
   // Check eligibility
@@ -109,12 +116,12 @@ export const taxExemptionAPI = {
     types: string[];
     requirements: string[];
   }> => {
-    const response = await api.get<{
+    const response = await api.get<TaxExemptionAPIResponse<{
       eligible: boolean;
       types: string[];
       requirements: string[];
-    }>('/tax-exemptions/eligibility', { params: { state } });
-    return response.data;
+    }>>('/tax-exemptions/eligibility', { params: { state } });
+    return response.data.data;
   },
 };
 

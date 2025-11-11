@@ -3,7 +3,7 @@
 // DO NOT CHANGE IT MANUALLY!
 import './core/polyfill';
 
-import { renderClient } from '/home/azureuser/Groow/groow/frontend/node_modules/@umijs/renderer-react';
+import { renderClient } from '/home/azureuser/groow/groow/frontend/node_modules/@umijs/renderer-react';
 import { getRoutes } from './core/route';
 import { createPluginManager } from './core/plugin';
 import { createHistory } from './core/history';

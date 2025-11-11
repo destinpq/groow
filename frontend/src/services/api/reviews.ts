@@ -1,144 +1,179 @@
 import api from './client';
-import { PaginatedResponse } from './products';
+import type {
+  ProductReview,
+  CreateReviewDto,
+  UpdateReviewDto,
+  ReviewFilterDto,
+  ReviewStatsDto,
+  ReviewModerationDto,
+  GetReviewsResponse,
+  CreateReviewResponse,
+  UpdateReviewResponse,
+  DeleteReviewResponse,
+  ReviewHelpfulResponse,
+  ReviewImageUploadResponse,
+  ReviewWithExtras,
+  ReviewAPIResponse
+} from '@/types/backend/review';
+import type { PaginatedResponse } from '@/types/backend/pagination';
 
-// Types
-export interface Review {
-  id: string;
-  productId: string;
-  customerId: string;
-  customerName: string;
-  customerAvatar?: string;
-  rating: number;
-  title: string;
-  comment: string;
-  images?: string[];
-  helpful: number;
-  notHelpful: number;
-  verified: boolean;
-  status: 'pending' | 'approved' | 'rejected';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateReviewData {
-  productId: string;
-  rating: number;
-  title: string;
-  comment: string;
-  images?: string[];
-}
-
-export interface ReviewStats {
-  averageRating: number;
-  totalReviews: number;
-  ratingDistribution: {
-    5: number;
-    4: number;
-    3: number;
-    2: number;
-    1: number;
-  };
-}
-
-// Reviews API Service
+// Reviews API Service with backend POJO integration
 export const reviewsAPI = {
-  // Create review
-  create: async (data: CreateReviewData): Promise<Review> => {
-    const response = await api.post<Review>('/reviews', data);
-    return response.data;
+  // Create review with backend DTO
+  create: async (data: CreateReviewDto): Promise<ProductReview> => {
+    const response = await api.post<ReviewAPIResponse<CreateReviewResponse>>('/reviews', data);
+    return response.data.data.review;
   },
 
-  // Get product reviews
+  // Get product reviews with typed response
   getProductReviews: async (
     productId: string,
-    filters?: {
-      rating?: number;
-      verified?: boolean;
-      page?: number;
-      limit?: number;
-    }
-  ): Promise<PaginatedResponse<Review>> => {
-    const response = await api.get<PaginatedResponse<Review>>(`/products/${productId}/reviews`, {
+    filters?: ReviewFilterDto
+  ): Promise<PaginatedResponse<ProductReview>> => {
+    const response = await api.get<ReviewAPIResponse<PaginatedResponse<ProductReview>>>(`/products/${productId}/reviews`, {
       params: filters,
     });
-    return response.data;
+    return response.data.data;
   },
 
-  // Get customer reviews
-  getCustomerReviews: async (filters?: {
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<Review>> => {
-    const response = await api.get<PaginatedResponse<Review>>('/reviews/customer', {
+  // Get customer reviews with typed response
+  getCustomerReviews: async (filters?: ReviewFilterDto): Promise<PaginatedResponse<ProductReview>> => {
+    const response = await api.get<ReviewAPIResponse<PaginatedResponse<ProductReview>>>('/reviews/customer', {
       params: filters,
     });
-    return response.data;
+    return response.data.data;
   },
 
-  // Update review
-  update: async (id: string, data: Partial<CreateReviewData>): Promise<Review> => {
-    const response = await api.put<Review>(`/reviews/${id}`, data);
-    return response.data;
+  // Update review with backend DTO
+  update: async (id: string, data: UpdateReviewDto): Promise<ProductReview> => {
+    const response = await api.put<ReviewAPIResponse<UpdateReviewResponse>>(`/reviews/${id}`, data);
+    return response.data.data.review;
   },
 
   // Delete review
   delete: async (id: string): Promise<void> => {
-    await api.delete(`/reviews/${id}`);
+    await api.delete<ReviewAPIResponse<DeleteReviewResponse>>(`/reviews/${id}`);
   },
 
   // Mark review as helpful
-  markHelpful: async (id: string): Promise<Review> => {
-    const response = await api.post<Review>(`/reviews/${id}/helpful`);
-    return response.data;
+  markHelpful: async (id: string): Promise<{ review: ProductReview; isHelpful: boolean }> => {
+    const response = await api.post<ReviewAPIResponse<ReviewHelpfulResponse>>(`/reviews/${id}/helpful`);
+    return {
+      review: response.data.data.review,
+      isHelpful: response.data.data.isHelpful,
+    };
   },
 
   // Mark review as not helpful
-  markNotHelpful: async (id: string): Promise<Review> => {
-    const response = await api.post<Review>(`/reviews/${id}/not-helpful`);
-    return response.data;
+  markNotHelpful: async (id: string): Promise<{ review: ProductReview; isHelpful: boolean }> => {
+    const response = await api.post<ReviewAPIResponse<ReviewHelpfulResponse>>(`/reviews/${id}/not-helpful`);
+    return {
+      review: response.data.data.review,
+      isHelpful: response.data.data.isHelpful,
+    };
   },
 
   // Upload review images
-  uploadImages: async (files: File[]): Promise<{ urls: string[] }> => {
+  uploadImages: async (files: File[]): Promise<ReviewImageUploadResponse> => {
     const formData = new FormData();
     files.forEach((file) => formData.append('files', file));
     
-    const response = await api.post<{ urls: string[] }>('/reviews/upload-images', formData, {
+    const response = await api.post<ReviewAPIResponse<ReviewImageUploadResponse>>('/reviews/upload-images', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data;
+    return response.data.data;
   },
 
-  // Get product review stats
-  getProductStats: async (productId: string): Promise<ReviewStats> => {
-    const response = await api.get<ReviewStats>(`/products/${productId}/reviews/stats`);
-    return response.data;
+  // Get product review statistics
+  getProductStats: async (productId: string): Promise<ReviewStatsDto> => {
+    const response = await api.get<ReviewAPIResponse<ReviewStatsDto>>(`/products/${productId}/reviews/stats`);
+    return response.data.data;
   },
 
-  // Approve review (admin)
-  approve: async (id: string): Promise<Review> => {
-    const response = await api.post<Review>(`/reviews/${id}/approve`);
-    return response.data;
+  // Get review by ID
+  getById: async (id: string): Promise<ProductReview> => {
+    const response = await api.get<ReviewAPIResponse<CreateReviewResponse>>(`/reviews/${id}`);
+    return response.data.data.review;
   },
 
-  // Reject review (admin)
-  reject: async (id: string, reason?: string): Promise<Review> => {
-    const response = await api.post<Review>(`/reviews/${id}/reject`, { reason });
-    return response.data;
-  },
-
-  // Get all reviews (admin)
-  getAll: async (filters?: {
-    status?: string;
-    rating?: number;
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<Review>> => {
-    const response = await api.get<PaginatedResponse<Review>>('/reviews', {
+  // Get reviews with enhanced data (includes customer and product info)
+  getEnhancedReviews: async (filters?: ReviewFilterDto): Promise<PaginatedResponse<ReviewWithExtras>> => {
+    const response = await api.get<ReviewAPIResponse<PaginatedResponse<ReviewWithExtras>>>('/reviews/enhanced', {
       params: filters,
     });
-    return response.data;
+    return response.data.data;
+  },
+
+  // Check if customer can review product
+  canReview: async (productId: string): Promise<boolean> => {
+    const response = await api.get<ReviewAPIResponse<{ canReview: boolean }>>(`/products/${productId}/can-review`);
+    return response.data.data.canReview;
+  },
+
+  // Admin operations
+  admin: {
+    // Approve review (admin)
+    approve: async (id: string): Promise<ProductReview> => {
+      const response = await api.post<ReviewAPIResponse<CreateReviewResponse>>(`/admin/reviews/${id}/approve`);
+      return response.data.data.review;
+    },
+
+    // Reject review (admin)
+    reject: async (id: string, reason?: string): Promise<ProductReview> => {
+      const response = await api.post<ReviewAPIResponse<CreateReviewResponse>>(`/admin/reviews/${id}/reject`, { reason });
+      return response.data.data.review;
+    },
+
+    // Get all reviews (admin)
+    getAll: async (filters?: ReviewFilterDto): Promise<PaginatedResponse<ProductReview>> => {
+      const response = await api.get<ReviewAPIResponse<PaginatedResponse<ProductReview>>>('/admin/reviews', {
+        params: filters,
+      });
+      return response.data.data;
+    },
+
+    // Moderate review (admin)
+    moderate: async (id: string, data: ReviewModerationDto): Promise<ProductReview> => {
+      const response = await api.patch<ReviewAPIResponse<CreateReviewResponse>>(`/admin/reviews/${id}/moderate`, data);
+      return response.data.data.review;
+    },
+
+    // Get review moderation queue (admin)
+    getModerationQueue: async (filters?: ReviewFilterDto): Promise<PaginatedResponse<ProductReview>> => {
+      const response = await api.get<ReviewAPIResponse<PaginatedResponse<ProductReview>>>('/admin/reviews/moderation-queue', {
+        params: filters,
+      });
+      return response.data.data;
+    },
+
+    // Get review statistics (admin)
+    getStats: async (): Promise<{
+      total: number;
+      pending: number;
+      approved: number;
+      rejected: number;
+      averageRating: number;
+    }> => {
+      const response = await api.get<ReviewAPIResponse<{
+        total: number;
+        pending: number;
+        approved: number;
+        rejected: number;
+        averageRating: number;
+      }>>('/admin/reviews/stats');
+      return response.data.data;
+    },
   },
 };
 
 export default reviewsAPI;
+
+// Re-export backend types for convenience
+export type {
+  ProductReview,
+  CreateReviewDto,
+  UpdateReviewDto,
+  ReviewFilterDto,
+  ReviewStatsDto,
+  ReviewWithExtras,
+} from '@/types/backend/review';

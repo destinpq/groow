@@ -1,159 +1,180 @@
 import api from './client';
-import { PaginatedResponse } from './products';
 
-// Types
-export interface Wallet {
-  id: string;
-  userId: string;
-  balance: number;
-  currency: string;
-  totalEarned: number;
-  totalSpent: number;
-  pendingBalance: number;
-}
+// Temporary front-end types until backend type package is available
+// These mirror the backend entities and DTOs and will be replaced by true imports
+interface Wallet { id: string; ownerId: string; ownerType: string; balance: number; currency: string; }
+interface WalletTransaction { id: string; walletId: string; amount: number; currency: string; transactionType: string; status: string; description?: string; }
+interface Payment { id: string; gateway: string; amount: number; currency: string; status: string; orderId?: string; }
+interface PaymentMethodInfo { id: string; provider: string; isDefault: boolean; isActive: boolean; providerData?: any; }
+interface PayoutRequest { id: string; vendorId: string; amount: number; currency: string; status: string; }
+interface PaginatedResponse<T> { items: T[]; total: number; page: number; limit: number; hasNext: boolean; hasPrev: boolean; }
 
-export interface WalletTransaction {
-  id: string;
-  walletId: string;
-  type: 'credit' | 'debit';
-  amount: number;
-  description: string;
-  reference?: string;
-  status: 'pending' | 'completed' | 'failed';
-  createdAt: string;
-}
+// API response wrappers
+interface APIResponse<T> { success: boolean; data: T; message?: string; timestamp?: string; }
 
-export interface PaymentMethod {
-  id: string;
-  type: 'card' | 'bank' | 'paypal' | 'wallet';
-  name: string;
-  last4?: string;
-  brand?: string;
-  expiryMonth?: number;
-  expiryYear?: number;
-  isDefault: boolean;
-  createdAt: string;
-}
-
-export interface CreatePaymentMethodData {
-  type: 'card' | 'bank' | 'paypal';
-  cardNumber?: string;
-  expiryMonth?: number;
-  expiryYear?: number;
-  cvv?: string;
-  nameOnCard?: string;
-  bankName?: string;
-  accountNumber?: string;
-  routingNumber?: string;
-  paypalEmail?: string;
-}
-
-export interface PayoutRequest {
-  id: string;
-  vendorId: string;
-  amount: number;
-  method: string;
-  status: 'pending' | 'approved' | 'rejected' | 'paid';
-  requestedAt: string;
-  processedAt?: string;
-}
-
-// Wallet API Service
+// Comprehensive Wallet & Payment API for enterprise payments
 export const walletAPI = {
-  // Get wallet balance
+  // Get wallet balance for current authenticated owner
   getBalance: async (): Promise<Wallet> => {
-    const response = await api.get<Wallet>('/wallet');
-    return response.data;
+    const res = await api.get<APIResponse<{ wallet: Wallet }>>('/payment/wallet/balance');
+    return res.data.data.wallet;
   },
 
-  // Get transactions
-  getTransactions: async (filters?: {
-    type?: string;
-    status?: string;
-    startDate?: string;
-    endDate?: string;
-    page?: number;
-    limit?: number;
-  }): Promise<PaginatedResponse<WalletTransaction>> => {
-    const response = await api.get<PaginatedResponse<WalletTransaction>>('/wallet/transactions', {
+  // Get wallet transactions with filters
+  getTransactions: async (filters?: { page?: number; limit?: number; type?: string; status?: string; dateFrom?: string; dateTo?: string }): Promise<PaginatedResponse<WalletTransaction>> => {
+    const res = await api.get<APIResponse<PaginatedResponse<WalletTransaction>>>('/payment/wallet/transactions', {
       params: filters,
     });
-    return response.data;
+    return res.data.data;
   },
 
-  // Add funds
-  addFunds: async (amount: number, paymentMethodId: string): Promise<WalletTransaction> => {
-    const response = await api.post<WalletTransaction>('/wallet/add-funds', {
-      amount,
-      paymentMethodId,
-    });
-    return response.data;
+  // Add funds via connected gateways or offline (corporate bank transfer)
+  addFunds: async (data: { amount: number; currency?: string; paymentMethodId?: string; provider?: string; description?: string; referenceId?: string }): Promise<WalletTransaction> => {
+    const res = await api.post<APIResponse<{ transaction: WalletTransaction }>>('/payment/wallet/add-funds', data);
+    return res.data.data.transaction;
   },
 
-  // Request payout (vendor)
-  requestPayout: async (amount: number, method: string): Promise<PayoutRequest> => {
-    const response = await api.post<PayoutRequest>('/wallet/payout/request', {
-      amount,
-      method,
-    });
-    return response.data;
+  // Deduct funds (refunds, reversals)
+  deductFunds: async (data: { amount: number; currency?: string; reason?: string; referenceId?: string }): Promise<WalletTransaction> => {
+    const res = await api.post<APIResponse<{ transaction: WalletTransaction }>>('/payment/wallet/deduct', data);
+    return res.data.data.transaction;
   },
 
-  // Get payout requests
-  getPayoutRequests: async (): Promise<PayoutRequest[]> => {
-    const response = await api.get<PayoutRequest[]>('/wallet/payout/requests');
-    return response.data;
+  // Request vendor payout (supports batch and scheduled payouts)
+  requestPayout: async (data: { vendorId: string; amount: number; currency?: string; paymentMethodId?: string; scheduleAt?: string; note?: string }): Promise<PayoutRequest> => {
+    const res = await api.post<APIResponse<PayoutRequest>>('/payment/wallet/payout/request', data);
+    return res.data.data;
+  },
+
+  // Get payout requests (vendor or admin)
+  getPayoutRequests: async (filters?: { vendorId?: string; status?: string; page?: number; limit?: number }): Promise<PaginatedResponse<PayoutRequest>> => {
+    const res = await api.get<APIResponse<PaginatedResponse<PayoutRequest>>>('/payment/wallet/payout/requests', { params: filters });
+    return res.data.data;
+  },
+
+  // Cancel payout request
+  cancelPayoutRequest: async (id: string): Promise<PayoutRequest> => {
+    const res = await api.patch<APIResponse<PayoutRequest>>(`/payment/wallet/payout/requests/${id}/cancel`);
+    return res.data.data;
+  },
+
+  // Get balance history
+  getBalanceHistory: async (days: number = 30): Promise<Array<{ date: string; balance: number }>> => {
+    const res = await api.get<APIResponse<Array<{ date: string; balance: number }>>>('/payment/wallet/balance-history', { params: { days } });
+    return res.data.data;
   },
 };
 
-// Payment Methods API Service
+// Payment operations (charges, authorizations, capture, refund, split settlements, escrow)
 export const paymentAPI = {
-  // Get payment methods
-  getAll: async (): Promise<PaymentMethod[]> => {
-    const response = await api.get<PaymentMethod[]>('/payment-methods');
-    return response.data;
-  },
-
-  // Add payment method
-  add: async (data: CreatePaymentMethodData): Promise<PaymentMethod> => {
-    const response = await api.post<PaymentMethod>('/payment-methods', data);
-    return response.data;
-  },
-
-  // Update payment method
-  update: async (id: string, data: Partial<CreatePaymentMethodData>): Promise<PaymentMethod> => {
-    const response = await api.put<PaymentMethod>(`/payment-methods/${id}`, data);
-    return response.data;
-  },
-
-  // Delete payment method
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/payment-methods/${id}`);
-  },
-
-  // Set default payment method
-  setDefault: async (id: string): Promise<void> => {
-    await api.patch(`/payment-methods/${id}/set-default`);
-  },
-
-  // Process payment
-  processPayment: async (data: {
-    orderId: string;
-    paymentMethodId: string;
+  // Create a payment intent / charge
+  createPayment: async (data: {
     amount: number;
-  }): Promise<{ success: boolean; transactionId: string }> => {
-    const response = await api.post('/payments/process', data);
-    return response.data;
+    currency: string;
+    orderId?: string;
+    paymentMethodId?: string;
+    customerId?: string;
+    vendorId?: string;
+    capture?: boolean;
+    metadata?: any;
+    splitAllocations?: Array<{ accountId: string; amount: number; currency?: string }>;
+    useEscrow?: boolean;
+  }): Promise<{ payment: Payment; gatewayData?: any }> => {
+    const res = await api.post<APIResponse<{ payment: Payment; gatewayData?: any }>>('/payment/create', data);
+    return res.data.data;
   },
 
-  // Verify payment
-  verifyPayment: async (transactionId: string): Promise<{
-    status: string;
-    verified: boolean;
-  }> => {
-    const response = await api.get(`/payments/verify/${transactionId}`);
-    return response.data;
+  // Verify webhook or async confirmation
+  verifyPayment: async (data: { paymentId?: string; provider?: string; payload?: any }): Promise<{ payment: Payment; verified: boolean }> => {
+    const res = await api.post<APIResponse<{ payment: Payment; verified: boolean }>>('/payment/verify', data);
+    return res.data.data;
+  },
+
+  // Capture an authorized payment
+  capture: async (paymentId: string, amount?: number): Promise<Payment> => {
+    const res = await api.post<APIResponse<Payment>>(`/payment/${paymentId}/capture`, { amount });
+    return res.data.data;
+  },
+
+  // Refund a payment (full or partial)
+  refund: async (paymentId: string, amount?: number, reason?: string): Promise<{ refundId: string; status: string }> => {
+    const res = await api.post<APIResponse<{ refundId: string; status: string }>>(`/payment/${paymentId}/refund`, { amount, reason });
+    return res.data.data;
+  },
+
+  // Get payment by id
+  getPayment: async (id: string): Promise<Payment> => {
+    const res = await api.get<APIResponse<Payment>>(`/payment/${id}`);
+    return res.data.data;
+  },
+
+  // List payments with filters
+  listPayments: async (filters?: { status?: string; fromDate?: string; toDate?: string; page?: number; limit?: number }): Promise<PaginatedResponse<Payment>> => {
+    const res = await api.get<APIResponse<PaginatedResponse<Payment>>>('/payment/history', { params: filters });
+    return res.data.data;
+  },
+
+  // Initiate split settlement / payout from escrow
+  releaseEscrow: async (escrowId: string, allocations?: any[]): Promise<{ success: boolean }> => {
+    const res = await api.post<APIResponse<{ success: boolean }>>(`/payment/escrow/${escrowId}/release`, { allocations });
+    return res.data.data;
   },
 };
 
-export default { walletAPI, paymentAPI };
+// Payment method management (vaulted methods, bank accounts, cards)
+export const paymentMethodAPI = {
+  list: async (ownerId?: string): Promise<PaymentMethodInfo[]> => {
+    const res = await api.get<APIResponse<PaymentMethodInfo[]>>('/payment-methods', { params: { ownerId } });
+    return res.data.data;
+  },
+
+  add: async (data: { ownerId: string; ownerType: 'customer' | 'vendor'; provider: string; providerData: any; makeDefault?: boolean }): Promise<PaymentMethodInfo> => {
+    const res = await api.post<APIResponse<PaymentMethodInfo>>('/payment-methods', data);
+    return res.data.data;
+  },
+
+  update: async (id: string, data: Partial<{ providerData: any; isActive?: boolean; isDefault?: boolean }>): Promise<PaymentMethodInfo> => {
+    const res = await api.patch<APIResponse<PaymentMethodInfo>>(`/payment-methods/${id}`, data);
+    return res.data.data;
+  },
+
+  delete: async (id: string): Promise<{ success: boolean }> => {
+    const res = await api.delete<APIResponse<{ success: boolean }>>(`/payment-methods/${id}`);
+    return res.data.data;
+  },
+
+  verify: async (id: string): Promise<PaymentMethodInfo> => {
+    const res = await api.post<APIResponse<PaymentMethodInfo>>(`/payment-methods/${id}/verify`);
+    return res.data.data;
+  },
+};
+
+// Billing & Invoicing (corporate billing, credit terms)
+export const billingAPI = {
+  createInvoice: async (data: { customerId: string; items: any[]; currency?: string; dueDate?: string; metadata?: any }): Promise<APIResponse<{ invoiceId: string }>> => {
+    const res = await api.post<APIResponse<{ invoiceId: string }>>('/billing/invoices', data);
+    return res.data;
+  },
+
+  getInvoice: async (invoiceId: string): Promise<APIResponse<any>> => {
+    const res = await api.get<APIResponse<any>>(`/billing/invoices/${invoiceId}`);
+    return res.data;
+  },
+
+  payInvoice: async (invoiceId: string, data: { paymentMethodId?: string; amount?: number; useWallet?: boolean }): Promise<APIResponse<{ paymentId?: string }>> => {
+    const res = await api.post<APIResponse<{ paymentId?: string }>>(`/billing/invoices/${invoiceId}/pay`, data);
+    return res.data;
+  },
+};
+
+export default { walletAPI, paymentAPI, paymentMethodAPI, billingAPI };
+
+// Export types for index.ts compatibility
+export type { Wallet, WalletTransaction, PayoutRequest };
+export type PaymentMethod = PaymentMethodInfo;
+export type CreatePaymentMethodData = {
+  provider: string;
+  type: string;
+  isDefault?: boolean;
+  providerData: any;
+};

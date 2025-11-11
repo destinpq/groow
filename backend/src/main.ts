@@ -8,46 +8,43 @@ import * as session from 'express-session';
 import * as RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 import { AppModule } from './app.module';
-import * as fs from 'fs';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/groow.destinpq.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem'),
-  };
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  // FORCE REBUILD - Nov 9, 2025 - Fix CORS duplicate headers
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: (origin, callback) => {
+        const allowedOrigins = [
+          'https://groow.destinpq.com',
+          'https://groow-frontend.vercel.app', 
+          'https://groow-frontend-iftdz6ipx-pratik-destinpqs-projects.vercel.app',
+          'https://groow-git-main-pratik-destinpqs-projects.vercel.app',
+          'https://groow-frontend-cqrljz5r9-pratik-destinpqs-projects.vercel.app',
+          'http://localhost:3000',
+          'http://localhost:3001'
+        ];
+
+        // Allow if no origin (mobile apps) or if origin is in allowed list
+        if (!origin || allowedOrigins.includes(origin) || 
+            origin.includes('vercel.app') || 
+            origin.includes('destinpq.com')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'), false);
+        }
+      },
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+      credentials: true,
+      maxAge: 3600
+    }
+  });
+  
   const configService = app.get(ConfigService);
 
-  // Security
+  // Security middleware
   app.use(helmet());
   app.use(compression());
-
-  // CORS - Allow multiple origins
-  const allowedOrigins = [
-    'https://groow.destinpq.com',
-    'http://localhost:8001',
-    'http://localhost:3000',
-    'http://127.0.0.1:8001',
-    'http://127.0.0.1:3000',
-  ];
-
-  app.enableCors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-    exposedHeaders: ['Authorization'],
-    maxAge: 3600,
-  });
 
   // Global prefix
   app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
@@ -102,10 +99,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = configService.get('PORT', 3001);
-  await app.listen(port, '0.0.0.0');
-  console.log(`🚀 Application running on: http://0.0.0.0:${port}`);
-  console.log(`📚 API Documentation: http://0.0.0.0:${port}/api/docs`);
+  const port = parseInt(configService.get('PORT', '3001'));
+  const host = configService.get('HOST', '0.0.0.0'); // Railway requires 0.0.0.0 binding
+  
+  await app.listen(port, host);
+  console.log(`🚀 Application running on: http://${host}:${port}`);
+  console.log(`📚 API Documentation: http://${host}:${port}/api/docs`);
 }
 
 bootstrap();

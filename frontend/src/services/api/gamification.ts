@@ -1,5 +1,12 @@
 import api from './client';
 
+// API Response wrapper types
+export interface GamificationAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
 // Types
 export interface UserProfile {
   id: string;
@@ -71,32 +78,32 @@ export interface Challenge {
 export const gamificationAPI = {
   // Get user profile
   getProfile: async (): Promise<UserProfile> => {
-    const response = await api.get<UserProfile>('/gamification/profile');
-    return response.data;
+    const response = await api.get<GamificationAPIResponse<UserProfile>>('/gamification/profile');
+    return response.data.data;
   },
 
   // Get leaderboard
   getLeaderboard: async (period: 'daily' | 'weekly' | 'monthly' | 'all-time' = 'all-time'): Promise<Leaderboard> => {
-    const response = await api.get<Leaderboard>('/gamification/leaderboard', { params: { period } });
-    return response.data;
+    const response = await api.get<GamificationAPIResponse<Leaderboard>>('/gamification/leaderboard', { params: { period } });
+    return response.data.data;
   },
 
   // Get achievements
   getAchievements: async (): Promise<Achievement[]> => {
-    const response = await api.get<Achievement[]>('/gamification/achievements');
-    return response.data;
+    const response = await api.get<GamificationAPIResponse<Achievement[]>>('/gamification/achievements');
+    return response.data.data;
   },
 
   // Get badges
   getBadges: async (): Promise<Badge[]> => {
-    const response = await api.get<Badge[]>('/gamification/badges');
-    return response.data;
+    const response = await api.get<GamificationAPIResponse<Badge[]>>('/gamification/badges');
+    return response.data.data;
   },
 
   // Get challenges
   getChallenges: async (): Promise<Challenge[]> => {
-    const response = await api.get<Challenge[]>('/gamification/challenges');
-    return response.data;
+    const response = await api.get<GamificationAPIResponse<Challenge[]>>('/gamification/challenges');
+    return response.data.data;
   },
 
   // Claim reward
@@ -105,12 +112,12 @@ export const gamificationAPI = {
     experience: number;
     newLevel?: number;
   }> => {
-    const response = await api.post<{
+    const response = await api.post<GamificationAPIResponse<{
       points: number;
       experience: number;
       newLevel?: number;
-    }>(`/gamification/achievements/${achievementId}/claim`);
-    return response.data;
+    }>>(`/gamification/achievements/${achievementId}/claim`);
+    return response.data.data;
   },
 };
 

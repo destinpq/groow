@@ -96,4 +96,111 @@ export class OrderController {
   ) {
     return this.orderService.cancelOrder(id, customerId);
   }
+
+  // Enhanced order management endpoints for all states (REQ-055 to REQ-063)
+
+  @Get('manifested')
+  @Roles(UserRole.ADMIN, UserRole.VENDOR)
+  @ApiOperation({ summary: 'Get manifested orders' })
+  getManifestOrders() {
+    return this.orderService.getManifestOrders();
+  }
+
+  @Get('disputed')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get disputed orders' })
+  getDisputedOrders() {
+    return this.orderService.getDisputedOrders();
+  }
+
+  @Get('cancelled')
+  @Roles(UserRole.ADMIN, UserRole.VENDOR)
+  @ApiOperation({ summary: 'Get cancelled orders' })
+  getCancelledOrders() {
+    return this.orderService.getCancelledOrders();
+  }
+
+  @Get('hold')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get orders on hold' })
+  getHoldOrders() {
+    return this.orderService.getHoldOrders();
+  }
+
+  @Get('returns')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get return/refund orders' })
+  getReturnRefundOrders() {
+    return this.orderService.getReturnRefundOrders();
+  }
+
+  @Patch(':id/manifest')
+  @Roles(UserRole.ADMIN, UserRole.VENDOR)
+  @ApiOperation({ summary: 'Manifest order for shipping' })
+  manifestOrder(@Param('id') id: string) {
+    return this.orderService.manifestOrder(id);
+  }
+
+  @Patch(':id/ship')
+  @Roles(UserRole.ADMIN, UserRole.VENDOR)
+  @ApiOperation({ summary: 'Ship order with tracking' })
+  shipOrder(
+    @Param('id') id: string,
+    @Body() shipData: { trackingNumber: string; carrierId: string },
+  ) {
+    return this.orderService.shipOrder(id, shipData.trackingNumber, shipData.carrierId);
+  }
+
+  @Patch(':id/hold')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Put order on hold' })
+  holdOrder(
+    @Param('id') id: string,
+    @Body() holdData: { reason: string },
+  ) {
+    return this.orderService.holdOrder(id, holdData.reason);
+  }
+
+  @Patch(':id/dispute')
+  @Roles(UserRole.ADMIN, UserRole.CUSTOMER)
+  @ApiOperation({ summary: 'Create order dispute' })
+  disputeOrder(
+    @Param('id') id: string,
+    @Body() disputeData: { reason: string; description: string },
+  ) {
+    return this.orderService.disputeOrder(id, disputeData.reason, disputeData.description);
+  }
+
+  @Patch(':id/return')
+  @Roles(UserRole.CUSTOMER)
+  @ApiOperation({ summary: 'Request order return' })
+  processReturn(
+    @Param('id') id: string,
+    @Body() returnData: { reason: string },
+  ) {
+    return this.orderService.processReturn(id, returnData.reason);
+  }
+
+  @Patch(':id/refund')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Process order refund' })
+  processRefund(
+    @Param('id') id: string,
+    @Body() refundData: { amount: number; reason: string },
+  ) {
+    return this.orderService.processRefund(id, refundData.amount, refundData.reason);
+  }
+
+  @Get(':id/tracking')
+  @ApiOperation({ summary: 'Get delivery tracking information' })
+  getDeliveryTracking(@Param('id') id: string) {
+    return this.orderService.getDeliveryTracking(id);
+  }
+
+  @Get('analytics')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get order analytics' })
+  getOrderAnalytics(@Query('period') period?: string) {
+    return this.orderService.getOrderAnalytics(period);
+  }
 }

@@ -4,6 +4,10 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const loadJSON = (filename: string) => {
   const filePath = path.join(__dirname, 'seeds', filename);

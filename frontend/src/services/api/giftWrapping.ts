@@ -1,5 +1,24 @@
 import api from './client';
 
+// API Response wrapper types
+export interface GiftWrappingAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface PaginatedGiftWrappingResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
 // Types
 export interface GiftWrap {
   id: string;
@@ -47,20 +66,26 @@ export const giftWrappingAPI = {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<GiftWrap>> => {
-    const response = await api.get<PaginatedResponse<GiftWrap>>('/gift-wrapping/wraps', { params });
-    return response.data;
+    const response = await api.get<PaginatedGiftWrappingResponse<GiftWrap>>('/gift-wrapping/wraps', { params });
+    return {
+      data: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: params?.limit || 10,
+      totalPages: response.data.data.totalPages
+    };
   },
 
   // Get gift wrap by ID
   getWrapById: async (id: string): Promise<GiftWrap> => {
-    const response = await api.get<GiftWrap>(`/gift-wrapping/wraps/${id}`);
-    return response.data;
+    const response = await api.get<GiftWrappingAPIResponse<GiftWrap>>(`/gift-wrapping/wraps/${id}`);
+    return response.data.data;
   },
 
   // Add gift wrap to order
   addToOrder: async (data: CreateGiftWrapOrderData): Promise<GiftWrapOrder> => {
-    const response = await api.post<GiftWrapOrder>('/gift-wrapping/orders', data);
-    return response.data;
+    const response = await api.post<GiftWrappingAPIResponse<GiftWrapOrder>>('/gift-wrapping/orders', data);
+    return response.data.data;
   },
 
   // Get my gift wrap orders
@@ -68,14 +93,19 @@ export const giftWrappingAPI = {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<GiftWrapOrder>> => {
-    const response = await api.get<PaginatedResponse<GiftWrapOrder>>('/gift-wrapping/my-orders', { params });
-    return response.data;
+    const response = await api.get<PaginatedGiftWrappingResponse<GiftWrapOrder>>('/gift-wrapping/my-orders', { params });
+    return {
+      data: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: params?.limit || 10,
+      totalPages: response.data.data.totalPages
+    };
   },
 
   // Remove gift wrap from order
   removeFromOrder: async (orderId: string): Promise<void> => {
-    const response = await api.delete<void>(`/gift-wrapping/orders/${orderId}`);
-    return response.data;
+    await api.delete(`/gift-wrapping/orders/${orderId}`);
   },
 };
 

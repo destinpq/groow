@@ -18,6 +18,12 @@ export default defineConfig({
   // Fix esbuild helper conflicts
   esbuildMinifyIIFE: true,
   
+  // Define environment variables
+  define: {
+    'process.env.API_URL': 'https://groow-api.destinpq.com/api/v1',
+    'process.env.REACT_APP_API_URL': 'https://groow-api.destinpq.com/api/v1',
+  },
+  
   // Theme configuration
   theme: {
     '@primary-color': '#FF9900',
@@ -29,15 +35,7 @@ export default defineConfig({
     '@border-radius-base': '4px',
   },
   
-  // Proxy for development
-  proxy: {
-    '/api': {
-      target: 'https://groow-api.destinpq.com',
-      changeOrigin: true,
-      pathRewrite: { '^/api': '' },
-      secure: false,
-    },
-  },
+  // Remove proxy - let API calls go directly to groow-api.destinpq.com
   
   // Title and metadata
   title: 'Groow - E-Commerce Platform',

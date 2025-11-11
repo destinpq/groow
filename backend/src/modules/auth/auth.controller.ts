@@ -45,6 +45,13 @@ export class AuthController {
     return ApiResponse.success('Email verified successfully', result);
   }
 
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access token' })
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    const result = await this.authService.refreshToken(refreshToken);
+    return ApiResponse.success('Token refreshed successfully', result);
+  }
+
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

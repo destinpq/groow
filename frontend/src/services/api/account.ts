@@ -1,52 +1,140 @@
-import request from '../../utils/request';
+import api from './client';
+import { PaginatedResponse } from '../../types/api/common';
 
-// Account Management API Types
-export interface CustomerProfile {
+// Define the types locally since imports are missing
+export interface Customer {
   id: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
   phone?: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
   gender?: 'male' | 'female' | 'other';
-  avatar?: string;
-  isEmailVerified: boolean;
-  isPhoneVerified: boolean;
-  preferredLanguage: string;
-  timezone: string;
-  currency: string;
-  newsletter: boolean;
-  smsNotifications: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  lastLoginAt?: Date;
+  status: 'active' | 'inactive' | 'suspended';
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Address {
+export interface CustomerAddress {
   id: string;
-  customerId: string;
-  type: 'home' | 'work' | 'billing' | 'shipping' | 'other';
-  title: string;
+  type: 'billing' | 'shipping' | 'both';
   firstName: string;
   lastName: string;
   company?: string;
-  addressLine1: string;
-  addressLine2?: string;
+  address1: string;
+  address2?: string;
   city: string;
   state: string;
-  postalCode: string;
+  zipCode: string;
   country: string;
   phone?: string;
   isDefault: boolean;
-  instructions?: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
-  createdAt: Date;
-  updatedAt: Date;
 }
 
+export interface CustomerWishlist {
+  id: string;
+  customerId: string;
+  productId: string;
+  addedAt: string;
+}
+
+export interface CustomerReview {
+  id: string;
+  customerId: string;
+  productId: string;
+  rating: number;
+  title: string;
+  comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LoyaltyProgram {
+  id: string;
+  name: string;
+  description: string;
+  points: number;
+  tier: string;
+}
+
+export interface LoyaltyTransaction {
+  id: string;
+  type: 'earned' | 'redeemed';
+  points: number;
+  description: string;
+  createdAt: string;
+}
+
+export interface AccountPreferences {
+  notifications: {
+    email: boolean;
+    sms: boolean;
+    push: boolean;
+    marketing: boolean;
+  };
+  privacy: {
+    profileVisibility: 'public' | 'private';
+    showActivity: boolean;
+    allowRecommendations: boolean;
+  };
+  shopping: {
+    defaultCurrency: string;
+    preferredLanguage: string;
+    autoSaveItems: boolean;
+  };
+  display: {
+    theme: 'light' | 'dark' | 'auto';
+    density: 'compact' | 'normal' | 'comfortable';
+  };
+}
+
+// Response type definitions
+export interface GetCustomerResponse {
+  customer: Customer;
+}
+
+export interface UpdateCustomerRequest {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  gender?: 'male' | 'female' | 'other';
+}
+
+export interface UpdateCustomerResponse {
+  customer: Customer;
+}
+
+export interface CreateAddressRequest {
+  type: 'billing' | 'shipping' | 'both';
+  firstName: string;
+  lastName: string;
+  company?: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone?: string;
+  isDefault?: boolean;
+}
+
+export interface CreateAddressResponse {
+  address: Address;
+}
+
+export interface GetAddressesResponse {
+  addresses: Address[];
+}
+
+// Export type aliases for compatibility
+export type CustomerProfile = Customer;
+export type Address = CustomerAddress;
+export type WishlistItem = CustomerWishlist;
+
+// Keep existing interfaces for backward compatibility (but rename to avoid conflicts)
 export interface PaymentMethod {
   id: string;
   customerId: string;
@@ -64,7 +152,7 @@ export interface PaymentMethod {
   updatedAt: Date;
 }
 
-export interface AccountPreferences {
+export interface AccountPreferencesLegacy {
   customerId: string;
   notifications: {
     email: {
@@ -158,23 +246,12 @@ export interface AccountStats {
   favoriteCategory: string;
 }
 
-export interface WishlistItem {
+// Note: WishlistItem is defined as type alias above (line 24)
+export interface ProductReview {
   id: string;
-  customerId: string;
-  productId: string;
-  productName: string;
-  productImage: string;
-  productPrice: number;
-  productSku: string;
-  vendorId: string;
-  vendorName: string;
-  isAvailable: boolean;
-  priceHistory: {
-    price: number;
-    date: Date;
-  }[];
-  addedAt: Date;
-  notes?: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
 }
 
 export interface ReviewData {
@@ -201,104 +278,117 @@ export interface ReviewData {
   updatedAt: Date;
 }
 
-// Profile API
+// Profile API with typed POJOs
 export const profileAPI = {
-  // Get customer profile
-  getProfile: async () => {
-    return request.get('/customer/profile');
+    // Get customer profile
+  getProfile: async (): Promise<CustomerProfile> => {
+    const response = await api.get<GetCustomerResponse>('/customer/profile');
+    return response.data.customer;
   },
 
   // Update customer profile
-  updateProfile: async (data: Partial<CustomerProfile>) => {
-    return request.put('/customer/profile', data);
+  updateProfile: async (requestData: UpdateCustomerRequest): Promise<CustomerProfile> => {
+    const response = await api.put<UpdateCustomerResponse>('/customer/profile', requestData);
+    return response.data.customer;
   },
 
   // Upload avatar
-  uploadAvatar: async (file: File) => {
+  uploadAvatar: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append('avatar', file);
-    return request.post('/customer/profile/avatar', formData, {
+    const response = await api.post<{ url: string }>('/customer/profile/avatar', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+    return response.data;
   },
 
   // Verify email
-  verifyEmail: async (token: string) => {
-    return request.post('/customer/profile/verify-email', { token });
+  verifyEmail: async (token: string): Promise<void> => {
+    await api.post('/customer/profile/verify-email', { token });
   },
 
   // Resend email verification
-  resendEmailVerification: async () => {
-    return request.post('/customer/profile/resend-email-verification');
+  resendEmailVerification: async (): Promise<void> => {
+    await api.post('/customer/profile/resend-email-verification');
   },
 
   // Verify phone
   verifyPhone: async (code: string) => {
-    return request.post('/customer/profile/verify-phone', { code });
+    const { data } = await api.post('/customer/profile/verify-phone', { code });
+    return data;
   },
 
   // Send phone verification
   sendPhoneVerification: async (phone: string) => {
-    return request.post('/customer/profile/send-phone-verification', { phone });
+    const { data } = await api.post('/customer/profile/send-phone-verification', { phone });
+    return data;
   },
 
   // Change password
-  changePassword: async (data: {
+  changePassword: async (requestData: {
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
   }) => {
-    return request.post('/customer/profile/change-password', data);
+    const { data: response } = await api.post('/customer/profile/change-password', requestData);
+    return response;
   },
 
   // Get account stats
   getAccountStats: async () => {
-    return request.get('/customer/profile/stats');
+    const { data } = await api.get('/customer/profile/stats');
+    return data;
   },
 };
 
-// Address API
+// Address API with typed POJOs
 export const addressAPI = {
   // Get all addresses
-  getAddresses: async () => {
-    return request.get('/customer/addresses');
+  getAddresses: async (): Promise<Address[]> => {
+    const response = await api.get<GetAddressesResponse>('/customer/addresses');
+    return response.data.addresses;
   },
 
   // Get single address
-  getAddress: async (id: string) => {
-    return request.get(`/customer/addresses/${id}`);
+  getAddress: async (id: string): Promise<Address> => {
+    const response = await api.get<{ address: Address }>(`/customer/addresses/${id}`);
+    return response.data.address;
   },
 
   // Create address
-  createAddress: async (data: Omit<Address, 'id' | 'customerId' | 'createdAt' | 'updatedAt'>) => {
-    return request.post('/customer/addresses', data);
+  createAddress: async (requestData: CreateAddressRequest): Promise<Address> => {
+    const response = await api.post<CreateAddressResponse>('/customer/addresses', requestData);
+    return response.data.address;
   },
 
   // Update address
-  updateAddress: async (id: string, data: Partial<Address>) => {
-    return request.put(`/customer/addresses/${id}`, data);
+  updateAddress: async (id: string, requestData: Partial<CreateAddressRequest>): Promise<Address> => {
+    const response = await api.put<CreateAddressResponse>(`/customer/addresses/${id}`, requestData);
+    return response.data.address;
   },
 
   // Delete address
-  deleteAddress: async (id: string) => {
-    return request.delete(`/customer/addresses/${id}`);
+  deleteAddress: async (id: string): Promise<void> => {
+    await api.delete(`/customer/addresses/${id}`);
   },
 
   // Set default address
-  setDefaultAddress: async (id: string, type: 'shipping' | 'billing') => {
-    return request.post(`/customer/addresses/${id}/set-default`, { type });
+  setDefaultAddress: async (id: string, type: 'shipping' | 'billing'): Promise<void> => {
+    await api.post(`/customer/addresses/${id}/set-default`, { type });
   },
 
   // Validate address
-  validateAddress: async (address: Partial<Address>) => {
-    return request.post('/customer/addresses/validate', address);
+  validateAddress: async (address: Partial<Address>): Promise<any> => {
+    const response = await api.post('/customer/addresses/validate', address);
+    return response.data;
   },
 
   // Get address suggestions
-  getAddressSuggestions: async (query: string) => {
-    return request.get('/customer/addresses/suggestions', { params: { query } });
+  getAddressSuggestions: async (query: string): Promise<any> => {
+    const response = await api.get('/customer/addresses/suggestions', { params: { query } });
+    return response.data;
   },
 };
 
@@ -306,47 +396,54 @@ export const addressAPI = {
 export const paymentMethodsAPI = {
   // Get all payment methods
   getPaymentMethods: async () => {
-    return request.get('/customer/payment-methods');
+    const { data } = await api.get('/customer/payment-methods');
+    return data;
   },
 
   // Get single payment method
   getPaymentMethod: async (id: string) => {
-    return request.get(`/customer/payment-methods/${id}`);
+    const { data } = await api.get(`/customer/payment-methods/${id}`);
+    return data;
   },
 
   // Add payment method
-  addPaymentMethod: async (data: {
+  addPaymentMethod: async (requestData: {
     type: string;
     token: string; // from payment processor
     billingAddressId?: string;
     setAsDefault?: boolean;
   }) => {
-    return request.post('/customer/payment-methods', data);
+    const { data: response } = await api.post('/customer/payment-methods', requestData);
+    return response;
   },
 
   // Update payment method
-  updatePaymentMethod: async (id: string, data: {
+  updatePaymentMethod: async (id: string, requestData: {
     title?: string;
     billingAddressId?: string;
     expiryMonth?: number;
     expiryYear?: number;
   }) => {
-    return request.put(`/customer/payment-methods/${id}`, data);
+    const { data: response } = await api.put(`/customer/payment-methods/${id}`, requestData);
+    return response;
   },
 
   // Delete payment method
   deletePaymentMethod: async (id: string) => {
-    return request.delete(`/customer/payment-methods/${id}`);
+    const { data } = await api.delete(`/customer/payment-methods/${id}`);
+    return data;
   },
 
   // Set default payment method
   setDefaultPaymentMethod: async (id: string) => {
-    return request.post(`/customer/payment-methods/${id}/set-default`);
+    const { data } = await api.post(`/customer/payment-methods/${id}/set-default`);
+    return data;
   },
 
   // Verify payment method
   verifyPaymentMethod: async (id: string, verificationData: any) => {
-    return request.post(`/customer/payment-methods/${id}/verify`, verificationData);
+    const { data } = await api.post(`/customer/payment-methods/${id}/verify`, verificationData);
+    return data;
   },
 };
 
@@ -354,32 +451,38 @@ export const paymentMethodsAPI = {
 export const preferencesAPI = {
   // Get preferences
   getPreferences: async () => {
-    return request.get('/customer/preferences');
+    const { data } = await api.get('/customer/preferences');
+    return data;
   },
 
   // Update preferences
-  updatePreferences: async (data: Partial<AccountPreferences>) => {
-    return request.put('/customer/preferences', data);
+  updatePreferences: async (requestData: Partial<AccountPreferences>) => {
+    const { data: response } = await api.put('/customer/preferences', requestData);
+    return response;
   },
 
   // Update notification preferences
-  updateNotificationPreferences: async (data: AccountPreferences['notifications']) => {
-    return request.put('/customer/preferences/notifications', data);
+  updateNotificationPreferences: async (requestData: AccountPreferences['notifications']) => {
+    const { data: response } = await api.put('/customer/preferences/notifications', requestData);
+    return response;
   },
 
   // Update privacy preferences
-  updatePrivacyPreferences: async (data: AccountPreferences['privacy']) => {
-    return request.put('/customer/preferences/privacy', data);
+  updatePrivacyPreferences: async (requestData: AccountPreferences['privacy']) => {
+    const { data: response } = await api.put('/customer/preferences/privacy', requestData);
+    return response;
   },
 
   // Update shopping preferences
-  updateShoppingPreferences: async (data: AccountPreferences['shopping']) => {
-    return request.put('/customer/preferences/shopping', data);
+  updateShoppingPreferences: async (requestData: AccountPreferences['shopping']) => {
+    const { data: response } = await api.put('/customer/preferences/shopping', requestData);
+    return response;
   },
 
   // Update display preferences
-  updateDisplayPreferences: async (data: AccountPreferences['display']) => {
-    return request.put('/customer/preferences/display', data);
+  updateDisplayPreferences: async (requestData: AccountPreferences['display']) => {
+    const { data: response } = await api.put('/customer/preferences/display', requestData);
+    return response;
   },
 };
 
@@ -387,24 +490,27 @@ export const preferencesAPI = {
 export const securityAPI = {
   // Get security settings
   getSecuritySettings: async () => {
-    return request.get('/customer/security');
+    const { data } = await api.get('/customer/security');
+    return data;
   },
 
   // Enable/disable two-factor authentication
-  updateTwoFactor: async (data: {
+  updateTwoFactor: async (requestData: {
     enabled: boolean;
     method?: 'sms' | 'email' | 'app';
     verificationCode?: string;
   }) => {
-    return request.post('/customer/security/two-factor', data);
+    const { data: response } = await api.post('/customer/security/two-factor', requestData);
+    return response;
   },
 
   // Update security preferences
-  updateSecurityPreferences: async (data: {
+  updateSecurityPreferences: async (requestData: {
     loginAlerts?: boolean;
     sessionTimeout?: number;
   }) => {
-    return request.put('/customer/security/preferences', data);
+    const { data: response } = await api.put('/customer/security/preferences', requestData);
+    return response;
   },
 
   // Get login history
@@ -414,27 +520,32 @@ export const securityAPI = {
     startDate?: string;
     endDate?: string;
   } = {}) => {
-    return request.get('/customer/security/login-history', { params });
+    const { data } = await api.get('/customer/security/login-history', { params });
+    return data;
   },
 
   // Get trusted devices
   getTrustedDevices: async () => {
-    return request.get('/customer/security/trusted-devices');
+    const { data } = await api.get('/customer/security/trusted-devices');
+    return data;
   },
 
   // Remove trusted device
   removeTrustedDevice: async (deviceId: string) => {
-    return request.delete(`/customer/security/trusted-devices/${deviceId}`);
+    const { data } = await api.delete(`/customer/security/trusted-devices/${deviceId}`);
+    return data;
   },
 
   // Update security questions
-  updateSecurityQuestions: async (questions: Omit<SecurityQuestion, 'id'>[]) => {
-    return request.post('/customer/security/questions', { questions });
+  updateSecurityQuestions: async (questions: any[]) => {
+    const { data } = await api.post('/customer/security/questions', { questions });
+    return data;
   },
 
   // Terminate all sessions
   terminateAllSessions: async () => {
-    return request.post('/customer/security/terminate-sessions');
+    const { data } = await api.post('/customer/security/terminate-sessions');
+    return data;
   },
 };
 
@@ -447,51 +558,53 @@ export const wishlistAPI = {
     category?: string;
     sort?: 'newest' | 'oldest' | 'price_low' | 'price_high';
   } = {}) => {
-    return request.get('/customer/wishlist', { params });
+    const { data } = await api.get('/customer/wishlist', { params });
   },
 
   // Add to wishlist
-  addToWishlist: async (data: {
+  addToWishlist: async (requestData: {
     productId: string;
-    notes?: string;
+    variantId?: string;
+    note?: string;
   }) => {
-    return request.post('/customer/wishlist', data);
+    const { data } = await api.post('/customer/wishlist', requestData);
+    return data;
   },
 
   // Remove from wishlist
   removeFromWishlist: async (itemId: string) => {
-    return request.delete(`/customer/wishlist/${itemId}`);
+    const { data } = await api.delete(`/customer/wishlist/${itemId}`);
   },
 
   // Update wishlist item
-  updateWishlistItem: async (itemId: string, data: {
+  updateWishlistItem: async (itemId: string, requestData: {
     notes?: string;
   }) => {
-    return request.put(`/customer/wishlist/${itemId}`, data);
+    const { data } = await api.put(`/customer/wishlist/${itemId}`, requestData);
   },
 
   // Move to cart
   moveToCart: async (itemId: string, quantity: number = 1) => {
-    return request.post(`/customer/wishlist/${itemId}/move-to-cart`, { quantity });
+    const { data } = await api.post(`/customer/wishlist/${itemId}/move-to-cart`, { quantity });
   },
 
   // Share wishlist
-  shareWishlist: async (data: {
+  shareWishlist: async (requestData: {
     email?: string;
     shareType: 'email' | 'link';
     message?: string;
   }) => {
-    return request.post('/customer/wishlist/share', data);
+    const { data } = await api.post('/customer/wishlist/share', requestData);
   },
 
   // Get price alerts
   getPriceAlerts: async () => {
-    return request.get('/customer/wishlist/price-alerts');
+    const { data } = await api.get('/customer/wishlist/price-alerts');
   },
 
   // Set price alert
   setPriceAlert: async (itemId: string, targetPrice: number) => {
-    return request.post(`/customer/wishlist/${itemId}/price-alert`, { targetPrice });
+    const { data } = await api.post(`/customer/wishlist/${itemId}/price-alert`, { targetPrice });
   },
 };
 
@@ -504,16 +617,16 @@ export const reviewsAPI = {
     status?: 'pending' | 'approved' | 'rejected';
     productId?: string;
   } = {}) => {
-    return request.get('/customer/reviews', { params });
+    const { data } = await api.get('/customer/reviews', { params });
   },
 
   // Get single review
   getReview: async (reviewId: string) => {
-    return request.get(`/customer/reviews/${reviewId}`);
+    const { data } = await api.get(`/customer/reviews/${reviewId}`);
   },
 
   // Create review
-  createReview: async (data: {
+  createReview: async (requestData: {
     productId: string;
     orderId: string;
     rating: number;
@@ -525,7 +638,7 @@ export const reviewsAPI = {
     images?: File[];
   }) => {
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(requestData).forEach(([key, value]) => {
       if (key === 'images' && Array.isArray(value)) {
         value.forEach(file => formData.append('images', file));
       } else if (Array.isArray(value)) {
@@ -535,7 +648,7 @@ export const reviewsAPI = {
       }
     });
 
-    return request.post('/customer/reviews', formData, {
+    const { data } = await api.post('/customer/reviews', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -543,50 +656,50 @@ export const reviewsAPI = {
   },
 
   // Update review
-  updateReview: async (reviewId: string, data: Partial<ReviewData>) => {
-    return request.put(`/customer/reviews/${reviewId}`, data);
+  updateReview: async (reviewId: string, requestData: Partial<ReviewData>) => {
+    const { data } = await api.put(`/customer/reviews/${reviewId}`, requestData);
   },
 
   // Delete review
   deleteReview: async (reviewId: string) => {
-    return request.delete(`/customer/reviews/${reviewId}`);
+    const { data } = await api.delete(`/customer/reviews/${reviewId}`);
   },
 
   // Vote on review helpfulness
   voteReview: async (reviewId: string, helpful: boolean) => {
-    return request.post(`/customer/reviews/${reviewId}/vote`, { helpful });
+    const { data } = await api.post(`/customer/reviews/${reviewId}/vote`, { helpful });
   },
 
   // Get pending reviews (products to review)
   getPendingReviews: async () => {
-    return request.get('/customer/reviews/pending');
+    const { data } = await api.get('/customer/reviews/pending');
   },
 };
 
 // Account deletion API
 export const accountDeletionAPI = {
   // Request account deletion
-  requestDeletion: async (data: {
+  requestDeletion: async (requestData: {
     reason: string;
     password: string;
     feedback?: string;
   }) => {
-    return request.post('/customer/account/delete', data);
+    const { data } = await api.post('/customer/account/delete', requestData);
   },
 
   // Cancel account deletion
   cancelDeletion: async () => {
-    return request.post('/customer/account/cancel-deletion');
+    const { data } = await api.post('/customer/account/cancel-deletion');
   },
 
   // Get deletion status
   getDeletionStatus: async () => {
-    return request.get('/customer/account/deletion-status');
+    const { data } = await api.get('/customer/account/deletion-status');
   },
 
   // Download account data
   downloadAccountData: async () => {
-    return request.get('/customer/account/download-data', {
+    const { data } = await api.get('/customer/account/download-data', {
       responseType: 'blob',
     });
   },

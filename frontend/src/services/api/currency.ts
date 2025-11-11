@@ -1,4 +1,24 @@
-import api from './client';
+import { api } from './client';
+
+// API Response wrapper types
+export interface CurrencyAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+  timestamp?: string;
+}
+
+export interface PaginatedCurrencyResponse<T> {
+  success: boolean;
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    limit: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
 
 // ========================================
 // Currency Types
@@ -163,30 +183,35 @@ export const currencyAPI = {
     page: number;
     limit: number;
   }> => {
-    const response = await api.get('/currencies', {
+    const response = await api.get<PaginatedCurrencyResponse<Currency>>('/currencies', {
       params: filters,
     });
-    return response.data;
+    return {
+      currencies: response.data.data.items,
+      total: response.data.data.total,
+      page: response.data.data.page,
+      limit: response.data.data.limit
+    };
   },
 
   getById: async (id: string): Promise<Currency> => {
-    const response = await api.get(`/currencies/${id}`);
-    return response.data;
+    const response = await api.get<CurrencyAPIResponse<Currency>>(`/currencies/${id}`);
+    return response.data.data;
   },
 
   getByCode: async (code: string): Promise<Currency> => {
-    const response = await api.get(`/currencies/code/${code}`);
-    return response.data;
+    const response = await api.get<CurrencyAPIResponse<Currency>>(`/currencies/code/${code}`);
+    return response.data.data;
   },
 
   create: async (currencyData: Omit<Currency, 'id' | 'lastUpdated'>): Promise<Currency> => {
-    const response = await api.post('/currencies', currencyData);
-    return response.data;
+    const response = await api.post<CurrencyAPIResponse<Currency>>('/currencies', currencyData);
+    return response.data.data;
   },
 
   update: async (id: string, updateData: Partial<Currency>): Promise<Currency> => {
-    const response = await api.put(`/currencies/${id}`, updateData);
-    return response.data;
+    const response = await api.put<CurrencyAPIResponse<Currency>>(`/currencies/${id}`, updateData);
+    return response.data.data;
   },
 
   delete: async (id: string): Promise<void> => {
@@ -213,15 +238,15 @@ export const currencyAPI = {
   // ========================================
 
   getExchangeRates: async (baseCurrency?: string): Promise<ExchangeRate[]> => {
-    const response = await api.get('/currencies/exchange-rates', {
+    const response = await api.get<CurrencyAPIResponse<ExchangeRate[]>>('/currencies/exchange-rates', {
       params: { baseCurrency },
     });
-    return response.data;
+    return response.data.data;
   },
 
   getExchangeRate: async (fromCurrency: string, toCurrency: string): Promise<ExchangeRate> => {
-    const response = await api.get(`/currencies/exchange-rates/${fromCurrency}/${toCurrency}`);
-    return response.data;
+    const response = await api.get<CurrencyAPIResponse<ExchangeRate>>(`/currencies/exchange-rates/${fromCurrency}/${toCurrency}`);
+    return response.data.data;
   },
 
   updateExchangeRate: async (
@@ -275,13 +300,13 @@ export const currencyAPI = {
     amount: number,
     includeMarkup: boolean = true
   ): Promise<CurrencyConversion> => {
-    const response = await api.post('/currencies/convert', {
+    const response = await api.post<CurrencyAPIResponse<CurrencyConversion>>('/currencies/convert', {
       fromCurrency,
       toCurrency,
       amount,
       includeMarkup,
     });
-    return response.data;
+    return response.data.data;
   },
 
   bulkConvert: async (conversions: {

@@ -1,6 +1,49 @@
 import api from './client';
 
-// Types
+// Backend POJO imports - Upload Module
+interface UploadDto {
+  id: string;
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  path: string;
+  url: string;
+  uploadedBy: string;
+  entityType?: string;
+  entityId?: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// API Response wrappers
+interface UploadAPIResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+// Request types
+export interface UploadFileRequest {
+  folder?: string;
+  entityType?: string;
+  entityId?: string;
+  metadata?: Record<string, any>;
+}
+
+// Response types
+export interface UploadFileResponse {
+  upload: UploadDto;
+}
+
+export interface UploadMultipleResponse {
+  uploads: UploadDto[];
+  totalUploaded: number;
+  failed: string[];
+}
+
+// Legacy interfaces for backward compatibility
 export interface UploadedFile {
   id: string;
   fileName: string;
@@ -21,16 +64,25 @@ export const uploadAPI = {
   // Upload single file
   uploadFile: async (
     file: File,
-    folder?: string,
+    options?: UploadFileRequest,
     onProgress?: (progress: UploadProgress) => void
-  ): Promise<UploadedFile> => {
+  ): Promise<UploadDto> => {
     const formData = new FormData();
     formData.append('file', file);
-    if (folder) {
-      formData.append('folder', folder);
+    if (options?.folder) {
+      formData.append('folder', options.folder);
+    }
+    if (options?.entityType) {
+      formData.append('entityType', options.entityType);
+    }
+    if (options?.entityId) {
+      formData.append('entityId', options.entityId);
+    }
+    if (options?.metadata) {
+      formData.append('metadata', JSON.stringify(options.metadata));
     }
 
-    const response = await api.post<UploadedFile>('/upload', formData, {
+    const response = await api.post<UploadAPIResponse<UploadDto>>('/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -46,22 +98,31 @@ export const uploadAPI = {
       },
     });
 
-    return response.data;
+    return response.data.data;
   },
 
   // Upload multiple files
   uploadMultiple: async (
     files: File[],
-    folder?: string,
+    options?: UploadFileRequest,
     onProgress?: (progress: UploadProgress) => void
-  ): Promise<UploadedFile[]> => {
+  ): Promise<UploadDto[]> => {
     const formData = new FormData();
     files.forEach((file) => formData.append('files', file));
-    if (folder) {
-      formData.append('folder', folder);
+    if (options?.folder) {
+      formData.append('folder', options.folder);
+    }
+    if (options?.entityType) {
+      formData.append('entityType', options.entityType);
+    }
+    if (options?.entityId) {
+      formData.append('entityId', options.entityId);
+    }
+    if (options?.metadata) {
+      formData.append('metadata', JSON.stringify(options.metadata));
     }
 
-    const response = await api.post<UploadedFile[]>('/upload/multiple', formData, {
+    const response = await api.post<UploadAPIResponse<UploadDto[]>>('/upload/multiple', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -77,7 +138,7 @@ export const uploadAPI = {
       },
     });
 
-    return response.data;
+    return response.data.data;
   },
 
   // Upload image with optimization
@@ -96,7 +157,7 @@ export const uploadAPI = {
       formData.append('options', JSON.stringify(options));
     }
 
-    const response = await api.post<UploadedFile>('/upload/image', formData, {
+    const response = await api.post<UploadAPIResponse<UploadedFile>>('/upload/image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -112,7 +173,7 @@ export const uploadAPI = {
       },
     });
 
-    return response.data;
+    return response.data.data;
   },
 
   // Delete file
@@ -122,7 +183,7 @@ export const uploadAPI = {
 
   // Get file URL
   getFileUrl: (path: string): string => {
-    return `${process.env.API_URL || 'https://groow-api.destinpq.com'}/uploads/${path}`;
+    return `${process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com'}/uploads/${path}`;
   },
 };
 

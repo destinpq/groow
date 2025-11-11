@@ -1,32 +1,20 @@
-/* Support Tickets Customer Styles */
-@import '../support-tickets.less';
+.support-tickets {
+  padding: 24px;
 
-.customer-support-tickets {
-  .ticket-item {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transform: translateY(-2px);
+  .tickets-list {
+    .ant-card {
+      margin-bottom: 16px;
     }
   }
-  
-  .new-ticket-form {
-    background: white;
-    padding: 24px;
-    border-radius: 8px;
-    margin-bottom: 24px;
+
+  .ticket-detail {
+    .messages-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
   }
-  
-  .ticket-category-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #f0f2f5;
-    margin-right: 12px;
+
+  .stats-cards {
+    margin-bottom: 24px;
   }
 }

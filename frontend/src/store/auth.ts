@@ -20,25 +20,51 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
 
       login: (token: string, user: User) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('access_token', token);
+          localStorage.setItem('user', JSON.stringify(user));
+        }
         set({ user, token, isAuthenticated: true });
       },
 
       logout: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+        }
         set({ user: null, token: null, isAuthenticated: false });
       },
     }),
     {
       name: 'auth-storage',
+      // Custom hydration to read tokens from localStorage on page load
+      onRehydrateStorage: () => (state) => {
+        if (typeof window !== 'undefined' && state) {
+          const token = localStorage.getItem('access_token');
+          const userStr = localStorage.getItem('user');
+          
+          if (token && userStr && userStr !== 'undefined' && userStr !== 'null') {
+            try {
+              const user = JSON.parse(userStr);
+              state.token = token;
+              state.user = user;
+              state.isAuthenticated = true;
+            } catch (error) {
+              console.error('Failed to parse user from localStorage:', error);
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('user');
+              localStorage.removeItem('refresh_token');
+            }
+          }
+        }
+      },
     }
   )
 );

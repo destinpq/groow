@@ -1,5 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Statistic, Table, Tag, Button, List, Avatar, Badge, Progress, Space, Typography, Spin, message } from 'antd';
+import { 
+  Row, 
+  Col, 
+  Card, 
+  Statistic, 
+  Table, 
+  Tag, 
+  Button, 
+  List, 
+  Avatar, 
+  Badge, 
+  Progress, 
+  Space, 
+  Typography, 
+  Spin, 
+  message,
+  Alert,
+  Tabs,
+  Select,
+  DatePicker,
+  Tooltip
+} from 'antd';
 import {
   DollarOutlined,
   ShoppingOutlined,
@@ -12,45 +33,203 @@ import {
   AlertOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  FireOutlined,
+  ThunderboltOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
 } from '@ant-design/icons';
-import { Line, Column, Pie } from '@ant-design/charts';
-import { vendorAPI } from '@/services/api/vendors';
-import { ordersAPI } from '@/services/api/orders';
-import { productAPI } from '@/services/api/products';
+import { Line, Column, Pie, Area, Gauge, Heatmap } from '@ant-design/charts';
+import { vendorAPI } from '../../services/api/vendors';
+import { ordersAPI } from '../../services/api/orders';
+import { productAPI } from '../../services/api/products';
+import { analyticsAPI } from '../../services/api/analytics';
+import dayjs from 'dayjs';
 
 const { Text, Title } = Typography;
+const { RangePicker } = DatePicker;
+
+// Enhanced interfaces for analytics data
+interface DashboardStats {
+  totalRevenue: number;
+  revenueGrowth: number;
+  totalOrders: number;
+  ordersGrowth: number;
+  averageOrderValue: number;
+  aovGrowth: number;
+  conversionRate: number;
+  conversionGrowth: number;
+  customerRetention: number;
+  retentionGrowth: number;
+  averageRating: number;
+  totalReviews: number;
+  monthlySales: any[];
+  topProducts: Array<{
+    id: string;
+    name: string;
+    revenue: number;
+    orders: number;
+    growth: number;
+  }>;
+}
+
+interface RealTimeMetrics {
+  currentVisitors: number;
+  activeOrders: number;
+  todayRevenue: number;
+  conversionRate: number;
+  recentOrders: any[];
+  topPages: { page: string; visitors: number }[];
+  system_health: { status: 'healthy' | 'warning' | 'critical'; uptime: number };
+  live_transactions: Array<{ amount: number; customer: string; product: string; timestamp: string }>;
+}
+
+interface AnalyticsData {
+  salesMetrics: any;
+  revenueChart: any[];
+  topProducts: any[];
+  customerInsights: any;
+  trafficOverview: any[];
+  recentActivity: any[];
+  quickInsights: any[];
+  performanceIndicators: Record<string, { value: number; target: number; status: 'on_track' | 'at_risk' | 'behind' }>;
+}
 
 const VendorDashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>(null);
+  const [realTimeLoading, setRealTimeLoading] = useState(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [realTimeData, setRealTimeData] = useState<RealTimeMetrics | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [timeRange, setTimeRange] = useState('7d');
+  const [selectedMetrics, setSelectedMetrics] = useState(['revenue', 'orders', 'customers']);
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+    fetchRealTimeMetrics();
+    fetchAlerts();
+    
+    // Set up real-time updates
+    const interval = setInterval(fetchRealTimeMetrics, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [timeRange]);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       
-      // Fetch vendor stats
-      const vendorStats = await vendorAPI.getStats();
-      setStats(vendorStats);
+      // Calculate date range for analytics
+      const endDate = dayjs().format('YYYY-MM-DD');
+      const startDate = dayjs().subtract(parseInt(timeRange), 'days').format('YYYY-MM-DD');
+      
+      // Fetch enhanced analytics dashboard data
+      const [
+        dashboardResponse,
+        vendorStatsResponse,
+      ] = await Promise.all([
+        analyticsAPI.getDashboardData({ 
+          startDate,
+          endDate,
+          granularity: 'day' 
+        }),
+        vendorAPI.reviews.getStats(),
+      ]);
 
-      // Fetch recent orders
-      const ordersResponse = await ordersAPI.getAll({ limit: 5 });
-      setRecentOrders(ordersResponse.data || []);
-
-      // Fetch products
-      const productsResponse = await productAPI.getAll({ limit: 100 });
-      setProducts(productsResponse.data || []);
+      setAnalyticsData(dashboardResponse);
+      
+      // Transform vendor stats to match our interface
+      const vendorStats = vendorStatsResponse.data;
+      setStats({
+        totalRevenue: dashboardResponse.salesMetrics?.totalRevenue || 0,
+        revenueGrowth: dashboardResponse.salesMetrics?.growth?.revenue || 0,
+        totalOrders: dashboardResponse.salesMetrics?.totalOrders || 0,
+        ordersGrowth: dashboardResponse.salesMetrics?.growth?.orders || 0,
+        averageOrderValue: dashboardResponse.salesMetrics?.averageOrderValue || 0,
+        aovGrowth: dashboardResponse.salesMetrics?.growth?.aov || 0,
+        conversionRate: dashboardResponse.salesMetrics?.conversionRate || 0,
+        conversionGrowth: dashboardResponse.salesMetrics?.growth?.conversion || 0,
+        customerRetention: dashboardResponse.customerInsights?.retentionRate || 0,
+        retentionGrowth: 0, // Calculate from historical data
+        topProducts: (dashboardResponse.topProducts || []).map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          revenue: product.revenue,
+          orders: product.totalSold || 0,
+          growth: ((product.revenue / (product.revenue - 1000)) - 1) * 100, // Mock growth calculation
+        })),
+        // Legacy compatibility
+        averageRating: vendorStats.averageRating || 4.5,
+        totalReviews: vendorStats.totalReviews || 0,
+        monthlySales: dashboardResponse.revenueChart || [],
+      });
+      
+      setRecentOrders(dashboardResponse.recentActivity || []); // Use analytics activity data
+      setProducts((dashboardResponse.topProducts || []).map((p: any) => ({
+        ...p,
+        isActive: p.inventory > 0,
+        stockQuantity: p.inventory || 0,
+      }))); // Transform analytics products data
 
     } catch (error: any) {
       message.error(error.message || 'Failed to load dashboard data');
+      console.error('Dashboard fetch error:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchRealTimeMetrics = async () => {
+    try {
+      setRealTimeLoading(true);
+      const realTimeResponse = await analyticsAPI.getRealTimeMetrics();
+      setRealTimeData(realTimeResponse);
+    } catch (error: any) {
+      console.error('Real-time metrics error:', error);
+    } finally {
+      setRealTimeLoading(false);
+    }
+  };
+
+  const fetchAlerts = async () => {
+    try {
+      const alertsResponse = await analyticsAPI.getAlerts({ 
+        status: 'active',
+        priority: 'medium' 
+      });
+      setAlerts(alertsResponse.alerts || []);
+    } catch (error: any) {
+      console.error('Alerts fetch error:', error);
+    }
+  };
+
+  // Helper functions for data formatting
+  const formatCurrency = (value: number) => `$${value?.toLocaleString('en-US', { minimumFractionDigits: 2 }) || '0.00'}`;
+  
+  const formatGrowth = (growth: number) => {
+    const color = growth >= 0 ? '#52c41a' : '#ff4d4f';
+    const icon = growth >= 0 ? <ArrowUpOutlined /> : <ArrowDownOutlined />;
+    return (
+      <span style={{ color, fontSize: 12 }}>
+        {icon} {Math.abs(growth).toFixed(1)}%
+      </span>
+    );
+  };
+
+  const getStatusColor = (status: string) => {
+    const colors = {
+      'on_track': '#52c41a',
+      'at_risk': '#faad14', 
+      'behind': '#ff4d4f',
+      'healthy': '#52c41a',
+      'warning': '#faad14',
+      'critical': '#ff4d4f',
+    };
+    return colors[status as keyof typeof colors] || '#d9d9d9';
   };
 
   if (loading) {
@@ -61,22 +240,42 @@ const VendorDashboard = () => {
     );
   }
 
+  // Enhanced data processing with analytics
   const salesData = stats?.monthlySales || [];
   const activeProducts = products.filter(p => p.isActive).length;
   const outOfStock = products.filter(p => p.stockQuantity === 0).length;
-  const totalRevenue = stats?.totalRevenue || 0;
-  const totalOrders = stats?.totalOrders || 0;
   const pendingOrders = recentOrders.filter(o => o.status === 'pending').length;
-  const averageRating = stats?.averageRating || 4.5;
-  const totalReviews = stats?.totalReviews || 0;
-
   const topProducts = stats?.topProducts || [];
 
+  // Enhanced analytics data from the dashboard stats
+  const revenueGrowth = stats?.revenueGrowth || 0;
+  const ordersGrowth = stats?.ordersGrowth || 0;
+  const conversionGrowth = stats?.conversionGrowth || 0;
+  const averageRating = stats?.averageRating || 4.5;
+  const totalReviews = stats?.totalReviews || 0;
+  const totalRevenue = stats?.totalRevenue || 0;
+  const totalOrders = stats?.totalOrders || 0;
+
+  // Real-time data overlay
+  const currentRevenue = realTimeData?.todayRevenue || totalRevenue;
+  const currentOrders = realTimeData?.activeOrders || totalOrders;
+
   const productStatusData = [
-    { status: 'Active', count: activeProducts },
-    { status: 'Out of Stock', count: outOfStock },
-    { status: 'Draft', count: products.length - activeProducts - outOfStock },
+    { status: 'Active', count: activeProducts, color: '#52c41a' },
+    { status: 'Out of Stock', count: outOfStock, color: '#ff4d4f' },
+    { status: 'Draft', count: products.length - activeProducts - outOfStock, color: '#faad14' },
   ];
+
+  // Enhanced charts configuration
+  const salesChartData = salesData.map((item, index) => ({
+    month: item.month,
+    sales: item.sales,
+    target: (item.sales * 1.2), // 20% growth target
+    trend: index > 0 ? ((item.sales - salesData[index - 1].sales) / salesData[index - 1].sales) * 100 : 0
+  }));
+
+  // Customer analytics chart data (using analytics data if available)
+  const customerGrowthData = analyticsData?.customerInsights?.monthlyGrowth || [];
 
   const orderColumns = [
     { title: 'Order #', dataIndex: 'orderNumber', key: 'orderNumber' },
@@ -124,7 +323,7 @@ const VendorDashboard = () => {
     data: salesData,
     xField: 'month',
     yField: 'sales',
-    point: { size: 5, shape: 'diamond' },
+    point: { size: 5, shape: 'circle' },
     smooth: true,
     color: '#1890ff',
   };
@@ -272,6 +471,156 @@ const VendorDashboard = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* Advanced Analytics Dashboard */}
+      <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+        {/* Real-time Performance Indicators */}
+        <Col span={24}>
+          <Card title="Real-time Performance" bordered={false}>
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={6}>
+                <Statistic
+                  title="Revenue Growth"
+                  value={revenueGrowth}
+                  suffix={formatGrowth(revenueGrowth)}
+                  valueStyle={{ color: revenueGrowth >= 0 ? '#52c41a' : '#ff4d4f' }}
+                />
+              </Col>
+              <Col xs={24} sm={6}>
+                <Statistic
+                  title="Order Growth"
+                  value={ordersGrowth}
+                  suffix={formatGrowth(ordersGrowth)}
+                  valueStyle={{ color: ordersGrowth >= 0 ? '#52c41a' : '#ff4d4f' }}
+                />
+              </Col>
+              <Col xs={24} sm={6}>
+                <Statistic
+                  title="Conversion Rate"
+                  value={stats?.conversionRate || 0}
+                  suffix={`% ${formatGrowth(conversionGrowth)}`}
+                  valueStyle={{ color: '#1890ff' }}
+                />
+              </Col>
+              <Col xs={24} sm={6}>
+                <Statistic
+                  title="Customer Retention"
+                  value={stats?.customerRetention || 0}
+                  suffix={`% ${formatGrowth(stats?.retentionGrowth || 0)}`}
+                  valueStyle={{ color: '#722ed1' }}
+                />
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Performance Alerts & Insights */}
+      {alerts.length > 0 && (
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col span={24}>
+            <Card title="Performance Alerts" bordered={false}>
+              <List
+                dataSource={alerts.slice(0, 5)}
+                renderItem={(alert: any) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar 
+                          style={{ 
+                            backgroundColor: getStatusColor(alert.priority),
+                            color: '#fff'
+                          }}
+                          icon={<AlertOutlined />}
+                        />
+                      }
+                      title={alert.title}
+                      description={alert.description}
+                    />
+                    <Tag color={getStatusColor(alert.priority)}>
+                      {alert.priority?.toUpperCase()}
+                    </Tag>
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
+
+      {/* Top Products Performance */}
+      {topProducts.length > 0 && (
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col span={24}>
+            <Card title="Top Performing Products" bordered={false}>
+              <List
+                dataSource={topProducts}
+                renderItem={(product: any) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<Avatar icon={<FireOutlined />} style={{ backgroundColor: '#ff7a45' }} />}
+                      title={product.name}
+                      description={`${product.orders} orders • ${formatCurrency(product.revenue)} revenue`}
+                    />
+                    <div style={{ textAlign: 'right' }}>
+                      {formatGrowth(product.growth)}
+                      <br />
+                      <Text type="secondary">{formatCurrency(product.revenue)}</Text>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
+
+      {/* Enhanced Analytics Data */}
+      {analyticsData && (
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col xs={24} lg={12}>
+            <Card title="Performance Overview" bordered={false}>
+              {analyticsData.performanceIndicators && Object.entries(analyticsData.performanceIndicators).map(([key, indicator]) => (
+                <div key={key} style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</Text>
+                    <Tag color={getStatusColor(indicator.status)}>
+                      {indicator.status.replace('_', ' ').toUpperCase()}
+                    </Tag>
+                  </div>
+                  <Progress 
+                    percent={(indicator.value / indicator.target) * 100} 
+                    strokeColor={getStatusColor(indicator.status)}
+                    format={() => `${indicator.value}/${indicator.target}`}
+                  />
+                </div>
+              ))}
+            </Card>
+          </Col>
+          
+          <Col xs={24} lg={12}>
+            <Card title="Quick Insights" bordered={false}>
+              <List
+                dataSource={analyticsData.quickInsights || []}
+                renderItem={(insight: any) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar 
+                          icon={<ThunderboltOutlined />} 
+                          style={{ backgroundColor: '#52c41a' }}
+                        />
+                      }
+                      title={insight.title}
+                      description={insight.description}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };

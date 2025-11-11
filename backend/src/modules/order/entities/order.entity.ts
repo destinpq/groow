@@ -74,10 +74,49 @@ export class Order extends BaseEntity {
   trackingNumber: string;
 
   @Column({ nullable: true })
+  carrierId: string;
+
+  @Column({ nullable: true })
   courierName: string;
 
   @Column({ type: 'timestamp', nullable: true })
+  manifestedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  shippedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
   deliveredAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  heldAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  disputedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  returnRequestedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  refundedAt: Date;
+
+  @Column({ nullable: true })
+  holdReason: string;
+
+  @Column({ nullable: true })
+  disputeReason: string;
+
+  @Column({ type: 'text', nullable: true })
+  disputeDescription: string;
+
+  @Column({ nullable: true })
+  returnReason: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  refundAmount: number;
+
+  @Column({ nullable: true })
+  refundReason: string;
 
   @Column({ type: 'text', nullable: true })
   notes: string;

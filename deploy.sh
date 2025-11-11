@@ -92,7 +92,7 @@ fi
 
 # Test through Caddy (may need DNS)
 echo -e "${BLUE}Testing domain access (may fail if DNS not propagated)...${NC}"
-if curl -s -k https://groow-api.destinpq.com/api/v1/health > /dev/null; then
+if curl -s -k https://groow-api-db.destinpq.com/api/v1/health > /dev/null; then
     echo -e "${GREEN}✓ Domain access working${NC}"
 else
     echo -e "${RED}⚠ Domain access not working (DNS may not be propagated yet)${NC}"
@@ -110,14 +110,14 @@ echo "   - groow-api.destinpq.com → 20.40.56.175"
 echo ""
 echo "2. Test the endpoints:"
 echo "   - Frontend: https://groow.destinpq.com"
-echo "   - API: https://groow-api.destinpq.com/api/v1/health"
-echo "   - Docs: https://groow-api.destinpq.com/api/docs"
+echo "   - API: https://groow-api-db.destinpq.com/api/v1/health"
+echo "   - Docs: https://groow-api-db.destinpq.com/api/docs"
 echo ""
 echo "3. Update frontend API configuration to use:"
-echo "   https://groow-api.destinpq.com/api/v1"
+echo "   https://groow-api-db.destinpq.com/api/v1"
 echo ""
 
-if ! curl -s https://groow-api.destinpq.com/api/v1/health > /dev/null; then
+if ! curl -s https://groow-api-db.destinpq.com/api/v1/health > /dev/null; then
     echo -e "${BLUE}Note: If domain doesn't work immediately, DNS may need time to propagate.${NC}"
     echo -e "${BLUE}You can test locally by adding to /etc/hosts:${NC}"
     echo "20.40.56.175 groow.destinpq.com"

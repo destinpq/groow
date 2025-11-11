@@ -1,46 +1,13 @@
 # Caddyfile for GROOW E-Commerce Platform
-# Frontend on https://groow.destinpq.com (standard port 443)
-# Backend on https://groow-api.destinpq.com (standard port 443)
-
-{
-    skip_install_trust
-    auto_https disable_redirects
-}
-
-# Backend API Server
+# Backend API Server - Let NestJS handle CORS
 groow-api.destinpq.com {
-    bind 0.0.0.0
-    
-    tls /etc/letsencrypt/live/groow.destinpq.com/fullchain.pem /etc/letsencrypt/live/groow.destinpq.com/privkey.pem {
-        protocols tls1.2 tls1.3
-    }
-    
-    # Add CORS headers for API access
-    header {
-        Access-Control-Allow-Origin "*"
-        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-        Access-Control-Allow-Headers "Origin, Content-Type, Accept, Authorization, X-Requested-With"
-        Access-Control-Allow-Credentials "true"
-    }
-    
-    # Handle CORS preflight requests
-    @cors_preflight {
-        method OPTIONS
-    }
-    respond @cors_preflight 204
-    
-    # Reverse proxy to the NestJS backend on internal port 21440
-    reverse_proxy localhost:21440
+    # Remove all CORS headers - let NestJS handle them
+    # Reverse proxy to the NestJS backend on port 3000
+    reverse_proxy localhost:3000
 }
 
-# Frontend Server
+# Frontend Server - Development server
 groow.destinpq.com {
-    bind 0.0.0.0
-    
-    tls /etc/letsencrypt/live/groow.destinpq.com/fullchain.pem /etc/letsencrypt/live/groow.destinpq.com/privkey.pem {
-        protocols tls1.2 tls1.3
-    }
-    
-    # Reverse proxy to the UMI frontend on internal port 21441
-    reverse_proxy localhost:21441
+    # Reverse proxy to the frontend development server on port 8000
+    reverse_proxy localhost:8000
 }

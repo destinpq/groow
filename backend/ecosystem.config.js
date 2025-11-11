@@ -3,55 +3,20 @@ module.exports = {
     {
       name: 'groow-backend',
       script: 'dist/main.js',
-      cwd: '/home/azureuser/Groow/groow/backend',
-      instances: 1, // or 'max' for cluster mode
-      exec_mode: 'fork', // or 'cluster'
+      cwd: '/home/azureuser/groow/groow/backend',
+      instances: 1,
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'development',
-        PORT: 21440
+        PORT: 3000,
+        DATABASE_URL: 'postgresql://groow_user:groow_password@localhost:5432/groow_db'
       },
-      env_production: {
-        NODE_ENV: 'production',
-        PORT: 21440,
-        DATABASE_SYNC: 'false', // Disable sync in production
-        DATABASE_LOGGING: 'false'
-      },
-      env_staging: {
-        NODE_ENV: 'staging',
-        PORT: 21440,
-        DATABASE_SYNC: 'false',
-        DATABASE_LOGGING: 'true'
-      },
-      // Logging
-      log_file: './logs/combined.log',
+      error_file: './logs/err.log',
       out_file: './logs/out.log',
-      error_file: './logs/error.log',
-      log_date_format: 'YYYY-MM-DD HH:mm Z',
-      
-      // Advanced settings
-      min_uptime: '10s',
-      max_restarts: 10,
-      restart_delay: 4000,
-      
-      // Graceful shutdown
-      kill_timeout: 5000,
-      wait_ready: true,
-      listen_timeout: 10000,
-      
-      // Health monitoring
-      health_check: {
-        port: 21440,
-        path: '/api/v1/health'
-      },
-      
-      // Environment files
-      env_file: '.env',
-      
-      // Node.js specific
-      node_args: '--max_old_space_size=4096'
+      log_file: './logs/combined.log',
+      time: true
     }
   ]
 };

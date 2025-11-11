@@ -62,7 +62,7 @@ dig groow-api.destinpq.com
 nslookup groow-api.destinpq.com
 
 # Test API endpoint
-curl -I https://groow-api.destinpq.com/api/v1/health
+curl -I https://groow-api-db.destinpq.com/api/v1/health
 ```
 
 ## Testing the Setup
@@ -72,9 +72,9 @@ curl -I https://groow-api.destinpq.com/api/v1/health
 - Should serve the React/UMI frontend
 
 ### Backend API Access  
-- Base URL: `https://groow-api.destinpq.com/api/v1`
-- Health Check: `https://groow-api.destinpq.com/api/v1/health`
-- API Docs: `https://groow-api.destinpq.com/api/docs`
+- Base URL: `https://groow-api-db.destinpq.com/api/v1`
+- Health Check: `https://groow-api-db.destinpq.com/api/v1/health`
+- API Docs: `https://groow-api-db.destinpq.com/api/docs`
 
 ## Troubleshooting
 
