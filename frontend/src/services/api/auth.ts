@@ -225,14 +225,14 @@ export interface VendorRegisterDTO extends RegisterDTO {
 }
 
 class AuthService {
-  private baseURL = '/api/auth';
+  private baseURL = (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1';
 
   // ============================================
   // Core Authentication
   // ============================================
 
   async login(credentials: LoginDTO): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseURL}/login`, {
+    const response = await fetch(`${this.baseURL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
@@ -242,11 +242,24 @@ class AuthService {
       throw new Error('Login failed');
     }
 
-    return response.json();
+    const result = await response.json();
+    
+    // Handle the actual API response structure
+    if (result.success && result.data) {
+      return {
+        user: result.data.user,
+        token: result.data.access_token,
+        refreshToken: result.data.refresh_token,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+      };
+    }
+    
+    // Fallback for different response structure
+    return result;
   }
 
   async register(userData: RegisterDTO): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseURL}/register`, {
+    const response = await fetch(`${this.baseURL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData),
@@ -260,7 +273,7 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    await fetch(`${this.baseURL}/logout`, {
+    await fetch(`${this.baseURL}/auth/logout`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
     });
@@ -287,7 +300,7 @@ class AuthService {
       throw new Error('No refresh token available');
     }
 
-    const response = await fetch(`${this.baseURL}/refresh`, {
+    const response = await fetch(`${this.baseURL}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
