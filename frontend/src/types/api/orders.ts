@@ -225,70 +225,70 @@ export interface OrderAnalyticsResponse extends ApiResponse<{
 
 export interface OrderAPI {
   // Order CRUD
-  // POST /api/v1/orders
+  // POST //orders
   createOrder(request: CreateOrderRequest): Promise<OrderResponse>;
   
-  // GET /api/v1/orders
+  // GET //orders
   getOrders(filters?: OrderFilterRequest): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/my-orders
+  // GET //orders/my-orders
   getMyOrders(filters?: OrderFilterRequest): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/stats
+  // GET //orders/stats
   getOrderStats(filters?: { dateFrom?: string; dateTo?: string; vendorId?: string }): Promise<OrderStatsResponse>;
   
-  // GET /api/v1/orders/status/:status
+  // GET //orders/status/:status
   getOrdersByStatus(status: OrderStatus, filters?: BaseFilter): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/:id
+  // GET //orders/:id
   getOrderById(id: string): Promise<OrderResponse>;
   
-  // GET /api/v1/orders/number/:orderNumber
+  // GET //orders/number/:orderNumber
   getOrderByNumber(orderNumber: string): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/status
+  // PATCH //orders/:id/status
   updateOrderStatus(id: string, request: UpdateOrderStatusRequest): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/cancel
+  // PATCH //orders/:id/cancel
   cancelOrder(id: string, request: CancelOrderRequest): Promise<OrderResponse>;
   
   // Order Management
-  // GET /api/v1/orders/manifested
+  // GET //orders/manifested
   getManifestOrders(filters?: BaseFilter): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/disputed
+  // GET //orders/disputed
   getDisputedOrders(filters?: BaseFilter): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/cancelled
+  // GET //orders/cancelled
   getCancelledOrders(filters?: BaseFilter): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/hold
+  // GET //orders/hold
   getOrdersOnHold(filters?: BaseFilter): Promise<OrderListResponse>;
   
-  // GET /api/v1/orders/returns
+  // GET //orders/returns
   getReturnOrders(filters?: BaseFilter): Promise<OrderListResponse>;
   
-  // PATCH /api/v1/orders/:id/manifest
+  // PATCH //orders/:id/manifest
   manifestOrder(id: string, request: ManifestOrderRequest): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/ship
+  // PATCH //orders/:id/ship
   shipOrder(id: string, request: ShipOrderRequest): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/hold
+  // PATCH //orders/:id/hold
   holdOrder(id: string, request: HoldOrderRequest): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/dispute
+  // PATCH //orders/:id/dispute
   disputeOrder(id: string, request: DisputeOrderRequest): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/return
+  // PATCH //orders/:id/return
   returnOrder(id: string, request: ReturnOrderRequest): Promise<OrderResponse>;
   
-  // PATCH /api/v1/orders/:id/refund
+  // PATCH //orders/:id/refund
   refundOrder(id: string, request: RefundOrderRequest): Promise<OrderResponse>;
   
-  // GET /api/v1/orders/:id/tracking
+  // GET //orders/:id/tracking
   getOrderTracking(id: string): Promise<OrderTrackingResponse>;
   
-  // GET /api/v1/orders/analytics
+  // GET //orders/analytics
   getOrderAnalytics(filters?: { dateFrom?: string; dateTo?: string; vendorId?: string }): Promise<OrderAnalyticsResponse>;
 }

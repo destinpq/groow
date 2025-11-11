@@ -1,8 +1,9 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { message } from 'antd';
 
-// API Base URL
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1';
+// Base API URL configuration
+const baseUrl = process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com';
+const API_BASE_URL = baseUrl;
 
 // Request retry configuration
 const RETRY_CONFIG = {

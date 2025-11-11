@@ -38,21 +38,21 @@ import { ApiResponse } from '@/types/api/common';
 export const supportAPI: SupportAPI = {
   // Ticket Management
   getAllTickets: async (filter?: SupportTicketFilter): Promise<ApiResponse<GetTicketsResponse>> => {
-    const response = await api.get<ApiResponse<GetTicketsResponse>>('/api/v1/support/tickets', {
+    const response = await api.get<ApiResponse<GetTicketsResponse>>('//support/tickets', {
       params: filter,
     });
     return response.data;
   },
 
   getMyTickets: async (filter?: Partial<SupportTicketFilter>): Promise<ApiResponse<GetTicketsResponse>> => {
-    const response = await api.get<ApiResponse<GetTicketsResponse>>('/api/v1/support/tickets/my-tickets', {
+    const response = await api.get<ApiResponse<GetTicketsResponse>>('//support/tickets/my-tickets', {
       params: filter,
     });
     return response.data;
   },
 
   getAssignedTickets: async (filter?: Partial<SupportTicketFilter>): Promise<ApiResponse<GetTicketsResponse>> => {
-    const response = await api.get<ApiResponse<GetTicketsResponse>>('/api/v1/support/tickets/assigned', {
+    const response = await api.get<ApiResponse<GetTicketsResponse>>('//support/tickets/assigned', {
       params: filter,
     });
     return response.data;
@@ -68,7 +68,7 @@ export const supportAPI: SupportAPI = {
       });
     }
 
-    const response = await api.post<ApiResponse<CreateTicketResponse>>('/api/v1/support/tickets', formData, {
+    const response = await api.post<ApiResponse<CreateTicketResponse>>('//support/tickets', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -77,22 +77,22 @@ export const supportAPI: SupportAPI = {
   },
 
   getTicketById: async (id: string): Promise<ApiResponse<GetTicketResponse>> => {
-    const response = await api.get<ApiResponse<GetTicketResponse>>(`/api/v1/support/tickets/${id}`);
+    const response = await api.get<ApiResponse<GetTicketResponse>>(`//support/tickets/${id}`);
     return response.data;
   },
 
   assignTicket: async (ticketId: string, request: AssignTicketRequest): Promise<ApiResponse<AssignTicketResponse>> => {
-    const response = await api.patch<ApiResponse<AssignTicketResponse>>(`/api/v1/support/tickets/${ticketId}/assign`, request);
+    const response = await api.patch<ApiResponse<AssignTicketResponse>>(`//support/tickets/${ticketId}/assign`, request);
     return response.data;
   },
 
   updateTicketStatus: async (ticketId: string, request: UpdateTicketStatusRequest): Promise<ApiResponse<UpdateTicketStatusResponse>> => {
-    const response = await api.patch<ApiResponse<UpdateTicketStatusResponse>>(`/api/v1/support/tickets/${ticketId}/status`, request);
+    const response = await api.patch<ApiResponse<UpdateTicketStatusResponse>>(`//support/tickets/${ticketId}/status`, request);
     return response.data;
   },
 
   escalateTicket: async (ticketId: string, request: EscalateTicketRequest): Promise<ApiResponse<EscalateTicketResponse>> => {
-    const response = await api.patch<ApiResponse<EscalateTicketResponse>>(`/api/v1/support/tickets/${ticketId}/escalate`, request);
+    const response = await api.patch<ApiResponse<EscalateTicketResponse>>(`//support/tickets/${ticketId}/escalate`, request);
     return response.data;
   },
 
@@ -107,7 +107,7 @@ export const supportAPI: SupportAPI = {
       });
     }
 
-    const response = await api.post<ApiResponse<SendMessageResponse>>(`/api/v1/support/tickets/${ticketId}/messages`, formData, {
+    const response = await api.post<ApiResponse<SendMessageResponse>>(`//support/tickets/${ticketId}/messages`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -116,32 +116,32 @@ export const supportAPI: SupportAPI = {
   },
 
   getTicketMessages: async (ticketId: string): Promise<ApiResponse<GetMessagesResponse>> => {
-    const response = await api.get<ApiResponse<GetMessagesResponse>>(`/api/v1/support/tickets/${ticketId}/messages`);
+    const response = await api.get<ApiResponse<GetMessagesResponse>>(`//support/tickets/${ticketId}/messages`);
     return response.data;
   },
 
   // Customer Feedback
   submitTicketFeedback: async (ticketId: string, request: SubmitFeedbackRequest): Promise<ApiResponse<SubmitFeedbackResponse>> => {
-    const response = await api.post<ApiResponse<SubmitFeedbackResponse>>(`/api/v1/support/tickets/${ticketId}/feedback`, request);
+    const response = await api.post<ApiResponse<SubmitFeedbackResponse>>(`//support/tickets/${ticketId}/feedback`, request);
     return response.data;
   },
 
   // Knowledge Base
   getKnowledgeBaseArticles: async (category?: string, search?: string): Promise<ApiResponse<GetKnowledgeBaseArticlesResponse>> => {
-    const response = await api.get<ApiResponse<GetKnowledgeBaseArticlesResponse>>('/api/v1/support/knowledge-base', {
+    const response = await api.get<ApiResponse<GetKnowledgeBaseArticlesResponse>>('//support/knowledge-base', {
       params: { category, search },
     });
     return response.data;
   },
 
   createKnowledgeBaseArticle: async (request: CreateKnowledgeBaseArticleRequest): Promise<ApiResponse<CreateKnowledgeBaseArticleResponse>> => {
-    const response = await api.post<ApiResponse<CreateKnowledgeBaseArticleResponse>>('/api/v1/support/knowledge-base', request);
+    const response = await api.post<ApiResponse<CreateKnowledgeBaseArticleResponse>>('//support/knowledge-base', request);
     return response.data;
   },
 
   // FAQ
   getFAQ: async (category?: string): Promise<ApiResponse<GetFAQResponse>> => {
-    const response = await api.get<ApiResponse<GetFAQResponse>>('/api/v1/support/faq', {
+    const response = await api.get<ApiResponse<GetFAQResponse>>('//support/faq', {
       params: { category },
     });
     return response.data;
@@ -149,43 +149,43 @@ export const supportAPI: SupportAPI = {
 
   // Live Chat
   initiateLiveChat: async (request: InitiateLiveChatRequest): Promise<ApiResponse<InitiateLiveChatResponse>> => {
-    const response = await api.post<ApiResponse<InitiateLiveChatResponse>>('/api/v1/support/live-chat', request);
+    const response = await api.post<ApiResponse<InitiateLiveChatResponse>>('//support/live-chat', request);
     return response.data;
   },
 
   // Templates
   getResponseTemplates: async (): Promise<ApiResponse<GetResponseTemplatesResponse>> => {
-    const response = await api.get<ApiResponse<GetResponseTemplatesResponse>>('/api/v1/support/templates');
+    const response = await api.get<ApiResponse<GetResponseTemplatesResponse>>('//support/templates');
     return response.data;
   },
 
   createResponseTemplate: async (request: CreateResponseTemplateRequest): Promise<ApiResponse<CreateResponseTemplateResponse>> => {
-    const response = await api.post<ApiResponse<CreateResponseTemplateResponse>>('/api/v1/support/templates', request);
+    const response = await api.post<ApiResponse<CreateResponseTemplateResponse>>('//support/templates', request);
     return response.data;
   },
 
   // Analytics & Reports
   getSupportAnalytics: async (period?: string): Promise<ApiResponse<SupportAnalytics>> => {
-    const response = await api.get<ApiResponse<SupportAnalytics>>('/api/v1/support/analytics', {
+    const response = await api.get<ApiResponse<SupportAnalytics>>('//support/analytics', {
       params: { period },
     });
     return response.data;
   },
 
   getSupportPerformance: async (period?: string, staffId?: string): Promise<ApiResponse<SupportPerformance>> => {
-    const response = await api.get<ApiResponse<SupportPerformance>>('/api/v1/support/performance', {
+    const response = await api.get<ApiResponse<SupportPerformance>>('//support/performance', {
       params: { period, staffId },
     });
     return response.data;
   },
 
   getSupportDashboardStats: async (): Promise<ApiResponse<SupportDashboardStats>> => {
-    const response = await api.get<ApiResponse<SupportDashboardStats>>('/api/v1/support/dashboard-stats');
+    const response = await api.get<ApiResponse<SupportDashboardStats>>('//support/dashboard-stats');
     return response.data;
   },
 
   getSLAReport: async (period?: string): Promise<ApiResponse<SLAReport>> => {
-    const response = await api.get<ApiResponse<SLAReport>>('/api/v1/support/sla-report', {
+    const response = await api.get<ApiResponse<SLAReport>>('//support/sla-report', {
       params: { period },
     });
     return response.data;
@@ -193,7 +193,7 @@ export const supportAPI: SupportAPI = {
 
   // Admin Operations
   getSupportCategories: async (): Promise<ApiResponse<{ categories: string[] }>> => {
-    const response = await api.get<ApiResponse<{ categories: string[] }>>('/api/v1/support/categories');
+    const response = await api.get<ApiResponse<{ categories: string[] }>>('//support/categories');
     return response.data;
   },
 };

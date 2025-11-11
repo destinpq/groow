@@ -75,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 13
+        "register": 20
       },
       "enableBy": "register",
       "type": "preset",
@@ -92,7 +92,7 @@
             0
           ]
         },
-        "register": 6
+        "register": 14
       },
       "enableBy": "register",
       "type": "plugin",
@@ -106,10 +106,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            4
+            8
           ]
         },
-        "register": 6
+        "register": 7
       },
       "enableBy": "register",
       "type": "plugin",
@@ -123,7 +123,7 @@
       "time": {
         "hooks": {
           "modifyRoutes": [
-            0
+            1
           ]
         },
         "register": 1
@@ -153,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            1184
+            2015
           ]
         },
-        "register": 55
+        "register": 202
       },
       "enableBy": "register",
       "type": "plugin",
@@ -169,7 +169,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 7
       },
       "enableBy": "register",
       "type": "plugin",
@@ -206,7 +206,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 8
       },
       "enableBy": "register",
       "type": "plugin",
@@ -219,7 +219,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 4
       },
       "enableBy": "config",
       "type": "plugin",
@@ -233,10 +233,10 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            0
+            1
           ]
         },
-        "register": 10
+        "register": 29
       },
       "enableBy": "register",
       "type": "plugin",
@@ -253,7 +253,7 @@
       "enableBy": "register",
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 3
       }
     },
     "virtual: config-styles": {
@@ -1088,7 +1088,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 4
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1102,7 +1102,7 @@
       "time": {
         "hooks": {
           "onStart": [
-            3
+            0
           ]
         },
         "register": 1
@@ -1118,7 +1118,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 14
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1131,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 245
+        "register": 579
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1144,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 52
+        "register": 121
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1157,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 33
+        "register": 47
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1200,7 +1200,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 5
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1214,10 +1214,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            2
+            7
           ]
         },
-        "register": 72
+        "register": 110
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1242,7 +1242,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 6
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/okam/okam.js",
@@ -1281,10 +1281,10 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            1
+            0
           ]
         },
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill.js",
@@ -1296,7 +1296,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1309,7 +1309,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 12
+        "register": 19
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1322,7 +1322,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 3
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1348,7 +1348,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1374,7 +1374,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 6
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1387,7 +1387,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps.js",
@@ -1399,7 +1399,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 6
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1412,7 +1412,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1425,7 +1425,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 15
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1438,7 +1438,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 8
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1476,7 +1476,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 46
+        "register": 96
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1489,7 +1489,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/test/test.js",
@@ -1501,7 +1501,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1514,7 +1514,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 9
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1527,7 +1527,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1540,7 +1540,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
@@ -1553,10 +1553,10 @@
       "time": {
         "hooks": {
           "addOnDemandDeps": [
-            3
+            0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1569,7 +1569,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 10
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/ui/ui.js",
@@ -1581,7 +1581,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 4
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1594,7 +1594,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack.js",
@@ -1606,7 +1606,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 8
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian.js",
@@ -1618,7 +1618,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 67
+        "register": 98
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1643,7 +1643,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1656,7 +1656,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 14
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1669,7 +1669,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 100
+        "register": 198
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1683,10 +1683,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            22
+            25
           ]
         },
-        "register": 53
+        "register": 137
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1698,7 +1698,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1711,7 +1711,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1724,7 +1724,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1750,7 +1750,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 7
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1776,7 +1776,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1789,7 +1789,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 5
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1802,7 +1802,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1841,7 +1841,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1867,7 +1867,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 12
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1880,7 +1880,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1893,7 +1893,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1906,7 +1906,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 8
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1919,7 +1919,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 10
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1932,7 +1932,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 46
+        "register": 117
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1945,7 +1945,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 8
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1958,7 +1958,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 13
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1971,7 +1971,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -3257,7 +3257,7 @@
     "tslibVersion": "2.8.1"
   },
   "faviconFiles": [],
-  "port": 8000,
+  "port": 21441,
   "host": "0.0.0.0",
   "ip": "10.0.0.7"
 }

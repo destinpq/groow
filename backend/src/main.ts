@@ -47,7 +47,7 @@ async function bootstrap() {
   app.use(compression());
 
   // Global prefix
-  app.setGlobalPrefix(configService.get('API_PREFIX', 'api/v1'));
+  app.setGlobalPrefix(configService.get('API_PREFIX', ''));
 
   // Validation
   app.useGlobalPipes(

@@ -213,7 +213,7 @@ export const cartAPI = {
     includeAbandonment?: boolean;
     includePricing?: boolean;
   }): Promise<APIResponse<Cart>> => {
-    const response = await apiClient.get<APIResponse<Cart>>('/api/v1/cart', {
+    const response = await apiClient.get<APIResponse<Cart>>('//cart', {
       params: includes,
     });
     return response.data;
@@ -230,7 +230,7 @@ export const cartAPI = {
     businessRules?: any;
     notes?: string;
   }): Promise<APIResponse<Cart>> => {
-    const response = await apiClient.post<APIResponse<Cart>>('/api/v1/cart', data);
+    const response = await apiClient.post<APIResponse<Cart>>('//cart', data);
     return response.data;
   },
 
@@ -248,7 +248,7 @@ export const cartAPI = {
     notes?: string;
     tags?: string[];
   }): Promise<APIResponse<Cart>> => {
-    const response = await apiClient.patch<APIResponse<Cart>>(`/api/v1/cart/${cartId}`, {
+    const response = await apiClient.patch<APIResponse<Cart>>(`//cart/${cartId}`, {
       ...data,
       preferredDeliveryDate: data.preferredDeliveryDate?.toISOString(),
     });
@@ -257,7 +257,7 @@ export const cartAPI = {
 
   // Clear cart
   clearCart: async (cartId?: string): Promise<APIResponse<{ success: boolean }>> => {
-    const url = cartId ? `/api/v1/cart/${cartId}/clear` : '/api/v1/cart/clear';
+    const url = cartId ? `//cart/${cartId}/clear` : '//cart/clear';
     const response = await apiClient.delete<APIResponse<{ success: boolean }>>(url);
     return response.data;
   },
@@ -284,7 +284,7 @@ export const cartAPI = {
       cartItem: CartItem;
       cart: Cart;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/cart/items', {
+      const response = await apiClient.post<APIResponse<any>>('//cart/items', {
         ...data,
         requestedDeliveryDate: data.requestedDeliveryDate?.toISOString(),
       });
@@ -304,7 +304,7 @@ export const cartAPI = {
       cartItem: CartItem;
       cart: Cart;
     }>> => {
-      const response = await apiClient.patch<APIResponse<any>>(`/api/v1/cart/items/${itemId}`, {
+      const response = await apiClient.patch<APIResponse<any>>(`//cart/items/${itemId}`, {
         ...data,
         requestedDeliveryDate: data.requestedDeliveryDate?.toISOString(),
       });
@@ -313,7 +313,7 @@ export const cartAPI = {
 
     // Remove item from cart
     remove: async (itemId: string): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.delete<APIResponse<Cart>>(`/api/v1/cart/items/${itemId}`);
+      const response = await apiClient.delete<APIResponse<Cart>>(`//cart/items/${itemId}`);
       return response.data;
     },
 
@@ -323,7 +323,7 @@ export const cartAPI = {
       discountAmount?: number;
       discountReason: string;
     }): Promise<APIResponse<CartItem>> => {
-      const response = await apiClient.post<APIResponse<CartItem>>(`/api/v1/cart/items/${itemId}/discount`, data);
+      const response = await apiClient.post<APIResponse<CartItem>>(`//cart/items/${itemId}/discount`, data);
       return response.data;
     },
 
@@ -334,7 +334,7 @@ export const cartAPI = {
       leadTime?: string;
       unavailableReason?: string;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/cart/items/${itemId}/availability`);
+      const response = await apiClient.get<APIResponse<any>>(`//cart/items/${itemId}/availability`);
       return response.data;
     },
 
@@ -350,7 +350,7 @@ export const cartAPI = {
       failed: Array<{ item: any; error: string }>;
       cart: Cart;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/cart/items/bulk-add', { items });
+      const response = await apiClient.post<APIResponse<any>>('//cart/items/bulk-add', { items });
       return response.data;
     },
 
@@ -363,12 +363,12 @@ export const cartAPI = {
       failed: Array<{ itemId: string; error: string }>;
       cart: Cart;
     }>> => {
-      const response = await apiClient.patch<APIResponse<any>>('/api/v1/cart/items/bulk-update', { updates });
+      const response = await apiClient.patch<APIResponse<any>>('//cart/items/bulk-update', { updates });
       return response.data;
     },
 
     bulkRemove: async (itemIds: string[]): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.delete<APIResponse<Cart>>('/api/v1/cart/items/bulk-remove', {
+      const response = await apiClient.delete<APIResponse<Cart>>('//cart/items/bulk-remove', {
         data: { itemIds },
       });
       return response.data;
@@ -386,7 +386,7 @@ export const cartAPI = {
       notes?: string;
       urgency?: 'normal' | 'high' | 'urgent';
     }): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.post<APIResponse<Cart>>(`/api/v1/cart/${cartId}/submit-approval`, data);
+      const response = await apiClient.post<APIResponse<Cart>>(`//cart/${cartId}/submit-approval`, data);
       return response.data;
     },
 
@@ -395,7 +395,7 @@ export const cartAPI = {
       notes?: string;
       conditions?: string[];
     }): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.post<APIResponse<Cart>>(`/api/v1/cart/${cartId}/approve`, data);
+      const response = await apiClient.post<APIResponse<Cart>>(`//cart/${cartId}/approve`, data);
       return response.data;
     },
 
@@ -405,7 +405,7 @@ export const cartAPI = {
       notes?: string;
       suggestedModifications?: string;
     }): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.post<APIResponse<Cart>>(`/api/v1/cart/${cartId}/reject`, data);
+      const response = await apiClient.post<APIResponse<Cart>>(`//cart/${cartId}/reject`, data);
       return response.data;
     },
 
@@ -418,7 +418,7 @@ export const cartAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedResponse<Cart>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<Cart>>>('/api/v1/cart/pending-approvals', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<Cart>>>('//cart/pending-approvals', {
         params: filters,
       });
       return response.data.data;
@@ -440,7 +440,7 @@ export const cartAPI = {
       allowedRoles?: string[];
       tags?: string[];
     }): Promise<APIResponse<SavedCart>> => {
-      const response = await apiClient.post<APIResponse<SavedCart>>(`/api/v1/cart/${cartId}/save`, data);
+      const response = await apiClient.post<APIResponse<SavedCart>>(`//cart/${cartId}/save`, data);
       return response.data;
     },
 
@@ -454,7 +454,7 @@ export const cartAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedResponse<SavedCart>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<SavedCart>>>('/api/v1/cart/saved', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<SavedCart>>>('//cart/saved', {
         params: filters,
       });
       return response.data.data;
@@ -465,7 +465,7 @@ export const cartAPI = {
       replaceCurrentCart?: boolean;
       updatePrices?: boolean;
     }): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.post<APIResponse<Cart>>(`/api/v1/cart/saved/${savedCartId}/load`, options);
+      const response = await apiClient.post<APIResponse<Cart>>(`//cart/saved/${savedCartId}/load`, options);
       return response.data;
     },
 
@@ -477,19 +477,19 @@ export const cartAPI = {
       tags?: string[];
       notes?: string;
     }): Promise<APIResponse<SavedCart>> => {
-      const response = await apiClient.patch<APIResponse<SavedCart>>(`/api/v1/cart/saved/${savedCartId}`, data);
+      const response = await apiClient.patch<APIResponse<SavedCart>>(`//cart/saved/${savedCartId}`, data);
       return response.data;
     },
 
     // Delete saved cart
     delete: async (savedCartId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/cart/saved/${savedCartId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//cart/saved/${savedCartId}`);
       return response.data;
     },
 
     // Use template to create cart
     useTemplate: async (templateId: string): Promise<APIResponse<Cart>> => {
-      const response = await apiClient.post<APIResponse<Cart>>(`/api/v1/cart/templates/${templateId}/use`);
+      const response = await apiClient.post<APIResponse<Cart>>(`//cart/templates/${templateId}/use`);
       return response.data;
     },
   },
@@ -508,7 +508,7 @@ export const cartAPI = {
       notifyOnChanges?: boolean;
       notifyOnCheckout?: boolean;
     }): Promise<APIResponse<CartShare>> => {
-      const response = await apiClient.post<APIResponse<CartShare>>(`/api/v1/cart/${cartId}/share`, {
+      const response = await apiClient.post<APIResponse<CartShare>>(`//cart/${cartId}/share`, {
         ...data,
         expiresAt: data.expiresAt?.toISOString(),
       });
@@ -517,7 +517,7 @@ export const cartAPI = {
 
     // Get cart shares
     getShares: async (cartId: string): Promise<APIResponse<CartShare[]>> => {
-      const response = await apiClient.get<APIResponse<CartShare[]>>(`/api/v1/cart/${cartId}/shares`);
+      const response = await apiClient.get<APIResponse<CartShare[]>>(`//cart/${cartId}/shares`);
       return response.data;
     },
 
@@ -526,7 +526,7 @@ export const cartAPI = {
       shareStatus: 'accepted' | 'declined';
       responseMessage?: string;
     }): Promise<APIResponse<CartShare>> => {
-      const response = await apiClient.patch<APIResponse<CartShare>>(`/api/v1/cart/shares/${shareId}/respond`, data);
+      const response = await apiClient.patch<APIResponse<CartShare>>(`//cart/shares/${shareId}/respond`, data);
       return response.data;
     },
 
@@ -537,7 +537,7 @@ export const cartAPI = {
       notifyOnChanges?: boolean;
       notifyOnCheckout?: boolean;
     }): Promise<APIResponse<CartShare>> => {
-      const response = await apiClient.patch<APIResponse<CartShare>>(`/api/v1/cart/shares/${shareId}`, {
+      const response = await apiClient.patch<APIResponse<CartShare>>(`//cart/shares/${shareId}`, {
         ...data,
         expiresAt: data.expiresAt?.toISOString(),
       });
@@ -546,7 +546,7 @@ export const cartAPI = {
 
     // Revoke cart share
     revokeShare: async (shareId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/cart/shares/${shareId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//cart/shares/${shareId}`);
       return response.data;
     },
 
@@ -555,7 +555,7 @@ export const cartAPI = {
       permission?: string[];
       shareStatus?: string[];
     }): Promise<APIResponse<CartShare[]>> => {
-      const response = await apiClient.get<APIResponse<CartShare[]>>('/api/v1/cart/shared-with-me', {
+      const response = await apiClient.get<APIResponse<CartShare[]>>('//cart/shared-with-me', {
         params: filters,
       });
       return response.data;
@@ -574,7 +574,7 @@ export const cartAPI = {
       deviceInfo?: any;
       browserInfo?: any;
     }): Promise<APIResponse<CartAbandonment>> => {
-      const response = await apiClient.post<APIResponse<CartAbandonment>>(`/api/v1/cart/${cartId}/abandonment`, data);
+      const response = await apiClient.post<APIResponse<CartAbandonment>>(`//cart/${cartId}/abandonment`, data);
       return response.data;
     },
 
@@ -588,7 +588,7 @@ export const cartAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedResponse<CartAbandonment>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<CartAbandonment>>>('/api/v1/cart/abandoned', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<CartAbandonment>>>('//cart/abandoned', {
         params: {
           ...filters,
           dateFrom: filters?.dateFrom?.toISOString(),
@@ -606,13 +606,13 @@ export const cartAPI = {
       incentiveType?: 'discount' | 'free_shipping' | 'gift';
       incentiveValue?: number;
     }): Promise<APIResponse<{ success: boolean; emailSent: boolean }>> => {
-      const response = await apiClient.post<APIResponse<any>>(`/api/v1/cart/abandonment/${abandonmentId}/recovery-email`, data);
+      const response = await apiClient.post<APIResponse<any>>(`//cart/abandonment/${abandonmentId}/recovery-email`, data);
       return response.data;
     },
 
     // Mark as recovered
     markRecovered: async (abandonmentId: string, orderId: string): Promise<APIResponse<CartAbandonment>> => {
-      const response = await apiClient.patch<APIResponse<CartAbandonment>>(`/api/v1/cart/abandonment/${abandonmentId}/recovered`, {
+      const response = await apiClient.patch<APIResponse<CartAbandonment>>(`//cart/abandonment/${abandonmentId}/recovered`, {
         orderId,
       });
       return response.data;
@@ -635,14 +635,14 @@ export const cartAPI = {
       }>;
       updatedCart: Cart;
     }>> => {
-      const url = cartId ? `/api/v1/cart/${cartId}/validate` : '/api/v1/cart/validate';
+      const url = cartId ? `//cart/${cartId}/validate` : '//cart/validate';
       const response = await apiClient.post<APIResponse<any>>(url);
       return response.data;
     },
 
     // Update cart pricing
     updatePricing: async (cartId?: string): Promise<APIResponse<Cart>> => {
-      const url = cartId ? `/api/v1/cart/${cartId}/update-pricing` : '/api/v1/cart/update-pricing';
+      const url = cartId ? `//cart/${cartId}/update-pricing` : '//cart/update-pricing';
       const response = await apiClient.post<APIResponse<Cart>>(url);
       return response.data;
     },
@@ -657,7 +657,7 @@ export const cartAPI = {
         severity: 'error' | 'warning';
       }>;
     }>> => {
-      const url = cartId ? `/api/v1/cart/${cartId}/compliance` : '/api/v1/cart/compliance';
+      const url = cartId ? `//cart/${cartId}/compliance` : '//cart/compliance';
       const response = await apiClient.get<APIResponse<any>>(url);
       return response.data;
     },
@@ -686,7 +686,7 @@ export const cartAPI = {
       conversionProbability: number;
       recommendedActions: string[];
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/cart/${cartId}/analytics`);
+      const response = await apiClient.get<APIResponse<any>>(`//cart/${cartId}/analytics`);
       return response.data;
     },
 
@@ -706,7 +706,7 @@ export const cartAPI = {
         recoveredRevenue: number;
       };
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/cart/analytics/abandonment', {
+      const response = await apiClient.get<APIResponse<any>>('//cart/analytics/abandonment', {
         params: {
           dateFrom: filters?.dateFrom?.toISOString(),
           dateTo: filters?.dateTo?.toISOString(),
@@ -753,7 +753,7 @@ export const cartAPI = {
     shippingMethodId?: string;
     notes?: string;
   }): Promise<APIResponse<{ orderId: string; orderNumber: string }>> => {
-    const url = cartId ? `/api/v1/cart/${cartId}/convert-to-order` : '/api/v1/cart/convert-to-order';
+    const url = cartId ? `//cart/${cartId}/convert-to-order` : '//cart/convert-to-order';
     const response = await apiClient.post<APIResponse<any>>(url, options);
     return response.data;
   },
@@ -774,7 +774,7 @@ export const wishlistAPI = {
     priority?: string;
     tags?: string[];
   }): Promise<APIResponse<Wishlist>> => {
-    const response = await apiClient.post<APIResponse<Wishlist>>('/api/v1/wishlists', {
+    const response = await apiClient.post<APIResponse<Wishlist>>('//wishlists', {
       ...data,
       targetDate: data.targetDate?.toISOString(),
     });
@@ -790,7 +790,7 @@ export const wishlistAPI = {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<Wishlist>> => {
-    const response = await apiClient.get<APIResponse<PaginatedResponse<Wishlist>>>('/api/v1/wishlists', {
+    const response = await apiClient.get<APIResponse<PaginatedResponse<Wishlist>>>('//wishlists', {
       params: filters,
     });
     return response.data.data;
@@ -798,13 +798,13 @@ export const wishlistAPI = {
 
   // Get default wishlist
   getDefault: async (): Promise<APIResponse<Wishlist>> => {
-    const response = await apiClient.get<APIResponse<Wishlist>>('/api/v1/wishlists/default');
+    const response = await apiClient.get<APIResponse<Wishlist>>('//wishlists/default');
     return response.data;
   },
 
   // Get wishlist by ID
   getById: async (wishlistId: string): Promise<APIResponse<Wishlist>> => {
-    const response = await apiClient.get<APIResponse<Wishlist>>(`/api/v1/wishlists/${wishlistId}`);
+    const response = await apiClient.get<APIResponse<Wishlist>>(`//wishlists/${wishlistId}`);
     return response.data;
   },
 
@@ -819,7 +819,7 @@ export const wishlistAPI = {
     tags?: string[];
     notes?: string;
   }): Promise<APIResponse<Wishlist>> => {
-    const response = await apiClient.patch<APIResponse<Wishlist>>(`/api/v1/wishlists/${wishlistId}`, {
+    const response = await apiClient.patch<APIResponse<Wishlist>>(`//wishlists/${wishlistId}`, {
       ...data,
       targetDate: data.targetDate?.toISOString(),
     });
@@ -828,7 +828,7 @@ export const wishlistAPI = {
 
   // Delete wishlist
   delete: async (wishlistId: string): Promise<APIResponse<{ success: boolean }>> => {
-    const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/wishlists/${wishlistId}`);
+    const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//wishlists/${wishlistId}`);
     return response.data;
   },
 
@@ -849,7 +849,7 @@ export const wishlistAPI = {
       isPriceAlert?: boolean;
       isStockAlert?: boolean;
     }): Promise<APIResponse<WishlistItem>> => {
-      const response = await apiClient.post<APIResponse<WishlistItem>>(`/api/v1/wishlists/${wishlistId}/items`, {
+      const response = await apiClient.post<APIResponse<WishlistItem>>(`//wishlists/${wishlistId}/items`, {
         ...data,
         neededByDate: data.neededByDate?.toISOString(),
       });
@@ -865,7 +865,7 @@ export const wishlistAPI = {
       notes?: string;
       businessJustification?: string;
     }): Promise<APIResponse<WishlistItem>> => {
-      const response = await apiClient.patch<APIResponse<WishlistItem>>(`/api/v1/wishlist-items/${itemId}`, {
+      const response = await apiClient.patch<APIResponse<WishlistItem>>(`//wishlist-items/${itemId}`, {
         ...data,
         neededByDate: data.neededByDate?.toISOString(),
       });
@@ -874,7 +874,7 @@ export const wishlistAPI = {
 
     // Remove item from wishlist
     remove: async (itemId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/wishlist-items/${itemId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//wishlist-items/${itemId}`);
       return response.data;
     },
 
@@ -883,7 +883,7 @@ export const wishlistAPI = {
       cartItem: CartItem;
       removedFromWishlist: boolean;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>(`/api/v1/wishlist-items/${itemId}/move-to-cart`, {
+      const response = await apiClient.post<APIResponse<any>>(`//wishlist-items/${itemId}/move-to-cart`, {
         cartId,
       });
       return response.data;
@@ -896,7 +896,7 @@ export const wishlistAPI = {
       targetPrice: number;
       priceDropPercentage: number;
     }>>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/wishlists/${wishlistId}/price-alerts`);
+      const response = await apiClient.get<APIResponse<any>>(`//wishlists/${wishlistId}/price-alerts`);
       return response.data;
     },
   },

@@ -235,7 +235,7 @@ export const customerAPI = {
     contracts?: CustomerContract[];
     recentInteractions?: CustomerInteraction[];
   }>> => {
-    const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/profile', {
+    const response = await apiClient.get<APIResponse<any>>('//customers/profile', {
       params: includes,
     });
     return response.data;
@@ -266,7 +266,7 @@ export const customerAPI = {
     customFields?: any;
     tags?: string[];
   }): Promise<APIResponse<Customer>> => {
-    const response = await apiClient.patch<APIResponse<Customer>>('/api/v1/customers/profile', {
+    const response = await apiClient.patch<APIResponse<Customer>>('//customers/profile', {
       ...data,
       incorporationDate: data.incorporationDate?.toISOString(),
     });
@@ -278,7 +278,7 @@ export const customerAPI = {
     const formData = new FormData();
     formData.append('logo', file);
 
-    const response = await apiClient.post<APIResponse<any>>('/api/v1/customers/upload/logo', formData, {
+    const response = await apiClient.post<APIResponse<any>>('//customers/upload/logo', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
@@ -304,7 +304,7 @@ export const customerAPI = {
       satisfactionScore: number;
     };
   }>> => {
-    const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/dashboard');
+    const response = await apiClient.get<APIResponse<any>>('//customers/dashboard');
     return response.data;
   },
 
@@ -315,7 +315,7 @@ export const customerAPI = {
   addresses: {
     // List addresses
     list: async (): Promise<APIResponse<CustomerAddress[]>> => {
-      const response = await apiClient.get<APIResponse<CustomerAddress[]>>('/api/v1/customers/addresses');
+      const response = await apiClient.get<APIResponse<CustomerAddress[]>>('//customers/addresses');
       return response.data;
     },
 
@@ -336,7 +336,7 @@ export const customerAPI = {
       businessHours?: any;
       notes?: string;
     }): Promise<APIResponse<CustomerAddress>> => {
-      const response = await apiClient.post<APIResponse<CustomerAddress>>('/api/v1/customers/addresses', data);
+      const response = await apiClient.post<APIResponse<CustomerAddress>>('//customers/addresses', data);
       return response.data;
     },
 
@@ -355,13 +355,13 @@ export const customerAPI = {
       businessHours?: any;
       notes?: string;
     }): Promise<APIResponse<CustomerAddress>> => {
-      const response = await apiClient.patch<APIResponse<CustomerAddress>>(`/api/v1/customers/addresses/${addressId}`, data);
+      const response = await apiClient.patch<APIResponse<CustomerAddress>>(`//customers/addresses/${addressId}`, data);
       return response.data;
     },
 
     // Set default address
     setDefault: async (addressId: string, addressType: CustomerAddress['addressType']): Promise<APIResponse<CustomerAddress>> => {
-      const response = await apiClient.patch<APIResponse<CustomerAddress>>(`/api/v1/customers/addresses/${addressId}/set-default`, {
+      const response = await apiClient.patch<APIResponse<CustomerAddress>>(`//customers/addresses/${addressId}/set-default`, {
         addressType,
       });
       return response.data;
@@ -369,7 +369,7 @@ export const customerAPI = {
 
     // Delete address
     delete: async (addressId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/customers/addresses/${addressId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//customers/addresses/${addressId}`);
       return response.data;
     },
 
@@ -385,7 +385,7 @@ export const customerAPI = {
       suggestedAddress?: any;
       validationMessages?: string[];
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/customers/addresses/validate', address);
+      const response = await apiClient.post<APIResponse<any>>('//customers/addresses/validate', address);
       return response.data;
     },
   },
@@ -397,7 +397,7 @@ export const customerAPI = {
   contacts: {
     // List contacts
     list: async (): Promise<APIResponse<CustomerContact[]>> => {
-      const response = await apiClient.get<APIResponse<CustomerContact[]>>('/api/v1/customers/contacts');
+      const response = await apiClient.get<APIResponse<CustomerContact[]>>('//customers/contacts');
       return response.data;
     },
 
@@ -419,7 +419,7 @@ export const customerAPI = {
       preferredContactMethods?: string[];
       notes?: string;
     }): Promise<APIResponse<CustomerContact>> => {
-      const response = await apiClient.post<APIResponse<CustomerContact>>('/api/v1/customers/contacts', data);
+      const response = await apiClient.post<APIResponse<CustomerContact>>('//customers/contacts', data);
       return response.data;
     },
 
@@ -441,13 +441,13 @@ export const customerAPI = {
       preferredContactMethods?: string[];
       notes?: string;
     }): Promise<APIResponse<CustomerContact>> => {
-      const response = await apiClient.patch<APIResponse<CustomerContact>>(`/api/v1/customers/contacts/${contactId}`, data);
+      const response = await apiClient.patch<APIResponse<CustomerContact>>(`//customers/contacts/${contactId}`, data);
       return response.data;
     },
 
     // Set primary contact
     setPrimary: async (contactId: string, contactType: CustomerContact['contactType']): Promise<APIResponse<CustomerContact>> => {
-      const response = await apiClient.patch<APIResponse<CustomerContact>>(`/api/v1/customers/contacts/${contactId}/set-primary`, {
+      const response = await apiClient.patch<APIResponse<CustomerContact>>(`//customers/contacts/${contactId}/set-primary`, {
         contactType,
       });
       return response.data;
@@ -455,7 +455,7 @@ export const customerAPI = {
 
     // Delete contact
     delete: async (contactId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/customers/contacts/${contactId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//customers/contacts/${contactId}`);
       return response.data;
     },
   },
@@ -471,7 +471,7 @@ export const customerAPI = {
       status?: string[];
       isExpiring?: boolean;
     }): Promise<APIResponse<CustomerDocument[]>> => {
-      const response = await apiClient.get<APIResponse<CustomerDocument[]>>('/api/v1/customers/documents', {
+      const response = await apiClient.get<APIResponse<CustomerDocument[]>>('//customers/documents', {
         params: filters,
       });
       return response.data;
@@ -494,7 +494,7 @@ export const customerAPI = {
       if (data.expirationDate) formData.append('expirationDate', data.expirationDate.toISOString());
       if (data.isConfidential) formData.append('isConfidential', String(data.isConfidential));
 
-      const response = await apiClient.post<APIResponse<CustomerDocument>>('/api/v1/customers/documents', formData, {
+      const response = await apiClient.post<APIResponse<CustomerDocument>>('//customers/documents', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -502,7 +502,7 @@ export const customerAPI = {
 
     // Download document
     download: async (documentId: string): Promise<Blob> => {
-      const response = await apiClient.get(`/api/v1/customers/documents/${documentId}/download`, {
+      const response = await apiClient.get(`//customers/documents/${documentId}/download`, {
         responseType: 'blob',
       });
       return response.data;
@@ -515,7 +515,7 @@ export const customerAPI = {
       expirationDate?: Date;
       isConfidential?: boolean;
     }): Promise<APIResponse<CustomerDocument>> => {
-      const response = await apiClient.patch<APIResponse<CustomerDocument>>(`/api/v1/customers/documents/${documentId}`, {
+      const response = await apiClient.patch<APIResponse<CustomerDocument>>(`//customers/documents/${documentId}`, {
         ...data,
         expirationDate: data.expirationDate?.toISOString(),
       });
@@ -524,13 +524,13 @@ export const customerAPI = {
 
     // Delete document
     delete: async (documentId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/customers/documents/${documentId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//customers/documents/${documentId}`);
       return response.data;
     },
 
     // Get expiring documents
     getExpiring: async (days: number = 30): Promise<APIResponse<CustomerDocument[]>> => {
-      const response = await apiClient.get<APIResponse<CustomerDocument[]>>('/api/v1/customers/documents/expiring', {
+      const response = await apiClient.get<APIResponse<CustomerDocument[]>>('//customers/documents/expiring', {
         params: { days },
       });
       return response.data;
@@ -552,7 +552,7 @@ export const customerAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedResponse<CustomerInteraction>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<CustomerInteraction>>>('/api/v1/customers/interactions', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<CustomerInteraction>>>('//customers/interactions', {
         params: {
           ...filters,
           dateFrom: filters?.dateFrom?.toISOString(),
@@ -576,7 +576,7 @@ export const customerAPI = {
       tags?: string[];
       internalNotes?: string;
     }): Promise<APIResponse<CustomerInteraction>> => {
-      const response = await apiClient.post<APIResponse<CustomerInteraction>>('/api/v1/customers/interactions', {
+      const response = await apiClient.post<APIResponse<CustomerInteraction>>('//customers/interactions', {
         ...data,
         interactionDate: data.interactionDate?.toISOString() || new Date().toISOString(),
       });
@@ -595,7 +595,7 @@ export const customerAPI = {
       tags?: string[];
       internalNotes?: string;
     }): Promise<APIResponse<CustomerInteraction>> => {
-      const response = await apiClient.patch<APIResponse<CustomerInteraction>>(`/api/v1/customers/interactions/${interactionId}`, data);
+      const response = await apiClient.patch<APIResponse<CustomerInteraction>>(`//customers/interactions/${interactionId}`, data);
       return response.data;
     },
 
@@ -615,7 +615,7 @@ export const customerAPI = {
         sentiment: number;
       }>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/interactions/analytics', {
+      const response = await apiClient.get<APIResponse<any>>('//customers/interactions/analytics', {
         params: {
           dateFrom: period?.dateFrom?.toISOString(),
           dateTo: period?.dateTo?.toISOString(),
@@ -636,7 +636,7 @@ export const customerAPI = {
       status?: string[];
       isExpiring?: boolean;
     }): Promise<APIResponse<CustomerContract[]>> => {
-      const response = await apiClient.get<APIResponse<CustomerContract[]>>('/api/v1/customers/contracts', {
+      const response = await apiClient.get<APIResponse<CustomerContract[]>>('//customers/contracts', {
         params: filters,
       });
       return response.data;
@@ -644,13 +644,13 @@ export const customerAPI = {
 
     // Get contract by ID
     getById: async (contractId: string): Promise<APIResponse<CustomerContract>> => {
-      const response = await apiClient.get<APIResponse<CustomerContract>>(`/api/v1/customers/contracts/${contractId}`);
+      const response = await apiClient.get<APIResponse<CustomerContract>>(`//customers/contracts/${contractId}`);
       return response.data;
     },
 
     // Download contract document
     download: async (contractId: string): Promise<Blob> => {
-      const response = await apiClient.get(`/api/v1/customers/contracts/${contractId}/download`, {
+      const response = await apiClient.get(`//customers/contracts/${contractId}/download`, {
         responseType: 'blob',
       });
       return response.data;
@@ -666,13 +666,13 @@ export const customerAPI = {
       requestId: string;
       status: 'pending' | 'approved' | 'rejected';
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>(`/api/v1/customers/contracts/${contractId}/amendment-request`, data);
+      const response = await apiClient.post<APIResponse<any>>(`//customers/contracts/${contractId}/amendment-request`, data);
       return response.data;
     },
 
     // Get expiring contracts
     getExpiring: async (days: number = 30): Promise<APIResponse<CustomerContract[]>> => {
-      const response = await apiClient.get<APIResponse<CustomerContract[]>>('/api/v1/customers/contracts/expiring', {
+      const response = await apiClient.get<APIResponse<CustomerContract[]>>('//customers/contracts/expiring', {
         params: { days },
       });
       return response.data;
@@ -706,7 +706,7 @@ export const customerAPI = {
         averageDaysOverdue: number;
       };
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/financials/summary');
+      const response = await apiClient.get<APIResponse<any>>('//customers/financials/summary');
       return response.data;
     },
 
@@ -721,7 +721,7 @@ export const customerAPI = {
       status: 'pending' | 'approved' | 'rejected';
       estimatedProcessingDays: number;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/customers/financials/credit-increase', data);
+      const response = await apiClient.post<APIResponse<any>>('//customers/financials/credit-increase', data);
       return response.data;
     },
 
@@ -733,7 +733,7 @@ export const customerAPI = {
       invoiceDeliveryMethod?: 'email' | 'portal' | 'api';
       paymentMethodId?: string;
     }): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.patch<APIResponse<{ success: boolean }>>('/api/v1/customers/financials/payment-preferences', data);
+      const response = await apiClient.patch<APIResponse<{ success: boolean }>>('//customers/financials/payment-preferences', data);
       return response.data;
     },
 
@@ -746,7 +746,7 @@ export const customerAPI = {
       recommendations: string[];
       lastUpdated: Date;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/financials/credit-report');
+      const response = await apiClient.get<APIResponse<any>>('//customers/financials/credit-report');
       return response.data;
     },
   },
@@ -764,7 +764,7 @@ export const customerAPI = {
       totalUsers: number;
       consolidatedSpending: number;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/hierarchy');
+      const response = await apiClient.get<APIResponse<any>>('//customers/hierarchy');
       return response.data;
     },
 
@@ -776,7 +776,7 @@ export const customerAPI = {
       relationshipType: string;
       ownershipPercentage?: number;
     }): Promise<APIResponse<Customer>> => {
-      const response = await apiClient.post<APIResponse<Customer>>('/api/v1/customers/hierarchy/subsidiaries', data);
+      const response = await apiClient.post<APIResponse<Customer>>('//customers/hierarchy/subsidiaries', data);
       return response.data;
     },
 
@@ -786,13 +786,13 @@ export const customerAPI = {
       ownershipPercentage?: number;
       isActive?: boolean;
     }): Promise<APIResponse<Customer>> => {
-      const response = await apiClient.patch<APIResponse<Customer>>(`/api/v1/customers/hierarchy/subsidiaries/${subsidiaryId}`, data);
+      const response = await apiClient.patch<APIResponse<Customer>>(`//customers/hierarchy/subsidiaries/${subsidiaryId}`, data);
       return response.data;
     },
 
     // Remove subsidiary
     removeSubsidiary: async (subsidiaryId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/customers/hierarchy/subsidiaries/${subsidiaryId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//customers/hierarchy/subsidiaries/${subsidiaryId}`);
       return response.data;
     },
   },
@@ -817,7 +817,7 @@ export const customerAPI = {
       }>;
       availableRewards: any[];
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/loyalty/summary');
+      const response = await apiClient.get<APIResponse<any>>('//customers/loyalty/summary');
       return response.data;
     },
 
@@ -832,7 +832,7 @@ export const customerAPI = {
       valueRedeemed: number;
       remainingPoints: number;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/customers/loyalty/redeem', data);
+      const response = await apiClient.post<APIResponse<any>>('//customers/loyalty/redeem', data);
       return response.data;
     },
 
@@ -845,7 +845,7 @@ export const customerAPI = {
       referralRewards: number;
       pendingReferrals: any[];
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/loyalty/referrals');
+      const response = await apiClient.get<APIResponse<any>>('//customers/loyalty/referrals');
       return response.data;
     },
   },
@@ -884,7 +884,7 @@ export const customerAPI = {
         action: string;
       }>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/analytics/insights', {
+      const response = await apiClient.get<APIResponse<any>>('//customers/analytics/insights', {
         params: {
           dateFrom: period?.dateFrom?.toISOString(),
           dateTo: period?.dateTo?.toISOString(),
@@ -901,7 +901,7 @@ export const customerAPI = {
       includeFinancials?: boolean;
       dateRange?: { from: Date; to: Date };
     }): Promise<Blob> => {
-      const response = await apiClient.post('/api/v1/customers/analytics/export', {
+      const response = await apiClient.post('//customers/analytics/export', {
         ...options,
         dateRange: options.dateRange ? {
           from: options.dateRange.from.toISOString(),
@@ -937,7 +937,7 @@ export const customerAPI = {
       sortBy?: string;
       sortOrder?: 'asc' | 'desc';
     }): Promise<PaginatedResponse<Customer>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<Customer>>>('/api/v1/admin/customers/search', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<Customer>>>('//admin/customers/search', {
         params: filters,
       });
       return response.data.data;
@@ -952,7 +952,7 @@ export const customerAPI = {
       contracts: CustomerContract[];
       documents: CustomerDocument[];
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/admin/customers/${customerId}`);
+      const response = await apiClient.get<APIResponse<any>>(`//admin/customers/${customerId}`);
       return response.data;
     },
 
@@ -962,13 +962,13 @@ export const customerAPI = {
       reason?: string;
       notifyCustomer?: boolean;
     }): Promise<APIResponse<Customer>> => {
-      const response = await apiClient.patch<APIResponse<Customer>>(`/api/v1/admin/customers/${customerId}/status`, data);
+      const response = await apiClient.patch<APIResponse<Customer>>(`//admin/customers/${customerId}/status`, data);
       return response.data;
     },
 
     // Assign account manager (admin)
     assignAccountManager: async (customerId: string, accountManagerId: string): Promise<APIResponse<Customer>> => {
-      const response = await apiClient.patch<APIResponse<Customer>>(`/api/v1/admin/customers/${customerId}/assign-manager`, {
+      const response = await apiClient.patch<APIResponse<Customer>>(`//admin/customers/${customerId}/assign-manager`, {
         accountManagerId,
       });
       return response.data;
@@ -980,7 +980,7 @@ export const customerAPI = {
       reason: string;
       effectiveDate?: Date;
     }): Promise<APIResponse<Customer>> => {
-      const response = await apiClient.patch<APIResponse<Customer>>(`/api/v1/admin/customers/${customerId}/tier`, {
+      const response = await apiClient.patch<APIResponse<Customer>>(`//admin/customers/${customerId}/tier`, {
         ...data,
         effectiveDate: data.effectiveDate?.toISOString(),
       });
@@ -1009,7 +1009,7 @@ export const customerAPI = {
         dataRetentionPolicy: any;
       };
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/customers/compliance/status');
+      const response = await apiClient.get<APIResponse<any>>('//customers/compliance/status');
       return response.data;
     },
 
@@ -1020,7 +1020,7 @@ export const customerAPI = {
       cookiePreferences?: any;
       communicationPreferences?: any;
     }): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.patch<APIResponse<{ success: boolean }>>('/api/v1/customers/compliance/privacy-settings', data);
+      const response = await apiClient.patch<APIResponse<{ success: boolean }>>('//customers/compliance/privacy-settings', data);
       return response.data;
     },
 
@@ -1030,7 +1030,7 @@ export const customerAPI = {
       estimatedCompletionDate: Date;
       downloadUrl?: string;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/customers/compliance/data-export');
+      const response = await apiClient.post<APIResponse<any>>('//customers/compliance/data-export');
       return response.data;
     },
 
@@ -1040,7 +1040,7 @@ export const customerAPI = {
       scheduledDeletionDate: Date;
       cancellationDeadline: Date;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/customers/compliance/account-deletion', {
+      const response = await apiClient.post<APIResponse<any>>('//customers/compliance/account-deletion', {
         reason,
       });
       return response.data;

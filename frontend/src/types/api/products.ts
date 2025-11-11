@@ -187,80 +187,80 @@ export interface BrandsResponse extends ApiResponse<Brand[]> {}
 
 export interface ProductAPI {
   // Product CRUD
-  // POST /api/v1/products
+  // POST //products
   createProduct(request: CreateProductRequest): Promise<ProductResponse>;
   
-  // GET /api/v1/products
+  // GET //products
   getProducts(filters?: ProductFilterRequest): Promise<ProductListResponse>;
   
-  // GET /api/v1/products/featured
+  // GET //products/featured
   getFeaturedProducts(limit?: number): Promise<ProductsResponse>;
   
-  // GET /api/v1/products/recommended
+  // GET //products/recommended
   getRecommendedProducts(limit?: number): Promise<ProductsResponse>;
   
-  // GET /api/v1/products/vendor/:vendorId
+  // GET //products/vendor/:vendorId
   getProductsByVendor(vendorId: string, filters?: ProductFilterRequest): Promise<ProductListResponse>;
   
-  // GET /api/v1/products/slug/:slug
+  // GET //products/slug/:slug
   getProductBySlug(slug: string): Promise<ProductResponse>;
   
-  // GET /api/v1/products/:id
+  // GET //products/:id
   getProductById(id: string): Promise<ProductResponse>;
   
-  // PATCH /api/v1/products/:id
+  // PATCH //products/:id
   updateProduct(id: string, request: UpdateProductRequest): Promise<ProductResponse>;
   
-  // PATCH /api/v1/products/:id/status
+  // PATCH //products/:id/status
   updateProductStatus(id: string, request: ProductStatusUpdateRequest): Promise<ProductResponse>;
   
-  // PATCH /api/v1/products/:id/stock
+  // PATCH //products/:id/stock
   updateProductStock(id: string, request: ProductStockUpdateRequest): Promise<ProductResponse>;
   
-  // DELETE /api/v1/products/:id
+  // DELETE //products/:id
   deleteProduct(id: string): Promise<ApiResponse>;
   
   // Category endpoints
-  // POST /api/v1/categories
+  // POST //categories
   createCategory(request: CreateCategoryRequest): Promise<CategoryResponse>;
   
-  // GET /api/v1/categories
+  // GET //categories
   getCategories(filters?: BaseFilter): Promise<CategoryListResponse>;
   
-  // GET /api/v1/categories/hierarchy
+  // GET //categories/hierarchy
   getCategoryHierarchy(): Promise<CategoryHierarchyResponse>;
   
-  // GET /api/v1/categories/:id/subcategories
+  // GET //categories/:id/subcategories
   getSubcategories(id: string): Promise<CategoriesResponse>;
   
-  // GET /api/v1/categories/slug/:slug
+  // GET //categories/slug/:slug
   getCategoryBySlug(slug: string): Promise<CategoryResponse>;
   
-  // GET /api/v1/categories/:id
+  // GET //categories/:id
   getCategoryById(id: string): Promise<CategoryResponse>;
   
-  // PATCH /api/v1/categories/:id
+  // PATCH //categories/:id
   updateCategory(id: string, request: UpdateCategoryRequest): Promise<CategoryResponse>;
   
-  // DELETE /api/v1/categories/:id
+  // DELETE //categories/:id
   deleteCategory(id: string): Promise<ApiResponse>;
   
   // Brand endpoints
-  // POST /api/v1/brands
+  // POST //brands
   createBrand(request: CreateBrandRequest): Promise<BrandResponse>;
   
-  // GET /api/v1/brands
+  // GET //brands
   getBrands(filters?: BaseFilter): Promise<BrandListResponse>;
   
-  // GET /api/v1/brands/slug/:slug
+  // GET //brands/slug/:slug
   getBrandBySlug(slug: string): Promise<BrandResponse>;
   
-  // GET /api/v1/brands/:id
+  // GET //brands/:id
   getBrandById(id: string): Promise<BrandResponse>;
   
-  // PATCH /api/v1/brands/:id
+  // PATCH //brands/:id
   updateBrand(id: string, request: UpdateBrandRequest): Promise<BrandResponse>;
   
-  // DELETE /api/v1/brands/:id
+  // DELETE //brands/:id
   deleteBrand(id: string): Promise<ApiResponse>;
 }

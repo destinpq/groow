@@ -113,28 +113,28 @@ export interface LogoutResponse extends ApiResponse<{
 // =================== AUTH API INTERFACE ===================
 
 export interface AuthAPI {
-  // POST /api/v1/auth/register
+  // POST //auth/register
   register(request: RegisterRequest): Promise<RegisterResponse>;
   
-  // POST /api/v1/auth/login
+  // POST //auth/login
   login(request: LoginRequest): Promise<LoginResponse>;
   
-  // POST /api/v1/auth/forgot-password
+  // POST //auth/forgot-password
   forgotPassword(request: ForgotPasswordRequest): Promise<ForgotPasswordResponse>;
   
-  // POST /api/v1/auth/reset-password
+  // POST //auth/reset-password
   resetPassword(request: ResetPasswordRequest): Promise<ResetPasswordResponse>;
   
-  // POST /api/v1/auth/verify-email
+  // POST //auth/verify-email
   verifyEmail(request: VerifyEmailRequest): Promise<VerifyEmailResponse>;
   
-  // POST /api/v1/auth/refresh
+  // POST //auth/refresh
   refreshToken(request: RefreshTokenRequest): Promise<RefreshTokenResponse>;
   
-  // GET /api/v1/auth/profile
+  // GET //auth/profile
   getProfile(): Promise<GetProfileResponse>;
   
-  // POST /api/v1/auth/logout
+  // POST //auth/logout
   logout(): Promise<LogoutResponse>;
   
   // POST /auth/change-password (legacy endpoint)

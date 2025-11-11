@@ -91,7 +91,7 @@ export const ordersAPI = {
     contractTerms?: any;
     requiresApproval?: boolean;
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>('/api/v1/orders', data);
+    const response = await apiClient.post<APIResponse<Order>>('//orders', data);
     return response.data;
   },
 
@@ -114,7 +114,7 @@ export const ordersAPI = {
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
   }): Promise<PaginatedResponse<Order>> => {
-    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('/api/v1/orders', {
+    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('//orders', {
       params: {
         ...filters,
         dateFrom: filters?.dateFrom?.toISOString(),
@@ -137,7 +137,7 @@ export const ordersAPI = {
     documents?: any[];
     changeRequests?: OrderChangeRequest[];
   }>> => {
-    const response = await apiClient.get<APIResponse<any>>(`/api/v1/orders/${id}`, {
+    const response = await apiClient.get<APIResponse<any>>(`//orders/${id}`, {
       params: includes,
     });
     return response.data;
@@ -145,7 +145,7 @@ export const ordersAPI = {
 
   // Get order by order number
   getByNumber: async (orderNumber: string): Promise<APIResponse<Order>> => {
-    const response = await apiClient.get<APIResponse<Order>>(`/api/v1/orders/number/${orderNumber}`);
+    const response = await apiClient.get<APIResponse<Order>>(`//orders/number/${orderNumber}`);
     return response.data;
   },
 
@@ -158,13 +158,13 @@ export const ordersAPI = {
     vendorNotes?: string;
     tags?: string[];
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.patch<APIResponse<Order>>(`/api/v1/orders/${id}`, data);
+    const response = await apiClient.patch<APIResponse<Order>>(`//orders/${id}`, data);
     return response.data;
   },
 
   // Delete/cancel order
   delete: async (id: string, reason: string): Promise<APIResponse<{ success: boolean }>> => {
-    const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/orders/${id}`, {
+    const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//orders/${id}`, {
       data: { reason },
     });
     return response.data;
@@ -181,7 +181,7 @@ export const ordersAPI = {
     notes?: string;
     notifyStakeholders?: boolean;
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.patch<APIResponse<Order>>(`/api/v1/orders/${id}/status`, data);
+    const response = await apiClient.patch<APIResponse<Order>>(`//orders/${id}/status`, data);
     return response.data;
   },
 
@@ -191,7 +191,7 @@ export const ordersAPI = {
     notes?: string;
     urgency?: 'normal' | 'high' | 'urgent';
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>(`/api/v1/orders/${id}/submit-approval`, data);
+    const response = await apiClient.post<APIResponse<Order>>(`//orders/${id}/submit-approval`, data);
     return response.data;
   },
 
@@ -200,7 +200,7 @@ export const ordersAPI = {
     notes?: string;
     conditions?: string[];
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>(`/api/v1/orders/${id}/approve`, data);
+    const response = await apiClient.post<APIResponse<Order>>(`//orders/${id}/approve`, data);
     return response.data;
   },
 
@@ -210,7 +210,7 @@ export const ordersAPI = {
     notes?: string;
     suggestedModifications?: string;
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>(`/api/v1/orders/${id}/reject`, data);
+    const response = await apiClient.post<APIResponse<Order>>(`//orders/${id}/reject`, data);
     return response.data;
   },
 
@@ -220,7 +220,7 @@ export const ordersAPI = {
     deliverySchedule?: any;
     notes?: string;
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>(`/api/v1/orders/${id}/confirm`, {
+    const response = await apiClient.post<APIResponse<Order>>(`//orders/${id}/confirm`, {
       ...data,
       estimatedDeliveryDate: data.estimatedDeliveryDate?.toISOString(),
     });
@@ -234,7 +234,7 @@ export const ordersAPI = {
     projectPlan?: any;
     notes?: string;
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>(`/api/v1/orders/${id}/start`, {
+    const response = await apiClient.post<APIResponse<Order>>(`//orders/${id}/start`, {
       ...data,
       actualStartDate: data.actualStartDate?.toISOString(),
     });
@@ -248,7 +248,7 @@ export const ordersAPI = {
     qualityReport?: any;
     customerSignoff?: boolean;
   }): Promise<APIResponse<Order>> => {
-    const response = await apiClient.post<APIResponse<Order>>(`/api/v1/orders/${id}/complete`, {
+    const response = await apiClient.post<APIResponse<Order>>(`//orders/${id}/complete`, {
       ...data,
       completionDate: data.completionDate?.toISOString(),
     });
@@ -268,7 +268,7 @@ export const ordersAPI = {
       unitPrice: number;
       configuration?: any;
     }): Promise<APIResponse<OrderItem>> => {
-      const response = await apiClient.post<APIResponse<OrderItem>>(`/api/v1/orders/${orderId}/items`, data);
+      const response = await apiClient.post<APIResponse<OrderItem>>(`//orders/${orderId}/items`, data);
       return response.data;
     },
 
@@ -279,13 +279,13 @@ export const ordersAPI = {
       configuration?: any;
       notes?: string;
     }): Promise<APIResponse<OrderItem>> => {
-      const response = await apiClient.patch<APIResponse<OrderItem>>(`/api/v1/order-items/${itemId}`, data);
+      const response = await apiClient.patch<APIResponse<OrderItem>>(`//order-items/${itemId}`, data);
       return response.data;
     },
 
     // Remove item from order
     remove: async (itemId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/order-items/${itemId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//order-items/${itemId}`);
       return response.data;
     },
 
@@ -296,7 +296,7 @@ export const ordersAPI = {
       notes?: string;
       milestoneCompleted?: string;
     }): Promise<APIResponse<OrderItem>> => {
-      const response = await apiClient.patch<APIResponse<OrderItem>>(`/api/v1/order-items/${itemId}/progress`, data);
+      const response = await apiClient.patch<APIResponse<OrderItem>>(`//order-items/${itemId}/progress`, data);
       return response.data;
     },
   },
@@ -315,7 +315,7 @@ export const ordersAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedResponse<OrderCommunication>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<OrderCommunication>>>(`/api/v1/orders/${orderId}/communications`, {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<OrderCommunication>>>(`//orders/${orderId}/communications`, {
         params: filters,
       });
       return response.data.data;
@@ -333,7 +333,7 @@ export const ordersAPI = {
       responseByDate?: Date;
       recipients?: string[];
     }): Promise<APIResponse<OrderCommunication>> => {
-      const response = await apiClient.post<APIResponse<OrderCommunication>>(`/api/v1/orders/${orderId}/communications`, {
+      const response = await apiClient.post<APIResponse<OrderCommunication>>(`//orders/${orderId}/communications`, {
         ...data,
         responseByDate: data.responseByDate?.toISOString(),
       });
@@ -342,7 +342,7 @@ export const ordersAPI = {
 
     // Mark communication as read
     markRead: async (communicationId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.patch<APIResponse<{ success: boolean }>>(`/api/v1/order-communications/${communicationId}/read`);
+      const response = await apiClient.patch<APIResponse<{ success: boolean }>>(`//order-communications/${communicationId}/read`);
       return response.data;
     },
 
@@ -351,7 +351,7 @@ export const ordersAPI = {
       message: string;
       attachments?: string[];
     }): Promise<APIResponse<OrderCommunication>> => {
-      const response = await apiClient.post<APIResponse<OrderCommunication>>(`/api/v1/order-communications/${communicationId}/reply`, data);
+      const response = await apiClient.post<APIResponse<OrderCommunication>>(`//order-communications/${communicationId}/reply`, data);
       return response.data;
     },
   },
@@ -366,7 +366,7 @@ export const ordersAPI = {
       documentType?: string[];
       accessLevel?: string[];
     }): Promise<APIResponse<any[]>> => {
-      const response = await apiClient.get<APIResponse<any[]>>(`/api/v1/orders/${orderId}/documents`, {
+      const response = await apiClient.get<APIResponse<any[]>>(`//orders/${orderId}/documents`, {
         params: filters,
       });
       return response.data;
@@ -389,7 +389,7 @@ export const ordersAPI = {
       if (data.accessLevel) formData.append('accessLevel', data.accessLevel);
       if (data.requiresSignature) formData.append('requiresSignature', String(data.requiresSignature));
 
-      const response = await apiClient.post<APIResponse<any>>(`/api/v1/orders/${orderId}/documents`, formData, {
+      const response = await apiClient.post<APIResponse<any>>(`//orders/${orderId}/documents`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -397,7 +397,7 @@ export const ordersAPI = {
 
     // Download document
     download: async (documentId: string): Promise<Blob> => {
-      const response = await apiClient.get(`/api/v1/order-documents/${documentId}/download`, {
+      const response = await apiClient.get(`//order-documents/${documentId}/download`, {
         responseType: 'blob',
       });
       return response.data;
@@ -409,13 +409,13 @@ export const ordersAPI = {
       signerName: string;
       signerEmail: string;
     }): Promise<APIResponse<any>> => {
-      const response = await apiClient.post<APIResponse<any>>(`/api/v1/order-documents/${documentId}/sign`, data);
+      const response = await apiClient.post<APIResponse<any>>(`//order-documents/${documentId}/sign`, data);
       return response.data;
     },
 
     // Delete document
     delete: async (documentId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/order-documents/${documentId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//order-documents/${documentId}`);
       return response.data;
     },
   },
@@ -433,7 +433,7 @@ export const ordersAPI = {
       justification: string;
       proposedChanges: any;
     }): Promise<APIResponse<OrderChangeRequest>> => {
-      const response = await apiClient.post<APIResponse<OrderChangeRequest>>(`/api/v1/orders/${orderId}/change-requests`, data);
+      const response = await apiClient.post<APIResponse<OrderChangeRequest>>(`//orders/${orderId}/change-requests`, data);
       return response.data;
     },
 
@@ -442,7 +442,7 @@ export const ordersAPI = {
       changeType?: string[];
       status?: string[];
     }): Promise<APIResponse<OrderChangeRequest[]>> => {
-      const response = await apiClient.get<APIResponse<OrderChangeRequest[]>>(`/api/v1/orders/${orderId}/change-requests`, {
+      const response = await apiClient.get<APIResponse<OrderChangeRequest[]>>(`//orders/${orderId}/change-requests`, {
         params: filters,
       });
       return response.data;
@@ -453,13 +453,13 @@ export const ordersAPI = {
       status: 'approved' | 'rejected';
       reviewNotes?: string;
     }): Promise<APIResponse<OrderChangeRequest>> => {
-      const response = await apiClient.patch<APIResponse<OrderChangeRequest>>(`/api/v1/order-change-requests/${changeRequestId}/review`, data);
+      const response = await apiClient.patch<APIResponse<OrderChangeRequest>>(`//order-change-requests/${changeRequestId}/review`, data);
       return response.data;
     },
 
     // Implement change request
     implement: async (changeRequestId: string): Promise<APIResponse<OrderChangeRequest>> => {
-      const response = await apiClient.patch<APIResponse<OrderChangeRequest>>(`/api/v1/order-change-requests/${changeRequestId}/implement`);
+      const response = await apiClient.patch<APIResponse<OrderChangeRequest>>(`//order-change-requests/${changeRequestId}/implement`);
       return response.data;
     },
   },
@@ -502,7 +502,7 @@ export const ordersAPI = {
         averageRating: number;
       }>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/orders/analytics/dashboard', {
+      const response = await apiClient.get<APIResponse<any>>('//orders/analytics/dashboard', {
         params: {
           ...filters,
           dateFrom: filters?.dateFrom?.toISOString(),
@@ -521,7 +521,7 @@ export const ordersAPI = {
       qualityMetrics: any;
       riskAssessment: any;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/orders/${orderId}/analytics`);
+      const response = await apiClient.get<APIResponse<any>>(`//orders/${orderId}/analytics`);
       return response.data;
     },
 
@@ -536,7 +536,7 @@ export const ordersAPI = {
       downloadUrl: string;
       expiresAt: Date;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/orders/analytics/reports', options);
+      const response = await apiClient.post<APIResponse<any>>('//orders/analytics/reports', options);
       return response.data;
     },
   },
@@ -551,7 +551,7 @@ export const ordersAPI = {
     assignedTo?: string;
     urgency?: string[];
   }): Promise<PaginatedResponse<Order>> => {
-    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('/api/v1/orders/pending-approval', {
+    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('//orders/pending-approval', {
       params: filters,
     });
     return response.data.data;
@@ -563,7 +563,7 @@ export const ordersAPI = {
     assignedTo?: string;
     priorityLevel?: string[];
   }): Promise<PaginatedResponse<Order>> => {
-    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('/api/v1/orders/active', {
+    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('//orders/active', {
       params: filters,
     });
     return response.data.data;
@@ -574,7 +574,7 @@ export const ordersAPI = {
     riskLevel?: string[];
     vendorId?: string;
   }): Promise<PaginatedResponse<Order>> => {
-    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('/api/v1/orders/at-risk', {
+    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('//orders/at-risk', {
       params: filters,
     });
     return response.data.data;
@@ -582,7 +582,7 @@ export const ordersAPI = {
 
   // Get overdue orders
   getOverdue: async (): Promise<APIResponse<Order[]>> => {
-    const response = await apiClient.get<APIResponse<Order[]>>('/api/v1/orders/overdue');
+    const response = await apiClient.get<APIResponse<Order[]>>('//orders/overdue');
     return response.data;
   },
 
@@ -601,7 +601,7 @@ export const ordersAPI = {
       failed: number;
       errors: Array<{ orderId: string; error: string }>;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/orders/bulk/update-status', {
+      const response = await apiClient.post<APIResponse<any>>('//orders/bulk/update-status', {
         orderIds,
         ...data,
       });
@@ -614,7 +614,7 @@ export const ordersAPI = {
       failed: number;
       errors: Array<{ orderId: string; error: string }>;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/orders/bulk/assign', {
+      const response = await apiClient.post<APIResponse<any>>('//orders/bulk/assign', {
         orderIds,
         assigneeId,
       });
@@ -623,7 +623,7 @@ export const ordersAPI = {
 
     // Bulk export
     export: async (orderIds: string[], format: 'csv' | 'excel'): Promise<Blob> => {
-      const response = await apiClient.post('/api/v1/orders/bulk/export', {
+      const response = await apiClient.post('//orders/bulk/export', {
         orderIds,
         format,
       }, {
@@ -644,7 +644,7 @@ export const ordersAPI = {
       erpOrderId?: string;
       errors?: string[];
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>(`/api/v1/orders/${orderId}/sync-erp`, {
+      const response = await apiClient.post<APIResponse<any>>(`//orders/${orderId}/sync-erp`, {
         erpSystem,
       });
       return response.data;
@@ -656,7 +656,7 @@ export const ordersAPI = {
       procurementSync?: any;
       notificationStatus: any;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/orders/${orderId}/integration-status`);
+      const response = await apiClient.get<APIResponse<any>>(`//orders/${orderId}/integration-status`);
       return response.data;
     },
 
@@ -667,7 +667,7 @@ export const ordersAPI = {
       webhooks: string[];
       escalationRules?: any[];
     }): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.post<APIResponse<{ success: boolean }>>(`/api/v1/orders/${orderId}/configure-notifications`, settings);
+      const response = await apiClient.post<APIResponse<{ success: boolean }>>(`//orders/${orderId}/configure-notifications`, settings);
       return response.data;
     },
   },

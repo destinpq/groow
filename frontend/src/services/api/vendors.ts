@@ -257,13 +257,13 @@ export const vendorAPI = {
     website?: string;
     description?: string;
   }): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.post<APIResponse<Vendor>>('/api/v1/vendors/register', data);
+    const response = await apiClient.post<APIResponse<Vendor>>('//vendors/register', data);
     return response.data;
   },
 
   // Get current vendor profile
   getProfile: async (): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.get<APIResponse<Vendor>>('/api/v1/vendors/profile');
+    const response = await apiClient.get<APIResponse<Vendor>>('//vendors/profile');
     return response.data;
   },
 
@@ -291,19 +291,19 @@ export const vendorAPI = {
     supportChannels?: any;
     tags?: string[];
   }): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.patch<APIResponse<Vendor>>('/api/v1/vendors/profile', data);
+    const response = await apiClient.patch<APIResponse<Vendor>>('//vendors/profile', data);
     return response.data;
   },
 
   // Complete onboarding step
   completeOnboardingStep: async (step: string, data?: any): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.post<APIResponse<Vendor>>(`/api/v1/vendors/onboarding/${step}`, data);
+    const response = await apiClient.post<APIResponse<Vendor>>(`//vendors/onboarding/${step}`, data);
     return response.data;
   },
 
   // Submit vendor for approval
   submitForApproval: async (): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.post<APIResponse<Vendor>>('/api/v1/vendors/submit-approval');
+    const response = await apiClient.post<APIResponse<Vendor>>('//vendors/submit-approval');
     return response.data;
   },
 
@@ -319,7 +319,7 @@ export const vendorAPI = {
       isRequired?: boolean;
       isExpiring?: boolean;
     }): Promise<APIResponse<VendorDocument[]>> => {
-      const response = await apiClient.get<APIResponse<VendorDocument[]>>('/api/v1/vendors/documents', {
+      const response = await apiClient.get<APIResponse<VendorDocument[]>>('//vendors/documents', {
         params: filters,
       });
       return response.data;
@@ -346,7 +346,7 @@ export const vendorAPI = {
       if (data.issueingAuthority) formData.append('issueingAuthority', data.issueingAuthority);
       if (data.documentNumber) formData.append('documentNumber', data.documentNumber);
 
-      const response = await apiClient.post<APIResponse<VendorDocument>>('/api/v1/vendors/documents', formData, {
+      const response = await apiClient.post<APIResponse<VendorDocument>>('//vendors/documents', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -361,7 +361,7 @@ export const vendorAPI = {
       issueingAuthority?: string;
       documentNumber?: string;
     }): Promise<APIResponse<VendorDocument>> => {
-      const response = await apiClient.patch<APIResponse<VendorDocument>>(`/api/v1/vendors/documents/${documentId}`, {
+      const response = await apiClient.patch<APIResponse<VendorDocument>>(`//vendors/documents/${documentId}`, {
         ...data,
         issueDate: data.issueDate?.toISOString(),
         expirationDate: data.expirationDate?.toISOString(),
@@ -371,7 +371,7 @@ export const vendorAPI = {
 
     // Download document
     download: async (documentId: string): Promise<Blob> => {
-      const response = await apiClient.get(`/api/v1/vendors/documents/${documentId}/download`, {
+      const response = await apiClient.get(`//vendors/documents/${documentId}/download`, {
         responseType: 'blob',
       });
       return response.data;
@@ -379,13 +379,13 @@ export const vendorAPI = {
 
     // Delete document
     delete: async (documentId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/vendors/documents/${documentId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//vendors/documents/${documentId}`);
       return response.data;
     },
 
     // Get expiring documents
     getExpiring: async (days: number = 30): Promise<APIResponse<VendorDocument[]>> => {
-      const response = await apiClient.get<APIResponse<VendorDocument[]>>(`/api/v1/vendors/documents/expiring`, {
+      const response = await apiClient.get<APIResponse<VendorDocument[]>>(`//vendors/documents/expiring`, {
         params: { days },
       });
       return response.data;
@@ -399,7 +399,7 @@ export const vendorAPI = {
   contacts: {
     // List contacts
     list: async (): Promise<APIResponse<VendorContact[]>> => {
-      const response = await apiClient.get<APIResponse<VendorContact[]>>('/api/v1/vendors/contacts');
+      const response = await apiClient.get<APIResponse<VendorContact[]>>('//vendors/contacts');
       return response.data;
     },
 
@@ -419,7 +419,7 @@ export const vendorAPI = {
       preferredContactMethods?: string[];
       notes?: string;
     }): Promise<APIResponse<VendorContact>> => {
-      const response = await apiClient.post<APIResponse<VendorContact>>('/api/v1/vendors/contacts', data);
+      const response = await apiClient.post<APIResponse<VendorContact>>('//vendors/contacts', data);
       return response.data;
     },
 
@@ -439,19 +439,19 @@ export const vendorAPI = {
       preferredContactMethods?: string[];
       notes?: string;
     }): Promise<APIResponse<VendorContact>> => {
-      const response = await apiClient.patch<APIResponse<VendorContact>>(`/api/v1/vendors/contacts/${contactId}`, data);
+      const response = await apiClient.patch<APIResponse<VendorContact>>(`//vendors/contacts/${contactId}`, data);
       return response.data;
     },
 
     // Delete contact
     delete: async (contactId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/vendors/contacts/${contactId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//vendors/contacts/${contactId}`);
       return response.data;
     },
 
     // Set primary contact
     setPrimary: async (contactId: string, contactType: VendorContact['contactType']): Promise<APIResponse<VendorContact>> => {
-      const response = await apiClient.patch<APIResponse<VendorContact>>(`/api/v1/vendors/contacts/${contactId}/set-primary`, {
+      const response = await apiClient.patch<APIResponse<VendorContact>>(`//vendors/contacts/${contactId}/set-primary`, {
         contactType,
       });
       return response.data;
@@ -491,7 +491,7 @@ export const vendorAPI = {
         ranking: number;
       };
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/performance/summary', {
+      const response = await apiClient.get<APIResponse<any>>('//vendors/performance/summary', {
         params: {
           ...period,
           dateFrom: period?.dateFrom?.toISOString(),
@@ -507,7 +507,7 @@ export const vendorAPI = {
       dateTo?: Date;
       metricPeriod?: VendorPerformance['metricPeriod'];
     }): Promise<PaginatedResponse<VendorPerformance>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<VendorPerformance>>>('/api/v1/vendors/performance/metrics', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<VendorPerformance>>>('//vendors/performance/metrics', {
         params: {
           ...filters,
           dateFrom: filters?.dateFrom?.toISOString(),
@@ -538,7 +538,7 @@ export const vendorAPI = {
         action?: string;
       }>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/performance/dashboard');
+      const response = await apiClient.get<APIResponse<any>>('//vendors/performance/dashboard');
       return response.data;
     },
 
@@ -548,7 +548,7 @@ export const vendorAPI = {
       dateTo?: Date;
       includeCharts?: boolean;
     }): Promise<Blob> => {
-      const response = await apiClient.post('/api/v1/vendors/performance/export', {
+      const response = await apiClient.post('//vendors/performance/export', {
         format,
         ...filters,
         dateFrom: filters?.dateFrom?.toISOString(),
@@ -571,7 +571,7 @@ export const vendorAPI = {
       status?: string[];
       isExpiring?: boolean;
     }): Promise<APIResponse<VendorContract[]>> => {
-      const response = await apiClient.get<APIResponse<VendorContract[]>>('/api/v1/vendors/contracts', {
+      const response = await apiClient.get<APIResponse<VendorContract[]>>('//vendors/contracts', {
         params: filters,
       });
       return response.data;
@@ -579,7 +579,7 @@ export const vendorAPI = {
 
     // Get contract by ID
     getById: async (contractId: string): Promise<APIResponse<VendorContract>> => {
-      const response = await apiClient.get<APIResponse<VendorContract>>(`/api/v1/vendors/contracts/${contractId}`);
+      const response = await apiClient.get<APIResponse<VendorContract>>(`//vendors/contracts/${contractId}`);
       return response.data;
     },
 
@@ -593,13 +593,13 @@ export const vendorAPI = {
       paymentTerms?: any;
       notes?: string;
     }): Promise<APIResponse<VendorContract>> => {
-      const response = await apiClient.patch<APIResponse<VendorContract>>(`/api/v1/vendors/contracts/${contractId}`, data);
+      const response = await apiClient.patch<APIResponse<VendorContract>>(`//vendors/contracts/${contractId}`, data);
       return response.data;
     },
 
     // Download contract document
     download: async (contractId: string): Promise<Blob> => {
-      const response = await apiClient.get(`/api/v1/vendors/contracts/${contractId}/download`, {
+      const response = await apiClient.get(`//vendors/contracts/${contractId}/download`, {
         responseType: 'blob',
       });
       return response.data;
@@ -607,7 +607,7 @@ export const vendorAPI = {
 
     // Get expiring contracts
     getExpiring: async (days: number = 30): Promise<APIResponse<VendorContract[]>> => {
-      const response = await apiClient.get<APIResponse<VendorContract[]>>('/api/v1/vendors/contracts/expiring', {
+      const response = await apiClient.get<APIResponse<VendorContract[]>>('//vendors/contracts/expiring', {
         params: { days },
       });
       return response.data;
@@ -629,7 +629,7 @@ export const vendorAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedResponse<VendorReview>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<VendorReview>>>('/api/v1/vendors/reviews', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<VendorReview>>>('//vendors/reviews', {
         params: {
           ...filters,
           dateFrom: filters?.dateFrom?.toISOString(),
@@ -641,7 +641,7 @@ export const vendorAPI = {
 
     // Respond to review
     respond: async (reviewId: string, response: string): Promise<APIResponse<VendorReview>> => {
-      const responseData = await apiClient.patch<APIResponse<VendorReview>>(`/api/v1/vendors/reviews/${reviewId}/respond`, {
+      const responseData = await apiClient.patch<APIResponse<VendorReview>>(`//vendors/reviews/${reviewId}/respond`, {
         response,
       });
       return responseData.data;
@@ -659,7 +659,7 @@ export const vendorAPI = {
       }>;
       criteriaBreakdown: Record<string, number>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/reviews/stats');
+      const response = await apiClient.get<APIResponse<any>>('//vendors/reviews/stats');
       return response.data;
     },
   },
@@ -696,7 +696,7 @@ export const vendorAPI = {
         customerLifetimeValue: number;
       };
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/financials/summary', {
+      const response = await apiClient.get<APIResponse<any>>('//vendors/financials/summary', {
         params: {
           ...period,
           dateFrom: period?.dateFrom?.toISOString(),
@@ -716,7 +716,7 @@ export const vendorAPI = {
       bankAccountDetails?: any;
       taxInformation?: any;
     }): Promise<APIResponse<Vendor>> => {
-      const response = await apiClient.patch<APIResponse<Vendor>>('/api/v1/vendors/financials', data);
+      const response = await apiClient.patch<APIResponse<Vendor>>('//vendors/financials', data);
       return response.data;
     },
 
@@ -729,7 +729,7 @@ export const vendorAPI = {
       requestId: string;
       status: 'pending' | 'approved' | 'rejected';
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/vendors/financials/credit-increase', data);
+      const response = await apiClient.post<APIResponse<any>>('//vendors/financials/credit-increase', data);
       return response.data;
     },
   },
@@ -753,7 +753,7 @@ export const vendorAPI = {
         isActive: boolean;
       }>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/integrations/settings');
+      const response = await apiClient.get<APIResponse<any>>('//vendors/integrations/settings');
       return response.data;
     },
 
@@ -762,7 +762,7 @@ export const vendorAPI = {
       webhookUrl?: string;
       automationRules?: any;
     }): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.patch<APIResponse<{ success: boolean }>>('/api/v1/vendors/integrations/settings', data);
+      const response = await apiClient.patch<APIResponse<{ success: boolean }>>('//vendors/integrations/settings', data);
       return response.data;
     },
 
@@ -776,7 +776,7 @@ export const vendorAPI = {
       apiKey: string;
       permissions: string[];
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/vendors/integrations/api-keys', {
+      const response = await apiClient.post<APIResponse<any>>('//vendors/integrations/api-keys', {
         ...data,
         expiresAt: data.expiresAt?.toISOString(),
       });
@@ -785,7 +785,7 @@ export const vendorAPI = {
 
     // Revoke API key
     revokeApiKey: async (keyId: string): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`/api/v1/vendors/integrations/api-keys/${keyId}`);
+      const response = await apiClient.delete<APIResponse<{ success: boolean }>>(`//vendors/integrations/api-keys/${keyId}`);
       return response.data;
     },
 
@@ -796,7 +796,7 @@ export const vendorAPI = {
       statusCode?: number;
       error?: string;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/vendors/integrations/test-webhook');
+      const response = await apiClient.post<APIResponse<any>>('//vendors/integrations/test-webhook');
       return response.data;
     },
   },
@@ -821,7 +821,7 @@ export const vendorAPI = {
       lastAssessment: Date;
       nextAssessment: Date;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/compliance/status');
+      const response = await apiClient.get<APIResponse<any>>('//vendors/compliance/status');
       return response.data;
     },
 
@@ -831,7 +831,7 @@ export const vendorAPI = {
       declaration: any;
       supportingDocuments?: string[];
     }): Promise<APIResponse<{ success: boolean }>> => {
-      const response = await apiClient.post<APIResponse<{ success: boolean }>>('/api/v1/vendors/compliance/declarations', data);
+      const response = await apiClient.post<APIResponse<{ success: boolean }>>('//vendors/compliance/declarations', data);
       return response.data;
     },
 
@@ -840,7 +840,7 @@ export const vendorAPI = {
       reviewId: string;
       estimatedCompletionDate: Date;
     }>> => {
-      const response = await apiClient.post<APIResponse<any>>('/api/v1/vendors/compliance/request-review', {
+      const response = await apiClient.post<APIResponse<any>>('//vendors/compliance/request-review', {
         reason,
       });
       return response.data;
@@ -866,7 +866,7 @@ export const vendorAPI = {
       sortBy?: string;
       sortOrder?: 'asc' | 'desc';
     }): Promise<PaginatedResponse<Vendor>> => {
-      const response = await apiClient.get<APIResponse<PaginatedResponse<Vendor>>>('/api/v1/vendors/directory/search', {
+      const response = await apiClient.get<APIResponse<PaginatedResponse<Vendor>>>('//vendors/directory/search', {
         params: filters,
       });
       return response.data.data;
@@ -879,13 +879,13 @@ export const vendorAPI = {
       products: any[];
       reviews: VendorReview[];
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>(`/api/v1/vendors/directory/${vendorId}`);
+      const response = await apiClient.get<APIResponse<any>>(`//vendors/directory/${vendorId}`);
       return response.data;
     },
 
     // Get featured vendors
     getFeatured: async (): Promise<APIResponse<Vendor[]>> => {
-      const response = await apiClient.get<APIResponse<Vendor[]>>('/api/v1/vendors/directory/featured');
+      const response = await apiClient.get<APIResponse<Vendor[]>>('//vendors/directory/featured');
       return response.data;
     },
 
@@ -895,7 +895,7 @@ export const vendorAPI = {
       serviceCategories: Array<{ name: string; count: number }>;
       industryVerticals: Array<{ name: string; count: number }>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/api/v1/vendors/directory/categories');
+      const response = await apiClient.get<APIResponse<any>>('//vendors/directory/categories');
       return response.data;
     },
   },
@@ -909,7 +909,7 @@ export const vendorAPI = {
     const formData = new FormData();
     formData.append('logo', file);
 
-    const response = await apiClient.post<APIResponse<any>>('/api/v1/vendors/upload/logo', formData, {
+    const response = await apiClient.post<APIResponse<any>>('//vendors/upload/logo', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
@@ -920,7 +920,7 @@ export const vendorAPI = {
     const formData = new FormData();
     formData.append('banner', file);
 
-    const response = await apiClient.post<APIResponse<any>>('/api/v1/vendors/upload/banner', formData, {
+    const response = await apiClient.post<APIResponse<any>>('//vendors/upload/banner', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
@@ -928,7 +928,7 @@ export const vendorAPI = {
 
   // Toggle vendor status (admin only)
   toggleStatus: async (vendorId: string, status: Vendor['status']): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.patch<APIResponse<Vendor>>(`/api/v1/admin/vendors/${vendorId}/status`, {
+    const response = await apiClient.patch<APIResponse<Vendor>>(`//admin/vendors/${vendorId}/status`, {
       status,
     });
     return response.data;
@@ -940,7 +940,7 @@ export const vendorAPI = {
     conditionalApproval?: boolean;
     conditions?: string[];
   }): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.post<APIResponse<Vendor>>(`/api/v1/admin/vendors/${vendorId}/verify`, data);
+    const response = await apiClient.post<APIResponse<Vendor>>(`//admin/vendors/${vendorId}/verify`, data);
     return response.data;
   },
 
@@ -949,7 +949,7 @@ export const vendorAPI = {
     rejectionReason: string;
     blocklist?: boolean;
   }): Promise<APIResponse<Vendor>> => {
-    const response = await apiClient.post<APIResponse<Vendor>>(`/api/v1/admin/vendors/${vendorId}/reject`, data);
+    const response = await apiClient.post<APIResponse<Vendor>>(`//admin/vendors/${vendorId}/reject`, data);
     return response.data;
   },
 };

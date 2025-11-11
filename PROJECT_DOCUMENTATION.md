@@ -91,7 +91,7 @@ vercel --prod
 - **Frontend**: `https://groow-frontend.vercel.app`
 - **Backend API**: `https://groow-backend-production.up.railway.app`
 - **API Docs**: `https://groow-backend-production.up.railway.app/api/docs`
-- **Health Check**: `https://groow-backend-production.up.railway.app/api/v1/health`
+- **Health Check**: `https://groow-backend-production.up.railway.app//health`
 
 ### **Custom Domains (Optional)**
 - **Frontend**: `https://groow.destinpq.com`
@@ -413,7 +413,7 @@ npm run seed
   },
   "deploy": {
     "startCommand": "npm run start:prod",
-    "healthcheckPath": "/api/v1/health"
+    "healthcheckPath": "//health"
   },
   "environments": {
     "production": {

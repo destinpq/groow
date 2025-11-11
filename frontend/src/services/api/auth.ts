@@ -225,9 +225,7 @@ export interface VendorRegisterDTO extends RegisterDTO {
 }
 
 class AuthService {
-  private baseURL = (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1';
-
-  // ============================================
+    private baseURL = process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com/api/v1';  // ============================================
   // Core Authentication
   // ============================================
 

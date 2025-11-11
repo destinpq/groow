@@ -1,11 +1,11 @@
 // API Base URL
 export const API_CONFIG = {
-  BASE_URL: (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1',
+  BASE_URL: process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com/api/v1',
   API_VERSION: '/api/v1',
   TIMEOUT: 30000,
 };
 
-export const API_BASE_URL = (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1';
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com/api/v1';
 
 // Upload Settings
 export const UPLOAD_CONFIG = {
