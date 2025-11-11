@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';
 import { CustomerEntity } from './customer';
 import { VendorEntity } from './vendor';
-import { ProductEntity } from './product';
+import { Product as ProductEntity } from '@modules/product/entities/product.entity';
 import { ServiceEntity } from './service';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 
 // ========================================
 // Core Cart Entity - B2B Enterprise Shopping Cart

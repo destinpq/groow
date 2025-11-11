@@ -21,7 +21,7 @@ import { User } from '../../modules/auth/entities/user.entity';
 @Entity('analytics_dashboards')
 @Index(['userId', 'type'])
 @Index(['createdAt'])
-export class AnalyticsDashboard {
+class AnalyticsDashboard {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -124,7 +124,7 @@ export class AnalyticsDashboard {
 @Index(['type', 'status'])
 @Index(['createdAt'])
 @Index(['scheduledAt'])
-export class AnalyticsReport {
+class AnalyticsReport {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -290,7 +290,7 @@ export class AnalyticsReport {
 @Index(['metricType', 'date'])
 @Index(['entityType', 'entityId', 'date'])
 @Index(['date'])
-export class AnalyticsMetric {
+class AnalyticsMetric {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -359,7 +359,7 @@ export class AnalyticsMetric {
 @Index(['entityType', 'entityId', 'createdAt'])
 @Index(['userId', 'createdAt'])
 @Index(['sessionId'])
-export class AnalyticsEvent {
+class AnalyticsEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -455,7 +455,7 @@ export class AnalyticsEvent {
 
 @Entity('analytics_funnels')
 @Index(['name', 'isActive'])
-export class AnalyticsFunnel {
+class AnalyticsFunnel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -512,7 +512,7 @@ export class AnalyticsFunnel {
 
 @Entity('analytics_funnel_steps')
 @Index(['funnelId', 'date'])
-export class AnalyticsFunnelStep {
+class AnalyticsFunnelStep {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -566,7 +566,7 @@ export class AnalyticsFunnelStep {
 
 @Entity('analytics_segments')
 @Index(['name', 'isActive'])
-export class AnalyticsSegment {
+class AnalyticsSegment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -650,7 +650,7 @@ export class AnalyticsSegment {
 @Entity('analytics_segment_members')
 @Index(['segmentId', 'userId'])
 @Index(['userId'])
-export class AnalyticsSegmentMember {
+class AnalyticsSegmentMember {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -699,7 +699,7 @@ export class AnalyticsSegmentMember {
 @Entity('analytics_alerts')
 @Index(['type', 'isActive'])
 @Index(['triggeredAt'])
-export class AnalyticsAlert {
+class AnalyticsAlert {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -814,7 +814,7 @@ export class AnalyticsAlert {
 
 @Entity('analytics_alert_triggers')
 @Index(['alertId', 'triggeredAt'])
-export class AnalyticsAlertTrigger {
+class AnalyticsAlertTrigger {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -889,7 +889,7 @@ export class AnalyticsAlertTrigger {
 @Entity('analytics_report_views')
 @Index(['reportId', 'viewedAt'])
 @Index(['userId', 'viewedAt'])
-export class AnalyticsReportView {
+class AnalyticsReportView {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -934,7 +934,7 @@ export class AnalyticsReportView {
 // ============================================
 
 @Entity('analytics_configurations')
-export class AnalyticsConfig {
+class AnalyticsConfig {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

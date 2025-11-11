@@ -1,10 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn, Index } from 'typeorm';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 import { ServiceEntity } from './service';
 import { VendorEntity } from './vendor';
 import { CustomerEntity } from './customer';
-import { PaymentMethodEntity } from './payment';
-import { InvoiceEntity } from './invoice';
+import { PaymentMethodEntity, InvoiceEntity } from './payment';
 
 @Entity('service_subscriptions')
 @Index(['customerId', 'status'])
@@ -138,15 +137,15 @@ export class ServiceSubscriptionEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => CustomerEntity, customer => customer.subscriptions)
+  @ManyToOne(() => CustomerEntity)
   @JoinColumn({ name: 'customerId' })
   customer: CustomerEntity;
 
-  @ManyToOne(() => ServiceEntity, service => service.subscriptions)
+  @ManyToOne(() => ServiceEntity)
   @JoinColumn({ name: 'serviceId' })
   service: ServiceEntity;
 
-  @ManyToOne(() => VendorEntity, vendor => vendor.subscriptions)
+  @ManyToOne(() => VendorEntity)
   @JoinColumn({ name: 'vendorId' })
   vendor: VendorEntity;
 
@@ -167,8 +166,9 @@ export class ServiceSubscriptionEntity {
   @OneToMany(() => SubscriptionChangeEntity, change => change.subscription)
   changeHistory: SubscriptionChangeEntity[];
 
-  @OneToMany(() => InvoiceEntity, invoice => invoice.subscription)
-  invoices: InvoiceEntity[];
+  // Note: Invoice relationship handled separately - no subscription field on InvoiceEntity
+  // @OneToMany(() => InvoiceEntity, invoice => invoice.subscription)
+  // invoices: InvoiceEntity[];
 }
 
 @Entity('subscription_plans')
@@ -260,11 +260,11 @@ export class SubscriptionPlanEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ServiceEntity, service => service.subscriptionPlans)
+  @ManyToOne(() => ServiceEntity)
   @JoinColumn({ name: 'serviceId' })
   service: ServiceEntity;
 
-  @ManyToOne(() => VendorEntity, vendor => vendor.subscriptionPlans)
+  @ManyToOne(() => VendorEntity)
   @JoinColumn({ name: 'vendorId' })
   vendor: VendorEntity;
 

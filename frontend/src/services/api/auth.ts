@@ -1133,4 +1133,11 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+const authService = new AuthService();
+export const authAPI = authService;
+export default authService;
+
+// Type aliases for compatibility
+export type LoginCredentials = LoginDTO;
+export type RegisterData = RegisterDTO;
+export type User = AuthUser;

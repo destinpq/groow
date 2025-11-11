@@ -168,3 +168,13 @@ export const billingAPI = {
 };
 
 export default { walletAPI, paymentAPI, paymentMethodAPI, billingAPI };
+
+// Export types for index.ts compatibility
+export type { Wallet, WalletTransaction, PayoutRequest };
+export type PaymentMethod = PaymentMethodInfo;
+export type CreatePaymentMethodData = {
+  provider: string;
+  type: string;
+  isDefault?: boolean;
+  providerData: any;
+};

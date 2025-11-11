@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn, Index } from 'typeorm';
 import { CustomerEntity } from './customer';
 import { VendorEntity } from './vendor';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 
 @Entity('rfq')
 @Index(['status', 'createdAt'])
@@ -71,7 +71,7 @@ export class RFQEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => CustomerEntity, customer => customer.rfqs)
+  @ManyToOne(() => CustomerEntity)
   @JoinColumn({ name: 'customerId' })
   customer: CustomerEntity;
 
@@ -156,7 +156,7 @@ export class QuotationEntity {
   @JoinColumn({ name: 'rfqId' })
   rfq: RFQEntity;
 
-  @ManyToOne(() => VendorEntity, vendor => vendor.quotations)
+  @ManyToOne(() => VendorEntity)
   @JoinColumn({ name: 'vendorId' })
   vendor: VendorEntity;
 

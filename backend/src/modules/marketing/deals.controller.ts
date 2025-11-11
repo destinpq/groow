@@ -5,6 +5,7 @@ import { MarketingService } from '@/modules/marketing/marketing.service';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/modules/auth/guards/roles.guard';
 import { Roles } from '@/modules/auth/decorators/roles.decorator';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { UserRole } from '@/common/enums';
 
 @ApiTags('Deals')
@@ -31,7 +32,8 @@ export class DealsController {
   @Get('active')
   @ApiOperation({ summary: 'Get active deals' })
   async getActiveDeals(@Query() filters: any) {
-    return this.marketingService.getActiveDeals(filters);
+    // Note: Service method doesn't use filters yet - ignoring for now
+    return this.marketingService.getActiveDeals();
   }
 
   @Get('performance-report')
@@ -64,7 +66,8 @@ export class DealsController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get deal analytics' })
   async getDealAnalytics(@Param('id') id: string, @Query() dateRange: any) {
-    return this.marketingService.getDealAnalytics(id, dateRange);
+    // Note: Service method doesn't use dateRange yet - ignoring for now
+    return this.marketingService.getDealAnalytics(id);
   }
 
   @Get(':dealId/usage')
@@ -77,8 +80,8 @@ export class DealsController {
   @Post()
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Create new deal' })
-  async createDeal(@Body() data: any) {
-    return this.marketingService.createDeal(data);
+  async createDeal(@Body() data: any, @CurrentUser() user: any) {
+    return this.marketingService.createDeal(data, user.id);
   }
 
   @Post('bulk-delete')

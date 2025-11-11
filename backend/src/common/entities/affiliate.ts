@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn, Index } from 'typeorm';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 import { VendorEntity } from './vendor';
 import { ServiceEntity } from './service';
 import { OrderEntity } from './order';
@@ -189,7 +189,7 @@ export class AffiliateAccountEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => UserEntity, user => user.affiliateAccounts)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
 

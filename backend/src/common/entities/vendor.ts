@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { CustomerEntity } from './customer';
-import { UserEntity } from './user';
-import { ProductEntity } from './product';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
+import { Product as ProductEntity } from '@modules/product/entities/product.entity';
 import { ServiceEntity } from './service';
 import { OrderEntity } from './order';
 
@@ -373,8 +373,9 @@ export class VendorEntity {
   @OneToMany(() => VendorReviewEntity, review => review.vendor, { cascade: true })
   reviews: VendorReviewEntity[];
 
-  @OneToMany(() => ProductEntity, product => product.vendor)
-  products: ProductEntity[];
+  // Note: Products relationship handled separately - different ProductEntity location
+  // @OneToMany(() => ProductEntity, product => product.vendor)
+  // products: ProductEntity[];
 
   @OneToMany(() => ServiceEntity, service => service.vendor)
   services: ServiceEntity[];

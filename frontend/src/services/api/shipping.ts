@@ -1,4 +1,4 @@
-import api from './client';
+import { api } from './client';
 
 // Backend POJO imports - Shipping Module
 import {

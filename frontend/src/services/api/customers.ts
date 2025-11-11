@@ -1049,3 +1049,14 @@ export const customerAPI = {
 };
 
 export default customerAPI;
+
+// Export types for index.ts compatibility
+export type { Customer };
+export interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+export type UpdateProfileData = Partial<Customer>;

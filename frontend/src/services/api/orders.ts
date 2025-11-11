@@ -674,3 +674,23 @@ export const ordersAPI = {
 };
 
 export default ordersAPI;
+
+// Export types for index.ts compatibility  
+export type { Order, OrderItem };
+export type CreateOrderData = Order;
+export type OrderFilters = {
+  status?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  customerId?: string;
+  vendorId?: string;
+};
+
+// Address type for compatibility (if needed)
+export interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}

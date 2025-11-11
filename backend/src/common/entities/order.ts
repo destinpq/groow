@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { VendorEntity } from './vendor';
 import { CustomerEntity } from './customer';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 import { ServiceEntity } from './service';
 import { PaymentEntity } from './payment';
 

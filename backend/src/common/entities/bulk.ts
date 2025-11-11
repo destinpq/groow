@@ -22,7 +22,7 @@ import { User } from '../../modules/auth/entities/user.entity';
 @Index(['type', 'status'])
 @Index(['createdBy', 'createdAt'])
 @Index(['organizationId', 'status'])
-export class BulkImportJob {
+class BulkImportJob {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -253,7 +253,7 @@ export class BulkImportJob {
 @Index(['type', 'status'])
 @Index(['createdBy', 'createdAt'])
 @Index(['organizationId', 'status'])
-export class BulkExportJob {
+class BulkExportJob {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -423,7 +423,7 @@ export class BulkExportJob {
 @Index(['type', 'status'])
 @Index(['entityType', 'status'])
 @Index(['organizationId', 'createdAt'])
-export class BulkOperation {
+class BulkOperation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -604,7 +604,7 @@ export class BulkOperation {
 @Index(['importJobId'])
 @Index(['severity'])
 @Index(['type'])
-export class BulkImportError {
+class BulkImportError {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -668,7 +668,7 @@ export class BulkImportError {
 @Entity('bulk_import_warnings')
 @Index(['importJobId'])
 @Index(['type'])
-export class BulkImportWarning {
+class BulkImportWarning {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -717,7 +717,7 @@ export class BulkImportWarning {
 @Index(['exportJobId'])
 @Index(['severity'])
 @Index(['type'])
-export class BulkExportError {
+class BulkExportError {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -759,7 +759,7 @@ export class BulkExportError {
 @Index(['operationId'])
 @Index(['itemId'])
 @Index(['type'])
-export class BulkOperationError {
+class BulkOperationError {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -807,7 +807,7 @@ export class BulkOperationError {
 @Entity('bulk_operation_logs')
 @Index(['operationId', 'createdAt'])
 @Index(['level'])
-export class BulkOperationLog {
+class BulkOperationLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -844,7 +844,7 @@ export class BulkOperationLog {
 @Index(['type', 'isActive'])
 @Index(['organizationId', 'isDefault'])
 @Index(['name'])
-export class BulkTemplate {
+class BulkTemplate {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -952,7 +952,7 @@ export class BulkTemplate {
 @Index(['importJobId'])
 @Index(['checkType'])
 @Index(['status'])
-export class BulkDataQualityCheck {
+class BulkDataQualityCheck {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -1037,7 +1037,7 @@ export class BulkDataQualityCheck {
 @Entity('bulk_processing_statistics')
 @Index(['entityType', 'date'])
 @Index(['organizationId', 'date'])
-export class BulkProcessingStatistics {
+class BulkProcessingStatistics {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

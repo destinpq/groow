@@ -167,3 +167,8 @@ export const productAPI: ProductAPI = {
 };
 
 export default productAPI;
+
+// Type exports for index.ts compatibility
+export type ProductFilters = ProductFilterRequest;
+export type CreateProductData = CreateProductRequest;
+export type PaginatedResponse = ProductListResponse;

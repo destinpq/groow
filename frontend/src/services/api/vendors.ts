@@ -955,3 +955,19 @@ export const vendorAPI = {
 };
 
 export default vendorAPI;
+
+// Export types for index.ts compatibility
+export type { Vendor };
+export type UpdateVendorProfileData = Partial<Vendor>;
+export interface KYCDocument {
+  id: string;
+  type: string;
+  status: string;
+  url: string;
+}
+export interface VendorStats {
+  totalOrders: number;
+  totalRevenue: number;
+  averageRating: number;
+  responseTime: number;
+}

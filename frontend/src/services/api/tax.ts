@@ -1,4 +1,4 @@
-import apiClient from './client';
+import { api } from './client';
 
 // Backend POJO imports - Tax Management Module
 import {
@@ -127,11 +127,10 @@ export interface TaxExemption {
   createdAt: string;
 }
 
-// Tax Management API with backend POJOs integration
+// ========================================
+// Tax Rate Management with typed POJOs
+// ========================================
 export const taxAPI = {
-  // ========================================
-  // Tax Rate Management with typed POJOs
-  // ========================================
   getRates: async (filters?: {
     jurisdiction?: Partial<TaxJurisdiction>;
     type?: TaxRateType;
@@ -142,7 +141,7 @@ export const taxAPI = {
     page?: number;
     limit?: number;
   }): Promise<GetTaxRatesResponse> => {
-    const response = await apiClient.get<PaginatedTaxResponse<TaxRateEntity>>('/tax/rates', { 
+    const response = await api.get<PaginatedTaxResponse<TaxRateEntity>>('/tax/rates', { 
       params: filters 
     });
     return {
@@ -154,31 +153,31 @@ export const taxAPI = {
   },
 
   getRateById: async (id: string): Promise<TaxRateEntity> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxRateEntity>>(`/tax/rates/${id}`);
+    const response = await api.get<TaxAPIResponse<TaxRateEntity>>(`/tax/rates/${id}`);
     return response.data.data;
   },
 
   getRatesByLocation: async (location: TaxLocation): Promise<TaxRateEntity[]> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxRateEntity[]>>('/tax/rates/by-location', location);
+    const response = await api.post<TaxAPIResponse<TaxRateEntity[]>>('/tax/rates/by-location', location);
     return response.data.data;
   },
 
   createRate: async (data: CreateTaxRateRequest): Promise<TaxRateEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxRateEntity>>('/tax/rates', data);
+    const response = await api.post<TaxAPIResponse<TaxRateEntity>>('/tax/rates', data);
     return response.data.data;
   },
 
   updateRate: async (id: string, data: UpdateTaxRateRequest): Promise<TaxRateEntity> => {
-    const response = await apiClient.put<TaxAPIResponse<TaxRateEntity>>(`/tax/rates/${id}`, data);
+    const response = await api.put<TaxAPIResponse<TaxRateEntity>>(`/tax/rates/${id}`, data);
     return response.data.data;
   },
 
   deleteRate: async (id: string): Promise<void> => {
-    await apiClient.delete(`/tax/rates/${id}`);
+    await api.delete(`/tax/rates/${id}`);
   },
 
   toggleRateStatus: async (id: string, isActive: boolean): Promise<TaxRateEntity> => {
-    const response = await apiClient.patch<TaxAPIResponse<TaxRateEntity>>(`/tax/rates/${id}/status`, {
+    const response = await api.patch<TaxAPIResponse<TaxRateEntity>>(`/tax/rates/${id}/status`, {
       isActive
     });
     return response.data.data;
@@ -188,12 +187,12 @@ export const taxAPI = {
   // Tax Calculation with typed POJOs
   // ========================================
   calculate: async (request: TaxCalculationRequest): Promise<TaxCalculationEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxCalculationEntity>>('/tax/calculate', request);
+    const response = await api.post<TaxAPIResponse<TaxCalculationEntity>>('/tax/calculate', request);
     return response.data.data;
   },
 
   recalculate: async (calculationId: string, changes?: Partial<TaxCalculationRequest>): Promise<TaxCalculationEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxCalculationEntity>>(
+    const response = await api.post<TaxAPIResponse<TaxCalculationEntity>>(
       `/tax/calculations/${calculationId}/recalculate`, 
       changes
     );
@@ -210,7 +209,7 @@ export const taxAPI = {
     page?: number;
     limit?: number;
   }): Promise<GetTaxCalculationsResponse> => {
-    const response = await apiClient.get<PaginatedTaxResponse<TaxCalculationEntity>>('/tax/calculations', {
+    const response = await api.get<PaginatedTaxResponse<TaxCalculationEntity>>('/tax/calculations', {
       params: filters
     });
     return {
@@ -222,26 +221,26 @@ export const taxAPI = {
   },
 
   getCalculationById: async (id: string): Promise<TaxCalculationEntity> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxCalculationEntity>>(`/tax/calculations/${id}`);
+    const response = await api.get<TaxAPIResponse<TaxCalculationEntity>>(`/tax/calculations/${id}`);
     return response.data.data;
   },
 
   validateCalculation: async (calculationId: string): Promise<TaxValidationResponse> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxValidationResponse>>(
+    const response = await api.post<TaxAPIResponse<TaxValidationResponse>>(
       `/tax/calculations/${calculationId}/validate`
     );
     return response.data.data;
   },
 
   finalizeCalculation: async (calculationId: string): Promise<TaxCalculationEntity> => {
-    const response = await apiClient.patch<TaxAPIResponse<TaxCalculationEntity>>(
+    const response = await api.patch<TaxAPIResponse<TaxCalculationEntity>>(
       `/tax/calculations/${calculationId}/finalize`
     );
     return response.data.data;
   },
 
   voidCalculation: async (calculationId: string, reason?: string): Promise<TaxCalculationEntity> => {
-    const response = await apiClient.patch<TaxAPIResponse<TaxCalculationEntity>>(
+    const response = await api.patch<TaxAPIResponse<TaxCalculationEntity>>(
       `/tax/calculations/${calculationId}/void`, 
       { reason }
     );
@@ -261,7 +260,7 @@ export const taxAPI = {
     page?: number;
     limit?: number;
   }): Promise<GetTaxExemptionsResponse> => {
-    const response = await apiClient.get<PaginatedTaxResponse<TaxExemptionEntity>>('/tax/exemptions', {
+    const response = await api.get<PaginatedTaxResponse<TaxExemptionEntity>>('/tax/exemptions', {
       params: filters
     });
     return {
@@ -273,12 +272,12 @@ export const taxAPI = {
   },
 
   getExemptionById: async (id: string): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}`);
+    const response = await api.get<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}`);
     return response.data.data;
   },
 
   getCustomerExemptions: async (customerId: string): Promise<TaxExemptionEntity[]> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxExemptionEntity[]>>(
+    const response = await api.get<TaxAPIResponse<TaxExemptionEntity[]>>(
       `/tax/exemptions/customer/${customerId}`
     );
     return response.data.data;
@@ -291,14 +290,14 @@ export const taxAPI = {
       formData.append('certificate', certificate);
     }
 
-    const response = await apiClient.post<TaxAPIResponse<TaxExemptionEntity>>('/tax/exemptions', formData, {
+    const response = await api.post<TaxAPIResponse<TaxExemptionEntity>>('/tax/exemptions', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data.data;
   },
 
   updateExemption: async (id: string, data: UpdateTaxExemptionRequest): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.put<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}`, data);
+    const response = await api.put<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}`, data);
     return response.data.data;
   },
 
@@ -306,7 +305,7 @@ export const taxAPI = {
     method: 'manual' | 'automated' | 'third_party';
     notes?: string;
   }): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxExemptionEntity>>(
+    const response = await api.post<TaxAPIResponse<TaxExemptionEntity>>(
       `/tax/exemptions/${id}/verify`, 
       verificationData
     );
@@ -314,28 +313,28 @@ export const taxAPI = {
   },
 
   approveExemption: async (id: string, notes?: string): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.patch<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/approve`, {
+    const response = await api.patch<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/approve`, {
       notes
     });
     return response.data.data;
   },
 
   rejectExemption: async (id: string, reason: string): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.patch<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/reject`, {
+    const response = await api.patch<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/reject`, {
       reason
     });
     return response.data.data;
   },
 
   renewExemption: async (id: string, newExpiryDate: Date): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/renew`, {
+    const response = await api.post<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/renew`, {
       expiryDate: newExpiryDate
     });
     return response.data.data;
   },
 
   suspendExemption: async (id: string, reason: string): Promise<TaxExemptionEntity> => {
-    const response = await apiClient.patch<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/suspend`, {
+    const response = await api.patch<TaxAPIResponse<TaxExemptionEntity>>(`/tax/exemptions/${id}/suspend`, {
       reason
     });
     return response.data.data;
@@ -345,7 +344,7 @@ export const taxAPI = {
   // Location & Jurisdiction Management
   // ========================================
   validateLocation: async (location: Partial<TaxLocation>): Promise<TaxValidationResponse> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxValidationResponse>>('/tax/locations/validate', location);
+    const response = await api.post<TaxAPIResponse<TaxValidationResponse>>('/tax/locations/validate', location);
     return response.data.data;
   },
 
@@ -355,24 +354,24 @@ export const taxAPI = {
     level?: string;
     search?: string;
   }): Promise<TaxJurisdiction[]> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxJurisdiction[]>>('/tax/jurisdictions', {
+    const response = await api.get<TaxAPIResponse<TaxJurisdiction[]>>('/tax/jurisdictions', {
       params: filters
     });
     return response.data.data;
   },
 
   getCountries: async (): Promise<{ code: string; name: string }[]> => {
-    const response = await apiClient.get<TaxAPIResponse<any[]>>('/tax/countries');
+    const response = await api.get<TaxAPIResponse<any[]>>('/tax/countries');
     return response.data.data;
   },
 
   getStates: async (countryCode: string): Promise<{ code: string; name: string }[]> => {
-    const response = await apiClient.get<TaxAPIResponse<any[]>>(`/tax/countries/${countryCode}/states`);
+    const response = await api.get<TaxAPIResponse<any[]>>(`/tax/countries/${countryCode}/states`);
     return response.data.data;
   },
 
   getCities: async (countryCode: string, stateCode: string): Promise<string[]> => {
-    const response = await apiClient.get<TaxAPIResponse<string[]>>(
+    const response = await api.get<TaxAPIResponse<string[]>>(
       `/tax/countries/${countryCode}/states/${stateCode}/cities`
     );
     return response.data.data;
@@ -386,14 +385,14 @@ export const taxAPI = {
     jurisdiction?: Partial<TaxJurisdiction>;
     includeProjections?: boolean;
   }): Promise<TaxStatsResponse> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxStatsResponse>>('/tax/stats', {
+    const response = await api.get<TaxAPIResponse<TaxStatsResponse>>('/tax/stats', {
       params: filters
     });
     return response.data.data;
   },
 
   generateReport: async (request: TaxReportRequest): Promise<TaxReportEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxReportEntity>>('/tax/reports', request);
+    const response = await api.post<TaxAPIResponse<TaxReportEntity>>('/tax/reports', request);
     return response.data.data;
   },
 
@@ -411,7 +410,7 @@ export const taxAPI = {
     page: number;
     totalPages: number;
   }> => {
-    const response = await apiClient.get<PaginatedTaxResponse<TaxReportEntity>>('/tax/reports', {
+    const response = await api.get<PaginatedTaxResponse<TaxReportEntity>>('/tax/reports', {
       params: filters
     });
     return {
@@ -423,19 +422,19 @@ export const taxAPI = {
   },
 
   getReportById: async (id: string): Promise<TaxReportEntity> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxReportEntity>>(`/tax/reports/${id}`);
+    const response = await api.get<TaxAPIResponse<TaxReportEntity>>(`/tax/reports/${id}`);
     return response.data.data;
   },
 
   downloadReport: async (id: string): Promise<Blob> => {
-    const response = await apiClient.get(`/tax/reports/${id}/download`, {
+    const response = await api.get(`/tax/reports/${id}/download`, {
       responseType: 'blob'
     });
     return response.data;
   },
 
   submitReport: async (id: string): Promise<TaxReportEntity> => {
-    const response = await apiClient.post<TaxAPIResponse<TaxReportEntity>>(`/tax/reports/${id}/submit`);
+    const response = await api.post<TaxAPIResponse<TaxReportEntity>>(`/tax/reports/${id}/submit`);
     return response.data.data;
   },
 
@@ -443,12 +442,12 @@ export const taxAPI = {
   // Configuration Management
   // ========================================
   getConfiguration: async (): Promise<TaxConfigurationEntity> => {
-    const response = await apiClient.get<TaxAPIResponse<TaxConfigurationEntity>>('/tax/configuration');
+    const response = await api.get<TaxAPIResponse<TaxConfigurationEntity>>('/tax/configuration');
     return response.data.data;
   },
 
   updateConfiguration: async (data: Partial<TaxConfigurationEntity>): Promise<TaxConfigurationEntity> => {
-    const response = await apiClient.put<TaxAPIResponse<TaxConfigurationEntity>>('/tax/configuration', data);
+    const response = await api.put<TaxAPIResponse<TaxConfigurationEntity>>('/tax/configuration', data);
     return response.data.data;
   },
 
@@ -462,7 +461,7 @@ export const taxAPI = {
     successful: TaxRateEntity[];
     failed: { rateId: string; error: string }[];
   }> => {
-    const response = await apiClient.post<TaxAPIResponse<any>>('/tax/rates/bulk-update', data);
+    const response = await api.post<TaxAPIResponse<any>>('/tax/rates/bulk-update', data);
     return response.data.data;
   },
 
@@ -470,7 +469,7 @@ export const taxAPI = {
     successful: string[];
     failed: { rateId: string; error: string }[];
   }> => {
-    const response = await apiClient.post<TaxAPIResponse<any>>('/tax/rates/bulk-delete', { rateIds });
+    const response = await api.post<TaxAPIResponse<any>>('/tax/rates/bulk-delete', { rateIds });
     return response.data.data;
   },
 
@@ -478,7 +477,7 @@ export const taxAPI = {
     successful: TaxExemptionEntity[];
     failed: { exemptionId: string; error: string }[];
   }> => {
-    const response = await apiClient.post<TaxAPIResponse<any>>('/tax/exemptions/bulk-approve', { exemptionIds });
+    const response = await api.post<TaxAPIResponse<any>>('/tax/exemptions/bulk-approve', { exemptionIds });
     return response.data.data;
   },
 
@@ -501,7 +500,7 @@ export const taxAPI = {
       formData.append('options', JSON.stringify(options));
     }
 
-    const response = await apiClient.post<TaxAPIResponse<any>>('/tax/rates/import', formData, {
+    const response = await api.post<TaxAPIResponse<any>>('/tax/rates/import', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data.data;
@@ -512,7 +511,7 @@ export const taxAPI = {
     type?: TaxRateType;
     format?: 'csv' | 'xlsx' | 'json';
   }): Promise<Blob> => {
-    const response = await apiClient.post('/tax/rates/export', filters, {
+    const response = await api.post('/tax/rates/export', filters, {
       responseType: 'blob'
     });
     return response.data;
@@ -523,7 +522,7 @@ export const taxAPI = {
     jurisdiction?: Partial<TaxJurisdiction>;
     format?: 'csv' | 'xlsx' | 'json';
   }): Promise<Blob> => {
-    const response = await apiClient.post('/tax/calculations/export', filters, {
+    const response = await api.post('/tax/calculations/export', filters, {
       responseType: 'blob'
     });
     return response.data;
@@ -542,7 +541,7 @@ export const taxAPI = {
     complianceScore: number;
     recommendations: string[];
   }[]> => {
-    const response = await apiClient.get<TaxAPIResponse<any[]>>('/tax/compliance/status', {
+    const response = await api.get<TaxAPIResponse<any[]>>('/tax/compliance/status', {
       params: { jurisdiction }
     });
     return response.data.data;
@@ -572,7 +571,7 @@ export const taxAPI = {
     page: number;
     totalPages: number;
   }> => {
-    const response = await apiClient.get<PaginatedTaxResponse<any>>('/tax/audit-trail', {
+    const response = await api.get<PaginatedTaxResponse<any>>('/tax/audit-trail', {
       params: filters
     });
     return {
@@ -689,15 +688,15 @@ export const taxAPI = {
   update: async (id: number, data: UpdateTaxRateDto): Promise<TaxRate> => {
     const updateData: UpdateTaxRateRequest = {
       name: data.state ? `${data.state} ${data.type} Tax` : undefined,
-      jurisdiction: {
+      jurisdiction: data.country ? {
         country: data.country,
-        countryCode: data.countryCode,
+        countryCode: data.countryCode || '',
         state: data.state,
         stateCode: data.stateCode,
         city: data.city,
         zipCode: data.zipCode,
         level: 'state'
-      },
+      } : undefined,
       rate: data.rate,
       priority: data.priority,
       isActive: data.enabled,

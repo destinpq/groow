@@ -27,7 +27,7 @@ import { User } from '../../modules/auth/entities/user.entity';
 @Index(['expiresAt'])
 @Index(['ipAddress'])
 @Index(['userAgent'])
-export class AuthSession {
+class AuthSession {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -138,7 +138,7 @@ export class AuthSession {
 @Index(['sessionId', 'createdAt'])
 @Index(['activityType'])
 @Index(['ipAddress'])
-export class AuthSessionActivity {
+class AuthSessionActivity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -206,7 +206,7 @@ export class AuthSessionActivity {
 @Entity('auth_mfa_configurations')
 @Index(['userId', 'isActive'])
 @Index(['type', 'isActive'])
-export class AuthMFAConfiguration {
+class AuthMFAConfiguration {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -270,7 +270,7 @@ export class AuthMFAConfiguration {
 @Index(['mfaConfigurationId', 'createdAt'])
 @Index(['ipAddress'])
 @Index(['success'])
-export class AuthMFAAttempt {
+class AuthMFAAttempt {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -313,7 +313,7 @@ export class AuthMFAAttempt {
 @Entity('auth_sso_providers')
 @Index(['name'], { unique: true })
 @Index(['isActive'])
-export class AuthSSOProvider {
+class AuthSSOProvider {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -398,7 +398,7 @@ export class AuthSSOProvider {
 @Entity('auth_sso_connections')
 @Index(['userId', 'providerId'], { unique: true })
 @Index(['externalId', 'providerId'], { unique: true })
-export class AuthSSOConnection {
+class AuthSSOConnection {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -468,7 +468,7 @@ export class AuthSSOConnection {
 @Entity('auth_roles')
 @Index(['name'], { unique: true })
 @Index(['isActive'])
-export class AuthRole {
+class AuthRole {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -545,7 +545,7 @@ export class AuthRole {
 @Index(['userId', 'roleId'], { unique: true })
 @Index(['assignedBy'])
 @Index(['expiresAt'])
-export class AuthRoleAssignment {
+class AuthRoleAssignment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -604,7 +604,7 @@ export class AuthRoleAssignment {
 @Entity('auth_permissions')
 @Index(['module', 'action', 'resource'], { unique: true })
 @Index(['isActive'])
-export class AuthPermission {
+class AuthPermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -653,7 +653,7 @@ export class AuthPermission {
 @Index(['keyHash'], { unique: true })
 @Index(['userId', 'isActive'])
 @Index(['expiresAt'])
-export class AuthAPIKey {
+class AuthAPIKey {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -731,7 +731,7 @@ export class AuthAPIKey {
 @Index(['apiKeyId', 'createdAt'])
 @Index(['endpoint'])
 @Index(['statusCode'])
-export class AuthAPIKeyUsage {
+class AuthAPIKeyUsage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -785,7 +785,7 @@ export class AuthAPIKeyUsage {
 @Index(['eventType'])
 @Index(['severity'])
 @Index(['ipAddress'])
-export class AuthAuditLog {
+class AuthAuditLog {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

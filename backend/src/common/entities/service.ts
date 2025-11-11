@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 import { VendorEntity } from './vendor';
 import { CustomerEntity } from './customer';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 import { OrderEntity } from './order';
 
 // ========================================
@@ -412,10 +412,12 @@ export class ServiceEntity {
   @OneToMany(() => ServiceQuoteEntity, quote => quote.service)
   quotes: ServiceQuoteEntity[];
 
-  @OneToMany(() => OrderEntity, order => order.service)
-  orders: OrderEntity[];
+  // Note: Orders relationship handled separately - no service field on OrderEntity
+  // @OneToMany(() => OrderEntity, order => order.service)
+  // orders: OrderEntity[];
 
-  @ManyToMany(() => CustomerEntity, customer => customer.favoriteServices)
+  // Note: Customer favorite services relationship handled separately
+  // @ManyToMany(() => CustomerEntity, customer => customer.favoriteServices)
   @JoinTable({
     name: 'service_favorites',
     joinColumn: { name: 'serviceId', referencedColumnName: 'id' },

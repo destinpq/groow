@@ -903,3 +903,11 @@ export const wishlistAPI = {
 };
 
 export default { cartAPI, wishlistAPI };
+
+// Export types for index.ts compatibility
+export type { Cart, CartItem, Wishlist, WishlistItem };
+export type AddToCartData = {
+  productId: string;
+  quantity: number;
+  price: number;
+};

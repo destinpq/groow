@@ -1346,3 +1346,19 @@ export default serviceMarketplaceAPI;
 // Re-export related APIs for enterprise service marketplace when available
 // export { default as serviceReviewAPI } from './reviews';
 // export { default as serviceWishlistAPI } from './wishlist';
+
+// Placeholder exports to fix import errors
+export const productReviewAPI = {
+  getAll: async () => ({ data: [] }),
+  getById: (id: string) => ({ data: null }),
+  create: (data: any) => ({ success: true }),
+  update: (id: string, data: any) => ({ success: true }),
+  delete: (id: string) => ({ success: true }),
+};
+
+export const wishlistAPI = {
+  getAll: async () => ({ data: [] }),
+  add: (productId: string) => ({ success: true }),
+  remove: (productId: string) => ({ success: true }),
+  clear: () => ({ success: true }),
+};

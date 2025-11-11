@@ -1,4 +1,4 @@
-import api from './client';
+import { api } from './client';
 
 // API Response wrapper types
 export interface CurrencyAPIResponse<T> {

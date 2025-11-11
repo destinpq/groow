@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDat
 import { ServiceEntity } from './service';
 import { VendorEntity } from './vendor';
 import { CustomerEntity } from './customer';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 import { OrderEntity } from './order';
 
 @Entity('service_auctions')
@@ -172,11 +172,11 @@ export class ServiceAuctionEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ServiceEntity, service => service.auctions)
+  @ManyToOne(() => ServiceEntity)
   @JoinColumn({ name: 'serviceId' })
   service: ServiceEntity;
 
-  @ManyToOne(() => VendorEntity, vendor => vendor.auctions)
+  @ManyToOne(() => VendorEntity)
   @JoinColumn({ name: 'vendorId' })
   vendor: VendorEntity;
 
@@ -196,8 +196,9 @@ export class ServiceAuctionEntity {
   @OneToMany(() => AuctionQuestionEntity, question => question.auction)
   questions: AuctionQuestionEntity[];
 
-  @OneToMany(() => OrderEntity, order => order.auction)
-  orders: OrderEntity[];
+  // Note: Orders relationship handled separately - no auction field on OrderEntity
+  // @OneToMany(() => OrderEntity, order => order.auction)
+  // orders: OrderEntity[];
 }
 
 @Entity('auction_bids')
@@ -284,7 +285,7 @@ export class AuctionBidEntity {
   @JoinColumn({ name: 'auctionId' })
   auction: ServiceAuctionEntity;
 
-  @ManyToOne(() => UserEntity, user => user.auctionBids)
+  @ManyToOne(() => UserEntity)
   @JoinColumn({ name: 'bidderId' })
   bidder: UserEntity;
 

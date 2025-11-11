@@ -14,7 +14,7 @@ import {
 // Note: depends on existing VendorEntity, CustomerEntity, UserEntity, OrderEntity
 import { VendorEntity } from './vendor';
 import { CustomerEntity } from './customer';
-import { UserEntity } from './user';
+import { User as UserEntity } from '@modules/auth/entities/user.entity';
 import { OrderEntity } from './order';
 
 // Wallet entity for customers/vendors

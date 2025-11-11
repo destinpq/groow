@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AutoComplete, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { AutoCompleteProps } from 'antd';
 import { debounce } from 'lodash';
+import { productAPI, categoriesAPI, brandsAPI } from '@/services/api';
+import type { Product, Category, Brand } from '@/services/api';
 
 interface SearchResult {
   value: string;
@@ -19,21 +21,6 @@ interface SmartSearchAutocompleteProps {
   style?: React.CSSProperties;
 }
 
-// Mock data - in real app, this would come from API
-const mockProducts = [
-  { id: 1, name: 'Wireless Bluetooth Headphones', category: 'Electronics', brand: 'AudioTech', price: 89.99 },
-  { id: 2, name: 'Smart Watch Pro', category: 'Electronics', brand: 'TechWear', price: 199.99 },
-  { id: 3, name: 'USB-C Hub 7-in-1', category: 'Accessories', brand: 'ConnectPlus', price: 45.99 },
-  { id: 4, name: 'Wireless Mouse Ergonomic', category: 'Accessories', brand: 'ClickMaster', price: 24.99 },
-  { id: 5, name: 'Mechanical Keyboard RGB', category: 'Accessories', brand: 'GameKeys', price: 79.99 },
-  { id: 6, name: 'Laptop Stand Aluminum', category: 'Accessories', brand: 'DeskPro', price: 34.99 },
-  { id: 7, name: 'Bluetooth Speaker Portable', category: 'Electronics', brand: 'SoundWave', price: 59.99 },
-  { id: 8, name: 'Wireless Earbuds Pro', category: 'Electronics', brand: 'AudioTech', price: 129.99 },
-];
-
-const mockCategories = ['Electronics', 'Accessories', 'Home & Garden', 'Fashion', 'Sports', 'Books'];
-const mockBrands = ['AudioTech', 'TechWear', 'ConnectPlus', 'ClickMaster', 'GameKeys', 'DeskPro', 'SoundWave'];
-
 const SmartSearchAutocomplete: React.FC<SmartSearchAutocompleteProps> = ({
   onSearch,
   onSelect,
@@ -43,13 +30,39 @@ const SmartSearchAutocomplete: React.FC<SmartSearchAutocompleteProps> = ({
 }) => {
   const [options, setOptions] = useState<SearchResult[]>([]);
   const [searchValue, setSearchValue] = useState('');
-  const [recentSearches, setRecentSearches] = useState<string[]>([
-    'wireless headphones',
-    'laptop stand',
-    'gaming keyboard',
-  ]);
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    // Load recent searches from localStorage
+    const saved = localStorage.getItem('recentSearches');
+    return saved ? JSON.parse(saved) : ['wireless headphones', 'laptop stand', 'gaming keyboard'];
+  });
 
-  const searchData = useCallback((query: string): SearchResult[] => {
+  // Load categories and brands on component mount
+  useEffect(() => {
+    const loadStaticData = async () => {
+      try {
+        const [categoriesResponse, brandsResponse] = await Promise.all([
+          categoriesAPI.getAll(),
+          brandsAPI.getAll()
+        ]);
+        setCategories(categoriesResponse || []);
+        setBrands(brandsResponse || []);
+      } catch (error) {
+        console.error('Failed to load categories and brands:', error);
+      }
+    };
+
+    loadStaticData();
+  }, []);
+
+  // Save recent searches to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+  }, [recentSearches]);
+
+  const searchData = useCallback(async (query: string): Promise<SearchResult[]> => {
     if (!query || query.length < 2) {
       // Show recent searches when no query
       return recentSearches.map(search => ({
@@ -64,80 +77,107 @@ const SmartSearchAutocomplete: React.FC<SmartSearchAutocompleteProps> = ({
       }));
     }
 
-    const lowerQuery = query.toLowerCase();
+    setLoading(true);
     const results: SearchResult[] = [];
 
-    // Search products
-    const matchingProducts = mockProducts.filter(
-      product =>
-        product.name.toLowerCase().includes(lowerQuery) ||
-        product.brand.toLowerCase().includes(lowerQuery) ||
-        product.category.toLowerCase().includes(lowerQuery)
-    );
-
-    matchingProducts.slice(0, 5).forEach(product => {
-      results.push({
-        value: product.name,
-        label: (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0' }}>
-            <div>
-              <div style={{ fontWeight: 500 }}>{product.name}</div>
-              <div style={{ fontSize: 12, color: '#8c8c8c' }}>
-                in {product.category} • {product.brand}
+    try {
+      // Search products using the API
+      const productResponse = await productAPI.getProducts({
+        search: query,
+        limit: 5,
+        page: 1
+      });
+      
+      const matchingProducts = productResponse.data?.items || [];
+      matchingProducts.forEach((product: Product) => {
+        results.push({
+          value: product.name,
+          label: (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0' }}>
+              <div>
+                <div style={{ fontWeight: 500 }}>{product.name}</div>
+                <div style={{ fontSize: 12, color: '#8c8c8c' }}>
+                  in {product.category?.name || 'Uncategorized'} • {product.brand?.name || 'No Brand'}
+                </div>
+              </div>
+              <div style={{ fontWeight: 600, color: '#ff9900' }}>
+                ${product.price}
               </div>
             </div>
-            <div style={{ fontWeight: 600, color: '#ff9900' }}>
-              ${product.price}
+          ),
+          type: 'product',
+          data: product,
+        });
+      });
+
+      // Search categories
+      const lowerQuery = query.toLowerCase();
+      const matchingCategories = categories.filter(cat =>
+        cat.name.toLowerCase().includes(lowerQuery)
+      );
+
+      matchingCategories.slice(0, 3).forEach(category => {
+        results.push({
+          value: category.name,
+          label: (
+            <div style={{ padding: '4px 0' }}>
+              <span style={{ fontWeight: 500 }}>Category: </span>
+              <span>{category.name}</span>
+              {category.description && (
+                <div style={{ fontSize: 12, color: '#8c8c8c' }}>{category.description}</div>
+              )}
             </div>
-          </div>
-        ),
-        type: 'product',
-        data: product,
+          ),
+          type: 'category',
+          data: category,
+        });
       });
-    });
 
-    // Search categories
-    const matchingCategories = mockCategories.filter(cat =>
-      cat.toLowerCase().includes(lowerQuery)
-    );
+      // Search brands
+      const matchingBrands = brands.filter(brand =>
+        brand.name.toLowerCase().includes(lowerQuery)
+      );
 
-    matchingCategories.slice(0, 3).forEach(category => {
-      results.push({
-        value: category,
+      matchingBrands.slice(0, 3).forEach(brand => {
+        results.push({
+          value: brand.name,
+          label: (
+            <div style={{ padding: '4px 0' }}>
+              <span style={{ fontWeight: 500 }}>Brand: </span>
+              <span>{brand.name}</span>
+              {brand.description && (
+                <div style={{ fontSize: 12, color: '#8c8c8c' }}>{brand.description}</div>
+              )}
+            </div>
+          ),
+          type: 'brand',
+          data: brand,
+        });
+      });
+
+    } catch (error) {
+      console.error('Search failed:', error);
+      // Fallback to showing recent searches on error
+      return recentSearches.map(search => ({
+        value: search,
         label: (
-          <div style={{ padding: '4px 0' }}>
-            <span style={{ fontWeight: 500 }}>Category: </span>
-            <span>{category}</span>
+          <div style={{ display: 'flex', alignItems: 'center', padding: '4px 0' }}>
+            <SearchOutlined style={{ marginRight: 8, color: '#8c8c8c' }} />
+            <span>{search}</span>
           </div>
         ),
-        type: 'category',
-      });
-    });
-
-    // Search brands
-    const matchingBrands = mockBrands.filter(brand =>
-      brand.toLowerCase().includes(lowerQuery)
-    );
-
-    matchingBrands.slice(0, 3).forEach(brand => {
-      results.push({
-        value: brand,
-        label: (
-          <div style={{ padding: '4px 0' }}>
-            <span style={{ fontWeight: 500 }}>Brand: </span>
-            <span>{brand}</span>
-          </div>
-        ),
-        type: 'brand',
-      });
-    });
+        type: 'keyword' as const,
+      }));
+    } finally {
+      setLoading(false);
+    }
 
     return results;
-  }, [recentSearches]);
+  }, [recentSearches, categories, brands]);
 
   const debouncedSearch = useCallback(
-    debounce((value: string) => {
-      const results = searchData(value);
+    debounce(async (value: string) => {
+      const results = await searchData(value);
       setOptions(results);
     }, 300),
     [searchData]
