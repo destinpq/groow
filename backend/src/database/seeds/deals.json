@@ -1,0 +1,198 @@
+[
+  {
+    "title": "Black Friday Mega Sale",
+    "description": "Huge discounts on electronics and gadgets. Get up to 50% off on all electronic items including smartphones, laptops, and accessories.",
+    "dealType": "flash_sale",
+    "discountRules": {
+      "type": "percentage",
+      "value": 30,
+      "minOrderValue": 500
+    },
+    "conditions": {
+      "applicableCategories": ["electronics"],
+      "minOrderValue": 500,
+      "maxUsagePerCustomer": 1
+    },
+    "startDate": "2025-11-15T00:00:00Z",
+    "endDate": "2025-11-30T23:59:59Z",
+    "isActive": true,
+    "isFeatured": true,
+    "usageLimit": 1000,
+    "priority": 10,
+    "banner": {
+      "imageUrl": "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da",
+      "altText": "Black Friday Sale",
+      "clickAction": "redirect_to_deals"
+    },
+    "targeting": {
+      "userSegments": ["all"],
+      "geoLocations": ["US", "CA"],
+      "demographics": {}
+    },
+    "analytics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "conversionRate": 0,
+      "avgOrderValue": 0
+    },
+    "tags": ["black-friday", "electronics", "mega-sale"]
+  },
+  {
+    "title": "Summer Fashion Clearance",
+    "description": "Clear out summer inventory with massive discounts on clothing and accessories. Perfect time to refresh your wardrobe.",
+    "dealType": "seasonal_sale",
+    "discountRules": {
+      "type": "percentage",
+      "value": 40,
+      "minOrderValue": 200
+    },
+    "conditions": {
+      "applicableCategories": ["fashion"],
+      "minOrderValue": 200
+    },
+    "startDate": "2025-11-01T00:00:00Z",
+    "endDate": "2025-12-31T23:59:59Z",
+    "isActive": true,
+    "isFeatured": false,
+    "usageLimit": 500,
+    "priority": 8,
+    "banner": {
+      "imageUrl": "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
+      "altText": "Summer Fashion Sale",
+      "clickAction": "redirect_to_category"
+    },
+    "targeting": {
+      "userSegments": ["all"],
+      "geoLocations": [],
+      "demographics": {}
+    },
+    "analytics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "conversionRate": 0,
+      "avgOrderValue": 0
+    },
+    "tags": ["summer", "fashion", "clearance"]
+  },
+  {
+    "title": "Buy 2 Get 1 Free Books",
+    "description": "Expand your library with our special book offer. Buy any 2 books and get the cheapest one absolutely free!",
+    "dealType": "bulk_discount",
+    "discountRules": {
+      "type": "buy_x_get_y",
+      "value": 1,
+      "minQuantity": 2,
+      "freeItems": 1
+    },
+    "conditions": {
+      "applicableCategories": ["books-media"],
+      "minOrderValue": 100
+    },
+    "startDate": "2025-11-01T00:00:00Z",
+    "endDate": "2025-12-15T23:59:59Z",
+    "isActive": true,
+    "isFeatured": true,
+    "priority": 7,
+    "banner": {
+      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+      "altText": "Book Sale Offer",
+      "clickAction": "redirect_to_category"
+    },
+    "targeting": {
+      "userSegments": ["all"],
+      "geoLocations": [],
+      "demographics": {}
+    },
+    "analytics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "conversionRate": 0,
+      "avgOrderValue": 0
+    },
+    "tags": ["books", "buy-2-get-1", "education"]
+  },
+  {
+    "title": "New Customer Welcome Deal",
+    "description": "Welcome to our platform! Enjoy 25% off on your first purchase. Start your shopping journey with amazing savings.",
+    "dealType": "daily_deal",
+    "discountRules": {
+      "type": "percentage",
+      "value": 25,
+      "minOrderValue": 150
+    },
+    "conditions": {
+      "newCustomersOnly": true,
+      "minOrderValue": 150,
+      "maxUsagePerCustomer": 1
+    },
+    "startDate": "2025-11-01T00:00:00Z",
+    "endDate": "2025-12-31T23:59:59Z",
+    "isActive": true,
+    "isFeatured": true,
+    "priority": 9,
+    "banner": {
+      "imageUrl": "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0",
+      "altText": "Welcome New Customers",
+      "clickAction": "redirect_to_deals"
+    },
+    "targeting": {
+      "userSegments": ["new_customers"],
+      "geoLocations": [],
+      "demographics": {}
+    },
+    "analytics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "conversionRate": 0,
+      "avgOrderValue": 0
+    },
+    "tags": ["welcome", "new-customer", "first-purchase"]
+  },
+  {
+    "title": "Home & Garden Spring Sale",
+    "description": "Transform your living space this spring! Get 35% off on all home improvement items, furniture, and garden supplies.",
+    "dealType": "seasonal_sale",
+    "discountRules": {
+      "type": "percentage",
+      "value": 35,
+      "minOrderValue": 300
+    },
+    "conditions": {
+      "applicableCategories": ["home-garden"],
+      "minOrderValue": 300
+    },
+    "startDate": "2025-11-01T00:00:00Z",
+    "endDate": "2025-11-25T23:59:59Z",
+    "isActive": true,
+    "isFeatured": false,
+    "usageLimit": 200,
+    "priority": 6,
+    "banner": {
+      "imageUrl": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7",
+      "altText": "Home Garden Sale",
+      "clickAction": "redirect_to_category"
+    },
+    "targeting": {
+      "userSegments": ["all"],
+      "geoLocations": [],
+      "demographics": {}
+    },
+    "analytics": {
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "conversionRate": 0,
+      "avgOrderValue": 0
+    },
+    "tags": ["home", "garden", "spring-sale", "furniture"]
+  }
+]

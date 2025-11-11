@@ -27,12 +27,14 @@ async function seed() {
     const brandsData = loadJSON('brands.json');
     const vendorsData = loadJSON('vendors.json');
     const customersData = loadJSON('customers.json');
+    const dealsData = loadJSON('deals.json');
     console.log('✅ JSON files loaded\n');
 
-    console.log('��️  Clearing existing data...');
+    console.log('🏷️  Clearing existing data...');
     await dataSource.query('TRUNCATE TABLE users CASCADE');
     await dataSource.query('TRUNCATE TABLE categories CASCADE');
     await dataSource.query('TRUNCATE TABLE brands CASCADE');
+    await dataSource.query('TRUNCATE TABLE deals CASCADE');
     console.log('✅ Data cleared\n');
 
     console.log('👤 Creating users...');
@@ -90,6 +92,38 @@ async function seed() {
     }
     console.log(`✅ Created ${customerCount} customers\n`);
 
+    console.log('🎯 Creating deals...');
+    let dealCount = 0;
+    const adminUserId = userIdMap.get('admin@groow.com');
+    for (const deal of dealsData) {
+      await dataSource.query(
+        `INSERT INTO deals (
+          title, description, "dealType", "discountRules", conditions, 
+          "startDate", "endDate", "isActive", "isFeatured", "usageLimit", 
+          banner, targeting, analytics, tags, "createdById"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+        [
+          deal.title,
+          deal.description, 
+          deal.dealType,
+          JSON.stringify(deal.discountRules),
+          JSON.stringify(deal.conditions),
+          deal.startDate,
+          deal.endDate,
+          deal.isActive,
+          deal.isFeatured || false,
+          deal.usageLimit || null,
+          JSON.stringify(deal.banner),
+          JSON.stringify(deal.targeting),
+          JSON.stringify(deal.analytics),
+          JSON.stringify(deal.tags || []),
+          adminUserId
+        ]
+      );
+      dealCount++;
+    }
+    console.log(`✅ Created ${dealCount} deals\n`);
+
     console.log('========================================');
     console.log('✅ Database seeding completed!');
     console.log('========================================\n');
@@ -99,6 +133,7 @@ async function seed() {
     console.log(`  ✓ ${brandsData.length} Brands`);
     console.log(`  ✓ ${vendorCount} Vendors`);
     console.log(`  ✓ ${customerCount} Customers`);
+    console.log(`  ✓ ${dealCount} Deals`);
     console.log('\n📝 Login Credentials:');
     console.log('  Admin:     admin@groow.com / Admin@123456');
     console.log('  Vendors:   vendor1-5@groow.com / Vendor@123456');

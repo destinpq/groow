@@ -23,7 +23,16 @@ export class MarketingService {
 
   // DEALS MANAGEMENT (REQ-080)
   async getAllDeals(filters: any) {
-    const { page, limit, search, dealType, status, isActive, isFeatured, startDate, endDate } = filters;
+    const { page = 1, limit = 10, search, dealType, status, isActive, isFeatured, startDate, endDate } = filters;
+    
+    // Parse page and limit to ensure they are numbers and within safe bounds
+    const maxLimit = 100;
+    const pageCandidate = parseInt(page, 10);
+    const limitCandidate = parseInt(limit, 10);
+    const pageNum = Number.isFinite(pageCandidate) && pageCandidate > 0 ? pageCandidate : 1;
+    const limitNum = Number.isFinite(limitCandidate) && limitCandidate > 0
+      ? Math.min(limitCandidate, maxLimit)
+      : 10;
     
     const queryBuilder = this.dealRepository.createQueryBuilder('deal')
       .leftJoinAndSelect('deal.createdBy', 'createdBy');
@@ -57,8 +66,8 @@ export class MarketingService {
 
     const [deals, total] = await queryBuilder
       .orderBy('deal.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip((pageNum - 1) * limitNum)
+      .take(limitNum)
       .getManyAndCount();
 
     return {
@@ -66,9 +75,9 @@ export class MarketingService {
       data: deals,
       pagination: {
         total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
       },
     };
   }
@@ -325,6 +334,13 @@ export class MarketingService {
   // COUPONS MANAGEMENT (REQ-081)
   async getAllCoupons(filters: any) {
     const { page, limit, search, type, status, isActive } = filters;
+    const maxLimit = 100;
+    const pageCandidate = parseInt(page, 10);
+    const limitCandidate = parseInt(limit, 10);
+    const pageNum = Number.isFinite(pageCandidate) && pageCandidate > 0 ? pageCandidate : 1;
+    const limitNum = Number.isFinite(limitCandidate) && limitCandidate > 0
+      ? Math.min(limitCandidate, maxLimit)
+      : 10;
     
     const queryBuilder = this.couponRepository.createQueryBuilder('coupon')
       .leftJoinAndSelect('coupon.createdBy', 'createdBy');
@@ -346,8 +362,8 @@ export class MarketingService {
 
     const [coupons, total] = await queryBuilder
       .orderBy('coupon.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip((pageNum - 1) * limitNum)
+      .take(limitNum)
       .getManyAndCount();
 
     return {
@@ -759,7 +775,14 @@ export class MarketingService {
   // PROMOTIONS MANAGEMENT (REQ-082)
   async getAllPromotions(filters: any) {
     const { page, limit, search, type, status } = filters;
-    
+    const maxLimit = 100;
+    const pageCandidate = parseInt(page, 10);
+    const limitCandidate = parseInt(limit, 10);
+    const pageNum = Number.isFinite(pageCandidate) && pageCandidate > 0 ? pageCandidate : 1;
+    const limitNum = Number.isFinite(limitCandidate) && limitCandidate > 0
+      ? Math.min(limitCandidate, maxLimit)
+      : 10;
+
     const queryBuilder = this.promotionRepository.createQueryBuilder('promotion')
       .leftJoinAndSelect('promotion.createdBy', 'createdBy');
 
@@ -780,8 +803,8 @@ export class MarketingService {
 
     const [promotions, total] = await queryBuilder
       .orderBy('promotion.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
+      .skip((pageNum - 1) * limitNum)
+      .take(limitNum)
       .getManyAndCount();
 
     return {
