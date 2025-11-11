@@ -50,7 +50,7 @@ export const useAuthStore = create<AuthState>()(
           const token = localStorage.getItem('access_token');
           const userStr = localStorage.getItem('user');
           
-          if (token && userStr) {
+          if (token && userStr && userStr !== 'undefined' && userStr !== 'null') {
             try {
               const user = JSON.parse(userStr);
               state.token = token;

@@ -1,5 +1,9 @@
 import { Client } from 'pg';
 import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 async function directSeed() {
   console.log('🚀 Direct PostgreSQL seeding...');
@@ -8,6 +12,7 @@ async function directSeed() {
   
   if (!databaseUrl) {
     console.error('❌ DATABASE_URL not found in environment');
+    console.log('Available env vars:', Object.keys(process.env).filter(key => key.includes('DATABASE')));
     process.exit(1);
   }
   
@@ -31,7 +36,7 @@ async function directSeed() {
     console.log('🔄 Creating users table...');
     await client.query(`
       CREATE TABLE users (
-        id SERIAL PRIMARY KEY,
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         "firstName" VARCHAR(100),
@@ -39,11 +44,15 @@ async function directSeed() {
         phone VARCHAR(20),
         role VARCHAR(20) DEFAULT 'customer' CHECK (role IN ('admin', 'vendor', 'customer')),
         status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('active', 'pending', 'suspended')),
+        "profileImage" VARCHAR(500),
+        "lastLoginAt" TIMESTAMP,
+        "resetPasswordToken" VARCHAR(255),
+        "resetPasswordExpires" TIMESTAMP,
         "emailVerified" BOOLEAN DEFAULT FALSE,
-        "phoneVerified" BOOLEAN DEFAULT FALSE,
-        "lastLogin" TIMESTAMP,
+        "emailVerificationToken" VARCHAR(255),
         "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        "deletedAt" TIMESTAMP
       )
     `);
     console.log('✅ Users table created successfully!');

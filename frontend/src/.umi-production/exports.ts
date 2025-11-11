@@ -15,3 +15,5 @@ export { history, createHistory } from './core/history';
 export { terminal } from './core/terminal';
 // react ssr
 export const useServerInsertedHTML: Function = () => {};
+// test
+export { TestBrowser } from './testBrowser';

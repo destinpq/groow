@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.API_URL || 'https://groow-api.destinpq.com/api/v1',
+  baseURL: (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },

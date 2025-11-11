@@ -75,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 8
+        "register": 6
       },
       "enableBy": "register",
       "type": "preset",
@@ -89,10 +89,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            0
+            1
           ]
         },
-        "register": 5
+        "register": 4
       },
       "enableBy": "register",
       "type": "plugin",
@@ -139,7 +139,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -153,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            494
+            510
           ]
         },
-        "register": 36
+        "register": 34
       },
       "enableBy": "register",
       "type": "plugin",
@@ -169,7 +169,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -186,10 +186,10 @@
             0
           ],
           "onCheck": [
-            0
+            1
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -206,7 +206,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -236,7 +236,7 @@
             0
           ]
         },
-        "register": 9
+        "register": 10
       },
       "enableBy": "register",
       "type": "plugin",
@@ -253,7 +253,7 @@
       "enableBy": "register",
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       }
     },
     "virtual: config-styles": {
@@ -1105,7 +1105,7 @@
             1
           ]
         },
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1118,7 +1118,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1131,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 136
+        "register": 138
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1157,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 17
+        "register": 28
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1213,7 +1213,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 55
+        "register": 52
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1225,7 +1225,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1277,7 +1277,7 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            1
+            0
           ]
         },
         "register": 2
@@ -1305,7 +1305,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1318,7 +1318,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1395,7 +1395,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1408,7 +1408,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1421,7 +1421,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 4
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1472,7 +1472,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 36
+        "register": 42
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1485,7 +1485,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/test/test.js",
@@ -1509,7 +1509,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1522,7 +1522,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1551,7 +1551,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1589,7 +1589,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack.js",
@@ -1601,7 +1601,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 9
+        "register": 3
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian.js",
@@ -1625,7 +1625,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1638,7 +1638,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1664,7 +1664,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 72
+        "register": 82
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1677,7 +1677,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 40
+        "register": 33
       },
       "type": "plugin",
       "path": "/home/azureuser/groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1702,7 +1702,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1715,7 +1715,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1754,7 +1754,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1767,7 +1767,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1845,7 +1845,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1871,7 +1871,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1884,7 +1884,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1910,7 +1910,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1962,7 +1962,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -3150,7 +3150,7 @@
       "id": "login",
       "file": "login.tsx",
       "absPath": "/login",
-      "__content": "import { Form, Input, Button, Card, message } from 'antd';\nimport { UserOutlined, LockOutlined } from '@ant-design/icons';\nimport { useNavigate } from 'umi';\nimport { useAuthStore } from '@/store/auth';\nimport { authAPI } from '@/services/api';\n\nconst LoginPage = () => {\n  const navigate = useNavigate();\n  const { login } = useAuthStore();\n  const [form] = Form.useForm();\n\n  const onFinish = async (values: any) => {\n    try {\n      const response = await authAPI.login(values);\n      const { access_token, refresh_token, user } = response;\n      \n      // Store tokens first\n      if (typeof window !== 'undefined') {\n        localStorage.setItem('access_token', access_token);\n        localStorage.setItem('refresh_token', refresh_token);\n        localStorage.setItem('user', JSON.stringify(user));\n      }\n      \n      // Create user object with proper name field\n      const userWithName = {\n        ...user,\n        name: `${user.firstName} ${user.lastName}` // Combine first and last name\n      };\n      \n      // Use the auth store login method\n      login(access_token, userWithName);\n      message.success('Login successful!');\n      \n      // Small delay before navigation to ensure state is updated\n      setTimeout(() => {\n        // Redirect based on user role\n        if (user.role === 'admin') {\n          navigate('/admin');\n        } else if (user.role === 'vendor') {\n          navigate('/vendor');\n        } else {\n          navigate('/');\n        }\n      }, 50);\n    } catch (error: any) {\n      console.error('Login error:', error);\n      message.error(error.response?.data?.message || 'Login failed');\n    }\n  };\n\n  return (\n    <div style={{ \n      display: 'flex', \n      justifyContent: 'center', \n      alignItems: 'center', \n      minHeight: '100vh',\n      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',\n    }}>\n      <Card title=\"Login to Groow\" style={{ width: 400 }}>\n        <Form\n          form={form}\n          name=\"login\"\n          onFinish={onFinish}\n          autoComplete=\"off\"\n        >\n          <Form.Item\n            name=\"email\"\n            rules={[\n              { required: true, message: 'Please input your email!' },\n              { type: 'email', message: 'Please enter a valid email!' }\n            ]}\n          >\n            <Input \n              prefix={<UserOutlined />} \n              placeholder=\"Email\" \n              autoComplete=\"email\"\n            />\n          </Form.Item>\n\n          <Form.Item\n            name=\"password\"\n            rules={[{ required: true, message: 'Please input your password!' }]}\n          >\n            <Input.Password \n              prefix={<LockOutlined />} \n              placeholder=\"Password\" \n              autoComplete=\"current-password\"\n            />\n          </Form.Item>\n\n          <Form.Item>\n            <Button type=\"primary\" htmlType=\"submit\" block>\n              Log in\n            </Button>\n          </Form.Item>\n        </Form>\n        <div style={{ textAlign: 'center' }}>\n          Don't have an account? <a onClick={() => navigate('/register')}>Register now</a>\n        </div>\n      </Card>\n    </div>\n  );\n};\n\nexport default LoginPage;\n",
+      "__content": "import { Form, Input, Button, Card, message } from 'antd';\nimport { UserOutlined, LockOutlined } from '@ant-design/icons';\nimport { useNavigate } from 'umi';\nimport { useAuthStore } from '@/store/auth';\nimport { authAPI } from '@/services/api';\n\nconst LoginPage = () => {\n  const navigate = useNavigate();\n  const { login } = useAuthStore();\n  const [form] = Form.useForm();\n\n  const onFinish = async (values: any) => {\n    try {\n      const response = await authAPI.login(values);\n      console.log('Login response:', response);\n      \n      // The auth service already transforms the response structure\n      const { token: access_token, refreshToken: refresh_token, user } = response;\n      \n      // Check if user data is available\n      if (!user) {\n        console.error('User data missing from response');\n        throw new Error('User data not received in login response');\n      }\n      \n      console.log('User data:', user);\n      \n      // Store tokens first\n      if (typeof window !== 'undefined') {\n        localStorage.setItem('access_token', access_token);\n        localStorage.setItem('refresh_token', refresh_token);\n        localStorage.setItem('user', JSON.stringify(user));\n      }\n      \n      // Create user object with proper name field\n      const userWithName = {\n        ...user,\n        name: user.firstName && user.lastName \n          ? `${user.firstName} ${user.lastName}` \n          : user.email.split('@')[0] // fallback to email username if names are missing\n      };\n      \n      // Use the auth store login method\n      login(access_token, userWithName);\n      message.success('Login successful!');\n      \n      // Small delay before navigation to ensure state is updated\n      setTimeout(() => {\n        // Redirect based on user role\n        if (user && user.role === 'admin') {\n          navigate('/admin');\n        } else if (user && user.role === 'vendor') {\n          navigate('/vendor');\n        } else {\n          navigate('/');\n        }\n      }, 50);\n    } catch (error: any) {\n      console.error('Login error:', error);\n      message.error(error.response?.data?.message || 'Login failed');\n    }\n  };\n\n  return (\n    <div style={{ \n      display: 'flex', \n      justifyContent: 'center', \n      alignItems: 'center', \n      minHeight: '100vh',\n      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',\n    }}>\n      <Card title=\"Login to Groow\" style={{ width: 400 }}>\n        <Form\n          form={form}\n          name=\"login\"\n          onFinish={onFinish}\n          autoComplete=\"off\"\n        >\n          <Form.Item\n            name=\"email\"\n            rules={[\n              { required: true, message: 'Please input your email!' },\n              { type: 'email', message: 'Please enter a valid email!' }\n            ]}\n          >\n            <Input \n              prefix={<UserOutlined />} \n              placeholder=\"Email\" \n              autoComplete=\"email\"\n            />\n          </Form.Item>\n\n          <Form.Item\n            name=\"password\"\n            rules={[{ required: true, message: 'Please input your password!' }]}\n          >\n            <Input.Password \n              prefix={<LockOutlined />} \n              placeholder=\"Password\" \n              autoComplete=\"current-password\"\n            />\n          </Form.Item>\n\n          <Form.Item>\n            <Button type=\"primary\" htmlType=\"submit\" block>\n              Log in\n            </Button>\n          </Form.Item>\n        </Form>\n        <div style={{ textAlign: 'center' }}>\n          Don't have an account? <a onClick={() => navigate('/register')}>Register now</a>\n        </div>\n      </Card>\n    </div>\n  );\n};\n\nexport default LoginPage;\n",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/groow/groow/frontend/src/pages/login.tsx"
     },

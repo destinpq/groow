@@ -198,6 +198,7 @@ export const supportAPI: SupportAPI = {
   },
 };
 
+// Only export the object-based implementation
 export default supportAPI;
 
 export interface CreateTicketDto {
@@ -206,7 +207,7 @@ export interface CreateTicketDto {
   description: string;
   category: SupportTicket['category'];
   priority: SupportTicket['priority'];
-  sourceChannel: SupportTicket['sourceChannel'];
+  sourceChannel: 'email' | 'chat' | 'phone' | 'web' | 'api';
   tags?: string[];
   attachments?: string[];
   relatedOrderId?: number;
@@ -256,7 +257,7 @@ export interface TicketFilters {
   createdFrom?: string;
   createdTo?: string;
   tags?: string[];
-  sourceChannel?: SupportTicket['sourceChannel'][];
+  sourceChannel?: ('email' | 'chat' | 'phone' | 'web' | 'api')[];
   searchTerm?: string;
   isEscalated?: boolean;
   hasSatisfactionRating?: boolean;
@@ -373,8 +374,8 @@ export interface ChatMessage {
   isRead: boolean;
 }
 
-class SupportAPI {
-  private baseUrl = process.env.API_URL || 'https://groow-api.destinpq.com/api/v1';
+class SupportAPIService {
+  private baseUrl = (process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com') + '/api/v1';
 
   // Ticket Management
   async getTickets(filters?: TicketFilters): Promise<{ tickets: SupportTicket[]; total: number }> {
@@ -830,5 +831,6 @@ class SupportAPI {
   }
 }
 
-export const supportAPI = new SupportAPI();
-export default supportAPI;
+// Commented out to avoid conflict with the object-based implementation above
+// export const supportAPI = new SupportAPIService();
+// export default supportAPI;
