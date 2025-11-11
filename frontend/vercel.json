@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "env": {
+    "REACT_APP_API_URL": "https://groow-api.destinpq.com",
+    "API_URL": "https://groow-api.destinpq.com",
+    "NODE_ENV": "production"
+  },
   "builds": [
     {
       "src": "package.json",
