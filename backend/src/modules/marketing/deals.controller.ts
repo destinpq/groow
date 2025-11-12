@@ -17,7 +17,6 @@ export class DealsController {
   constructor(private readonly marketingService: MarketingService) {}
 
   @Get()
-  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get all deals' })
   async getAllDeals(@Query() filters: GetDealsDto) {
     return this.marketingService.getAllDeals(filters);

@@ -11,7 +11,7 @@
       "setup": "umi setup",
       "start": "npm run dev",
       "serve": "serve -s dist -l 8001",
-      "vercel-build": "umi build",
+      "vercel-build": "npm run build",
       "pm2:dev": "pm2 start ../ecosystem.config.js --only groow-frontend-dev",
       "pm2:serve": "npm run build && pm2 start ../ecosystem.config.js --only groow-frontend-static",
       "pm2:stop": "pm2 stop groow-frontend-dev groow-frontend-static",
@@ -75,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 25
+        "register": 7
       },
       "enableBy": "register",
       "type": "preset",
@@ -92,7 +92,7 @@
             0
           ]
         },
-        "register": 6
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -106,10 +106,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            5
+            2
           ]
         },
-        "register": 4
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -126,7 +126,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -153,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            1404
+            380
           ]
         },
-        "register": 61
+        "register": 23
       },
       "enableBy": "register",
       "type": "plugin",
@@ -169,7 +169,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -183,10 +183,10 @@
       "time": {
         "hooks": {
           "onCheckConfig": [
-            1
+            0
           ],
           "onCheck": [
-            1
+            0
           ]
         },
         "register": 1
@@ -219,7 +219,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -236,7 +236,7 @@
             0
           ]
         },
-        "register": 13
+        "register": 7
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1088,7 +1088,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1102,10 +1102,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            3
+            0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1131,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 280
+        "register": 89
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1144,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 57
+        "register": 27
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1157,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 30
+        "register": 16
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1174,7 +1174,7 @@
             0
           ]
         },
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1187,7 +1187,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1200,7 +1200,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1213,7 +1213,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 67
+        "register": 34
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1238,7 +1238,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 0
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/okam/okam.js",
@@ -1277,10 +1277,10 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            0
+            1
           ]
         },
-        "register": 4
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/polyfill/polyfill.js",
@@ -1305,7 +1305,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 8
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1344,7 +1344,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1357,7 +1357,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1370,7 +1370,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1383,7 +1383,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps.js",
@@ -1395,7 +1395,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1408,7 +1408,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1421,7 +1421,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1434,7 +1434,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 7
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1447,7 +1447,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1460,7 +1460,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 7
+        "register": 3
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute.js",
@@ -1472,7 +1472,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 46
+        "register": 23
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1497,7 +1497,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent.js",
@@ -1509,7 +1509,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 4
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1522,7 +1522,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1535,7 +1535,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
@@ -1564,7 +1564,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 8
+        "register": 2
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/ui/ui.js",
@@ -1589,7 +1589,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 0
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack.js",
@@ -1601,7 +1601,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 6
+        "register": 2
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/hmrGuardian/hmrGuardian.js",
@@ -1613,7 +1613,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 98
+        "register": 30
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1625,7 +1625,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1651,7 +1651,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 16
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1664,7 +1664,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 156
+        "register": 38
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1677,7 +1677,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 43
+        "register": 19
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1689,7 +1689,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 16
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1702,7 +1702,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1715,7 +1715,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1728,7 +1728,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1754,7 +1754,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1793,7 +1793,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1806,7 +1806,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1858,7 +1858,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1871,7 +1871,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1884,7 +1884,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1923,7 +1923,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 51
+        "register": 29
       },
       "enableBy": "register",
       "type": "plugin",
@@ -3149,7 +3149,7 @@
       "id": "index",
       "file": "index.tsx",
       "absPath": "/",
-      "__content": "import React from 'react';\nimport { Row, Col, Card, Button, Carousel, Input, Space, Typography, Divider, Badge, Rate } from 'antd';\nimport { useNavigate } from 'umi';\nimport { \n  ShoppingOutlined, \n  SearchOutlined, \n  ShoppingCartOutlined,\n  HeartOutlined,\n  StarFilled,\n  TruckOutlined,\n  SafetyOutlined,\n  PercentageOutlined,\n  ThunderboltOutlined,\n  GiftOutlined,\n  MenuOutlined,\n  UserOutlined,\n  EnvironmentOutlined,\n} from '@ant-design/icons';\nimport CustomerServiceOutlined from '@ant-design/icons/CustomerServiceOutlined';\n// import './index.less';\n\nconst { Title, Text, Paragraph } = Typography;\nconst { Search } = Input;\n\nconst HomePage = () => {\n  const navigate = useNavigate();\n\n  // Top Navigation Categories\n  const topCategories = [\n    'Electronics', 'Fashion', 'Home & Kitchen', 'Beauty & Health', \n    'Sports & Outdoors', 'Books', 'Toys & Games', 'Automotive'\n  ];\n\n  // Hero Carousel Data\n  const heroSlides = [\n    {\n      title: 'Mega Electronics Sale',\n      subtitle: 'Up to 70% off on Top Brands',\n      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',\n      buttonText: 'Shop Electronics',\n      buttonLink: '/categories/electronics'\n    },\n    {\n      title: 'New Fashion Collection',\n      subtitle: 'Trending styles for every season',\n      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',\n      buttonText: 'Shop Fashion',\n      buttonLink: '/categories/fashion'\n    },\n    {\n      title: 'Home Essentials',\n      subtitle: 'Transform your living space',\n      background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',\n      buttonText: 'Shop Home',\n      buttonLink: '/categories/home'\n    }\n  ];\n\n  const categories = [\n    { name: 'Electronics', icon: '📱', items: 'Phones, Laptops, TVs', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400' },\n    { name: 'Fashion', icon: '�', items: 'Clothing, Shoes, Bags', image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400' },\n    { name: 'Home & Kitchen', icon: '🏠', items: 'Furniture, Decor, Appliances', image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400' },\n    { name: 'Beauty', icon: '💄', items: 'Cosmetics, Skincare, Fragrance', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400' },\n  ];\n\n  const deals = [\n    {\n      id: 1,\n      title: 'Apple iPhone 15 Pro Max',\n      price: 1199,\n      originalPrice: 1499,\n      rating: 4.8,\n      reviews: 2847,\n      image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400',\n      discount: 20,\n      badge: 'Limited Deal',\n      prime: true\n    },\n    {\n      id: 2,\n      title: 'Sony WH-1000XM5 Wireless Headphones',\n      price: 349,\n      originalPrice: 399,\n      rating: 4.9,\n      reviews: 5621,\n      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',\n      discount: 13,\n      badge: 'Best Seller',\n      prime: true\n    },\n    {\n      id: 3,\n      title: 'Samsung 55\" 4K Smart TV',\n      price: 599,\n      originalPrice: 899,\n      rating: 4.7,\n      reviews: 1893,\n      image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400',\n      discount: 33,\n      badge: 'Deal of the Day',\n      prime: false\n    },\n    {\n      id: 4,\n      title: 'Nike Air Max Running Shoes',\n      price: 129,\n      originalPrice: 180,\n      rating: 4.6,\n      reviews: 3421,\n      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',\n      discount: 28,\n      badge: 'Hot Deal',\n      prime: true\n    },\n    {\n      id: 5,\n      title: 'Instant Pot Duo 7-in-1',\n      price: 89,\n      originalPrice: 139,\n      rating: 4.8,\n      reviews: 12847,\n      image: 'https://images.unsplash.com/photo-1585515320310-259814833e62?w=400',\n      discount: 36,\n      badge: 'Top Rated',\n      prime: true\n    },\n    {\n      id: 6,\n      title: 'Canon EOS R6 Camera Body',\n      price: 2299,\n      originalPrice: 2499,\n      rating: 4.9,\n      reviews: 892,\n      image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400',\n      discount: 8,\n      badge: 'New Arrival',\n      prime: false\n    },\n    {\n      id: 7,\n      title: 'KitchenAid Stand Mixer',\n      price: 279,\n      originalPrice: 399,\n      rating: 4.9,\n      reviews: 8234,\n      image: 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400',\n      discount: 30,\n      badge: \"Amazon's Choice\",\n      prime: true\n    },\n    {\n      id: 8,\n      title: 'Dyson V15 Vacuum Cleaner',\n      price: 649,\n      originalPrice: 749,\n      rating: 4.7,\n      reviews: 2156,\n      image: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400',\n      discount: 13,\n      badge: 'Limited Stock',\n      prime: true\n    }\n  ];\n\n  return (\n    <div style={{ background: '#EAEDED' }}>\n      {/* Top Header Bar */}\n      <div style={{ \n        background: '#131921', \n        color: 'white', \n        padding: '8px 0',\n        borderBottom: '1px solid #232F3E'\n      }}>\n        <div style={{ maxWidth: 1500, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>\n          <Space size=\"large\">\n            <div style={{ fontSize: 24, fontWeight: 'bold', cursor: 'pointer' }} onClick={() => navigate('/')}>\n              GROOW\n            </div>\n            <Space size=\"small\" style={{ cursor: 'pointer' }}>\n              <EnvironmentOutlined />\n              <div>\n                <div style={{ fontSize: 11, color: '#ccc' }}>Deliver to</div>\n                <div style={{ fontSize: 14, fontWeight: 'bold' }}>New York 10001</div>\n              </div>\n            </Space>\n          </Space>\n          \n          <div style={{ flex: 1, maxWidth: 800, margin: '0 20px' }}>\n            <Search\n              placeholder=\"Search Groow\"\n              size=\"large\"\n              enterButton={\n                <Button \n                  style={{ \n                    background: '#FEBD69', \n                    borderColor: '#FEBD69',\n                    color: '#131921',\n                    fontWeight: 600\n                  }}\n                  icon={<SearchOutlined />}\n                />\n              }\n              onSearch={(value) => navigate(`/search?q=${value}`)}\n            />\n          </div>\n\n          <Space size=\"large\">\n            <div style={{ cursor: 'pointer' }} onClick={() => navigate('/login')}>\n              <div style={{ fontSize: 11 }}>Hello, Sign in</div>\n              <div style={{ fontSize: 14, fontWeight: 'bold' }}>Account & Lists</div>\n            </div>\n            <div style={{ cursor: 'pointer' }} onClick={() => navigate('/orders')}>\n              <div style={{ fontSize: 11 }}>Returns</div>\n              <div style={{ fontSize: 14, fontWeight: 'bold' }}>& Orders</div>\n            </div>\n            <Badge count={3} style={{ background: '#FF9900' }}>\n              <div style={{ cursor: 'pointer', fontSize: 24 }} onClick={() => navigate('/cart')}>\n                <ShoppingCartOutlined style={{ color: 'white' }} />\n              </div>\n            </Badge>\n          </Space>\n        </div>\n      </div>\n\n      {/* Navigation Bar */}\n      <div style={{ background: '#232F3E', color: 'white', padding: '8px 0' }}>\n        <div style={{ maxWidth: 1500, margin: '0 auto', padding: '0 20px' }}>\n          <Space size=\"large\">\n            <Button \n              type=\"text\" \n              icon={<MenuOutlined />} \n              style={{ color: 'white', fontWeight: 'bold' }}\n            >\n              All\n            </Button>\n            {topCategories.map((cat, idx) => (\n              <Text \n                key={idx} \n                style={{ color: 'white', cursor: 'pointer', fontSize: 14 }}\n                onClick={() => navigate(`/category/${cat.toLowerCase()}`)}\n              >\n                {cat}\n              </Text>\n            ))}\n          </Space>\n        </div>\n      </div>\n\n      {/* Hero Carousel */}\n      <div style={{ position: 'relative' }}>\n        <Carousel autoplay autoplaySpeed={4000} effect=\"fade\">\n          {heroSlides.map((slide, index) => (\n            <div key={index}>\n              <div\n                style={{\n                  height: 400,\n                  background: slide.background,\n                  display: 'flex',\n                  alignItems: 'center',\n                  justifyContent: 'center',\n                  position: 'relative',\n                  padding: '0 20px'\n                }}\n              >\n                <div style={{ textAlign: 'center', color: 'white', maxWidth: 800 }}>\n                  <Title level={1} style={{ color: 'white', fontSize: 48, marginBottom: 8, fontWeight: 700 }}>\n                    {slide.title}\n                  </Title>\n                  <Paragraph style={{ fontSize: 20, color: 'white', marginBottom: 24, opacity: 0.95 }}>\n                    {slide.subtitle}\n                  </Paragraph>\n                  <Button\n                    type=\"primary\"\n                    size=\"large\"\n                    onClick={() => navigate(slide.buttonLink)}\n                    style={{\n                      height: 45,\n                      fontSize: 16,\n                      padding: '0 40px',\n                      background: '#FF9900',\n                      borderColor: '#FF9900',\n                      fontWeight: 600\n                    }}\n                  >\n                    {slide.buttonText}\n                  </Button>\n                </div>\n              </div>\n            </div>\n          ))}\n        </Carousel>\n\n        {/* Category Quick Access overlaid on hero */}\n        <div style={{ \n          position: 'absolute', \n          bottom: -60, \n          left: 0, \n          right: 0, \n          zIndex: 10,\n          maxWidth: 1500,\n          margin: '0 auto',\n          padding: '0 20px'\n        }}>\n          <Row gutter={16}>\n            {categories.map((cat, idx) => (\n              <Col xs={24} sm={12} md={6} key={idx}>\n                <Card\n                  hoverable\n                  onClick={() => navigate(`/category/${cat.name.toLowerCase()}`)}\n                  style={{ \n                    background: 'white',\n                    border: 'none',\n                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'\n                  }}\n                  bodyStyle={{ padding: 16 }}\n                >\n                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>\n                    <div \n                      style={{ \n                        width: 60, \n                        height: 60, \n                        borderRadius: 8,\n                        background: `url(${cat.image})`,\n                        backgroundSize: 'cover',\n                        backgroundPosition: 'center'\n                      }} \n                    />\n                    <div style={{ flex: 1 }}>\n                      <div style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 4 }}>{cat.name}</div>\n                      <div style={{ fontSize: 12, color: '#666' }}>{cat.items}</div>\n                    </div>\n                  </div>\n                </Card>\n              </Col>\n            ))}\n          </Row>\n        </div>\n      </div>\n\n      {/* Main Content */}\n      <div style={{ maxWidth: 1500, margin: '0 auto', padding: '80px 20px 40px' }}>\n        \n        {/* Today's Deals Section */}\n        <Card \n          style={{ marginBottom: 24, border: 'none' }}\n          bodyStyle={{ padding: 20 }}\n        >\n          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>\n            <Title level={3} style={{ margin: 0 }}>Today's Deals</Title>\n            <Button type=\"link\" onClick={() => navigate('/deals')} style={{ fontSize: 16 }}>\n              See all deals →\n            </Button>\n          </div>\n\n          <Row gutter={[16, 16]}>\n            {deals.map((product) => (\n              <Col xs={12} sm={8} md={6} lg={3} key={product.id}>\n                <Card\n                  hoverable\n                  onClick={() => navigate(`/products/${product.id}`)}\n                  cover={\n                    <div style={{ position: 'relative', paddingTop: '100%', background: '#f5f5f5' }}>\n                      <img\n                        alt={product.title}\n                        src={product.image}\n                        style={{\n                          position: 'absolute',\n                          top: 0,\n                          left: 0,\n                          width: '100%',\n                          height: '100%',\n                          objectFit: 'cover'\n                        }}\n                      />\n                      {product.badge && (\n                        <div\n                          style={{\n                            position: 'absolute',\n                            top: 8,\n                            left: 8,\n                            background: '#CC0C39',\n                            color: 'white',\n                            padding: '4px 8px',\n                            fontSize: 11,\n                            fontWeight: 'bold',\n                            borderRadius: 2\n                          }}\n                        >\n                          {product.badge}\n                        </div>\n                      )}\n                      {product.discount > 0 && (\n                        <div\n                          style={{\n                            position: 'absolute',\n                            top: 8,\n                            right: 8,\n                            background: '#B12704',\n                            color: 'white',\n                            padding: '4px 8px',\n                            fontSize: 12,\n                            fontWeight: 'bold',\n                            borderRadius: 2\n                          }}\n                        >\n                          -{product.discount}%\n                        </div>\n                      )}\n                    </div>\n                  }\n                  bodyStyle={{ padding: 12 }}\n                  style={{ border: '1px solid #DDD' }}\n                >\n                  {product.prime && (\n                    <div style={{ marginBottom: 4 }}>\n                      <span style={{ \n                        background: '#00A8E1', \n                        color: 'white', \n                        padding: '2px 6px', \n                        fontSize: 10, \n                        fontWeight: 'bold',\n                        borderRadius: 2\n                      }}>\n                        prime\n                      </span>\n                    </div>\n                  )}\n                  \n                  <Paragraph\n                    ellipsis={{ rows: 2 }}\n                    style={{ \n                      marginBottom: 8, \n                      fontSize: 14, \n                      minHeight: 40,\n                      lineHeight: '1.4'\n                    }}\n                  >\n                    {product.title}\n                  </Paragraph>\n\n                  <div style={{ marginBottom: 4 }}>\n                    <Space size={4} align=\"center\">\n                      <Rate disabled defaultValue={product.rating} style={{ fontSize: 12 }} />\n                      <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                        ({product.reviews.toLocaleString()})\n                      </Text>\n                    </Space>\n                  </div>\n\n                  <div style={{ marginBottom: 8 }}>\n                    <Space align=\"baseline\" size={4}>\n                      <Text strong style={{ fontSize: 11, color: '#0F1111' }}>$</Text>\n                      <Text strong style={{ fontSize: 20, color: '#0F1111', lineHeight: 1 }}>\n                        {Math.floor(product.price)}\n                      </Text>\n                      <Text strong style={{ fontSize: 11, color: '#0F1111' }}>\n                        {(product.price % 1).toFixed(2).substring(1)}\n                      </Text>\n                    </Space>\n                    {product.originalPrice && (\n                      <div>\n                        <Text delete type=\"secondary\" style={{ fontSize: 12 }}>\n                          ${product.originalPrice}\n                        </Text>\n                      </div>\n                    )}\n                  </div>\n\n                  {product.prime && (\n                    <div style={{ fontSize: 11, color: '#007185', marginBottom: 8 }}>\n                      FREE delivery Tomorrow\n                    </div>\n                  )}\n\n                  <Button\n                    type=\"primary\"\n                    block\n                    size=\"small\"\n                    onClick={(e) => {\n                      e.stopPropagation();\n                      // Add to cart\n                    }}\n                    style={{\n                      background: '#FFD814',\n                      borderColor: '#FCD200',\n                      color: '#0F1111',\n                      fontWeight: 600,\n                      fontSize: 13\n                    }}\n                  >\n                    Add to Cart\n                  </Button>\n                </Card>\n              </Col>\n            ))}\n          </Row>\n        </Card>\n\n        {/* Service Features */}\n        <Card style={{ background: '#F7F8F8', border: 'none', marginBottom: 24 }} bodyStyle={{ padding: 30 }}>\n          <Row gutter={[24, 24]}>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <TruckOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />\n                <Title level={5} style={{ marginBottom: 8 }}>FREE Shipping</Title>\n                <Text type=\"secondary\">Free delivery on orders over $25</Text>\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <SafetyOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />\n                <Title level={5} style={{ marginBottom: 8 }}>Secure Payment</Title>\n                <Text type=\"secondary\">100% secure transactions</Text>\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <CustomerServiceOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />\n                <Title level={5} style={{ marginBottom: 8 }}>24/7 Support</Title>\n                <Text type=\"secondary\">Dedicated customer service</Text>\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <ThunderboltOutlined style={{ fontSize: 40, color: '#FF9900', marginBottom: 12 }} />\n                <Title level={5} style={{ marginBottom: 8 }}>Easy Returns</Title>\n                <Text type=\"secondary\">30-day return policy</Text>\n              </div>\n            </Col>\n          </Row>\n        </Card>\n      </div>\n\n      {/* Footer */}\n      <div style={{ background: '#232F3E', color: 'white', padding: '40px 20px', marginTop: 40 }}>\n        <div style={{ maxWidth: 1500, margin: '0 auto', textAlign: 'center' }}>\n          <Title level={4} style={{ color: 'white', marginBottom: 8 }}>GROOW</Title>\n          <Text style={{ color: '#DDD' }}>Your one-stop marketplace for everything</Text>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default HomePage;",
+      "__content": "import React from 'react';\nimport { Row, Col, Card, Button, Input, Space, Typography, Rate, Avatar } from 'antd';\nimport { useNavigate } from 'umi';\nimport { \n  SearchOutlined, \n  LaptopOutlined,\n  MobileOutlined,\n  CloudOutlined,\n  SecurityScanOutlined,\n  CodeOutlined,\n  DatabaseOutlined,\n  WifiOutlined,\n  ToolOutlined,\n  TeamOutlined,\n  CheckCircleOutlined,\n  StarFilled,\n  ArrowRightOutlined,\n  PhoneOutlined,\n  MailOutlined,\n  EnvironmentOutlined,\n  ClockCircleOutlined,\n  SafetyOutlined,\n  TrophyOutlined,\n} from '@ant-design/icons';\n\nconst { Title, Text, Paragraph } = Typography;\nconst { Search } = Input;\n\nconst HomePage = () => {\n  const navigate = useNavigate();\n\n  // Service Categories for IT Business\n  const serviceCategories = [\n    {\n      title: 'Software Development',\n      icon: <CodeOutlined />,\n      services: ['Web Development', 'Mobile Apps', 'Custom Software'],\n      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',\n      color: '#1890FF'\n    },\n    {\n      title: 'Cloud Services',\n      icon: <CloudOutlined />,\n      services: ['AWS Setup', 'Azure Migration', 'Cloud Security'],\n      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',\n      color: '#52C41A'\n    },\n    {\n      title: 'IT Support',\n      icon: <ToolOutlined />,\n      services: ['Technical Support', 'System Maintenance', 'Troubleshooting'],\n      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',\n      color: '#FA8C16'\n    },\n    {\n      title: 'Cybersecurity',\n      icon: <SecurityScanOutlined />,\n      services: ['Security Audits', 'Firewall Setup', 'Data Protection'],\n      image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',\n      color: '#F5222D'\n    },\n    {\n      title: 'Network Solutions',\n      icon: <WifiOutlined />,\n      services: ['Network Setup', 'Wi-Fi Installation', 'Network Security'],\n      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',\n      color: '#722ED1'\n    },\n    {\n      title: 'Database Services',\n      icon: <DatabaseOutlined />,\n      services: ['Database Design', 'Data Migration', 'Backup Solutions'],\n      image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=300&fit=crop',\n      color: '#13C2C2'\n    },\n  ];\n\n  // Popular IT Services\n  const popularServices = [\n    {\n      id: 1,\n      title: 'Website Development',\n      description: 'Complete website development with modern frameworks',\n      price: 1999,\n      originalPrice: 2499,\n      duration: '7-10 days',\n      rating: 4.9,\n      reviews: 1247,\n      image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=300&fit=crop',\n      professional: { name: 'John Smith', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }\n    },\n    {\n      id: 2,\n      title: 'Cloud Migration',\n      description: 'Seamless migration to AWS/Azure cloud platforms',\n      price: 2999,\n      originalPrice: 3499,\n      duration: '5-7 days',\n      rating: 4.8,\n      reviews: 892,\n      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',\n      professional: { name: 'Sarah Johnson', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face' }\n    },\n    {\n      id: 3,\n      title: 'IT Security Audit',\n      description: 'Comprehensive security assessment and recommendations',\n      price: 1499,\n      originalPrice: 1899,\n      duration: '3-5 days',\n      rating: 4.9,\n      reviews: 567,\n      image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',\n      professional: { name: 'Mike Chen', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' }\n    },\n    {\n      id: 4,\n      title: 'Network Setup',\n      description: 'Enterprise-grade network infrastructure setup',\n      price: 899,\n      originalPrice: 1199,\n      duration: '1-2 days',\n      rating: 4.7,\n      reviews: 423,\n      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',\n      professional: { name: 'Alex Rodriguez', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' }\n    },\n    {\n      id: 5,\n      title: 'Mobile App Development',\n      description: 'iOS and Android mobile application development',\n      price: 2499,\n      originalPrice: 2999,\n      duration: '14-21 days',\n      rating: 4.8,\n      reviews: 334,\n      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',\n      professional: { name: 'Emily Davis', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face' }\n    },\n    {\n      id: 6,\n      title: 'Database Optimization',\n      description: 'Performance tuning and database optimization',\n      price: 799,\n      originalPrice: 999,\n      duration: '2-3 days',\n      rating: 4.6,\n      reviews: 289,\n      image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=300&fit=crop',\n      professional: { name: 'David Wilson', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }\n    }\n  ];\n\n  return (\n    <div style={{ background: '#f8f9fa' }}>\n      {/* Header Navigation */}\n      <div style={{ \n        background: 'white', \n        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',\n        position: 'sticky',\n        top: 0,\n        zIndex: 100\n      }}>\n        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 20px' }}>\n          <Row align=\"middle\" justify=\"space-between\">\n            <Col>\n              <div \n                style={{ \n                  fontSize: 28, \n                  fontWeight: 'bold', \n                  color: '#1890FF',\n                  cursor: 'pointer' \n                }}\n                onClick={() => navigate('/')}\n              >\n                GROOW\n              </div>\n              <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                Professional IT Services at Your Doorstep\n              </Text>\n            </Col>\n            \n            <Col flex={1} style={{ maxWidth: 500, margin: '0 40px' }}>\n              <Search\n                placeholder=\"Search IT services...\"\n                size=\"large\"\n                enterButton={\n                  <Button \n                    type=\"primary\"\n                    icon={<SearchOutlined />}\n                    style={{ height: 40 }}\n                  />\n                }\n                onSearch={(value) => navigate(`/search?q=${value}`)}\n              />\n            </Col>\n\n            <Col>\n              <Space size=\"large\">\n                <Button \n                  type=\"text\" \n                  onClick={() => navigate('/login')}\n                  style={{ height: 40 }}\n                >\n                  Sign in\n                </Button>\n                <Button \n                  type=\"primary\" \n                  onClick={() => navigate('/register')}\n                  style={{ height: 40 }}\n                >\n                  Get Started\n                </Button>\n              </Space>\n            </Col>\n          </Row>\n        </div>\n      </div>\n\n      {/* Hero Section */}\n      <div style={{ \n        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',\n        padding: '80px 20px',\n        color: 'white',\n        textAlign: 'center'\n      }}>\n        <div style={{ maxWidth: 1200, margin: '0 auto' }}>\n          <Title \n            level={1} \n            style={{ \n              color: 'white', \n              fontSize: 52, \n              marginBottom: 24, \n              fontWeight: 700,\n              lineHeight: 1.2\n            }}\n          >\n            Professional IT Services\n            <br />\n            at Your Doorstep\n          </Title>\n          <Paragraph \n            style={{ \n              fontSize: 20, \n              color: 'white', \n              marginBottom: 40, \n              opacity: 0.95,\n              maxWidth: 600,\n              margin: '0 auto 40px'\n            }}\n          >\n            Connect with verified IT professionals for all your technology needs. \n            From software development to cybersecurity, we've got you covered.\n          </Paragraph>\n          \n          <Space direction=\"vertical\" align=\"center\" size=\"large\">\n            <div style={{ maxWidth: 400, width: '100%' }}>\n              <Search\n                placeholder=\"What IT service do you need?\"\n                size=\"large\"\n                enterButton={\n                  <Button \n                    size=\"large\"\n                    style={{ \n                      background: '#FF6B6B', \n                      borderColor: '#FF6B6B',\n                      fontWeight: 600,\n                      height: 50,\n                      fontSize: 16\n                    }}\n                  >\n                    Find Services\n                  </Button>\n                }\n                style={{ marginBottom: 20 }}\n              />\n            </div>\n            \n            <Row gutter={40} style={{ marginTop: 40 }}>\n              <Col>\n                <div style={{ textAlign: 'center' }}>\n                  <div style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>4.8★</div>\n                  <div style={{ fontSize: 14, opacity: 0.9 }}>Service Rating</div>\n                </div>\n              </Col>\n              <Col>\n                <div style={{ textAlign: 'center' }}>\n                  <div style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>50K+</div>\n                  <div style={{ fontSize: 14, opacity: 0.9 }}>Happy Customers</div>\n                </div>\n              </Col>\n              <Col>\n                <div style={{ textAlign: 'center' }}>\n                  <div style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>24/7</div>\n                  <div style={{ fontSize: 14, opacity: 0.9 }}>Support Available</div>\n                </div>\n              </Col>\n            </Row>\n          </Space>\n        </div>\n      </div>\n\n      {/* Service Categories */}\n      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 20px' }}>\n        <Title level={2} style={{ textAlign: 'center', marginBottom: 16 }}>\n          What are you looking for?\n        </Title>\n        <Text \n          style={{ \n            display: 'block', \n            textAlign: 'center', \n            fontSize: 16, \n            color: '#666',\n            marginBottom: 50 \n          }}\n        >\n          Choose from our wide range of professional IT services\n        </Text>\n        \n        <Row gutter={[24, 24]}>\n          {serviceCategories.map((category, index) => (\n            <Col xs={24} sm={12} md={8} lg={4} key={index}>\n              <Card\n                hoverable\n                onClick={() => navigate(`/services/${category.title.toLowerCase().replace(/\\s+/g, '-')}`)}\n                style={{ \n                  height: '100%',\n                  border: 'none',\n                  borderRadius: 12,\n                  overflow: 'hidden'\n                }}\n                styles={{ body: { padding: 0 } }}\n              >\n                <div \n                  style={{ \n                    height: 120,\n                    background: `url(${category.image})`,\n                    backgroundSize: 'cover',\n                    backgroundPosition: 'center',\n                    position: 'relative'\n                  }}\n                >\n                  <div \n                    style={{\n                      position: 'absolute',\n                      top: 16,\n                      left: 16,\n                      width: 40,\n                      height: 40,\n                      borderRadius: 8,\n                      background: 'white',\n                      display: 'flex',\n                      alignItems: 'center',\n                      justifyContent: 'center',\n                      fontSize: 20,\n                      color: category.color\n                    }}\n                  >\n                    {category.icon}\n                  </div>\n                </div>\n                <div style={{ padding: 16 }}>\n                  <Title level={5} style={{ marginBottom: 8, fontSize: 16 }}>\n                    {category.title}\n                  </Title>\n                  <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                    {category.services.join(' • ')}\n                  </Text>\n                </div>\n              </Card>\n            </Col>\n          ))}\n        </Row>\n      </div>\n\n      {/* Most Booked Services */}\n      <div style={{ background: 'white', padding: '80px 0' }}>\n        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>\n          <div style={{ marginBottom: 40 }}>\n            <Title level={2} style={{ marginBottom: 16 }}>Most booked services</Title>\n            <Text style={{ fontSize: 16, color: '#666' }}>\n              Popular IT services trusted by thousands of customers\n            </Text>\n          </div>\n\n          <Row gutter={[24, 24]}>\n            {popularServices.map((service) => (\n              <Col xs={24} sm={12} md={8} lg={8} xl={6} key={service.id}>\n                <Card\n                  hoverable\n                  onClick={() => navigate(`/service/${service.id}`)}\n                  style={{ \n                    border: '1px solid #f0f0f0',\n                    borderRadius: 12,\n                    overflow: 'hidden'\n                  }}\n                  styles={{ body: { padding: 16 } }}\n                  cover={\n                    <div style={{ \n                      height: 180, \n                      background: `url(${service.image})`,\n                      backgroundSize: 'cover',\n                      backgroundPosition: 'center',\n                      position: 'relative'\n                    }}>\n                      {service.originalPrice && (\n                        <div \n                          style={{\n                            position: 'absolute',\n                            top: 12,\n                            right: 12,\n                            background: '#FF4D4F',\n                            color: 'white',\n                            padding: '4px 8px',\n                            borderRadius: 4,\n                            fontSize: 12,\n                            fontWeight: 'bold'\n                          }}\n                        >\n                          Save ${service.originalPrice - service.price}\n                        </div>\n                      )}\n                    </div>\n                  }\n                >\n                  <div style={{ marginBottom: 12 }}>\n                    <Title level={5} style={{ marginBottom: 4, fontSize: 16 }}>\n                      {service.title}\n                    </Title>\n                    <Text type=\"secondary\" style={{ fontSize: 13 }}>\n                      {service.description}\n                    </Text>\n                  </div>\n\n                  <div style={{ marginBottom: 12 }}>\n                    <Space size={4}>\n                      <Rate disabled defaultValue={service.rating} style={{ fontSize: 12 }} />\n                      <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                        {service.rating} ({service.reviews.toLocaleString()})\n                      </Text>\n                    </Space>\n                  </div>\n\n                  <div style={{ marginBottom: 12 }}>\n                    <Space align=\"baseline\">\n                      <Text strong style={{ fontSize: 20, color: '#1890FF' }}>\n                        ${service.price}\n                      </Text>\n                      {service.originalPrice && (\n                        <Text delete type=\"secondary\" style={{ fontSize: 14 }}>\n                          ${service.originalPrice}\n                        </Text>\n                      )}\n                    </Space>\n                    <div style={{ marginTop: 4 }}>\n                      <Space size={4}>\n                        <ClockCircleOutlined style={{ fontSize: 12, color: '#666' }} />\n                        <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                          {service.duration}\n                        </Text>\n                      </Space>\n                    </div>\n                  </div>\n\n                  <div style={{ marginBottom: 16, paddingTop: 12, borderTop: '1px solid #f0f0f0' }}>\n                    <Space size={8}>\n                      <Avatar size={32} src={service.professional.avatar} />\n                      <div>\n                        <div style={{ fontSize: 13, fontWeight: 500 }}>\n                          {service.professional.name}\n                        </div>\n                        <Text type=\"secondary\" style={{ fontSize: 11 }}>\n                          Verified Professional\n                        </Text>\n                      </div>\n                    </Space>\n                  </div>\n\n                  <Button\n                    type=\"primary\"\n                    block\n                    onClick={(e) => {\n                      e.stopPropagation();\n                      navigate(`/book/${service.id}`);\n                    }}\n                    style={{\n                      height: 40,\n                      fontWeight: 600,\n                      borderRadius: 8\n                    }}\n                  >\n                    Book Now\n                  </Button>\n                </Card>\n              </Col>\n            ))}\n          </Row>\n        </div>\n      </div>\n\n      {/* Why Choose Us */}\n      <div style={{ padding: '80px 0', background: '#f8f9fa' }}>\n        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 20px' }}>\n          <Title level={2} style={{ textAlign: 'center', marginBottom: 50 }}>\n            Why choose GROOW?\n          </Title>\n          \n          <Row gutter={[32, 32]}>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <div style={{ \n                  width: 80, \n                  height: 80, \n                  borderRadius: '50%',\n                  background: '#E6F7FF',\n                  display: 'flex',\n                  alignItems: 'center',\n                  justifyContent: 'center',\n                  margin: '0 auto 20px'\n                }}>\n                  <CheckCircleOutlined style={{ fontSize: 32, color: '#1890FF' }} />\n                </div>\n                <Title level={4} style={{ marginBottom: 12 }}>Verified Professionals</Title>\n                <Text type=\"secondary\" style={{ fontSize: 14 }}>\n                  All our IT professionals are background verified and certified\n                </Text>\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <div style={{ \n                  width: 80, \n                  height: 80, \n                  borderRadius: '50%',\n                  background: '#F6FFED',\n                  display: 'flex',\n                  alignItems: 'center',\n                  justifyContent: 'center',\n                  margin: '0 auto 20px'\n                }}>\n                  <SafetyOutlined style={{ fontSize: 32, color: '#52C41A' }} />\n                </div>\n                <Title level={4} style={{ marginBottom: 12 }}>100% Secure</Title>\n                <Text type=\"secondary\" style={{ fontSize: 14 }}>\n                  Your data and privacy are completely protected with us\n                </Text>\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <div style={{ \n                  width: 80, \n                  height: 80, \n                  borderRadius: '50%',\n                  background: '#FFF7E6',\n                  display: 'flex',\n                  alignItems: 'center',\n                  justifyContent: 'center',\n                  margin: '0 auto 20px'\n                }}>\n                  <TrophyOutlined style={{ fontSize: 32, color: '#FA8C16' }} />\n                </div>\n                <Title level={4} style={{ marginBottom: 12 }}>Quality Guaranteed</Title>\n                <Text type=\"secondary\" style={{ fontSize: 14 }}>\n                  30-day service guarantee on all IT solutions\n                </Text>\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <div style={{ textAlign: 'center' }}>\n                <div style={{ \n                  width: 80, \n                  height: 80, \n                  borderRadius: '50%',\n                  background: '#F9F0FF',\n                  display: 'flex',\n                  alignItems: 'center',\n                  justifyContent: 'center',\n                  margin: '0 auto 20px'\n                }}>\n                  <TeamOutlined style={{ fontSize: 32, color: '#722ED1' }} />\n                </div>\n                <Title level={4} style={{ marginBottom: 12 }}>24/7 Support</Title>\n                <Text type=\"secondary\" style={{ fontSize: 14 }}>\n                  Round-the-clock customer support for all your queries\n                </Text>\n              </div>\n            </Col>\n          </Row>\n        </div>\n      </div>\n\n      {/* CTA Section */}\n      <div style={{ \n        background: 'linear-gradient(135deg, #1890FF 0%, #096DD9 100%)',\n        padding: '80px 20px',\n        color: 'white',\n        textAlign: 'center'\n      }}>\n        <div style={{ maxWidth: 800, margin: '0 auto' }}>\n          <Title level={2} style={{ color: 'white', marginBottom: 24 }}>\n            Ready to get started?\n          </Title>\n          <Paragraph style={{ fontSize: 18, color: 'white', opacity: 0.9, marginBottom: 40 }}>\n            Join thousands of satisfied customers who trust GROOW for their IT needs\n          </Paragraph>\n          <Space size=\"large\">\n            <Button \n              size=\"large\" \n              style={{ \n                height: 50, \n                fontSize: 16, \n                padding: '0 40px',\n                fontWeight: 600\n              }}\n              onClick={() => navigate('/services')}\n            >\n              Browse Services\n            </Button>\n            <Button \n              type=\"default\" \n              size=\"large\"\n              style={{ \n                height: 50, \n                fontSize: 16, \n                padding: '0 40px',\n                fontWeight: 600,\n                color: 'white',\n                borderColor: 'white',\n                background: 'transparent'\n              }}\n              onClick={() => navigate('/contact')}\n            >\n              Contact Us\n            </Button>\n          </Space>\n        </div>\n      </div>\n\n      {/* Footer */}\n      <div style={{ background: '#001529', color: 'white', padding: '60px 20px 40px' }}>\n        <div style={{ maxWidth: 1200, margin: '0 auto' }}>\n          <Row gutter={[40, 40]}>\n            <Col xs={24} sm={12} md={6}>\n              <Title level={4} style={{ color: 'white', marginBottom: 20 }}>\n                GROOW\n              </Title>\n              <Text style={{ color: '#ccc', marginBottom: 20, display: 'block' }}>\n                Professional IT services at your doorstep. Trusted by thousands of customers worldwide.\n              </Text>\n              <Space>\n                <Button type=\"text\" style={{ color: '#ccc' }} icon={<PhoneOutlined />}>\n                  +1 (555) 123-4567\n                </Button>\n              </Space>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <Title level={5} style={{ color: 'white', marginBottom: 16 }}>\n                Services\n              </Title>\n              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>\n                {['Software Development', 'Cloud Services', 'IT Support', 'Cybersecurity', 'Network Solutions'].map(service => (\n                  <Button \n                    key={service}\n                    type=\"text\" \n                    style={{ \n                      color: '#ccc', \n                      justifyContent: 'flex-start',\n                      padding: '4px 0',\n                      height: 'auto'\n                    }}\n                    onClick={() => navigate(`/services/${service.toLowerCase().replace(/\\s+/g, '-')}`)}\n                  >\n                    {service}\n                  </Button>\n                ))}\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <Title level={5} style={{ color: 'white', marginBottom: 16 }}>\n                Company\n              </Title>\n              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>\n                {['About Us', 'Careers', 'Contact Us', 'Privacy Policy', 'Terms & Conditions'].map(item => (\n                  <Button \n                    key={item}\n                    type=\"text\" \n                    style={{ \n                      color: '#ccc', \n                      justifyContent: 'flex-start',\n                      padding: '4px 0',\n                      height: 'auto'\n                    }}\n                    onClick={() => navigate(`/${item.toLowerCase().replace(/\\s+/g, '-')}`)}\n                  >\n                    {item}\n                  </Button>\n                ))}\n              </div>\n            </Col>\n            <Col xs={24} sm={12} md={6}>\n              <Title level={5} style={{ color: 'white', marginBottom: 16 }}>\n                Contact Info\n              </Title>\n              <Space direction=\"vertical\" size=\"middle\">\n                <Space>\n                  <MailOutlined style={{ color: '#1890FF' }} />\n                  <Text style={{ color: '#ccc' }}>hello@groow.com</Text>\n                </Space>\n                <Space>\n                  <EnvironmentOutlined style={{ color: '#1890FF' }} />\n                  <Text style={{ color: '#ccc' }}>New York, NY 10001</Text>\n                </Space>\n              </Space>\n            </Col>\n          </Row>\n          \n          <div style={{ \n            borderTop: '1px solid #333', \n            marginTop: 40, \n            paddingTop: 20, \n            textAlign: 'center'\n          }}>\n            <Text style={{ color: '#666' }}>\n              © 2025 GROOW. All rights reserved.\n            </Text>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default HomePage;",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/Groow/groow/frontend/src/pages/index.tsx"
     },

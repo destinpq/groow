@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'groow-backend',
       script: 'dist/main.js',
-      cwd: '/home/azureuser/groow/groow/backend',
+      cwd: '/home/azureuser/Groow/groow/backend',
       instances: 1,
       autorestart: true,
       watch: false,
