@@ -422,8 +422,8 @@ groow-api.destinpq.com {
         X-XSS-Protection "1; mode=block"
         X-Content-Type-Options "nosniff"
         Referrer-Policy "no-referrer-when-downgrade"
+      }
     }
-}
 
 # Groow E-Commerce Platform - Frontend
 groow.destinpq.com {

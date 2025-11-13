@@ -1,3 +1,10 @@
+/**
+ * SAFE API RESPONSE HANDLING - APPLY THIS PATTERN:
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * Always check: Array.isArray(data) before .map()/.filter()
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, Form, Input, Upload, Button, Switch, Select, message, Card, Spin } from 'antd';
 import { UploadOutlined, SaveOutlined } from '@ant-design/icons';

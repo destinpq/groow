@@ -25,7 +25,7 @@ export class RfqController {
   constructor(private readonly rfqService: RfqService) {}
 
   @Post()
-  @Roles(UserRole.CUSTOMER)
+  @Roles(UserRole.CUSTOMER, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create RFQ' })
   create(
     @CurrentUser('id') customerId: string,

@@ -1,3 +1,13 @@
+/**
+ * ⚠️ SAFE API RESPONSE HANDLING - ALWAYS USE THIS PATTERN:
+ * 
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * 
+ * Before using .map()/.filter()/.forEach():
+ * setItems(Array.isArray(dataArray) ? dataArray : []);
+ */
+
 import { useEffect } from 'react';
 import { Table, Button, Space, Modal, Form, Input, InputNumber, message, Select, Upload, Image, Tag, Switch } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, SearchOutlined } from '@ant-design/icons';
@@ -30,11 +40,19 @@ const AdminProducts = () => {
     try {
       setLoading(true);
       const response = await productAPI.getAll(filters);
-      setProducts(response.data);
-      setTotal(response.total);
+      
+      // Safely extract data - handle different response formats
+      const productsData = response?.data?.data || response?.data || [];
+      const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+      
+      // Ensure productsData is an array
+      setProducts(Array.isArray(productsData) ? productsData : []);
+      setTotal(total);
     } catch (error: any) {
       console.error('Failed to fetch products:', error);
       message.error(error?.response?.data?.message || 'Failed to load products');
+      setProducts([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }

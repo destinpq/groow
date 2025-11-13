@@ -1,3 +1,10 @@
+/**
+ * SAFE API RESPONSE HANDLING - APPLY THIS PATTERN:
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * Always check: Array.isArray(data) before .map()/.filter()
+ */
+
 import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { Button, Space, Modal, Form, Input, Upload, message, Image, Switch } from 'antd';
@@ -23,10 +30,14 @@ const AdminBrands = () => {
     try {
       setLoading(true);
       const response = await brandsAPI.getAll();
-      setBrands(response || []);
+      
+      // SAFE API RESPONSE HANDLING
+      const brandsData = response?.data?.data || response?.data || [];
+      setBrands(Array.isArray(brandsData) ? brandsData : []);
     } catch (error: any) {
       console.error('Failed to fetch brands:', error);
       message.error(error?.response?.data?.message || 'Failed to load brands');
+      setBrands([]);
     } finally {
       setLoading(false);
     }

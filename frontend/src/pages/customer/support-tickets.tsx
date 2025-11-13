@@ -71,7 +71,7 @@ const SupportTicketsSystem: React.FC = () => {
     try {
       const response = await supportTicketsAPI.getTicketStats();
       if (response.success) {
-        setStats(response.data);
+        setStats(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       }
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -94,7 +94,7 @@ const SupportTicketsSystem: React.FC = () => {
     try {
       const response = await supportTicketsAPI.getTicketMessages(ticketId);
       if (response.success) {
-        setMessages(response.data);
+        setMessages(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       } else {
         message.error('Failed to load messages');
       }

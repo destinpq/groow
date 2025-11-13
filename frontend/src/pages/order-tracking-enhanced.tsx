@@ -29,7 +29,7 @@ const EnhancedOrderTracking: React.FC = () => {
         try {
           const response = await orderTrackingAPI.getRealTimeLocation(trackingData.trackingNumber!);
           if (response.success) {
-            setRealTimeLocation(response.data);
+            setRealTimeLocation(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
           }
         } catch (error) {
           console.error('Error updating real-time location:', error);
@@ -52,7 +52,7 @@ const EnhancedOrderTracking: React.FC = () => {
     try {
       const response = await orderTrackingAPI.getOrderTracking(value);
       if (response.success && response.data) {
-        setTrackingData(response.data);
+        setTrackingData(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
         
         // Get initial real-time location if shipped
         if (response.data.status === 'shipped' || response.data.status === 'out_for_delivery') {

@@ -391,7 +391,7 @@ export const productAPI = {
       return await request.get(`/products/featured?limit=${limit}`);
     } catch (error) {
       const response = await productAPI.getProducts({ filters: { featured: true }, limit });
-      return { data: response.data.data } as AxiosResponse<Product[]>;
+      return { data: (response?.data?.data || response?.data) } as AxiosResponse<Product[]>;
     }
   },
 
@@ -401,7 +401,7 @@ export const productAPI = {
       return await request.get(`/products/${productId}/related?limit=${limit}`);
     } catch (error) {
       const response = await productAPI.getProducts({ limit });
-      return { data: response.data.data.slice(0, limit) } as AxiosResponse<Product[]>;
+      return { data: (response?.data?.data || response?.data)?.slice(0, limit) } as AxiosResponse<Product[]>;
     }
   },
 

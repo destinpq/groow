@@ -176,21 +176,21 @@ export const warrantyAPI = {
       params: filters 
     });
     return {
-      warranties: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      warranties: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getById: async (id: string): Promise<WarrantyEntity> => {
     const response = await api.get<WarrantyAPIResponse<WarrantyEntity>>(`/warranties/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getByProduct: async (productId: string): Promise<WarrantyEntity[]> => {
     const response = await api.get<WarrantyAPIResponse<WarrantyEntity[]>>(`/warranties/product/${productId}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   validateWarranty: async (serialNumber: string, productId?: string): Promise<WarrantyValidationResponse> => {
@@ -198,7 +198,7 @@ export const warrantyAPI = {
       serialNumber,
       productId
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -213,12 +213,12 @@ export const warrantyAPI = {
     const response = await api.get<WarrantyAPIResponse<GetPlansResponse>>('/warranties/plans', { 
       params: { productId, ...filters } 
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getPlanById: async (id: string): Promise<WarrantyPlanEntity> => {
     const response = await api.get<WarrantyAPIResponse<WarrantyPlanEntity>>(`/warranties/plans/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   comparePlans: async (planIds: string[]): Promise<{
@@ -230,7 +230,7 @@ export const warrantyAPI = {
     recommendations: string[];
   }> => {
     const response = await api.post<WarrantyAPIResponse<any>>('/warranties/plans/compare', { planIds });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -238,17 +238,17 @@ export const warrantyAPI = {
   // ========================================
   purchase: async (data: PurchaseWarrantyRequest): Promise<WarrantyEntity> => {
     const response = await api.post<WarrantyAPIResponse<WarrantyEntity>>('/warranties/purchase', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   register: async (data: RegisterWarrantyRequest): Promise<WarrantyRegistrationEntity> => {
     const response = await api.post<WarrantyAPIResponse<WarrantyRegistrationEntity>>('/warranties/register', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   extend: async (data: ExtendWarrantyRequest): Promise<WarrantyEntity> => {
     const response = await api.post<WarrantyAPIResponse<WarrantyEntity>>('/warranties/extend', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   transfer: async (warrantyId: string, newOwnerId: string, transferReason?: string): Promise<WarrantyEntity> => {
@@ -256,14 +256,14 @@ export const warrantyAPI = {
       newOwnerId,
       transferReason
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   cancel: async (warrantyId: string, reason: string): Promise<WarrantyEntity> => {
     const response = await api.post<WarrantyAPIResponse<WarrantyEntity>>(`/warranties/${warrantyId}/cancel`, {
       reason
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -283,16 +283,16 @@ export const warrantyAPI = {
       params: filters 
     });
     return {
-      claims: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      claims: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getClaimById: async (id: string): Promise<WarrantyClaimEntity> => {
     const response = await api.get<WarrantyAPIResponse<WarrantyClaimEntity>>(`/warranties/claims/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createClaim: async (data: CreateWarrantyClaimRequest, evidence?: File[]): Promise<WarrantyClaimEntity> => {
@@ -308,19 +308,19 @@ export const warrantyAPI = {
     const response = await api.post<WarrantyAPIResponse<WarrantyClaimEntity>>('/warranties/claims', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateClaim: async (id: string, data: UpdateClaimRequest): Promise<WarrantyClaimEntity> => {
     const response = await api.put<WarrantyAPIResponse<WarrantyClaimEntity>>(`/warranties/claims/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   cancelClaim: async (id: string, reason?: string): Promise<WarrantyClaimEntity> => {
     const response = await api.post<WarrantyAPIResponse<WarrantyClaimEntity>>(`/warranties/claims/${id}/cancel`, {
       reason
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   addClaimEvidence: async (claimId: string, evidence: File[], descriptions?: string[]): Promise<WarrantyClaimEntity> => {
@@ -337,7 +337,7 @@ export const warrantyAPI = {
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } }
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getClaimEstimate: async (warrantyId: string, issueData: {
@@ -349,7 +349,7 @@ export const warrantyAPI = {
       `/warranties/${warrantyId}/estimate`, 
       issueData
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -357,12 +357,12 @@ export const warrantyAPI = {
   // ========================================
   getProviders: async (): Promise<WarrantyProviderEntity[]> => {
     const response = await api.get<WarrantyAPIResponse<WarrantyProviderEntity[]>>('/warranties/providers');
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getProviderById: async (id: string): Promise<WarrantyProviderEntity> => {
     const response = await api.get<WarrantyAPIResponse<WarrantyProviderEntity>>(`/warranties/providers/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -397,7 +397,7 @@ export const warrantyAPI = {
     const response = await api.get<WarrantyAPIResponse<any>>('/warranties/analytics', {
       params: { customerId, ...dateRange }
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getClaimReport: async (claimId: string): Promise<{
@@ -422,7 +422,7 @@ export const warrantyAPI = {
     };
   }> => {
     const response = await api.get<WarrantyAPIResponse<any>>(`/warranties/claims/${claimId}/report`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -470,7 +470,7 @@ export const warrantyAPI = {
     const response = await api.get<WarrantyAPIResponse<any>>('/warranties/notifications', {
       params: { customerId }
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateNotificationPreferences: async (customerId: string, preferences: {
@@ -492,7 +492,7 @@ export const warrantyAPI = {
     const response = await api.post<WarrantyAPIResponse<any>>('/warranties/bulk-register', {
       registrations
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkExtend: async (extensions: ExtendWarrantyRequest[]): Promise<{
@@ -502,7 +502,7 @@ export const warrantyAPI = {
     const response = await api.post<WarrantyAPIResponse<any>>('/warranties/bulk-extend', {
       extensions
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================

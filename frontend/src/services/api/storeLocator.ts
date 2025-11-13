@@ -67,18 +67,18 @@ export const storeLocatorAPI = {
   }): Promise<PaginatedResponse<Store>> => {
     const response = await api.get<PaginatedStoreLocatorResponse<Store>>('/stores', { params });
     return {
-      data: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
+      data: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
       limit: params?.limit || 10,
-      totalPages: response.data.data.totalPages
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   // Get store by ID
   getById: async (id: string): Promise<Store> => {
     const response = await api.get<StoreLocatorAPIResponse<Store>>(`/stores/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Find nearby stores
@@ -89,13 +89,13 @@ export const storeLocatorAPI = {
     limit?: number;
   }): Promise<Store[]> => {
     const response = await api.get<StoreLocatorAPIResponse<Store[]>>('/stores/nearby', { params });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Search stores
   search: async (query: string): Promise<Store[]> => {
     const response = await api.get<StoreLocatorAPIResponse<Store[]>>('/stores/search', { params: { q: query } });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get directions
@@ -112,7 +112,7 @@ export const storeLocatorAPI = {
       duration: number;
       steps: any[];
     }>>(`/stores/${storeId}/directions`, { from });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 };
 

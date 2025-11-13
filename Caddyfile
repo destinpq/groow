@@ -212,12 +212,48 @@ groow-api.destinpq.com {
 
 # Groow E-Commerce Platform - Frontend
 groow.destinpq.com {
-    reverse_proxy https://localhost:21441 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
+    reverse_proxy http://localhost:21441
     encode gzip
+    
+    # Force no-cache for HTML files (prevents chunk hash mismatches)
+    @html {
+        path *.html /
+    }
+    header @html {
+        Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
+        Pragma "no-cache"
+        Expires "0"
+    }
+    
+    # Cache JS/CSS files with hash (they're versioned)
+    @static {
+        path *.js *.css *.woff *.woff2 *.ttf *.eot
+    }
+    header @static {
+        Cache-Control "public, max-age=31536000, immutable"
+    }
+    
+    # Security headers for all responses
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "no-referrer-when-downgrade"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
+}
+        Expires "0"
+    }
+    
+    # Cache JS/CSS files with hash (they're versioned)
+    @static {
+        path *.js *.css *.woff *.woff2 *.ttf *.eot
+    }
+    header @static {
+        Cache-Control "public, max-age=31536000, immutable"
+    }
+    
+    # Security headers for all responses
     header {
         X-Frame-Options "SAMEORIGIN"
         X-XSS-Protection "1; mode=block"

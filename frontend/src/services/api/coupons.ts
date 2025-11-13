@@ -248,35 +248,35 @@ export const couponsAPI = {
   getAll: async (filters?: CouponFilters): Promise<GetCouponsResponse> => {
     const response = await apiClient.get<PaginatedCouponsResponse<CouponDto>>('/coupons', { params: filters });
     return {
-      coupons: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      coupons: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   // Get coupon by ID
   getById: async (id: number): Promise<CouponDto> => {
     const response = await apiClient.get<CouponsAPIResponse<CouponDto>>(`/coupons/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get coupon by code
   getByCode: async (code: string): Promise<CouponDto> => {
     const response = await apiClient.get<CouponsAPIResponse<CouponDto>>(`/coupons/code/${code}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Create new coupon
   create: async (data: CreateCouponRequest): Promise<CouponDto> => {
     const response = await apiClient.post<CouponsAPIResponse<CouponDto>>('/coupons', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Update coupon
   update: async (id: number, data: UpdateCouponRequest): Promise<CouponDto> => {
     const response = await apiClient.put<CouponsAPIResponse<CouponDto>>(`/coupons/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Delete coupon
@@ -287,7 +287,9 @@ export const couponsAPI = {
   // Get coupon statistics
   getStats: async (): Promise<CouponStats> => {
     const response = await apiClient.get<CouponsAPIResponse<CouponStats>>('/coupons/stats');
-    return response.data.data;
+    // Backend returns: {success: true, data: {...stats...}}
+    // NOT nested, so use response.data NOT response.data.data
+    return response.data as any;
   },
 
   // Get coupon usage history
@@ -301,9 +303,9 @@ export const couponsAPI = {
       params: { page, limit },
     });
     return {
-      usage: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
+      usage: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
       limit: limit
     };
   },
@@ -311,7 +313,7 @@ export const couponsAPI = {
   // Validate coupon
   validate: async (data: ValidateCouponDto): Promise<CouponValidation> => {
     const response = await apiClient.post<CouponsAPIResponse<CouponValidation>>('/coupons/validate', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Apply coupon to cart
@@ -321,25 +323,25 @@ export const couponsAPI = {
       userId,
       cartTotal,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Deactivate coupon
   deactivate: async (id: number): Promise<CouponDto> => {
     const response = await apiClient.patch<CouponsAPIResponse<CouponDto>>(`/coupons/${id}/deactivate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Activate coupon
   activate: async (id: number): Promise<CouponDto> => {
     const response = await apiClient.patch<CouponsAPIResponse<CouponDto>>(`/coupons/${id}/activate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Duplicate coupon
   duplicate: async (id: number): Promise<CouponDto> => {
     const response = await apiClient.post<CouponsAPIResponse<CouponDto>>(`/coupons/${id}/duplicate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get auto-apply coupons
@@ -348,13 +350,13 @@ export const couponsAPI = {
       cartTotal,
       items,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Bulk delete coupons
   bulkDelete: async (ids: number[]): Promise<any> => {
     const response = await apiClient.post<CouponsAPIResponse<any>>('/coupons/bulk-delete', { ids });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Bulk update status
@@ -363,6 +365,6 @@ export const couponsAPI = {
       ids,
       status,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 };

@@ -1,3 +1,10 @@
+/**
+ * SAFE API RESPONSE HANDLING - APPLY THIS PATTERN:
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * Always check: Array.isArray(data) before .map()/.filter()
+ */
+
 import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { Tag, Button, Space, Modal, Form, Input, Select, message, Switch } from 'antd';
@@ -21,10 +28,14 @@ const AdminCategories = () => {
     try {
       setLoading(true);
       const response = await categoriesAPI.getAll();
-      setCategories(response || []);
+      
+      // SAFE API RESPONSE HANDLING
+      const categoriesData = response?.data?.data || response?.data || [];
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (error: any) {
       console.error('Failed to fetch categories:', error);
       message.error(error?.response?.data?.message || 'Failed to load categories');
+      setCategories([]);
     } finally {
       setLoading(false);
     }

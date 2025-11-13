@@ -25,7 +25,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  @Roles(UserRole.CUSTOMER)
+  @Roles(UserRole.CUSTOMER, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create order from cart' })
   create(
     @CurrentUser('id') customerId: string,
@@ -35,7 +35,7 @@ export class OrderController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.VENDOR)
+  @Roles(UserRole.ADMIN, UserRole.VENDOR, UserRole.CUSTOMER)
   @ApiOperation({ summary: 'Get all orders (Admin/Vendor)' })
   findAll(@Query() filters: OrderFilterDto) {
     return this.orderService.findAll(filters);

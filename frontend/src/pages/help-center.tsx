@@ -124,7 +124,7 @@ const HelpCenterPage: React.FC = () => {
       const response = await helpCenterAPI.searchHelp(value);
       
       if (response.success) {
-        setSearchResults(response.data);
+        setSearchResults(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       } else {
         message.error('Search failed');
       }

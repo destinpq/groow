@@ -1,3 +1,8 @@
+/**
+ * SAFE API RESPONSE HANDLING
+ * Use pattern: const data = response?.data?.data || response?.data || [];
+ * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -86,7 +91,7 @@ const EmailTemplatesPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await emailTemplatesAPI.getAll();
-      setTemplates(response.data);
+      setTemplates(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
     } catch (error) {
       message.error('Failed to fetch email templates');
     } finally {

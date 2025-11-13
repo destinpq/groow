@@ -205,26 +205,26 @@ export const emailAPI = {
       params: filters 
     });
     return {
-      templates: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      templates: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getTemplateById: async (id: string): Promise<EmailTemplateEntity> => {
     const response = await apiClient.get<EmailAPIResponse<EmailTemplateEntity>>(`/email/templates/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createTemplate: async (data: CreateEmailTemplateRequest): Promise<EmailTemplateEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailTemplateEntity>>('/email/templates', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateTemplate: async (id: string, data: UpdateTemplateRequest): Promise<EmailTemplateEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailTemplateEntity>>(`/email/templates/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteTemplate: async (id: string): Promise<void> => {
@@ -233,17 +233,17 @@ export const emailAPI = {
 
   duplicateTemplate: async (id: string, name: string): Promise<EmailTemplateEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailTemplateEntity>>(`/email/templates/${id}/duplicate`, { name });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   activateTemplate: async (id: string): Promise<EmailTemplateEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailTemplateEntity>>(`/email/templates/${id}/activate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   archiveTemplate: async (id: string): Promise<EmailTemplateEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailTemplateEntity>>(`/email/templates/${id}/archive`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -254,7 +254,7 @@ export const emailAPI = {
     variables?: Record<string, any>
   ): Promise<EmailPreviewResponse> => {
     const response = await apiClient.post<EmailAPIResponse<EmailPreviewResponse>>(`/email/templates/${id}/preview`, { variables });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   sendTestEmail: async (data: SendTestEmailRequest): Promise<void> => {
@@ -271,7 +271,7 @@ export const emailAPI = {
       errors: string[];
       warnings: string[];
     }>>(`/email/templates/${id}/validate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getAvailableVariables: async (type?: string): Promise<Record<string, {
@@ -284,7 +284,7 @@ export const emailAPI = {
       description: string;
       example: any;
     }>>>('/email/variables', { params: { type } });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -304,26 +304,26 @@ export const emailAPI = {
       params: filters 
     });
     return {
-      campaigns: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      campaigns: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getCampaignById: async (id: string): Promise<EmailCampaignEntity> => {
     const response = await apiClient.get<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createCampaign: async (data: CreateEmailCampaignRequest): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>('/email/campaigns', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateCampaign: async (id: string, data: UpdateCampaignRequest): Promise<EmailCampaignEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteCampaign: async (id: string): Promise<void> => {
@@ -332,7 +332,7 @@ export const emailAPI = {
 
   duplicateCampaign: async (id: string, name?: string): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}/duplicate`, { name });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -340,27 +340,27 @@ export const emailAPI = {
   // ========================================
   sendCampaign: async (id: string): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}/send`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   scheduleCampaign: async (id: string, scheduledAt: Date): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}/schedule`, { scheduledAt });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   pauseCampaign: async (id: string): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}/pause`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   resumeCampaign: async (id: string): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}/resume`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   cancelCampaign: async (id: string, reason?: string): Promise<EmailCampaignEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailCampaignEntity>>(`/email/campaigns/${id}/cancel`, { reason });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -377,26 +377,26 @@ export const emailAPI = {
       params: filters 
     });
     return {
-      lists: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      lists: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getListById: async (id: string): Promise<EmailListEntity> => {
     const response = await apiClient.get<EmailAPIResponse<EmailListEntity>>(`/email/lists/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createList: async (data: CreateListRequest): Promise<EmailListEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailListEntity>>('/email/lists', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateList: async (id: string, data: UpdateListRequest): Promise<EmailListEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailListEntity>>(`/email/lists/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteList: async (id: string): Promise<void> => {
@@ -418,26 +418,26 @@ export const emailAPI = {
       params: filters 
     });
     return {
-      subscribers: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      subscribers: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getSubscriberById: async (id: string): Promise<EmailSubscriberEntity> => {
     const response = await apiClient.get<EmailAPIResponse<EmailSubscriberEntity>>(`/email/subscribers/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createSubscriber: async (data: CreateSubscriberRequest): Promise<EmailSubscriberEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailSubscriberEntity>>('/email/subscribers', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateSubscriber: async (id: string, data: UpdateSubscriberRequest): Promise<EmailSubscriberEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailSubscriberEntity>>(`/email/subscribers/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteSubscriber: async (id: string): Promise<void> => {
@@ -446,7 +446,7 @@ export const emailAPI = {
 
   unsubscribeSubscriber: async (id: string, reason?: string): Promise<EmailSubscriberEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailSubscriberEntity>>(`/email/subscribers/${id}/unsubscribe`, { reason });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkImportSubscribers: async (data: BulkImportSubscribersRequest): Promise<{
@@ -459,7 +459,7 @@ export const emailAPI = {
       updated: number;
       errors: { email: string; error: string }[];
     }>>('/email/subscribers/bulk-import', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -467,7 +467,7 @@ export const emailAPI = {
   // ========================================
   getCampaignStats: async (id: string): Promise<CampaignStatsResponse> => {
     const response = await apiClient.get<EmailAPIResponse<CampaignStatsResponse>>(`/email/campaigns/${id}/stats`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getTemplateStats: async (id: string): Promise<{
@@ -483,7 +483,7 @@ export const emailAPI = {
     }[];
   }> => {
     const response = await apiClient.get<EmailAPIResponse<any>>(`/email/templates/${id}/stats`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getEmailAnalytics: async (filters?: {
@@ -495,7 +495,7 @@ export const emailAPI = {
     const response = await apiClient.get<EmailAPIResponse<EmailAnalyticsEntity[]>>('/email/analytics', { 
       params: filters 
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getOverallStats: async (period?: string): Promise<{
@@ -509,7 +509,7 @@ export const emailAPI = {
     revenueGenerated?: number;
   }> => {
     const response = await apiClient.get<EmailAPIResponse<any>>('/email/stats', { params: { period } });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -517,7 +517,7 @@ export const emailAPI = {
   // ========================================
   getSegments: async (): Promise<EmailSegmentEntity[]> => {
     const response = await apiClient.get<EmailAPIResponse<EmailSegmentEntity[]>>('/email/segments');
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createSegment: async (data: {
@@ -532,12 +532,12 @@ export const emailAPI = {
     autoUpdate?: boolean;
   }): Promise<EmailSegmentEntity> => {
     const response = await apiClient.post<EmailAPIResponse<EmailSegmentEntity>>('/email/segments', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateSegment: async (id: string, data: any): Promise<EmailSegmentEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailSegmentEntity>>(`/email/segments/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteSegment: async (id: string): Promise<void> => {
@@ -549,17 +549,17 @@ export const emailAPI = {
   // ========================================
   getProviders: async (): Promise<EmailProviderEntity[]> => {
     const response = await apiClient.get<EmailAPIResponse<EmailProviderEntity[]>>('/email/providers');
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateProvider: async (id: string, data: Partial<EmailProviderEntity>): Promise<EmailProviderEntity> => {
     const response = await apiClient.patch<EmailAPIResponse<EmailProviderEntity>>(`/email/providers/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   testProvider: async (id: string): Promise<{ success: boolean; error?: string }> => {
     const response = await apiClient.post<EmailAPIResponse<{ success: boolean; error?: string }>>(`/email/providers/${id}/test`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -567,22 +567,22 @@ export const emailAPI = {
   // ========================================
   bulkDeleteTemplates: async (ids: string[]): Promise<{ deleted: number; errors: string[] }> => {
     const response = await apiClient.post<EmailAPIResponse<{ deleted: number; errors: string[] }>>('/email/templates/bulk-delete', { ids });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkUpdateTemplates: async (ids: string[], data: UpdateTemplateRequest): Promise<{ updated: number; errors: string[] }> => {
     const response = await apiClient.post<EmailAPIResponse<{ updated: number; errors: string[] }>>('/email/templates/bulk-update', { ids, ...data });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkDeleteCampaigns: async (ids: string[]): Promise<{ deleted: number; errors: string[] }> => {
     const response = await apiClient.post<EmailAPIResponse<{ deleted: number; errors: string[] }>>('/email/campaigns/bulk-delete', { ids });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkUpdateSubscriberStatus: async (ids: string[], status: string): Promise<{ updated: number; errors: string[] }> => {
     const response = await apiClient.post<EmailAPIResponse<{ updated: number; errors: string[] }>>('/email/subscribers/bulk-update-status', { ids, status });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================

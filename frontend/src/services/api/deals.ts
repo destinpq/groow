@@ -236,26 +236,26 @@ export const dealsAPI = {
       params: filters 
     });
     return {
-      deals: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      deals: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getById: async (id: string): Promise<DealEntity> => {
     const response = await apiClient.get<DealAPIResponse<DealEntity>>(`/deals/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   create: async (data: CreateDealRequest): Promise<DealEntity> => {
     const response = await apiClient.post<DealAPIResponse<DealEntity>>('/deals', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   update: async (id: string, data: UpdateDealRequest): Promise<DealEntity> => {
     const response = await apiClient.put<DealAPIResponse<DealEntity>>(`/deals/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   delete: async (id: string): Promise<void> => {
@@ -274,7 +274,9 @@ export const dealsAPI = {
     const response = await apiClient.get<DealAPIResponse<DealStatsResponse>>('/deals/stats', {
       params: filters
     });
-    return response.data.data;
+    // Backend returns: {success: true, data: {...stats...}}
+    // NOT nested like products, so use response.data NOT response.data.data
+    return response.data as any;
   },
 
   getAnalytics: async (id: string, filters?: {
@@ -288,7 +290,7 @@ export const dealsAPI = {
       `/deals/${id}/analytics`, 
       { params: filters }
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getPerformanceReport: async (filters?: {
@@ -327,7 +329,7 @@ export const dealsAPI = {
     const response = await apiClient.get<DealAPIResponse<any>>('/deals/performance-report', {
       params: filters
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -346,10 +348,10 @@ export const dealsAPI = {
       { params: filters }
     );
     return {
-      usages: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      usages: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
@@ -366,10 +368,10 @@ export const dealsAPI = {
       { params: filters }
     );
     return {
-      usages: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      usages: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
@@ -394,7 +396,7 @@ export const dealsAPI = {
       `/deals/${dealId}/check-eligibility`, 
       data
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   apply: async (dealId: string, data: {
@@ -411,7 +413,7 @@ export const dealsAPI = {
       `/deals/${dealId}/apply`, 
       data
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   validateCode: async (code: string, customerId?: string): Promise<{
@@ -424,7 +426,7 @@ export const dealsAPI = {
       code,
       customerId
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -441,14 +443,14 @@ export const dealsAPI = {
     const response = await apiClient.get<DealAPIResponse<DealEntity[]>>('/deals/active', {
       params: filters
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getFeaturedDeals: async (limit = 6): Promise<DealEntity[]> => {
     const response = await apiClient.get<DealAPIResponse<DealEntity[]>>('/deals/featured', {
       params: { limit }
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getTrendingDeals: async (filters?: {
@@ -459,7 +461,7 @@ export const dealsAPI = {
     const response = await apiClient.get<DealAPIResponse<DealEntity[]>>('/deals/trending', {
       params: filters
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getPersonalizedDeals: async (customerId: string, filters?: {
@@ -475,7 +477,7 @@ export const dealsAPI = {
     const response = await apiClient.get<DealAPIResponse<any>>(`/deals/personalized/${customerId}`, {
       params: filters
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -493,21 +495,21 @@ export const dealsAPI = {
       params: filters
     });
     return {
-      templates: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      templates: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getTemplateById: async (id: string): Promise<DealTemplateEntity> => {
     const response = await apiClient.get<DealAPIResponse<DealTemplateEntity>>(`/deals/templates/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createTemplate: async (data: CreateDealTemplateRequest): Promise<DealTemplateEntity> => {
     const response = await apiClient.post<DealAPIResponse<DealTemplateEntity>>('/deals/templates', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createFromTemplate: async (templateId: string, data: Partial<CreateDealRequest>): Promise<DealEntity> => {
@@ -515,7 +517,7 @@ export const dealsAPI = {
       `/deals/templates/${templateId}/create`, 
       data
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -538,21 +540,21 @@ export const dealsAPI = {
       params: filters
     });
     return {
-      campaigns: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      campaigns: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getCampaignById: async (id: string): Promise<DealCampaignEntity> => {
     const response = await apiClient.get<DealAPIResponse<DealCampaignEntity>>(`/deals/campaigns/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createCampaign: async (data: CreateDealCampaignRequest): Promise<DealCampaignEntity> => {
     const response = await apiClient.post<DealAPIResponse<DealCampaignEntity>>('/deals/campaigns', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateCampaignStatus: async (id: string, status: DealCampaignStatus): Promise<DealCampaignEntity> => {
@@ -560,7 +562,7 @@ export const dealsAPI = {
       `/deals/campaigns/${id}/status`, 
       { status }
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -581,23 +583,23 @@ export const dealsAPI = {
       params: filters
     });
     return {
-      tests: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      tests: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   createABTest: async (data: CreateDealABTestRequest): Promise<DealABTestEntity> => {
     const response = await apiClient.post<DealAPIResponse<DealABTestEntity>>('/deals/ab-tests', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getABTestResults: async (testId: string): Promise<DealABTestEntity['results']> => {
     const response = await apiClient.get<DealAPIResponse<DealABTestEntity['results']>>(
       `/deals/ab-tests/${testId}/results`
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -605,19 +607,19 @@ export const dealsAPI = {
   // ========================================
   toggleStatus: async (id: string): Promise<DealEntity> => {
     const response = await apiClient.patch<DealAPIResponse<DealEntity>>(`/deals/${id}/toggle-status`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   duplicate: async (id: string, modifications?: Partial<CreateDealRequest>): Promise<DealEntity> => {
     const response = await apiClient.post<DealAPIResponse<DealEntity>>(`/deals/${id}/duplicate`, modifications);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   extend: async (id: string, newEndDate: Date): Promise<DealEntity> => {
     const response = await apiClient.patch<DealAPIResponse<DealEntity>>(`/deals/${id}/extend`, {
       endDate: newEndDate
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   trackClick: async (dealId: string, data?: {
@@ -645,7 +647,7 @@ export const dealsAPI = {
     failed: { id: string; error: string }[];
   }> => {
     const response = await apiClient.post<DealAPIResponse<any>>('/deals/bulk-delete', { ids });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkUpdateStatus: async (ids: string[], isActive: boolean): Promise<{
@@ -656,7 +658,7 @@ export const dealsAPI = {
       ids,
       isActive
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkApplyTags: async (ids: string[], tags: string[]): Promise<{
@@ -667,7 +669,7 @@ export const dealsAPI = {
       ids,
       tags
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -689,12 +691,12 @@ export const dealsAPI = {
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } }
     );
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteBanner: async (dealId: string): Promise<DealEntity> => {
     const response = await apiClient.delete<DealAPIResponse<DealEntity>>(`/deals/${dealId}/banner`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================

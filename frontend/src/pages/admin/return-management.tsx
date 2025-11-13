@@ -1,3 +1,8 @@
+/**
+ * SAFE API RESPONSE HANDLING
+ * Use pattern: const data = response?.data?.data || response?.data || [];
+ * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -83,7 +88,7 @@ const ReturnManagementPage: React.FC = () => {
   const fetchStats = async () => {
     try {
       const response = await returnsAPI.getReturnStats();
-      setStats(response.data);
+      setStats(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
     } catch (error) {
       console.error('Failed to fetch stats:', error);
     }

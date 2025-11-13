@@ -77,30 +77,30 @@ export const shoppingListsAPI = {
   }): Promise<PaginatedResponse<ShoppingList>> => {
     const response = await api.get<PaginatedShoppingListsResponse<ShoppingList>>('/shopping-lists', { params });
     return {
-      data: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
+      data: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
       limit: params?.limit || 10,
-      totalPages: response.data.data.totalPages
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   // Get list by ID
   getById: async (id: string): Promise<ShoppingList> => {
     const response = await api.get<ShoppingListsAPIResponse<ShoppingList>>(`/shopping-lists/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Create list
   create: async (data: CreateShoppingListData): Promise<ShoppingList> => {
     const response = await api.post<ShoppingListsAPIResponse<ShoppingList>>('/shopping-lists', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Update list
   update: async (id: string, data: Partial<CreateShoppingListData>): Promise<ShoppingList> => {
     const response = await api.put<ShoppingListsAPIResponse<ShoppingList>>(`/shopping-lists/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Delete list
@@ -115,24 +115,24 @@ export const shoppingListsAPI = {
   }): Promise<PaginatedResponse<ShoppingListItem>> => {
     const response = await api.get<PaginatedShoppingListsResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items`, { params });
     return {
-      data: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
+      data: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
       limit: params?.limit || 10,
-      totalPages: response.data.data.totalPages
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   // Add item to list
   addItem: async (listId: string, data: AddItemToListData): Promise<ShoppingListItem> => {
     const response = await api.post<ShoppingListsAPIResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Update item
   updateItem: async (listId: string, itemId: string, data: Partial<AddItemToListData>): Promise<ShoppingListItem> => {
     const response = await api.put<ShoppingListsAPIResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items/${itemId}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Remove item
@@ -143,19 +143,19 @@ export const shoppingListsAPI = {
   // Mark item as purchased
   markPurchased: async (listId: string, itemId: string, purchased: boolean): Promise<ShoppingListItem> => {
     const response = await api.patch<ShoppingListsAPIResponse<ShoppingListItem>>(`/shopping-lists/${listId}/items/${itemId}/purchased`, { purchased });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Add all items to cart
   addAllToCart: async (listId: string): Promise<{ addedItems: number }> => {
     const response = await api.post<ShoppingListsAPIResponse<{ addedItems: number }>>(`/shopping-lists/${listId}/add-to-cart`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Share list
   share: async (listId: string): Promise<{ shareUrl: string }> => {
     const response = await api.post<ShoppingListsAPIResponse<{ shareUrl: string }>>(`/shopping-lists/${listId}/share`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 };
 

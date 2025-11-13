@@ -11,7 +11,7 @@ import { ApiResponse } from '@/common/dto/api-response.dto';
 @ApiTags('Cart & Wishlist')
 @Controller('cart')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.CUSTOMER)
+@Roles(UserRole.CUSTOMER, UserRole.ADMIN)
 @ApiBearerAuth()
 export class CartController {
   constructor(private readonly cartService: CartService) {}
@@ -30,6 +30,23 @@ export class CartController {
     const customerId = req.user.id;
     const cart = await this.cartService.getCart(customerId);
     return ApiResponse.success('Cart retrieved successfully', cart);
+  }
+
+  @Get('items')
+  @ApiOperation({ summary: 'Get cart items (alias)' })
+  async getCartItems(@Request() req) {
+    const customerId = req.user.id;
+    const cart = await this.cartService.getCart(customerId);
+    return ApiResponse.success('Cart items retrieved', cart?.items || []);
+  }
+
+  @Get('count')
+  @ApiOperation({ summary: 'Get cart item count' })
+  async getCartCount(@Request() req) {
+    const customerId = req.user.id;
+    const cart = await this.cartService.getCart(customerId);
+    const count = cart?.items?.length || 0;
+    return ApiResponse.success('Cart count retrieved', { count });
   }
 
   @Patch('items/:itemId')

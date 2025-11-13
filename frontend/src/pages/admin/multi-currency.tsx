@@ -1,3 +1,13 @@
+/**
+ * ⚠️ SAFE API RESPONSE HANDLING - ALWAYS USE THIS PATTERN:
+ * 
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * 
+ * Before using .map()/.filter()/.forEach():
+ * setItems(Array.isArray(dataArray) ? dataArray : []);
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   Card,

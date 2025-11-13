@@ -439,29 +439,29 @@ export const promotionsAPI = {
   getAll: async (filters?: PromotionFilters): Promise<GetPromotionsResponse> => {
     const response = await apiClient.get<PaginatedPromotionsResponse<PromotionDto>>('/promotions', { params: filters });
     return {
-      promotions: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      promotions: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   // Get promotion by ID
   getById: async (id: number): Promise<PromotionDto> => {
     const response = await apiClient.get<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Create new promotion
   create: async (data: CreatePromotionRequest): Promise<PromotionDto> => {
     const response = await apiClient.post<PromotionsAPIResponse<PromotionDto>>('/promotions', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Update promotion
   update: async (id: number, data: UpdatePromotionRequest): Promise<PromotionDto> => {
     const response = await apiClient.put<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Delete promotion
@@ -472,7 +472,9 @@ export const promotionsAPI = {
   // Get promotion statistics
   getStats: async (): Promise<PromotionStats> => {
     const response = await apiClient.get<PromotionsAPIResponse<PromotionStats>>('/promotions/stats');
-    return response.data.data;
+    // Backend returns: {success: true, data: {...stats...}}
+    // NOT nested, so use response.data NOT response.data.data
+    return response.data as any;
   },
 
   // Get promotion analytics
@@ -480,43 +482,43 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<PromotionAnalytics>>(`/promotions/${id}/analytics`, {
       params: { startDate, endDate },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Launch promotion
   launch: async (id: number): Promise<PromotionDto> => {
     const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/launch`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Pause promotion
   pause: async (id: number): Promise<PromotionDto> => {
     const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/pause`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Resume promotion
   resume: async (id: number): Promise<PromotionDto> => {
     const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/resume`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Cancel promotion
   cancel: async (id: number, reason?: string): Promise<PromotionDto> => {
     const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/cancel`, { reason });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Complete promotion
   complete: async (id: number): Promise<PromotionDto> => {
     const response = await apiClient.patch<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/complete`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Duplicate promotion
   duplicate: async (id: number, name?: string): Promise<PromotionDto> => {
     const response = await apiClient.post<PromotionsAPIResponse<PromotionDto>>(`/promotions/${id}/duplicate`, { name });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Preview promotion
@@ -524,7 +526,7 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<any>>(`/promotions/${id}/preview`, {
       params: { variantId },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Test promotion
@@ -533,7 +535,7 @@ export const promotionsAPI = {
       testEmails,
       variantId,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get promotion templates
@@ -541,13 +543,13 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<PromotionTemplate[]>>('/promotions/templates', {
       params: { type, objective },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Create promotion from template
   createFromTemplate: async (templateId: number, customizations: any): Promise<PromotionDto> => {
     const response = await apiClient.post<PromotionsAPIResponse<PromotionDto>>(`/promotions/templates/${templateId}/create`, customizations);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get campaign calendar
@@ -555,13 +557,13 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<CampaignCalendar[]>>('/promotions/calendar', {
       params: { month, year },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get audience segments
   getAudienceSegments: async (): Promise<any[]> => {
     const response = await apiClient.get<PromotionsAPIResponse<any[]>>('/promotions/audience-segments');
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Create audience segment
@@ -571,13 +573,13 @@ export const promotionsAPI = {
     criteria: any;
   }): Promise<any> => {
     const response = await apiClient.post<PromotionsAPIResponse<any>>('/promotions/audience-segments', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get A/B test results
   getABTestResults: async (promotionId: number): Promise<any> => {
     const response = await apiClient.get<PromotionsAPIResponse<any>>(`/promotions/${promotionId}/ab-test-results`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Declare A/B test winner
@@ -585,7 +587,7 @@ export const promotionsAPI = {
     const response = await apiClient.patch<PromotionsAPIResponse<any>>(`/promotions/${promotionId}/ab-test-winner`, {
       variantId,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Upload promotion assets
@@ -597,7 +599,7 @@ export const promotionsAPI = {
     const response = await apiClient.post<PromotionsAPIResponse<any>>(`/promotions/${promotionId}/upload-assets`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get promotion performance report
@@ -605,7 +607,7 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<any>>('/promotions/performance-report', {
       params: { startDate, endDate, ...filters },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Export promotion data
@@ -620,7 +622,7 @@ export const promotionsAPI = {
   // Bulk operations
   bulkDelete: async (ids: number[]): Promise<any> => {
     const response = await apiClient.post<PromotionsAPIResponse<any>>('/promotions/bulk-delete', { ids });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   bulkUpdateStatus: async (ids: number[], status: string): Promise<any> => {
@@ -628,7 +630,7 @@ export const promotionsAPI = {
       ids,
       status,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get promotion recommendations
@@ -636,7 +638,7 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<any>>('/promotions/recommendations', {
       params: { type, objective },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Get competitor analysis
@@ -644,6 +646,6 @@ export const promotionsAPI = {
     const response = await apiClient.get<PromotionsAPIResponse<any>>('/promotions/competitor-analysis', {
       params: { industry, region },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 };

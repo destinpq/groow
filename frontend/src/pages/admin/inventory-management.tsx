@@ -1,3 +1,13 @@
+/**
+ * ⚠️ SAFE API RESPONSE HANDLING - ALWAYS USE THIS PATTERN:
+ * 
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * 
+ * Before using .map()/.filter()/.forEach():
+ * setItems(Array.isArray(dataArray) ? dataArray : []);
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Space, Tag, Row, Col, Statistic, Input, Select, message, Alert, Tabs, Typography, Modal, Form, InputNumber } from 'antd';
 import { DownloadOutlined, EditOutlined, ExclamationCircleOutlined, WarningOutlined, ReloadOutlined, InboxOutlined, SearchOutlined } from '@ant-design/icons';
@@ -43,7 +53,7 @@ const InventoryManagementPage: React.FC = () => {
         limit: 1000, // Get all products for inventory view
       });
       
-      const products = response.data?.items || [];
+      const products = response?.data?.data || response?.data || []?.items || [];
       setInventory(products);
       
       // Calculate stats

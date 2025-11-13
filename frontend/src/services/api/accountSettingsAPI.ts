@@ -182,10 +182,12 @@ export const accountSettingsAPI = {
     try {
       const response = await api.get('/customer/addresses');
       
-      if (response.data?.data) {
+      // SAFE: Handle both nested and direct formats
+      const addresses = response?.data?.data || response?.data;
+      if (addresses) {
         return {
           success: true,
-          data: response.data.data,
+          data: addresses,
           message: 'Addresses retrieved successfully'
         };
       }
@@ -522,7 +524,7 @@ export const accountSettingsAPI = {
       if (response.data?.data) {
         return {
           success: true,
-          data: response.data.data,
+          data: (response?.data?.data || response?.data),
           message: 'Payment methods retrieved'
         };
       }

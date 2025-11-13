@@ -156,24 +156,36 @@ export class ReportService {
       .orderBy('date', 'ASC')
       .getRawMany();
 
-    // Customer lifetime value
-    const customerLTV = await this.orderRepository
-      .createQueryBuilder('order')
-      .leftJoin('order.customer', 'customer')
-      .select([
-        'customer.id as customerId',
-        'customer.name as customerName',
-        'COUNT(*) as orderCount',
-        'SUM(order.total) as totalSpent',
-        'AVG(order.total) as avgOrderValue',
-        'MIN(order.createdAt) as firstOrder',
-        'MAX(order.createdAt) as lastOrder',
-      ])
-      .where('order.status = :status', { status: OrderStatus.DELIVERED })
-      .groupBy('customer.id, customer.name')
-      .orderBy('totalSpent', 'DESC')
-      .limit(100)
-      .getRawMany();
+    // Get all customers for LTV calculation
+    const customers = await this.userRepository.find({
+      where: { role: UserRole.CUSTOMER },
+      select: ['id', 'email', 'firstName', 'lastName', 'createdAt']
+    });
+
+    // Customer lifetime value - Calculate from orders by customerId
+    const customerLTV = [];
+    for (const customer of customers.slice(0, 100)) {
+      const orders = await this.orderRepository.find({
+        where: { customerId: customer.id, status: OrderStatus.DELIVERED }
+      });
+      
+      if (orders.length > 0) {
+        const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.total?.toString() || '0'), 0);
+        const avgOrderValue = totalSpent / orders.length;
+        
+        customerLTV.push({
+          customerId: customer.id,
+          customerName: `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || customer.email,
+          orderCount: orders.length,
+          totalSpent,
+          avgOrderValue,
+          firstOrder: orders[0].createdAt,
+          lastOrder: orders[orders.length - 1].createdAt,
+        });
+      }
+    }
+    
+    customerLTV.sort((a, b) => b.totalSpent - a.totalSpent);
 
     return {
       success: true,

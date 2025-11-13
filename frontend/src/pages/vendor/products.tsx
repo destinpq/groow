@@ -90,7 +90,7 @@ const VendorProductsPage: React.FC = () => {
         categoryId: categoryFilter,
         inStock: statusFilter,
       });
-      setProducts(response.data);
+      setProducts(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       setTotal(response.total);
     } catch (error) {
       message.error('Failed to load products');

@@ -1,0 +1,31 @@
+{
+  "name": "groow-api-tests",
+  "version": "1.0.0",
+  "description": "Cypress API tests for Groow platform",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test": "cypress run --spec 'cypress/e2e/**/*.cy.ts'",
+    "test:auth": "cypress run --spec 'cypress/e2e/01-authentication.cy.ts'",
+    "test:products": "cypress run --spec 'cypress/e2e/02-products.cy.ts'",
+    "test:categories": "cypress run --spec 'cypress/e2e/03-categories.cy.ts'",
+    "test:brands": "cypress run --spec 'cypress/e2e/04-brands.cy.ts'",
+    "test:orders": "cypress run --spec 'cypress/e2e/05-orders.cy.ts'",
+    "test:cart": "cypress run --spec 'cypress/e2e/06-cart.cy.ts'",
+    "test:marketing": "cypress run --spec 'cypress/e2e/07-marketing.cy.ts'",
+    "test:cms": "cypress run --spec 'cypress/e2e/08-cms.cy.ts'",
+    "test:reports": "cypress run --spec 'cypress/e2e/09-reports.cy.ts'",
+    "test:rfq": "cypress run --spec 'cypress/e2e/10-rfq.cy.ts'",
+    "test:core": "cypress run --spec 'cypress/e2e/{01,02,03,04,05,06}*.cy.ts'",
+    "test:all": "cypress run",
+    "report": "cypress run --reporter json --reporter-options output=test-results.json"
+  },
+  "keywords": ["cypress", "api", "testing", "groow"],
+  "author": "Groow Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "cypress": "^13.6.0",
+    "typescript": "^5.3.0"
+  }
+}

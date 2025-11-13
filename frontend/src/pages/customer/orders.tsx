@@ -81,7 +81,7 @@ const OrdersPage: React.FC = () => {
       }
 
       const response = await ordersAPI.getAll(filters);
-      setOrders(response.data);
+      setOrders(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       setPagination({
         current: response.page,
         pageSize: response.limit,

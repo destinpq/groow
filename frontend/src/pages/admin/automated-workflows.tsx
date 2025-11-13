@@ -1,3 +1,13 @@
+/**
+ * ⚠️ SAFE API RESPONSE HANDLING - ALWAYS USE THIS PATTERN:
+ * 
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * 
+ * Before using .map()/.filter()/.forEach():
+ * setItems(Array.isArray(dataArray) ? dataArray : []);
+ */
+
 import React, { useState } from 'react';
 import { Card, Table, Button, Space, Tag, Row, Col, Modal, Form, Input, Select, Switch, InputNumber, Typography, Alert, Tabs, Timeline, Progress } from 'antd';
 import { PlayCircleOutlined, PauseCircleOutlined, EditOutlined, DeleteOutlined, PlusOutlined, ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, RobotOutlined, SettingOutlined } from '@ant-design/icons';

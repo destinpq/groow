@@ -1,3 +1,8 @@
+/**
+ * SAFE API RESPONSE HANDLING
+ * Use pattern: const data = response?.data?.data || response?.data || [];
+ * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -126,7 +131,7 @@ const SystemLogsPage: React.FC = () => {
       };
 
       const response = await systemLogsAPI.getAll(params);
-      setLogs(response.data);
+      setLogs(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       setPagination(prev => ({
         ...prev,
         total: response.total,
@@ -141,7 +146,7 @@ const SystemLogsPage: React.FC = () => {
   const fetchStats = async () => {
     try {
       const response = await systemLogsAPI.getStats();
-      setStats(response.data);
+      setStats(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
     } catch (error) {
       console.error('Failed to fetch log stats');
     }

@@ -109,8 +109,8 @@ export const productQAAPI = {
         return {
           success: true,
           data: {
-            questions: response.data.data,
-            total: response.data.total || response.data.data.length,
+            questions: (response?.data?.data || response?.data),
+            total: response.data.total || (response?.data?.data || response?.data)?.length,
             hasMore: response.data.hasMore || false
           },
           message: 'Questions retrieved successfully'
@@ -311,8 +311,8 @@ export const productQAAPI = {
         return {
           success: true,
           data: {
-            questions: response.data.data,
-            total: response.data.total || response.data.data.length,
+            questions: (response?.data?.data || response?.data),
+            total: response.data.total || (response?.data?.data || response?.data)?.length,
             hasMore: response.data.hasMore || false
           },
           message: 'Your questions retrieved successfully'
@@ -616,7 +616,7 @@ export const productQAAPI = {
       if (response.data?.data) {
         return {
           success: true,
-          data: response.data.data,
+          data: (response?.data?.data || response?.data),
           message: 'Search completed successfully'
         };
       }

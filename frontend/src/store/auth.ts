@@ -29,9 +29,19 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.setItem('access_token', token);
           localStorage.setItem('user', JSON.stringify(user));
+          console.log('[AUTH STORE] Token saved to localStorage:', token.substring(0, 20) + '...');
         }
         console.log('Auth store: Setting user and token', { user: user.role, isAuthenticated: true });
         set({ user, token, isAuthenticated: true });
+        
+        // Force a re-render to ensure token is available for API calls
+        setTimeout(() => {
+          const storedToken = localStorage.getItem('access_token');
+          if (storedToken && storedToken !== token) {
+            console.warn('[AUTH STORE] Token mismatch, resyncing');
+            set({ token: storedToken });
+          }
+        }, 100);
       },
 
       logout: () => {

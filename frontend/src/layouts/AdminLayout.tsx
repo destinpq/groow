@@ -84,11 +84,9 @@ const AdminLayout = () => {
       icon: <ShoppingOutlined />,
       label: 'Products',
       children: [
-        { key: '/admin/products', label: 'All Products' },
-        { key: '/admin/products/add', label: 'Add Product' },
+        { key: '/admin/products', label: 'Products' },
         { key: '/admin/categories', label: 'Categories' },
         { key: '/admin/brands', label: 'Brands' },
-        { key: '/admin/attributes', label: 'Attributes' },
       ],
     },
     {
@@ -96,12 +94,7 @@ const AdminLayout = () => {
       icon: <ShoppingCartOutlined />,
       label: 'Orders',
       children: [
-        { key: '/admin/orders/new', label: 'New Orders' },
-        { key: '/admin/orders/confirmed', label: 'Confirmed' },
-        { key: '/admin/orders/processing', label: 'In Process' },
-        { key: '/admin/orders/delivered', label: 'Delivered' },
-        { key: '/admin/orders/cancelled', label: 'Cancelled' },
-        { key: '/admin/orders/returns', label: 'Returns/Refunds' },
+        { key: '/admin/orders', label: 'All Orders' },
       ],
     },
     {
@@ -110,9 +103,6 @@ const AdminLayout = () => {
       label: 'Vendors',
       children: [
         { key: '/admin/vendors', label: 'All Vendors' },
-        { key: '/admin/vendors/pending', label: 'Pending Approval' },
-        { key: '/admin/vendors/verified', label: 'Verified' },
-        { key: '/admin/vendors/subscriptions', label: 'Subscriptions' },
       ],
     },
     {
@@ -121,8 +111,6 @@ const AdminLayout = () => {
       label: 'Customers',
       children: [
         { key: '/admin/customers', label: 'All Customers' },
-        { key: '/admin/customers/active', label: 'Active' },
-        { key: '/admin/customers/suspended', label: 'Suspended' },
       ],
     },
     {
@@ -131,8 +119,6 @@ const AdminLayout = () => {
       label: 'RFQ Management',
       children: [
         { key: '/admin/rfq', label: 'All RFQs' },
-        { key: '/admin/rfq/pending', label: 'Pending' },
-        { key: '/admin/rfq/quoted', label: 'Quoted' },
       ],
     },
     {
@@ -141,10 +127,7 @@ const AdminLayout = () => {
       label: 'CMS',
       children: [
         { key: '/admin/cms/banners', label: 'Banners' },
-        { key: '/admin/cms/sliders', label: 'Sliders' },
         { key: '/admin/cms/pages', label: 'Pages' },
-        { key: '/admin/cms/menus', label: 'Menus' },
-        { key: '/admin/cms/testimonials', label: 'Testimonials' },
         { key: '/admin/cms/faqs', label: 'FAQs' },
       ],
     },
@@ -153,9 +136,9 @@ const AdminLayout = () => {
       icon: <TagsOutlined />,
       label: 'Marketing',
       children: [
-        { key: '/admin/marketing/deals', label: 'Deals' },
-        { key: '/admin/marketing/coupons', label: 'Coupons' },
-        { key: '/admin/marketing/promotions', label: 'Promotions' },
+        { key: '/admin/deals-management', label: 'Deals' },
+        { key: '/admin/coupon-management', label: 'Coupons' },
+        { key: '/admin/promotions-campaigns', label: 'Promotions' },
       ],
     },
     {
@@ -186,8 +169,7 @@ const AdminLayout = () => {
       icon: <CustomerServiceOutlined />,
       label: 'Support',
       children: [
-        { key: '/admin/support/tickets', label: 'Support Tickets' },
-        { key: '/admin/support/disputes', label: 'Disputes' },
+        { key: '/admin/customer-support', label: 'Customer Support' },
       ],
     },
     {
@@ -195,8 +177,7 @@ const AdminLayout = () => {
       icon: <TeamOutlined />,
       label: 'Staff & HRMS',
       children: [
-        { key: '/admin/staff', label: 'All Staff' },
-        { key: '/admin/staff/roles', label: 'Roles & Permissions' },
+        { key: '/admin/settings', label: 'Settings' },
       ],
     },
     {

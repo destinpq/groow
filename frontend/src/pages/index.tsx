@@ -31,125 +31,125 @@ const HomePage = () => {
 
   console.log('[HomePage] Rendering home page', new Date().toISOString());
 
-  // Service Categories for IT Business
+  // Household Service Categories (Urban Company style)
   const serviceCategories = [
     {
-      title: 'Software Development',
-      icon: <CodeOutlined />,
-      services: ['Web Development', 'Mobile Apps', 'Custom Software'],
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
-      color: '#1890FF'
+      title: 'Salon for Women',
+      icon: <TeamOutlined />,
+      services: ['Waxing', 'Facial', 'Hair Spa'],
+      image: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=800&h=600&fit=crop',
+      color: '#EB2F96'
     },
     {
-      title: 'Cloud Services',
-      icon: <CloudOutlined />,
-      services: ['AWS Setup', 'Azure Migration', 'Cloud Security'],
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',
-      color: '#52C41A'
-    },
-    {
-      title: 'IT Support',
-      icon: <ToolOutlined />,
-      services: ['Technical Support', 'System Maintenance', 'Troubleshooting'],
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
-      color: '#FA8C16'
-    },
-    {
-      title: 'Cybersecurity',
-      icon: <SecurityScanOutlined />,
-      services: ['Security Audits', 'Firewall Setup', 'Data Protection'],
-      image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
-      color: '#F5222D'
-    },
-    {
-      title: 'Network Solutions',
-      icon: <WifiOutlined />,
-      services: ['Network Setup', 'Wi-Fi Installation', 'Network Security'],
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
+      title: "Men's Grooming",
+      icon: <TeamOutlined />,
+      services: ['Haircut', 'Beard Styling', 'Facial'],
+      image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop',
       color: '#722ED1'
     },
     {
-      title: 'Database Services',
-      icon: <DatabaseOutlined />,
-      services: ['Database Design', 'Data Migration', 'Backup Solutions'],
-      image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=300&fit=crop',
+      title: 'AC Service & Repair',
+      icon: <ToolOutlined />,
+      services: ['Jet Wash', 'Gas Top-up', 'Repair'],
+      image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=800&h=600&fit=crop',
       color: '#13C2C2'
+    },
+    {
+      title: 'Electrician',
+      icon: <ToolOutlined />,
+      services: ['Wiring', 'Fan/Light Install', 'Switches'],
+      image: 'https://images.unsplash.com/photo-1581091215367-59ab6b47d6f6?w=800&h=600&fit=crop',
+      color: '#FA8C16'
+    },
+    {
+      title: 'Plumber',
+      icon: <ToolOutlined />,
+      services: ['Leak Fix', 'Tap Install', 'Drainage'],
+      image: 'https://images.unsplash.com/photo-1565372910381-81f1b2f58cc1?w=800&h=600&fit=crop',
+      color: '#1890FF'
+    },
+    {
+      title: 'Home Cleaning',
+      icon: <SafetyOutlined />,
+      services: ['Deep Clean', 'Sofa', 'Kitchen'],
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=600&fit=crop',
+      color: '#52C41A'
     },
   ];
 
-  // Popular IT Services
+  // Popular Household Services
   const popularServices = [
     {
       id: 1,
-      title: 'Website Development',
-      description: 'Complete website development with modern frameworks',
-      price: 1999,
-      originalPrice: 2499,
-      duration: '7-10 days',
+      title: 'Salon at Home for Women',
+      description: 'Facials, waxing, threading and more',
+      price: 999,
+      originalPrice: 1299,
+      duration: '60-90 mins',
       rating: 4.9,
       reviews: 1247,
-      image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=300&fit=crop',
-      professional: { name: 'John Smith', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }
+      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&h=800&fit=crop',
+      professional: { name: 'Priya Sharma', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face' }
     },
     {
       id: 2,
-      title: 'Cloud Migration',
-      description: 'Seamless migration to AWS/Azure cloud platforms',
-      price: 2999,
-      originalPrice: 3499,
-      duration: '5-7 days',
+      title: "Men's Haircut & Grooming",
+      description: 'Professional haircut, beard styling and facials',
+      price: 499,
+      originalPrice: 699,
+      duration: '30-60 mins',
       rating: 4.8,
       reviews: 892,
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',
-      professional: { name: 'Sarah Johnson', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face' }
+      image: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=1200&h=800&fit=crop',
+      professional: { name: 'Rahul Verma', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' }
     },
     {
       id: 3,
-      title: 'IT Security Audit',
-      description: 'Comprehensive security assessment and recommendations',
-      price: 1499,
-      originalPrice: 1899,
-      duration: '3-5 days',
+      title: 'AC Service (Jet Wash)',
+      description: 'Complete AC cleaning, cooling improvement and health check',
+      price: 599,
+      originalPrice: 799,
+      duration: '45-60 mins',
       rating: 4.9,
       reviews: 567,
-      image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
-      professional: { name: 'Mike Chen', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' }
+      image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=1200&h=800&fit=crop',
+      professional: { name: 'Imran Khan', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' }
     },
     {
       id: 4,
-      title: 'Network Setup',
-      description: 'Enterprise-grade network infrastructure setup',
-      price: 899,
-      originalPrice: 1199,
-      duration: '1-2 days',
+      title: 'Home Deep Cleaning',
+      description: 'Full home deep cleaning with professional equipment',
+      price: 2499,
+      originalPrice: 2999,
+      duration: '4-6 hours',
       rating: 4.7,
       reviews: 423,
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop',
-      professional: { name: 'Alex Rodriguez', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' }
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1200&h=800&fit=crop',
+      professional: { name: 'Sumanth R', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }
     },
     {
       id: 5,
-      title: 'Mobile App Development',
-      description: 'iOS and Android mobile application development',
-      price: 2499,
-      originalPrice: 2999,
-      duration: '14-21 days',
+      title: 'Electrician Visit',
+      description: 'Switches, sockets, fan/light install, wiring',
+      price: 199,
+      originalPrice: 299,
+      duration: '30-60 mins',
       rating: 4.8,
       reviews: 334,
-      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
-      professional: { name: 'Emily Davis', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face' }
+      image: 'https://images.unsplash.com/photo-1581091215367-59ab6b47d6f6?w=1200&h=800&fit=crop',
+      professional: { name: 'Ravi Kumar', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' }
     },
     {
       id: 6,
-      title: 'Database Optimization',
-      description: 'Performance tuning and database optimization',
-      price: 799,
-      originalPrice: 999,
-      duration: '2-3 days',
+      title: 'Plumber Visit',
+      description: 'Leak fixes, tap/shower installation, drainage',
+      price: 249,
+      originalPrice: 349,
+      duration: '30-60 mins',
       rating: 4.6,
       reviews: 289,
-      image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=300&fit=crop',
-      professional: { name: 'David Wilson', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }
+      image: 'https://images.unsplash.com/photo-1565372910381-81f1b2f58cc1?w=1200&h=800&fit=crop',
+      professional: { name: 'Mahesh Kumar', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face' }
     }
   ];
 
@@ -178,13 +178,13 @@ const HomePage = () => {
                 GROOW
               </div>
               <Text type="secondary" style={{ fontSize: 12 }}>
-                Professional IT Services at Your Doorstep
+                Home services in Hyderabad — trusted professionals at your doorstep
               </Text>
             </Col>
             
             <Col flex={1} style={{ maxWidth: 500, margin: '0 40px' }}>
               <Search
-                placeholder="Search IT services..."
+                placeholder="Search services (e.g., Salon, Electrician)"
                 size="large"
                 enterButton={
                   <Button 
@@ -221,7 +221,7 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <div style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
         padding: '80px 20px',
         color: 'white',
         textAlign: 'center'
@@ -239,7 +239,7 @@ const HomePage = () => {
           >
             Professional IT Services
             <br />
-            at Your Doorstep
+            Across New Zealand
           </Title>
           <Paragraph 
             style={{ 
@@ -251,27 +251,27 @@ const HomePage = () => {
               margin: '0 auto 40px'
             }}
           >
-            Connect with verified IT professionals for all your technology needs. 
-            From software development to cybersecurity, we've got you covered.
+            Salon, cleaning, appliance repair, electrician, plumber and more — 
+            book trusted professionals with transparent pricing.
           </Paragraph>
           
           <Space direction="vertical" align="center" size="large">
             <div style={{ maxWidth: 400, width: '100%' }}>
               <Search
-                placeholder="What IT service do you need?"
+                placeholder="What service do you need?"
                 size="large"
                 enterButton={
                   <Button 
                     size="large"
                     style={{ 
-                      background: '#FF6B6B', 
-                      borderColor: '#FF6B6B',
+                      background: '#22c55e', 
+                      borderColor: '#22c55e',
                       fontWeight: 600,
                       height: 50,
                       fontSize: 16
                     }}
                   >
-                    Find Services
+                    Find services near you
                   </Button>
                 }
                 style={{ marginBottom: 20 }}

@@ -515,13 +515,13 @@ export const serviceMarketplaceAPI = {
   // Create new service offering
   services: {
     create: async (data: CreateServiceData): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceMarketplace>>('//services', data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceMarketplace>>('/services', data);
       return response.data;
     },
 
     // Get all services with advanced filtering
     getAll: async (filters?: ServiceMarketplaceFilters): Promise<PaginatedServiceResponse<ServiceMarketplace>> => {
-      const response = await apiClient.get<PaginatedServiceResponse<ServiceMarketplace>>('//services', {
+      const response = await apiClient.get<PaginatedServiceResponse<ServiceMarketplace>>('/services', {
         params: {
           ...filters,
           deliveryDateFrom: filters?.deliveryDateFrom?.toISOString(),
@@ -541,7 +541,7 @@ export const serviceMarketplaceAPI = {
       includeComplianceData?: boolean;
       includeVendorDetails?: boolean;
     }): Promise<ServiceAPIResponse<ServiceWithRelations>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceWithRelations>>(`//services/${id}`, {
+      const response = await apiClient.get<ServiceAPIResponse<ServiceWithRelations>>(`/services/${id}`, {
         params: includeDetails,
       });
       return response.data;
@@ -549,19 +549,19 @@ export const serviceMarketplaceAPI = {
 
     // Get service by slug
     getBySlug: async (slug: string): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceMarketplace>>(`//services/slug/${slug}`);
+      const response = await apiClient.get<ServiceAPIResponse<ServiceMarketplace>>(`/services/slug/${slug}`);
       return response.data;
     },
 
     // Update service
     update: async (id: string, data: UpdateServiceData): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceMarketplace>>(`//services/${id}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceMarketplace>>(`/services/${id}`, data);
       return response.data;
     },
 
     // Update service status
     updateStatus: async (id: string, status: ServiceEntity['status'], reason?: string): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceMarketplace>>(`//services/${id}/status`, { 
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceMarketplace>>(`/services/${id}/status`, { 
         status,
         lastModifiedReason: reason,
       });
@@ -575,13 +575,13 @@ export const serviceMarketplaceAPI = {
       allowOverbooking?: boolean;
       capacitySchedule?: ServiceEntity['capacitySchedule'];
     }): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceMarketplace>>(`//services/${id}/capacity`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceMarketplace>>(`/services/${id}/capacity`, data);
       return response.data;
     },
 
     // Delete service (soft delete)
     delete: async (id: string, reason?: string): Promise<ServiceAPIResponse<void>> => {
-      const response = await apiClient.delete<ServiceAPIResponse<void>>(`//services/${id}`, {
+      const response = await apiClient.delete<ServiceAPIResponse<void>>(`/services/${id}`, {
         data: { reason },
       });
       return response.data;
@@ -589,19 +589,19 @@ export const serviceMarketplaceAPI = {
 
     // Archive service
     archive: async (id: string, reason: string): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceMarketplace>>(`//services/${id}/archive`, { reason });
+      const response = await apiClient.post<ServiceAPIResponse<ServiceMarketplace>>(`/services/${id}/archive`, { reason });
       return response.data;
     },
 
     // Duplicate service
     duplicate: async (id: string, modifications?: Partial<CreateServiceData>): Promise<ServiceAPIResponse<ServiceMarketplace>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceMarketplace>>(`//services/${id}/duplicate`, modifications);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceMarketplace>>(`/services/${id}/duplicate`, modifications);
       return response.data;
     },
 
     // Get featured services
     getFeatured: async (category?: string, limit: number = 10): Promise<ServiceAPIResponse<ServiceMarketplace[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceMarketplace[]>>('//services/featured', {
+      const response = await apiClient.get<ServiceAPIResponse<ServiceMarketplace[]>>('/services/featured', {
         params: { category, limit },
       });
       return response.data;
@@ -624,7 +624,7 @@ export const serviceMarketplaceAPI = {
         matchingCriteria: string[];
       }>;
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//services/recommended', {
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/services/recommended', {
         params: filters,
       });
       return response.data;
@@ -637,7 +637,7 @@ export const serviceMarketplaceAPI = {
       growthRate: number;
       popularityIncrease: number;
     }>>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//services/trending', {
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/services/trending', {
         params: { timeframe, limit },
       });
       return response.data;
@@ -645,7 +645,7 @@ export const serviceMarketplaceAPI = {
 
     // Get services by vendor
     getByVendor: async (vendorId: string, filters?: ServiceMarketplaceFilters): Promise<PaginatedServiceResponse<ServiceMarketplace>> => {
-      const response = await apiClient.get<PaginatedServiceResponse<ServiceMarketplace>>(`//services/vendor/${vendorId}`, {
+      const response = await apiClient.get<PaginatedServiceResponse<ServiceMarketplace>>(`/services/vendor/${vendorId}`, {
         params: filters,
       });
       return response.data;
@@ -668,7 +668,7 @@ export const serviceMarketplaceAPI = {
       searchTime: number;
       recommendations?: ServiceMarketplace[];
     }>> => {
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//services/search', options);
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/services/search', options);
       return response.data;
     },
 
@@ -690,7 +690,7 @@ export const serviceMarketplaceAPI = {
       isCurrentlyBookable: boolean;
       overbookingAllowed: boolean;
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>(`//services/${serviceId}/availability`, {
+      const response = await apiClient.get<ServiceAPIResponse<any>>(`/services/${serviceId}/availability`, {
         params: {
           ...options,
           startDate: options?.startDate?.toISOString(),
@@ -709,7 +709,7 @@ export const serviceMarketplaceAPI = {
       failed: number;
       errors: Array<{ serviceId: string; error: string }>;
     }>> => {
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//services/bulk/update', { updates });
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/services/bulk/update', { updates });
       return response.data;
     },
 
@@ -718,7 +718,7 @@ export const serviceMarketplaceAPI = {
       failed: number;
       errors: Array<{ serviceId: string; error: string }>;
     }>> => {
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//services/bulk/status', {
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/services/bulk/status', {
         serviceIds,
         status,
         reason,
@@ -728,7 +728,7 @@ export const serviceMarketplaceAPI = {
 
     // Import/Export services
     export: async (filters?: ServiceMarketplaceFilters, format: 'csv' | 'excel' | 'json' = 'csv'): Promise<Blob> => {
-      const response = await apiClient.post('//services/export', {
+      const response = await apiClient.post('/services/export', {
         filters,
         format,
       }, {
@@ -753,7 +753,7 @@ export const serviceMarketplaceAPI = {
         formData.append('options', JSON.stringify(options));
       }
 
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//services/import', formData, {
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/services/import', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -765,39 +765,39 @@ export const serviceMarketplaceAPI = {
   // ========================================
   categories: {
     getAll: async (includeStats?: boolean): Promise<ServiceAPIResponse<ServiceCategoryWithServices[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceCategoryWithServices[]>>('//service-categories', {
+      const response = await apiClient.get<ServiceAPIResponse<ServiceCategoryWithServices[]>>('/service-categories', {
         params: { includeStats },
       });
       return response.data;
     },
 
     getById: async (id: string): Promise<ServiceAPIResponse<ServiceCategoryWithServices>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceCategoryWithServices>>(`//service-categories/${id}`);
+      const response = await apiClient.get<ServiceAPIResponse<ServiceCategoryWithServices>>(`/service-categories/${id}`);
       return response.data;
     },
 
     getHierarchy: async (): Promise<ServiceAPIResponse<ServiceCategoryWithServices[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceCategoryWithServices[]>>('//service-categories/hierarchy');
+      const response = await apiClient.get<ServiceAPIResponse<ServiceCategoryWithServices[]>>('/service-categories/hierarchy');
       return response.data;
     },
 
     create: async (data: Omit<ServiceCategoryEntity, 'id' | 'createdAt' | 'updatedAt'>): Promise<ServiceAPIResponse<ServiceCategoryEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceCategoryEntity>>('//service-categories', data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceCategoryEntity>>('/service-categories', data);
       return response.data;
     },
 
     update: async (id: string, data: Partial<ServiceCategoryEntity>): Promise<ServiceAPIResponse<ServiceCategoryEntity>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceCategoryEntity>>(`//service-categories/${id}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceCategoryEntity>>(`/service-categories/${id}`, data);
       return response.data;
     },
 
     delete: async (id: string): Promise<ServiceAPIResponse<void>> => {
-      const response = await apiClient.delete<ServiceAPIResponse<void>>(`//service-categories/${id}`);
+      const response = await apiClient.delete<ServiceAPIResponse<void>>(`/service-categories/${id}`);
       return response.data;
     },
 
     getServices: async (categoryId: string, filters?: ServiceMarketplaceFilters): Promise<PaginatedServiceResponse<ServiceMarketplace>> => {
-      const response = await apiClient.get<PaginatedServiceResponse<ServiceMarketplace>>(`//service-categories/${categoryId}/services`, {
+      const response = await apiClient.get<PaginatedServiceResponse<ServiceMarketplace>>(`/service-categories/${categoryId}/services`, {
         params: filters,
       });
       return response.data;
@@ -810,7 +810,7 @@ export const serviceMarketplaceAPI = {
       averageRating: number;
       growthRate: number;
     }>>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//service-categories/popular', {
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/service-categories/popular', {
         params: { limit },
       });
       return response.data;
@@ -822,27 +822,27 @@ export const serviceMarketplaceAPI = {
   // ========================================
   variants: {
     getByService: async (serviceId: string): Promise<ServiceAPIResponse<ServiceVariantEntity[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceVariantEntity[]>>(`//services/${serviceId}/variants`);
+      const response = await apiClient.get<ServiceAPIResponse<ServiceVariantEntity[]>>(`/services/${serviceId}/variants`);
       return response.data;
     },
 
     create: async (serviceId: string, data: Omit<ServiceVariantEntity, 'id' | 'serviceId' | 'service' | 'createdAt' | 'updatedAt'>): Promise<ServiceAPIResponse<ServiceVariantEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceVariantEntity>>(`//services/${serviceId}/variants`, data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceVariantEntity>>(`/services/${serviceId}/variants`, data);
       return response.data;
     },
 
     update: async (variantId: string, data: Partial<ServiceVariantEntity>): Promise<ServiceAPIResponse<ServiceVariantEntity>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceVariantEntity>>(`//service-variants/${variantId}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceVariantEntity>>(`/service-variants/${variantId}`, data);
       return response.data;
     },
 
     delete: async (variantId: string): Promise<ServiceAPIResponse<void>> => {
-      const response = await apiClient.delete<ServiceAPIResponse<void>>(`//service-variants/${variantId}`);
+      const response = await apiClient.delete<ServiceAPIResponse<void>>(`/service-variants/${variantId}`);
       return response.data;
     },
 
     bulkUpdate: async (serviceId: string, variants: Array<Partial<ServiceVariantEntity> & { id?: string }>): Promise<ServiceAPIResponse<ServiceVariantEntity[]>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceVariantEntity[]>>(`//services/${serviceId}/variants/bulk`, { variants });
+      const response = await apiClient.post<ServiceAPIResponse<ServiceVariantEntity[]>>(`/services/${serviceId}/variants/bulk`, { variants });
       return response.data;
     },
   },
@@ -852,24 +852,24 @@ export const serviceMarketplaceAPI = {
   // ========================================
   addons: {
     getByService: async (serviceId: string, activeOnly: boolean = true): Promise<ServiceAPIResponse<ServiceAddonEntity[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceAddonEntity[]>>(`//services/${serviceId}/addons`, {
+      const response = await apiClient.get<ServiceAPIResponse<ServiceAddonEntity[]>>(`/services/${serviceId}/addons`, {
         params: { activeOnly },
       });
       return response.data;
     },
 
     create: async (serviceId: string, data: Omit<ServiceAddonEntity, 'id' | 'serviceId' | 'service' | 'createdAt' | 'updatedAt'>): Promise<ServiceAPIResponse<ServiceAddonEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceAddonEntity>>(`//services/${serviceId}/addons`, data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceAddonEntity>>(`/services/${serviceId}/addons`, data);
       return response.data;
     },
 
     update: async (addonId: string, data: Partial<ServiceAddonEntity>): Promise<ServiceAPIResponse<ServiceAddonEntity>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceAddonEntity>>(`//service-addons/${addonId}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceAddonEntity>>(`/service-addons/${addonId}`, data);
       return response.data;
     },
 
     delete: async (addonId: string): Promise<ServiceAPIResponse<void>> => {
-      const response = await apiClient.delete<ServiceAPIResponse<void>>(`//service-addons/${addonId}`);
+      const response = await apiClient.delete<ServiceAPIResponse<void>>(`/service-addons/${addonId}`);
       return response.data;
     },
 
@@ -878,7 +878,7 @@ export const serviceMarketplaceAPI = {
       isRecommended: boolean;
       compatibilityReason: string;
     }>>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>(`//services/${serviceId}/addons/compatible`, {
+      const response = await apiClient.get<ServiceAPIResponse<any>>(`/services/${serviceId}/addons/compatible`, {
         params: { variantIds },
       });
       return response.data;
@@ -897,7 +897,7 @@ export const serviceMarketplaceAPI = {
       verified?: boolean;
       sortBy?: 'newest' | 'oldest' | 'rating_high' | 'rating_low' | 'helpful';
     }): Promise<PaginatedServiceResponse<ServiceReviewEntity>> => {
-      const response = await apiClient.get<PaginatedServiceResponse<ServiceReviewEntity>>(`//services/${serviceId}/reviews`, {
+      const response = await apiClient.get<PaginatedServiceResponse<ServiceReviewEntity>>(`/services/${serviceId}/reviews`, {
         params: filters,
       });
       return response.data;
@@ -912,7 +912,7 @@ export const serviceMarketplaceAPI = {
       isAnonymous?: boolean;
       orderId?: string;
     }): Promise<ServiceAPIResponse<ServiceReviewEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceReviewEntity>>(`//services/${serviceId}/reviews`, data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceReviewEntity>>(`/services/${serviceId}/reviews`, data);
       return response.data;
     },
 
@@ -923,24 +923,24 @@ export const serviceMarketplaceAPI = {
       detailedRatings?: ServiceReviewEntity['detailedRatings'];
       images?: string[];
     }): Promise<ServiceAPIResponse<ServiceReviewEntity>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceReviewEntity>>(`//service-reviews/${reviewId}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceReviewEntity>>(`/service-reviews/${reviewId}`, data);
       return response.data;
     },
 
     delete: async (reviewId: string): Promise<ServiceAPIResponse<void>> => {
-      const response = await apiClient.delete<ServiceAPIResponse<void>>(`//service-reviews/${reviewId}`);
+      const response = await apiClient.delete<ServiceAPIResponse<void>>(`/service-reviews/${reviewId}`);
       return response.data;
     },
 
     addVote: async (reviewId: string, isHelpful: boolean): Promise<ServiceAPIResponse<ServiceReviewEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceReviewEntity>>(`//service-reviews/${reviewId}/vote`, {
+      const response = await apiClient.post<ServiceAPIResponse<ServiceReviewEntity>>(`/service-reviews/${reviewId}/vote`, {
         isHelpful,
       });
       return response.data;
     },
 
     addVendorResponse: async (reviewId: string, response: string): Promise<ServiceAPIResponse<ServiceReviewEntity>> => {
-      const responseData = await apiClient.post<ServiceAPIResponse<ServiceReviewEntity>>(`//service-reviews/${reviewId}/vendor-response`, {
+      const responseData = await apiClient.post<ServiceAPIResponse<ServiceReviewEntity>>(`/service-reviews/${reviewId}/vendor-response`, {
         response,
       });
       return responseData.data;
@@ -960,7 +960,7 @@ export const serviceMarketplaceAPI = {
       verifiedReviewsPercentage: number;
       recentTrend: 'improving' | 'declining' | 'stable';
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>(`//services/${serviceId}/reviews/stats`);
+      const response = await apiClient.get<ServiceAPIResponse<any>>(`/services/${serviceId}/reviews/stats`);
       return response.data;
     },
   },
@@ -970,7 +970,7 @@ export const serviceMarketplaceAPI = {
   // ========================================
   quotes: {
     request: async (data: ServiceQuoteRequest): Promise<ServiceAPIResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>('//service-quotes/request', data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>('/service-quotes/request', data);
       return response.data;
     },
 
@@ -979,29 +979,29 @@ export const serviceMarketplaceAPI = {
       page?: number;
       limit?: number;
     }): Promise<PaginatedServiceResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.get<PaginatedServiceResponse<ServiceQuoteEntity>>(`//services/${serviceId}/quotes`, {
+      const response = await apiClient.get<PaginatedServiceResponse<ServiceQuoteEntity>>(`/services/${serviceId}/quotes`, {
         params: filters,
       });
       return response.data;
     },
 
     getById: async (quoteId: string): Promise<ServiceAPIResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceQuoteEntity>>(`//service-quotes/${quoteId}`);
+      const response = await apiClient.get<ServiceAPIResponse<ServiceQuoteEntity>>(`/service-quotes/${quoteId}`);
       return response.data;
     },
 
     update: async (quoteId: string, data: Partial<ServiceQuoteEntity>): Promise<ServiceAPIResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceQuoteEntity>>(`//service-quotes/${quoteId}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceQuoteEntity>>(`/service-quotes/${quoteId}`, data);
       return response.data;
     },
 
     accept: async (quoteId: string): Promise<ServiceAPIResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>(`//service-quotes/${quoteId}/accept`);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>(`/service-quotes/${quoteId}/accept`);
       return response.data;
     },
 
     reject: async (quoteId: string, reason?: string): Promise<ServiceAPIResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>(`//service-quotes/${quoteId}/reject`, {
+      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>(`/service-quotes/${quoteId}/reject`, {
         reason,
       });
       return response.data;
@@ -1011,12 +1011,12 @@ export const serviceMarketplaceAPI = {
       quotedItems: ServiceQuoteEntity['quotedItems'];
       notes?: string;
     }): Promise<ServiceAPIResponse<ServiceQuoteEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>(`//service-quotes/${quoteId}/revise`, data);
+      const response = await apiClient.post<ServiceAPIResponse<ServiceQuoteEntity>>(`/service-quotes/${quoteId}/revise`, data);
       return response.data;
     },
 
     generatePdf: async (quoteId: string): Promise<Blob> => {
-      const response = await apiClient.get(`//service-quotes/${quoteId}/pdf`, {
+      const response = await apiClient.get(`/service-quotes/${quoteId}/pdf`, {
         responseType: 'blob',
       });
       return response.data;
@@ -1051,7 +1051,7 @@ export const serviceMarketplaceAPI = {
         timestamp: Date;
       }>;
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//analytics/dashboard');
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/analytics/dashboard');
       return response.data;
     },
 
@@ -1072,7 +1072,7 @@ export const serviceMarketplaceAPI = {
         expectedImpact: string;
       }>;
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>(`//services/${serviceId}/analytics`, {
+      const response = await apiClient.get<ServiceAPIResponse<any>>(`/services/${serviceId}/analytics`, {
         params: { timeframe },
       });
       return response.data;
@@ -1100,7 +1100,7 @@ export const serviceMarketplaceAPI = {
         timeToRealize: string;
       }>;
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//analytics/market-insights', {
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/analytics/market-insights', {
         params: { category, timeframe },
       });
       return response.data;
@@ -1120,7 +1120,7 @@ export const serviceMarketplaceAPI = {
       downloadUrl: string;
       expiresAt: Date;
     }>> => {
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//analytics/generate-report', {
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/analytics/generate-report', {
         ...options,
         dateFrom: options.dateFrom?.toISOString(),
         dateTo: options.dateTo?.toISOString(),
@@ -1134,7 +1134,7 @@ export const serviceMarketplaceAPI = {
   // ========================================
   compliance: {
     getAudits: async (serviceId: string, auditType?: string): Promise<ServiceAPIResponse<ServiceComplianceAuditEntity[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<ServiceComplianceAuditEntity[]>>(`//services/${serviceId}/compliance/audits`, {
+      const response = await apiClient.get<ServiceAPIResponse<ServiceComplianceAuditEntity[]>>(`/services/${serviceId}/compliance/audits`, {
         params: { auditType },
       });
       return response.data;
@@ -1146,7 +1146,7 @@ export const serviceMarketplaceAPI = {
       auditorId?: string;
       notes?: string;
     }): Promise<ServiceAPIResponse<ServiceComplianceAuditEntity>> => {
-      const response = await apiClient.post<ServiceAPIResponse<ServiceComplianceAuditEntity>>(`//services/${serviceId}/compliance/audits`, {
+      const response = await apiClient.post<ServiceAPIResponse<ServiceComplianceAuditEntity>>(`/services/${serviceId}/compliance/audits`, {
         ...data,
         scheduledDate: data.scheduledDate.toISOString(),
       });
@@ -1159,7 +1159,7 @@ export const serviceMarketplaceAPI = {
       complianceScore?: number;
       notes?: string;
     }): Promise<ServiceAPIResponse<ServiceComplianceAuditEntity>> => {
-      const response = await apiClient.patch<ServiceAPIResponse<ServiceComplianceAuditEntity>>(`//compliance-audits/${auditId}`, data);
+      const response = await apiClient.patch<ServiceAPIResponse<ServiceComplianceAuditEntity>>(`/compliance-audits/${auditId}`, data);
       return response.data;
     },
 
@@ -1172,7 +1172,7 @@ export const serviceMarketplaceAPI = {
       status: 'valid' | 'expired' | 'suspended' | 'revoked';
       documentUrl?: string;
     }>>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>(`//services/${serviceId}/compliance/certifications`);
+      const response = await apiClient.get<ServiceAPIResponse<any>>(`/services/${serviceId}/compliance/certifications`);
       return response.data;
     },
 
@@ -1192,7 +1192,7 @@ export const serviceMarketplaceAPI = {
       formData.append('certificateNumber', data.certificateNumber);
       formData.append('document', data.document);
 
-      const response = await apiClient.post<ServiceAPIResponse<any>>(`//services/${serviceId}/compliance/certifications`, formData, {
+      const response = await apiClient.post<ServiceAPIResponse<any>>(`/services/${serviceId}/compliance/certifications`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
@@ -1216,7 +1216,7 @@ export const serviceMarketplaceAPI = {
         percentage: number;
       }>;
     }>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//compliance/overview');
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/compliance/overview');
       return response.data;
     },
   },
@@ -1244,7 +1244,7 @@ export const serviceMarketplaceAPI = {
         reason: string;
       }>;
     }>> => {
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//services/validate', data);
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/services/validate', data);
       return response.data;
     },
 
@@ -1253,12 +1253,12 @@ export const serviceMarketplaceAPI = {
       isAvailable: boolean;
       alternatives?: string[];
     }>> => {
-      const response = await apiClient.post<ServiceAPIResponse<any>>('//services/generate-slug', { name });
+      const response = await apiClient.post<ServiceAPIResponse<any>>('/services/generate-slug', { name });
       return response.data;
     },
 
     getSuggestions: async (partial: string, type: 'service' | 'category' | 'tag'): Promise<ServiceAPIResponse<string[]>> => {
-      const response = await apiClient.get<ServiceAPIResponse<string[]>>('//services/suggestions', {
+      const response = await apiClient.get<ServiceAPIResponse<string[]>>('/services/suggestions', {
         params: { partial, type },
       });
       return response.data;
@@ -1273,14 +1273,14 @@ export const serviceMarketplaceAPI = {
       usageCount: number;
       rating: number;
     }>>> => {
-      const response = await apiClient.get<ServiceAPIResponse<any>>('//services/templates', {
+      const response = await apiClient.get<ServiceAPIResponse<any>>('/services/templates', {
         params: { category },
       });
       return response.data;
     },
 
     applyTemplate: async (templateId: string, customizations?: Partial<CreateServiceData>): Promise<ServiceAPIResponse<CreateServiceData>> => {
-      const response = await apiClient.post<ServiceAPIResponse<CreateServiceData>>(`//services/templates/${templateId}/apply`, customizations);
+      const response = await apiClient.post<ServiceAPIResponse<CreateServiceData>>(`/services/templates/${templateId}/apply`, customizations);
       return response.data;
     },
   },

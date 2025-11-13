@@ -1,3 +1,8 @@
+/**
+ * SAFE API RESPONSE HANDLING
+ * Use pattern: const data = response?.data?.data || response?.data || [];
+ * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;
+ */
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -65,7 +70,7 @@ const ReviewsModerationPage: React.FC = () => {
         status: statusFilter,
         rating: ratingFilter,
       });
-      setReviews(response.data);
+      setReviews(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       setTotal(response.total);
     } catch (error) {
       message.error('Failed to load reviews');

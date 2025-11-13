@@ -276,31 +276,31 @@ export const bundlesAPI = {
       params: filters,
     });
     return {
-      bundles: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
+      bundles: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
       limit: filters?.limit || 20
     };
   },
 
   getById: async (id: string): Promise<ProductBundle> => {
     const response = await api.get<BundleAPIResponse<ProductBundle>>(`/bundles/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getBySlug: async (slug: string): Promise<ProductBundle> => {
     const response = await api.get<BundleAPIResponse<ProductBundle>>(`/bundles/slug/${slug}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   create: async (bundleData: CreateBundleRequest): Promise<ProductBundle> => {
     const response = await api.post<BundleAPIResponse<ProductBundle>>('/bundles', bundleData);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   update: async (id: string, updateData: UpdateBundleRequest): Promise<ProductBundle> => {
     const response = await api.put<BundleAPIResponse<ProductBundle>>(`/bundles/${id}`, updateData);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   delete: async (id: string): Promise<void> => {
@@ -313,22 +313,22 @@ export const bundlesAPI = {
 
   activate: async (id: string): Promise<ProductBundle> => {
     const response = await api.post<BundleAPIResponse<ProductBundle>>(`/bundles/${id}/activate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deactivate: async (id: string): Promise<ProductBundle> => {
     const response = await api.post<BundleAPIResponse<ProductBundle>>(`/bundles/${id}/deactivate`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   archive: async (id: string): Promise<ProductBundle> => {
     const response = await api.post<BundleAPIResponse<ProductBundle>>(`/bundles/${id}/archive`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   duplicate: async (id: string, modifications?: Partial<CreateBundleRequest>): Promise<ProductBundle> => {
     const response = await api.post<BundleAPIResponse<ProductBundle>>(`/bundles/${id}/duplicate`, modifications);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================

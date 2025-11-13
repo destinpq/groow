@@ -317,26 +317,26 @@ export const shippingAPI = {
       params: filters,
     });
     return {
-      carriers: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      carriers: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getCarrier: async (id: string): Promise<ShippingCarrierEntity> => {
     const response = await api.get<ShippingAPIResponse<ShippingCarrierEntity>>(`/shipping/carriers/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createCarrier: async (data: CreateCarrierRequest): Promise<ShippingCarrierEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingCarrierEntity>>('/shipping/carriers', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateCarrier: async (id: string, data: UpdateCarrierRequest): Promise<ShippingCarrierEntity> => {
     const response = await api.put<ShippingAPIResponse<ShippingCarrierEntity>>(`/shipping/carriers/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteCarrier: async (id: string): Promise<void> => {
@@ -345,12 +345,12 @@ export const shippingAPI = {
 
   toggleCarrier: async (id: string, isActive: boolean): Promise<ShippingCarrierEntity> => {
     const response = await api.patch<ShippingAPIResponse<ShippingCarrierEntity>>(`/shipping/carriers/${id}/toggle`, { isActive });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   testCarrierConnection: async (id: string): Promise<{ connected: boolean; error?: string }> => {
     const response = await api.post<ShippingAPIResponse<{ connected: boolean; error?: string }>>(`/shipping/carriers/${id}/test-connection`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -369,26 +369,26 @@ export const shippingAPI = {
       params: filters,
     });
     return {
-      methods: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      methods: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getMethod: async (id: string): Promise<ShippingMethodEntity> => {
     const response = await api.get<ShippingAPIResponse<ShippingMethodEntity>>(`/shipping/methods/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createMethod: async (data: CreateMethodRequest): Promise<ShippingMethodEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingMethodEntity>>('/shipping/methods', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateMethod: async (id: string, data: UpdateMethodRequest): Promise<ShippingMethodEntity> => {
     const response = await api.put<ShippingAPIResponse<ShippingMethodEntity>>(`/shipping/methods/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteMethod: async (id: string): Promise<void> => {
@@ -397,7 +397,7 @@ export const shippingAPI = {
 
   toggleMethod: async (id: string, isActive: boolean): Promise<ShippingMethodEntity> => {
     const response = await api.patch<ShippingAPIResponse<ShippingMethodEntity>>(`/shipping/methods/${id}/toggle`, { isActive });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -414,26 +414,26 @@ export const shippingAPI = {
       params: filters,
     });
     return {
-      zones: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      zones: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getZone: async (id: string): Promise<ShippingZoneEntity> => {
     const response = await api.get<ShippingAPIResponse<ShippingZoneEntity>>(`/shipping/zones/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   createZone: async (data: CreateZoneRequest): Promise<ShippingZoneEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingZoneEntity>>('/shipping/zones', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateZone: async (id: string, data: UpdateZoneRequest): Promise<ShippingZoneEntity> => {
     const response = await api.put<ShippingAPIResponse<ShippingZoneEntity>>(`/shipping/zones/${id}`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteZone: async (id: string): Promise<void> => {
@@ -442,7 +442,7 @@ export const shippingAPI = {
 
   toggleZone: async (id: string, isActive: boolean): Promise<ShippingZoneEntity> => {
     const response = await api.patch<ShippingAPIResponse<ShippingZoneEntity>>(`/shipping/zones/${id}/toggle`, { isActive });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -450,7 +450,7 @@ export const shippingAPI = {
   // ========================================
   calculateRates: async (data: CalculateShippingRateRequest): Promise<CalculateRatesResponse> => {
     const response = await api.post<ShippingAPIResponse<CalculateRatesResponse>>('/shipping/calculate-rates', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   compareMethods: async (data: CalculateShippingRateRequest): Promise<{
@@ -469,7 +469,7 @@ export const shippingAPI = {
         allRates: any[];
       };
     }>>('/shipping/compare-methods', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   validateAddress: async (address: {
@@ -489,7 +489,7 @@ export const shippingAPI = {
       suggestions?: any[];
       normalized?: any;
     }>>('/shipping/validate-address', { address });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -499,19 +499,19 @@ export const shippingAPI = {
     const response = await api.get<ShippingAPIResponse<TrackingResponse>>('/shipping/track', {
       params: { trackingNumber, carrierId },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   trackMultiple: async (trackingNumbers: string[]): Promise<TrackingResponse[]> => {
     const response = await api.post<ShippingAPIResponse<TrackingResponse[]>>('/shipping/track-multiple', {
       trackingNumbers,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updateTrackingInfo: async (trackingNumber: string, data: UpdateTrackingRequest): Promise<ShippingTrackingEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingTrackingEntity>>(`/shipping/track/${trackingNumber}/update`, data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -519,17 +519,17 @@ export const shippingAPI = {
   // ========================================
   createLabel: async (data: CreateShippingLabelRequest): Promise<CreateLabelResponse> => {
     const response = await api.post<ShippingAPIResponse<CreateLabelResponse>>('/shipping/labels', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getLabel: async (id: string): Promise<ShippingLabelEntity> => {
     const response = await api.get<ShippingAPIResponse<ShippingLabelEntity>>(`/shipping/labels/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   voidLabel: async (id: string, reason?: string): Promise<ShippingLabelEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingLabelEntity>>(`/shipping/labels/${id}/void`, { reason });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   downloadLabel: async (id: string, format?: string): Promise<Blob> => {
@@ -545,7 +545,7 @@ export const shippingAPI = {
   // ========================================
   schedulePickup: async (data: SchedulePickupRequest): Promise<SchedulePickupResponse> => {
     const response = await api.post<ShippingAPIResponse<SchedulePickupResponse>>('/shipping/pickups', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getPickups: async (filters?: {
@@ -565,21 +565,21 @@ export const shippingAPI = {
       params: filters,
     });
     return {
-      pickups: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      pickups: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   getPickup: async (id: string): Promise<ShippingPickupEntity> => {
     const response = await api.get<ShippingAPIResponse<ShippingPickupEntity>>(`/shipping/pickups/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   cancelPickup: async (id: string, reason?: string): Promise<ShippingPickupEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingPickupEntity>>(`/shipping/pickups/${id}/cancel`, { reason });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -591,7 +591,7 @@ export const shippingAPI = {
     shipmentIds: string[];
   }): Promise<ShippingManifestEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingManifestEntity>>('/shipping/manifests', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getManifests: async (filters?: {
@@ -611,16 +611,16 @@ export const shippingAPI = {
       params: filters,
     });
     return {
-      manifests: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      totalPages: response.data.data.totalPages
+      manifests: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   submitManifest: async (id: string): Promise<ShippingManifestEntity> => {
     const response = await api.post<ShippingAPIResponse<ShippingManifestEntity>>(`/shipping/manifests/${id}/submit`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   downloadManifest: async (id: string): Promise<Blob> => {
@@ -637,12 +637,12 @@ export const shippingAPI = {
     const response = await api.get<ShippingAPIResponse<ShippingPreferenceEntity>>('/shipping/preferences', {
       params: { userId },
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   updatePreferences: async (data: Partial<ShippingPreferenceEntity>): Promise<ShippingPreferenceEntity> => {
     const response = await api.put<ShippingAPIResponse<ShippingPreferenceEntity>>('/shipping/preferences', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================
@@ -684,7 +684,7 @@ export const shippingAPI = {
     const response = await api.get<ShippingAPIResponse<any>>('/shipping/analytics', {
       params: filters,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   getCostAnalysis: async (filters?: {
@@ -705,7 +705,7 @@ export const shippingAPI = {
     const response = await api.get<ShippingAPIResponse<any>>('/shipping/cost-analysis', {
       params: filters,
     });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // ========================================

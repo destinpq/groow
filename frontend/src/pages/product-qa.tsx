@@ -73,7 +73,7 @@ const ProductQASystem: React.FC = () => {
     try {
       const response = await productQAAPI.getQAStats(currentProductId);
       if (response.success) {
-        setStats(response.data);
+        setStats(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
       }
     } catch (error) {
       console.error('Error loading stats:', error);

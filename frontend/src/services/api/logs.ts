@@ -135,16 +135,16 @@ export const logsAPI = {
   }> => {
     const response = await apiClient.get<PaginatedLogsResponse<ActivityLog>>('/logs/activity', { params: filters });
     return {
-      logs: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      limit: response.data.data.limit
+      logs: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      limit: (response?.data?.data || response?.data)?.limit
     };
   },
 
   getActivityLogById: async (id: string): Promise<ActivityLog> => {
     const response = await apiClient.get<LogsAPIResponse<ActivityLog>>(`/logs/activity/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteActivityLogs: async (ids: string[]): Promise<void> => {
@@ -160,21 +160,21 @@ export const logsAPI = {
   }> => {
     const response = await apiClient.get<PaginatedLogsResponse<ErrorLog>>('/logs/errors', { params: filters });
     return {
-      logs: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
-      limit: response.data.data.limit
+      logs: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
+      limit: (response?.data?.data || response?.data)?.limit
     };
   },
 
   getErrorLogById: async (id: string): Promise<ErrorLog> => {
     const response = await apiClient.get<LogsAPIResponse<ErrorLog>>(`/logs/errors/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   resolveErrorLog: async (id: string, resolvedBy: string): Promise<ErrorLog> => {
     const response = await apiClient.patch<LogsAPIResponse<ErrorLog>>(`/logs/errors/${id}/resolve`, { resolvedBy });
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   deleteErrorLogs: (ids: string[]) => {
@@ -224,7 +224,7 @@ export const logsAPI = {
   // Statistics
   getLogStats: async (): Promise<LogStats> => {
     const response = await apiClient.get<LogsAPIResponse<LogStats>>('/logs/stats');
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Export

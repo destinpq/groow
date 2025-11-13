@@ -1,0 +1,299 @@
+🔐 Getting admin authentication token...
+[0;31m❌ Failed to get admin token - trying admin123...[0m
+
+======================================
+Starting API Tests
+======================================
+
+[0;34m=== PHASE 1: AUTHENTICATION ===[0m
+[0;34mTesting:[0m POST /auth/login - User login
+[0;31m❌ FAIL[0m - Expected public but got 401
+
+[0;34mTesting:[0m GET /auth/me - Get current user
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /auth/profile - Get user profile
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34m=== PHASE 1: PRODUCTS ===[0m
+[0;34mTesting:[0m GET /products - Get all products
+[0;32m✅ PASS[0m - HTTP 200
+{
+  "success": true,
+  "message": "Products retrieved successfully",
+  "data": {
+    "data": [],
+
+[0;34mTesting:[0m GET /products/featured - Get featured products
+[0;31m❌ FAIL[0m - Server error (500)
+
+[0;34mTesting:[0m GET /products/recommended - Get recommended products
+[0;31m❌ FAIL[0m - Server error (500)
+
+[0;34mTesting:[0m GET /products/trending - Get trending products
+[0;31m❌ FAIL[0m - Server error (500)
+
+[0;34m=== PHASE 1: CATEGORIES ===[0m
+[0;34mTesting:[0m GET /categories - Get all categories
+[0;32m✅ PASS[0m - HTTP 200
+{
+  "success": true,
+  "message": "Categories retrieved successfully",
+  "data": [],
+  "timestamp": "2025-11-13T17:37:04.430Z"
+
+[0;34mTesting:[0m GET /categories/tree - Get category tree
+[0;31m❌ FAIL[0m - Server error (500)
+
+[0;34mTesting:[0m GET /categories/hierarchy - Get category hierarchy
+[0;32m✅ PASS[0m - HTTP 200
+{
+  "success": true,
+  "message": "Category hierarchy retrieved",
+  "data": [],
+  "timestamp": "2025-11-13T17:37:04.530Z"
+
+[0;34m=== PHASE 1: BRANDS ===[0m
+[0;34mTesting:[0m GET /brands - Get all brands
+[0;32m✅ PASS[0m - HTTP 200
+{
+  "success": true,
+  "message": "Brands retrieved successfully",
+  "data": [],
+  "timestamp": "2025-11-13T17:37:04.576Z"
+
+[0;34mTesting:[0m GET /brands/popular - Get popular brands
+[0;31m❌ FAIL[0m - Server error (500)
+
+[0;34m=== PHASE 1: ORDERS ===[0m
+[0;34mTesting:[0m GET /orders - Get all orders
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /orders/my-orders - Get my orders
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /orders/stats - Get order stats
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34m=== PHASE 1: CART ===[0m
+[0;34mTesting:[0m GET /cart - Get cart
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /cart/items - Get cart items
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /cart/count - Get cart count
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 1: VENDORS ===[0m
+[0;34mTesting:[0m GET /vendors - Get all vendors
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /vendors/profile - Get vendor profile
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /vendors/stats - Get vendor stats
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 1: CUSTOMERS ===[0m
+[0;34mTesting:[0m GET /customers - Get all customers
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /customers/profile - Get customer profile
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 2: DEALS ===[0m
+[0;34mTesting:[0m GET /deals - Get all deals
+[0;31m❌ FAIL[0m - Expected public but got 401
+
+[0;34mTesting:[0m GET /deals/stats - Get deal stats
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /deals/active - Get active deals
+[0;31m❌ FAIL[0m - Expected public but got 401
+
+[0;34mTesting:[0m GET /deals/trending - Get trending deals
+[0;31m❌ FAIL[0m - Expected public but got 401
+
+[0;34m=== PHASE 2: COUPONS ===[0m
+[0;34mTesting:[0m GET /coupons - Get all coupons
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /coupons/stats - Get coupon stats
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34m=== PHASE 2: PROMOTIONS ===[0m
+[0;34mTesting:[0m GET /promotions - Get all promotions
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /promotions/stats - Get promotion stats
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /promotions/calendar - Get promotion calendar
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 2: FLASH SALES ===[0m
+[0;34mTesting:[0m GET /flash-sales - Get all flash sales
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /flash-sales/live - Get live flash sales
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /flash-sales/upcoming - Get upcoming flash sales
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /flash-sales/stats - Get flash sale stats
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 2: LOYALTY ===[0m
+[0;34mTesting:[0m GET /loyalty/programs - Get loyalty programs
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /loyalty/rewards - Get loyalty rewards
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /loyalty/transactions - Get loyalty transactions
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 3: REPORTS ===[0m
+[0;34mTesting:[0m GET /reports/dashboard - Get dashboard report
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /reports/system-health - Get system health
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /reports/recent-activities - Get recent activities
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /reports/sales - Get sales report
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /reports/products - Get products report
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /reports/customers - Get customers report
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /reports/vendors - Get vendors report
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34m=== PHASE 3: ANALYTICS ===[0m
+[0;34mTesting:[0m GET /analytics/dashboard - Get analytics dashboard
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /analytics/overview - Get analytics overview
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /analytics/realtime - Get realtime analytics
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 4: SUPPORT ===[0m
+[0;34mTesting:[0m GET /support/tickets - Get support tickets
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /support/tickets/my - Get my tickets
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34m=== PHASE 4: NOTIFICATIONS ===[0m
+[0;34mTesting:[0m GET /notifications - Get notifications
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /notifications/preferences - Get notification preferences
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 4: CHAT ===[0m
+[0;34mTesting:[0m GET /chat/conversations - Get conversations
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 5: CMS ===[0m
+[0;34mTesting:[0m GET /cms/banners - Get banners
+[0;32m✅ PASS[0m - HTTP 200
+[]
+
+[0;34mTesting:[0m GET /cms/banners/active - Get active banners
+[0;32m✅ PASS[0m - HTTP 200
+[]
+
+[0;34mTesting:[0m GET /cms/faqs - Get FAQs
+[0;32m✅ PASS[0m - HTTP 200
+[]
+
+[0;34mTesting:[0m GET /cms/pages - Get pages
+[0;32m✅ PASS[0m - HTTP 200
+[]
+
+[0;34mTesting:[0m GET /cms/testimonials - Get testimonials
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 6: SHIPPING ===[0m
+[0;34mTesting:[0m GET /shipping/methods - Get shipping methods
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /shipping/zones - Get shipping zones
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /shipping/carriers - Get shipping carriers
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 6: TAX ===[0m
+[0;34mTesting:[0m GET /tax/rates - Get tax rates
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /tax/countries - Get tax countries
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 7: RFQ ===[0m
+[0;34mTesting:[0m GET /rfq - Get all RFQs
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34mTesting:[0m GET /rfq/my-rfqs - Get my RFQs
+[1;33m⚠️  SKIP[0m - HTTP 401 (may need data or different auth)
+
+[0;34m=== PHASE 7: SUBSCRIPTIONS ===[0m
+[0;34mTesting:[0m GET /api/subscriptions - Get subscriptions
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /api/subscriptions/stats - Get subscription stats
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 7: RETURNS ===[0m
+[0;34mTesting:[0m GET /returns - Get all returns
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34mTesting:[0m GET /returns/stats - Get return stats
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 7: REVIEWS ===[0m
+[0;34mTesting:[0m GET /reviews - Get all reviews
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+[0;34m=== PHASE 7: WISHLIST ===[0m
+[0;34mTesting:[0m GET /wishlist - Get wishlist
+[0;31m❌ FAIL[0m - Endpoint not found (404)
+
+
+======================================
+TEST SUMMARY
+======================================
+Total Tests:   72
+[0;32mPassed:        8[0m
+[0;31mFailed:        43[0m
+[1;33mSkipped:       21[0m
+
+Results saved to: api_test_results_20251113_173703.json
+Logs saved to: api_test_log_20251113_173703.txt
+
+Pass Rate: 11%
+
+======================================
+RECOMMENDATIONS
+======================================
+
+1. Endpoints returning 401: Need proper authentication
+2. Endpoints returning 404: May not be implemented yet
+3. Endpoints returning 500: Server errors - check backend logs
+4. Empty responses: May need database seeding
+
+To seed the database, run:
+  cd backend && npm run seed
+

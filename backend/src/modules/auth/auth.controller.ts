@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, ForgotPasswordDto, ResetPasswordDto, VerifyEmailDto } from './dto/auth.dto';
@@ -11,6 +11,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Register a new user' })
   async register(@Body() registerDto: RegisterDto) {
     const result = await this.authService.register(registerDto);
@@ -18,6 +19,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User login' })
   async login(@Body() loginDto: LoginDto) {
     const result = await this.authService.login(loginDto);
@@ -46,10 +48,16 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
-  async refreshToken(@Body('refreshToken') refreshToken: string) {
-    const result = await this.authService.refreshToken(refreshToken);
+  async refreshToken(@Body() body: { refreshToken: string }) {
+    try {
+      const result = await this.authService.refreshToken(body.refreshToken);
     return ApiResponse.success('Token refreshed successfully', result);
+    } catch (error) {
+      // If refresh fails, return 401 which is expected
+      throw error;
+    }
   }
 
   @Get('profile')
@@ -57,6 +65,25 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user profile' })
   async getProfile(@Request() req) {
-    return ApiResponse.success('Profile retrieved', req.user);
+    return req.user;
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout user' })
+  async logout(@Request() req) {
+    // In JWT, logout is typically client-side (remove token)
+    // But we return success for consistency
+    return ApiResponse.success('Logout successful', { userId: req.user.id });
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user (alias for profile)' })
+  async getMe(@Request() req) {
+    return ApiResponse.success('User retrieved', req.user);
   }
 }

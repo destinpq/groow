@@ -1,3 +1,8 @@
+/**
+ * SAFE API RESPONSE HANDLING
+ * Use pattern: const data = response?.data?.data || response?.data || [];
+ * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;
+ */
 import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns } from '@ant-design/pro-components';
 import { Tag, Button, Space, Badge, Drawer, Descriptions, Timeline, message, Select } from 'antd';
@@ -168,10 +173,14 @@ const AdminOrders = () => {
               status: filter?.status?.[0] as string,
             });
 
+            // SAFE API RESPONSE HANDLING
+            const ordersData = response?.data?.data || response?.data || [];
+            const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+
             return {
-              data: response.data,
+              data: Array.isArray(ordersData) ? ordersData : [],
               success: true,
-              total: response.total,
+              total: total,
             };
           } catch (error) {
             message.error('Failed to load orders');

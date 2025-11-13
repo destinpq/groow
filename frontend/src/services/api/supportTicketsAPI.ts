@@ -109,8 +109,8 @@ export const supportTicketsAPI = {
         return {
           success: true,
           data: {
-            tickets: response.data.data,
-            total: response.data.total || response.data.data.length,
+            tickets: (response?.data?.data || response?.data),
+            total: response.data.total || (response?.data?.data || response?.data)?.length,
             hasMore: response.data.hasMore || false
           },
           message: 'Tickets retrieved successfully'
@@ -377,7 +377,7 @@ export const supportTicketsAPI = {
       if (response.data?.data) {
         return {
           success: true,
-          data: response.data.data,
+          data: (response?.data?.data || response?.data),
           message: 'Messages retrieved successfully'
         };
       }
@@ -620,7 +620,7 @@ export const supportTicketsAPI = {
       if (response.data?.data) {
         return {
           success: true,
-          data: response.data.data,
+          data: (response?.data?.data || response?.data),
           message: 'Search completed successfully'
         };
       }

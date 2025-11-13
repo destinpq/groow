@@ -72,7 +72,7 @@ const VendorWalletPage: React.FC = () => {
       }
       
       const response = await walletAPI.getTransactions(filters);
-      setTransactions(response.data);
+      setTransactions(Array.isArray(response?.data?.data) ? response.data.data : (Array.isArray(response?.data) ? response.data : []));
     } catch (error) {
       message.error('Failed to fetch transactions');
       console.error('Error fetching transactions:', error);

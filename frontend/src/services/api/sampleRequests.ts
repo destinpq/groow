@@ -77,30 +77,30 @@ export const sampleRequestsAPI = {
   }): Promise<PaginatedResponse<SampleRequest>> => {
     const response = await api.get<PaginatedSampleRequestResponse<SampleRequest>>('/sample-requests/my-requests', { params });
     return {
-      data: response.data.data.items,
-      total: response.data.data.total,
-      page: response.data.data.page,
+      data: (response?.data?.data || response?.data)?.items,
+      total: (response?.data?.data || response?.data)?.total,
+      page: (response?.data?.data || response?.data)?.page,
       limit: params?.limit || 10,
-      totalPages: response.data.data.totalPages
+      totalPages: (response?.data?.data || response?.data)?.totalPages
     };
   },
 
   // Get sample request by ID
   getById: async (id: string): Promise<SampleRequest> => {
     const response = await api.get<SampleRequestAPIResponse<SampleRequest>>(`/sample-requests/${id}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Create sample request
   create: async (data: CreateSampleRequestData): Promise<SampleRequest> => {
     const response = await api.post<SampleRequestAPIResponse<SampleRequest>>('/sample-requests', data);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Cancel sample request
   cancel: async (id: string): Promise<SampleRequest> => {
     const response = await api.put<SampleRequestAPIResponse<SampleRequest>>(`/sample-requests/${id}/cancel`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 
   // Check if product is eligible for sample
@@ -114,7 +114,7 @@ export const sampleRequestsAPI = {
       reason?: string;
       maxQuantity?: number;
     }>>(`/sample-requests/check-eligibility/${productId}`);
-    return response.data.data;
+    return response?.data?.data || response?.data;
   },
 };
 

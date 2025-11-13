@@ -94,10 +94,22 @@ const requestTiming = new Map<string, number>();
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Add auth token to requests
+    // ALWAYS add auth token to ALL requests
     const token = localStorage.getItem('access_token');
-    if (token && config.headers) {
+    
+    // Initialize headers if they don't exist
+    if (!config.headers) {
+      config.headers = {} as any;
+    }
+    
+    // Add token to ALL requests (even if already has one - override)
+    if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      // No token - log warning for protected endpoints
+      if (config.url && !config.url.includes('/login') && !config.url.includes('/register') && !config.url.includes('/health')) {
+        console.warn('⚠️ No token for API call:', config.url);
+      }
     }
     
     // Store request start time for performance monitoring

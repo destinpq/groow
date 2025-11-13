@@ -1,3 +1,10 @@
+/**
+ * SAFE API RESPONSE HANDLING - APPLY THIS PATTERN:
+ * const dataArray = response?.data?.data || response?.data || [];
+ * const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+ * Always check: Array.isArray(data) before .map()/.filter()
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -101,7 +108,7 @@ const DealsManagementPage: React.FC = () => {
       if (filters.targetType !== 'all') filterParams.targetType = filters.targetType;
 
       const response = await dealsAPI.getAll(filterParams);
-      const dealsData = response.data || response;
+      const dealsData = response?.data?.data || response?.data || [] || response;
       const sanitizedDeals = Array.isArray(dealsData) ? dealsData.map(sanitizeDeal) : [];
       setDeals(sanitizedDeals);
     } catch (error) {

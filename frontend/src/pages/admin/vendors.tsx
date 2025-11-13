@@ -1,3 +1,8 @@
+/**
+ * SAFE API RESPONSE HANDLING
+ * Use pattern: const data = response?.data?.data || response?.data || [];
+ * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;
+ */
 import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns } from '@ant-design/pro-components';
 import { 
@@ -120,7 +125,10 @@ const AdminVendorOnboarding = () => {
         businessCategories: statusFilter !== 'all' ? [statusFilter] : undefined,
         limit: 100,
       });
-      setVendors(response.data.items);
+      
+      // SAFE API RESPONSE HANDLING
+      const vendorsData = response?.data?.data?.items || response?.data?.items || response?.data || [];
+      setVendors(Array.isArray(vendorsData) ? vendorsData : []);
     } catch (error) {
       console.error('Failed to load vendors:', error);
       message.error('Failed to load vendors');
