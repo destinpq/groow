@@ -44,10 +44,43 @@ fi
 
 echo "Zone ID: $ZONE_ID"
 
+# First, let's check if records exist and delete them
+echo "Checking for existing records..."
+RECORDS=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=groow.destinpq.com" \
+     -H "X-Auth-Key: $CF_TOKEN" \
+     -H "X-Auth-Email: khanapurkarpratik@gmail.com" \
+     -H "Content-Type: application/json")
+
+# Delete existing groow record if it exists
+RECORD_ID=$(echo $RECORDS | jq -r '.result[0].id')
+if [ "$RECORD_ID" != "null" ] && [ -n "$RECORD_ID" ]; then
+    echo "Deleting existing groow record..."
+    curl -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+         -H "X-Auth-Key: $CF_TOKEN" \
+         -H "X-Auth-Email: khanapurkarpratik@gmail.com" \
+         -H "Content-Type: application/json"
+fi
+
+# Check groow-api records
+API_RECORDS=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=groow-api.destinpq.com" \
+     -H "X-Auth-Key: $CF_TOKEN" \
+     -H "X-Auth-Email: khanapurkarpratik@gmail.com" \
+     -H "Content-Type: application/json")
+
+API_RECORD_ID=$(echo $API_RECORDS | jq -r '.result[0].id')
+if [ "$API_RECORD_ID" != "null" ] && [ -n "$API_RECORD_ID" ]; then
+    echo "Deleting existing groow-api record..."
+    curl -X DELETE "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$API_RECORD_ID" \
+         -H "X-Auth-Key: $CF_TOKEN" \
+         -H "X-Auth-Email: khanapurkarpratik@gmail.com" \
+         -H "Content-Type: application/json"
+fi
+
 # Create groow.destinpq.com record
 echo "Creating groow.destinpq.com DNS record..."
 curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-     -H "Authorization: Bearer $CF_TOKEN" \
+     -H "X-Auth-Key: $CF_TOKEN" \
+     -H "X-Auth-Email: khanapurkarpratik@gmail.com" \
      -H "Content-Type: application/json" \
      --data '{
        "type": "A",
@@ -62,7 +95,8 @@ echo ""
 # Create groow-api.destinpq.com record  
 echo "Creating groow-api.destinpq.com DNS record..."
 curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
-     -H "Authorization: Bearer $CF_TOKEN" \
+     -H "X-Auth-Key: $CF_TOKEN" \
+     -H "X-Auth-Email: khanapurkarpratik@gmail.com" \
      -H "Content-Type: application/json" \
      --data '{
        "type": "A", 

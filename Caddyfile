@@ -6,8 +6,20 @@ groow-api.destinpq.com {
     reverse_proxy localhost:3000
 }
 
-# Frontend Server - Development server
+# Frontend Server - Static files
 groow.destinpq.com {
-    # Reverse proxy to the frontend development server on port 8000
-    reverse_proxy localhost:8000
+    root * /home/azureuser/Groow/groow/frontend/dist
+    file_server
+    
+    # Handle client-side routing for SPA
+    try_files {path} /index.html
+    
+    # Force cache reload for JS files
+    header *.js Cache-Control "no-cache, no-store, must-revalidate"
+    header *.js Pragma "no-cache"
+    header *.js Expires "0"
+    
+    header Access-Control-Allow-Origin *
+    header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    header Access-Control-Allow-Headers "Content-Type, Authorization"
 }

@@ -20,6 +20,7 @@ import { CmsModule } from './modules/cms/cms.module';
 import { ReportModule } from './modules/report/report.module';
 import { HealthModule } from './modules/health/health.module';
 import { SeedModule } from './modules/seed/seed.module';
+import { ServiceModule } from './modules/service/service.module';
 import { FinanceModule } from './modules/finance/finance.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { SupportModule } from './modules/support/support.module';
@@ -135,6 +136,7 @@ import { MarketingModule } from './modules/marketing/marketing.module';
     VendorModule,
     CustomerModule,
     ProductModule,
+    ServiceModule,
     OrderModule,
     RfqModule,
     NotificationModule,

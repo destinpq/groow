@@ -45,6 +45,11 @@ const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
+// Utility function to safely handle array operations
+const safeArray = (arr: any[] | undefined | null): any[] => {
+  return Array.isArray(arr) ? arr : [];
+};
+
 interface MediaFile {
   id: number;
   name: string;
@@ -175,7 +180,7 @@ const MediaLibraryPage: React.FC = () => {
     const matchesSearch =
       searchQuery === '' ||
       file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      file.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      (safeArray(file.tags).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
     return matchesFolder && matchesSearch;
   });
 

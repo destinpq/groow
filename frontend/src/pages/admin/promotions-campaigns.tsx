@@ -73,6 +73,11 @@ import type {
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+
+// Utility function to safely handle array operations
+const safeArray = (arr: any[] | undefined | null): any[] => {
+  return Array.isArray(arr) ? arr : [];
+};
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const { Step } = Steps;
@@ -312,13 +317,13 @@ const PromotionsManagementPage: React.FC = () => {
           >
             {record.description}
           </Paragraph>
-          {record.tags.length > 0 && (
+          {safeArray(record.tags).length > 0 && (
             <div style={{ marginTop: 4 }}>
-              {record.tags.slice(0, 2).map(tag => (
+              {safeArray(record.tags).slice(0, 2).map(tag => (
                 <Tag key={tag}>{tag}</Tag>
               ))}
-              {record.tags.length > 2 && (
-                <Tag>+{record.tags.length - 2}</Tag>
+              {safeArray(record.tags).length > 2 && (
+                <Tag>+{safeArray(record.tags).length - 2}</Tag>
               )}
             </div>
           )}

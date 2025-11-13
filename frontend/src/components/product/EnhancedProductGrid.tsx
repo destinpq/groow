@@ -48,6 +48,11 @@ import { useProductComparisonStore } from '@/store/productComparison';
 import { useErrorStore } from '@/store/error';
 
 const { Text, Title } = Typography;
+
+// Utility function to safely handle array operations
+const safeArray = (arr: any[] | undefined | null): any[] => {
+  return Array.isArray(arr) ? arr : [];
+};
 const { Meta } = Card;
 
 interface EnhancedProductGridProps {
@@ -251,8 +256,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </Space>
                 
                 <Space wrap>
-                  {product.tags.slice(0, 3).map(tag => (
-                    <Tag key={tag} size="small">{tag}</Tag>
+                  {safeArray(product.tags).slice(0, 3).map(tag => (
+                    <Tag key={tag}>{tag}</Tag>
                   ))}
                 </Space>
               </Space>
@@ -573,7 +578,7 @@ const EnhancedProductGrid: React.FC<EnhancedProductGridProps> = ({
             <Text>{quickViewProduct.shortDescription || quickViewProduct.description}</Text>
             
             <Space wrap>
-              {quickViewProduct.tags.map(tag => (
+              {safeArray(quickViewProduct.tags).map(tag => (
                 <Tag key={tag}>{tag}</Tag>
               ))}
             </Space>

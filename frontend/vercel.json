@@ -10,15 +10,12 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "framework": null
       }
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "https://groow-api.destinpq.com/api/$1"
-    },
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|map))",
       "dest": "/$1"
@@ -27,9 +24,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "framework": null,
-  "installCommand": "npm install",
-  "buildCommand": "npm run vercel-build",
-  "outputDirectory": "dist"
+  ]
 }

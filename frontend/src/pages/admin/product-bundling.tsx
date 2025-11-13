@@ -92,6 +92,11 @@ const { TabPane } = Tabs;
 const { Step } = Steps;
 const { Option } = Select;
 
+// Utility function to safely handle array operations
+const safeArray = (arr: any[] | undefined | null): any[] => {
+  return Array.isArray(arr) ? arr : [];
+};
+
 const ProductBundlingPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [bundles, setBundles] = useState<ProductBundle[]>([]);
@@ -329,11 +334,11 @@ const ProductBundlingPage: React.FC = () => {
             {record.description}
           </Text>
           <div style={{ marginTop: 4 }}>
-            {record.tags.slice(0, 2).map(tag => (
+            {safeArray(record.tags).slice(0, 2).map(tag => (
               <Tag key={tag} color="blue">{tag}</Tag>
             ))}
-            {record.tags.length > 2 && (
-              <Tag>+{record.tags.length - 2}</Tag>
+            {safeArray(record.tags).length > 2 && (
+              <Tag>+{safeArray(record.tags).length - 2}</Tag>
             )}
           </div>
         </div>

@@ -56,6 +56,21 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
+// Utility function to safely handle array operations
+const safeArray = (arr: any[] | undefined | null): any[] => {
+  return Array.isArray(arr) ? arr : [];
+};
+
+// Utility function to sanitize deal data
+const sanitizeDeal = (deal: any): Deal => {
+  return {
+    ...deal,
+    tags: safeArray(deal.tags),
+    categories: safeArray(deal.categories),
+    products: safeArray(deal.products),
+  };
+};
+
 const DealsManagementPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [deals, setDeals] = useState<Deal[]>([]);
@@ -86,7 +101,9 @@ const DealsManagementPage: React.FC = () => {
       if (filters.targetType !== 'all') filterParams.targetType = filters.targetType;
 
       const response = await dealsAPI.getAll(filterParams);
-      setDeals(response.data || response);
+      const dealsData = response.data || response;
+      const sanitizedDeals = Array.isArray(dealsData) ? dealsData.map(sanitizeDeal) : [];
+      setDeals(sanitizedDeals);
     } catch (error) {
       message.error('Failed to load deals');
     } finally {
@@ -258,13 +275,13 @@ const DealsManagementPage: React.FC = () => {
           >
             {record.description}
           </Paragraph>
-          {record.tags.length > 0 && (
+          {safeArray(record.tags).length > 0 && (
             <div style={{ marginTop: 4 }}>
-              {record.tags.slice(0, 2).map(tag => (
-                <Tag key={tag} size="small">{tag}</Tag>
+              {safeArray(record.tags).slice(0, 2).map(tag => (
+                <Tag key={tag}>{tag}</Tag>
               ))}
-              {record.tags.length > 2 && (
-                <Tag size="small">+{record.tags.length - 2}</Tag>
+              {safeArray(record.tags).length > 2 && (
+                <Tag>+{safeArray(record.tags).length - 2}</Tag>
               )}
             </div>
           )}

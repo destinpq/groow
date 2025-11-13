@@ -77,3 +77,31 @@ export enum TransactionType {
   CREDIT = 'credit',
   DEBIT = 'debit',
 }
+
+export enum ServiceStatus {
+  DRAFT = 'draft',
+  PENDING_APPROVAL = 'pending_approval',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  PAUSED = 'paused',
+}
+
+export enum ServiceType {
+  HOURLY = 'hourly',
+  PROJECT = 'project',
+  SUBSCRIPTION = 'subscription',
+  CONSULTATION = 'consultation',
+  MAINTENANCE = 'maintenance',
+}
+
+export enum PricingModel {
+  FIXED = 'fixed',
+  HOURLY = 'hourly',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+  CUSTOM = 'custom',
+}

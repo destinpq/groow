@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import { seedServices } from './seeds/it-services-seed';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -191,6 +192,9 @@ async function seed() {
       promotionCount++;
     }
     console.log(`✅ Created ${promotionCount} promotions\n`);
+
+    // Seed IT Services
+    await seedServices(dataSource);
 
     console.log('========================================');
     console.log('✅ Database seeding completed!');

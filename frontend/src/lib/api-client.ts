@@ -1,11 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const apiClient = axios.create({
-  baseURL: '/api/v1',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
+  timeout: 60000, // Increased to 60 seconds
+  withCredentials: true, // Enable credentials
 });
 
 // Request interceptor to add auth token
