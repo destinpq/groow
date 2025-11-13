@@ -11,10 +11,11 @@ const GlobalLayoutWrapper = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log('[LAYOUT DEBUG]', { 
+  console.log('[LAYOUT DEBUG] START', { 
     isAuthenticated, 
     userRole: user?.role,
-    pathname: location.pathname 
+    pathname: location.pathname,
+    timestamp: new Date().toISOString()
   });
 
   useEffect(() => {

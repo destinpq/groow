@@ -212,7 +212,11 @@ groow-api.destinpq.com {
 
 # Groow E-Commerce Platform - Frontend
 groow.destinpq.com {
-    reverse_proxy localhost:21441
+    reverse_proxy https://localhost:21441 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
     encode gzip
     header {
         X-Frame-Options "SAMEORIGIN"

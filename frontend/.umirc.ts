@@ -9,8 +9,16 @@ export default defineConfig({
     cert: '/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem',
   },
   
-  // CRITICAL: Disable MFSU - it breaks with HTTPS/Caddy proxy
+  // CRITICAL: Completely disable MFSU - it breaks with HTTPS/Caddy proxy
   mfsu: false,
+  
+  // Disable code splitting to avoid chunk loading issues
+  codeSplitting: {
+    jsStrategy: 'bigVendors',
+  },
+  
+  // Force cache busting with hash in development
+  hash: true,
   
   // Fix esbuild helper conflicts in production builds
   esbuildMinifyIIFE: true,

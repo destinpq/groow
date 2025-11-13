@@ -62,7 +62,9 @@ module.exports = {
         NODE_ENV: 'development',
         PORT: 21441,
         HOST: '0.0.0.0',
-        UMI_ENV: 'dev'
+        UMI_ENV: 'dev',
+        MFSU: 'none',
+        UMI_MFSU: 'none'
       },
       // Logging
       log_file: './logs/frontend-dev-combined.log',

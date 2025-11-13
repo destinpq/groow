@@ -111,36 +111,39 @@ railway variables set JWT_SECRET=$(openssl rand -base64 32)
 railway variables set ADMIN_PASSWORD=$(openssl rand -base64 16)
 ```
 
-#### **Alternative: Frontend to Vercel**
+#### **Frontend Deployment with PM2**
 ```bash
-# 1. Install Vercel CLI
-npm install -g vercel@latest
-
-# 2. Build and deploy
+# 1. Build frontend
 cd frontend
 npm run build
-vercel --prod
+
+# 2. Deploy with PM2
+pm2 start ../ecosystem.config.js --only groow-frontend-dev
+pm2 save
 ```
 
 ### **Environment Variables**
 
-#### **Backend (Railway)**
+#### **Backend (PM2)**
 ```env
 NODE_ENV=production
-PORT=3001
-DATABASE_URL=${DATABASE_URL}          # Auto-provided
-REDIS_URL=${REDIS_URL}                # Auto-provided  
+PORT=21440
+DATABASE_URL=${DATABASE_URL}          # PostgreSQL connection
+REDIS_URL=${REDIS_URL}                # Redis connection  
 JWT_SECRET=${JWT_SECRET}              # Set manually
 SESSION_SECRET=${SESSION_SECRET}      # Set manually
-FRONTEND_URL=https://groow-frontend.vercel.app
-CORS_ORIGINS=https://groow-frontend.vercel.app,https://groow.destinpq.com
+FRONTEND_URL=https://groow.destinpq.com
+CORS_ORIGINS=https://groow.destinpq.com
 ```
 
-#### **Frontend (Vercel)**
+#### **Frontend (PM2)**
 ```env
-NODE_ENV=production
-REACT_APP_API_URL=https://groow-backend-production.up.railway.app
-API_URL=https://groow-backend-production.up.railway.app
+NODE_ENV=development
+PORT=21441
+HOST=0.0.0.0
+UMI_ENV=dev
+REACT_APP_API_URL=https://groow-api.destinpq.com/api/v1
+API_URL=https://groow-api.destinpq.com/api/v1
 ```
 
 ---
@@ -408,38 +411,35 @@ npm run seed
 
 ## 🚀 DEPLOYMENT CONFIGURATIONS
 
-### **Vercel Configuration (Frontend)**
-```json
-{
-  "version": 2,
-  "env": {
-    "REACT_APP_API_URL": "https://groow-api.destinpq.com",
-    "API_URL": "https://groow-api.destinpq.com",
-    "NODE_ENV": "production"
-  },
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+### **Caddy Configuration (Reverse Proxy)**
+```caddyfile
+# Groow E-Commerce Platform - Backend API
+groow-api.destinpq.com {
+    reverse_proxy localhost:21440
+    encode gzip
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "no-referrer-when-downgrade"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "https://groow-api.destinpq.com/api/$1"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+}
+
+# Groow E-Commerce Platform - Frontend
+groow.destinpq.com {
+    reverse_proxy https://localhost:21441 {
+        transport http {
+            tls_insecure_skip_verify
+        }
     }
-  ]
+    encode gzip
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "no-referrer-when-downgrade"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    }
 }
 ```
 
@@ -471,7 +471,9 @@ npm run seed
     "dev": "umi dev",
     "build": "umi build",
     "start": "npm run dev",
-    "vercel-build": "umi build"
+    "serve": "serve -s dist -l 8001",
+    "pm2:dev": "pm2 start ../ecosystem.config.js --only groow-frontend-dev",
+    "pm2:serve": "npm run build && pm2 start ../ecosystem.config.js --only groow-frontend-static"
   }
 }
 ```
@@ -493,16 +495,15 @@ npm run seed
 ## 💰 COST ESTIMATION
 
 ### **Monthly Costs**
-- **Railway (Backend + Database)**: $5-25/month
-  - Starter: $5/month (512MB RAM, PostgreSQL, Redis)
-  - Pro: $20/month (higher limits, auto-scaling)
-- **Vercel (Frontend)**: $0-20/month
-  - Hobby: FREE (perfect for personal projects)
-  - Pro: $20/month (teams, analytics, custom domains)
+- **VPS/Cloud Server (Azure/AWS/DigitalOcean)**: $10-50/month
+  - Basic: $10-20/month (2GB RAM, 2 vCPU)
+  - Professional: $40-50/month (4GB RAM, 4 vCPU, more bandwidth)
+- **Domain & SSL**: $10-15/year (included with Caddy for SSL)
+- **Database**: Included on server or managed PostgreSQL ($15-30/month)
 
 ### **Total Monthly Cost**
-- **Basic Setup**: $5/month (Railway Starter + Vercel Hobby)
-- **Professional Setup**: $45/month (Railway Pro + Vercel Pro)
+- **Basic Setup**: $10-20/month (Single VPS with Caddy + PM2)
+- **Professional Setup**: $40-80/month (Managed services + scaling)
 
 ---
 
@@ -541,7 +542,8 @@ npm run seed
 - ✅ Image optimization
 - ✅ CSS minification
 - ✅ Bundle size optimization
-- ✅ CDN delivery (Vercel)
+- ✅ Gzip compression (Caddy)
+- ✅ HTTPS/2 support
 - ✅ Caching strategies
 
 ### **Backend Optimization**
@@ -593,12 +595,13 @@ npm run seed
 ## 🚀 NEXT STEPS & ROADMAP
 
 ### **Immediate Actions (Ready for Production)**
-1. ✅ Deploy backend to Railway
-2. ✅ Deploy frontend to Vercel
-3. ✅ Configure custom domains
-4. ✅ Set up monitoring and alerts
-5. ✅ Test all functionality
-6. ✅ Launch marketing campaign
+1. ✅ Deploy backend with PM2
+2. ✅ Deploy frontend with PM2
+3. ✅ Configure custom domains (Caddy)
+4. ✅ Set up SSL certificates (Caddy)
+5. ✅ Set up monitoring and alerts
+6. ✅ Test all functionality
+7. ✅ Launch marketing campaign
 
 ### **Future Enhancements (Post-Launch)**
 - **Mobile App**: React Native implementation

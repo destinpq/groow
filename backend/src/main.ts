@@ -16,17 +16,14 @@ async function bootstrap() {
       origin: (origin, callback) => {
         const allowedOrigins = [
           'https://groow.destinpq.com',
-          'https://groow-frontend.vercel.app', 
-          'https://groow-frontend-iftdz6ipx-pratik-destinpqs-projects.vercel.app',
-          'https://groow-git-main-pratik-destinpqs-projects.vercel.app',
-          'https://groow-frontend-cqrljz5r9-pratik-destinpqs-projects.vercel.app',
           'http://localhost:3000',
-          'http://localhost:3001'
+          'http://localhost:3001',
+          'http://localhost:21441',
+          'https://localhost:21441'
         ];
 
         // Allow if no origin (mobile apps) or if origin is in allowed list
         if (!origin || allowedOrigins.includes(origin) || 
-            origin.includes('vercel.app') || 
             origin.includes('destinpq.com')) {
           callback(null, true);
         } else {

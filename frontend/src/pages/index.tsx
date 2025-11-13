@@ -29,6 +29,8 @@ const { Search } = Input;
 const HomePage = () => {
   const navigate = useNavigate();
 
+  console.log('[HomePage] Rendering home page', new Date().toISOString());
+
   // Service Categories for IT Business
   const serviceCategories = [
     {

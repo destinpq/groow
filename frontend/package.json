@@ -9,7 +9,6 @@
     "setup": "umi setup",
     "start": "npm run dev",
     "serve": "serve -s dist -l 8001",
-    "vercel-build": "npm run build",
     "pm2:dev": "pm2 start ../ecosystem.config.js --only groow-frontend-dev",
     "pm2:serve": "npm run build && pm2 start ../ecosystem.config.js --only groow-frontend-static",
     "pm2:stop": "pm2 stop groow-frontend-dev groow-frontend-static",
