@@ -5,17 +5,76 @@ import {
   WalletOutlined,
   ClockCircleOutlined,
   EyeOutlined,
+  CodeOutlined,
+  CloudOutlined,
+  SecurityScanOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'umi';
 import { useEffect, useState } from 'react';
 import { ordersAPI } from '@/services/api/orders';
-import { productAPI } from '@/services/api/products';
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [recommendedServices, setRecommendedServices] = useState<any[]>([]);
+
+  // Mock IT Services Data
+  const mockITServices = [
+    {
+      id: 1,
+      name: 'Website Development',
+      description: 'Complete responsive website development with modern frameworks',
+      price: 2999,
+      category: 'Web Development',
+      rating: 4.9,
+      reviews: 247,
+      image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=300&fit=crop',
+      provider: 'TechSolutions Pro',
+      duration: '7-14 days',
+      icon: <CodeOutlined />
+    },
+    {
+      id: 2,
+      name: 'Cloud Migration Service',
+      description: 'Seamless migration to AWS/Azure cloud platforms with security',
+      price: 4999,
+      category: 'Cloud Services',
+      rating: 4.8,
+      reviews: 189,
+      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop',
+      provider: 'CloudExperts Inc',
+      duration: '5-10 days',
+      icon: <CloudOutlined />
+    },
+    {
+      id: 3,
+      name: 'Security Audit & Assessment',
+      description: 'Comprehensive cybersecurity audit with detailed recommendations',
+      price: 1999,
+      category: 'Cybersecurity',
+      rating: 4.9,
+      reviews: 156,
+      image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop',
+      provider: 'SecureIT Solutions',
+      duration: '3-5 days',
+      icon: <SecurityScanOutlined />
+    },
+    {
+      id: 4,
+      name: 'IT Support & Maintenance',
+      description: '24/7 IT support and system maintenance for your business',
+      price: 899,
+      category: 'IT Support',
+      rating: 4.7,
+      reviews: 98,
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
+      provider: 'TechSupport Plus',
+      duration: 'Ongoing',
+      icon: <ToolOutlined />
+    }
+  ];
 
   useEffect(() => {
     fetchDashboardData();
@@ -25,13 +84,30 @@ const CustomerDashboard = () => {
     try {
       setLoading(true);
       
-      // Fetch customer orders
-      const ordersResponse = await ordersAPI.getAll({ limit: 5 });
-      setOrders(ordersResponse.data || []);
+      // Fetch customer orders - using mock data for now
+      setOrders([
+        {
+          id: 'ORD-001',
+          orderNumber: 'ORD-001',
+          serviceName: 'Website Development',
+          status: 'in-progress',
+          total: 2999,
+          createdAt: '2025-11-10',
+          items: [{ serviceName: 'Website Development' }]
+        },
+        {
+          id: 'ORD-002', 
+          orderNumber: 'ORD-002',
+          serviceName: 'Security Audit',
+          status: 'completed',
+          total: 1999,
+          createdAt: '2025-11-05',
+          items: [{ serviceName: 'Security Audit' }]
+        }
+      ]);
 
-      // Fetch recommended products
-      const productsResponse = await productAPI.getFeatured();
-      setRecommendations(productsResponse.slice(0, 4));
+      // Set recommended IT services
+      setRecommendedServices(mockITServices);
 
     } catch (error: any) {
       message.error(error.message || 'Failed to load dashboard data');
@@ -52,14 +128,14 @@ const CustomerDashboard = () => {
 
   return (
     <div>
-      <h1>Welcome Back!</h1>
-      <p style={{ color: '#666', marginBottom: 24 }}>Here's what's happening with your account today.</p>
+      <h1>Welcome Back to Your IT Services Portal!</h1>
+      <p style={{ color: '#666', marginBottom: 24 }}>Manage your IT service orders, discover new solutions, and track your projects.</p>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable onClick={() => navigate('/customer/orders')} style={{ cursor: 'pointer' }}>
             <Statistic
-              title="Active Orders"
+              title="Active Service Orders"
               value={activeOrders}
               prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}
               valueStyle={{ color: '#1890ff' }}
@@ -70,7 +146,7 @@ const CustomerDashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable onClick={() => navigate('/customer/wishlist')} style={{ cursor: 'pointer' }}>
             <Statistic
-              title="Wishlist Items"
+              title="Saved Services"
               value={12}
               prefix={<HeartOutlined style={{ color: '#ff4d4f' }} />}
               valueStyle={{ color: '#ff4d4f' }}
@@ -81,8 +157,8 @@ const CustomerDashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable onClick={() => navigate('/customer/wallet')} style={{ cursor: 'pointer' }}>
             <Statistic
-              title="Wallet Balance"
-              value={250.00}
+              title="Service Credits"
+              value={2500.00}
               prefix={<WalletOutlined style={{ color: '#52c41a' }} />}
               precision={2}
               valueStyle={{ color: '#52c41a' }}
@@ -93,8 +169,8 @@ const CustomerDashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Pending RFQs"
-              value={2}
+              title="Pending Service Quotes"
+              value={3}
               prefix={<ClockCircleOutlined style={{ color: '#faad14' }} />}
               valueStyle={{ color: '#faad14' }}
             />
@@ -104,14 +180,14 @@ const CustomerDashboard = () => {
 
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="Recent Orders" extra={<a onClick={() => navigate('/customer/orders')}>View All</a>}>
+          <Card title="Recent Service Orders" extra={<a onClick={() => navigate('/customer/orders')}>View All</a>}>
             <List
               dataSource={orders.slice(0, 3)}
               renderItem={(order: any) => (
                 <List.Item
                   actions={[
                     <Button type="link" icon={<EyeOutlined />} onClick={() => navigate(`/customer/orders/${order.id}`)}>
-                      View
+                      View Details
                     </Button>,
                   ]}
                 >
@@ -119,14 +195,14 @@ const CustomerDashboard = () => {
                     title={
                       <div>
                         <span style={{ fontWeight: 500 }}>{order.orderNumber}</span>
-                        <Tag color={order.status === 'delivered' ? 'success' : 'processing'} style={{ marginLeft: 8 }}>
+                        <Tag color={order.status === 'completed' ? 'success' : 'processing'} style={{ marginLeft: 8 }}>
                           {order.status?.toUpperCase()}
                         </Tag>
                       </div>
                     }
                     description={
                       <div>
-                        <div>{order.items?.length || 0} items</div>
+                        <div>Service: {order.serviceName}</div>
                         <div style={{ marginTop: 4 }}>
                           <span style={{ fontWeight: 500, color: '#B12704' }}>${order.total?.toFixed(2)}</span>
                           <span style={{ marginLeft: 16, color: '#666', fontSize: 12 }}>
@@ -143,24 +219,35 @@ const CustomerDashboard = () => {
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title="Recommended for You" extra={<a onClick={() => navigate('/products')}>View All</a>}>
+          <Card title="Recommended IT Services" extra={<a onClick={() => navigate('/services')}>View All</a>}>
             <List
-              dataSource={recommendations}
-              renderItem={(product) => (
+              dataSource={recommendedServices}
+              renderItem={(service: any) => (
                 <List.Item
                   actions={[
-                    <Button type="primary" size="small" onClick={() => navigate(`/products/${product.id}`)}>
-                      View
+                    <Button type="primary" size="small" onClick={() => navigate(`/services/${service.id}`)}>
+                      View Service
                     </Button>,
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar shape="square" size={64} src={product.image} />}
-                    title={product.name}
+                    avatar={
+                      <Avatar 
+                        shape="square" 
+                        size={64} 
+                        src={service.image}
+                        style={{ background: '#f0f0f0' }}
+                        icon={service.icon}
+                      />
+                    }
+                    title={service.name}
                     description={
                       <div>
-                        <div style={{ fontWeight: 600, color: '#B12704', fontSize: 16 }}>${product.price}</div>
-                        <div style={{ color: '#FF9900' }}>⭐ {product.rating}</div>
+                        <div style={{ fontWeight: 600, color: '#B12704', fontSize: 16 }}>${service.price}</div>
+                        <div style={{ color: '#FF9900', marginTop: 4 }}>⭐ {service.rating} ({service.reviews} reviews)</div>
+                        <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
+                          {service.provider} • {service.duration}
+                        </div>
                       </div>
                     }
                   />
@@ -179,23 +266,23 @@ const CustomerDashboard = () => {
           >
             <Row gutter={16}>
               <Col xs={24} sm={12} md={6}>
-                <Button block size="large" onClick={() => navigate('/products')}>
-                  Browse Products
+                <Button block size="large" onClick={() => navigate('/services')}>
+                  Browse IT Services
                 </Button>
               </Col>
               <Col xs={24} sm={12} md={6}>
                 <Button block size="large" onClick={() => navigate('/customer/rfq')}>
-                  Create RFQ
+                  Request Custom Quote
                 </Button>
               </Col>
               <Col xs={24} sm={12} md={6}>
                 <Button block size="large" onClick={() => navigate('/customer/orders')}>
-                  Track Orders
+                  Track Service Orders
                 </Button>
               </Col>
               <Col xs={24} sm={12} md={6}>
                 <Button block size="large" onClick={() => navigate('/help')}>
-                  Help & Support
+                  Technical Support
                 </Button>
               </Col>
             </Row>

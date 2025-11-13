@@ -46,15 +46,10 @@ const LoginPage = () => {
       
       // Small delay before navigation to ensure state is updated
       setTimeout(() => {
-        // Redirect based on user role
-        if (user && user.role === 'admin') {
-          navigate('/admin');
-        } else if (user && user.role === 'vendor') {
-          navigate('/vendor');
-        } else {
-          navigate('/');
-        }
-      }, 50);
+        // The GlobalLayoutWrapper will handle the redirection based on user role
+        // Just trigger a page reload to ensure the layout wrapper picks up the new auth state
+        window.location.href = '/';
+      }, 100);
     } catch (error: any) {
       console.error('Login error:', error);
       message.error(error.response?.data?.message || 'Login failed');

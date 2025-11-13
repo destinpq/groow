@@ -103,7 +103,7 @@ const VendorDashboard = () => {
   const [realTimeData, setRealTimeData] = useState<RealTimeMetrics | null>(null);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState('7d');
@@ -169,7 +169,7 @@ const VendorDashboard = () => {
       });
       
       setRecentOrders(dashboardResponse.recentActivity || []); // Use analytics activity data
-      setProducts((dashboardResponse.topProducts || []).map((p: any) => ({
+      setServices((dashboardResponse.topProducts || []).map((p: any) => ({
         ...p,
         isActive: p.inventory > 0,
         stockQuantity: p.inventory || 0,
@@ -242,8 +242,8 @@ const VendorDashboard = () => {
 
   // Enhanced data processing with analytics
   const salesData = stats?.monthlySales || [];
-  const activeProducts = products.filter(p => p.isActive).length;
-  const outOfStock = products.filter(p => p.stockQuantity === 0).length;
+  const activeServices = services.filter((p: any) => p.isActive).length;
+  const outOfStock = services.filter((p: any) => p.stockQuantity === 0).length;
   const pendingOrders = recentOrders.filter(o => o.status === 'pending').length;
   const topProducts = stats?.topProducts || [];
 
@@ -260,10 +260,10 @@ const VendorDashboard = () => {
   const currentRevenue = realTimeData?.todayRevenue || totalRevenue;
   const currentOrders = realTimeData?.activeOrders || totalOrders;
 
-  const productStatusData = [
-    { status: 'Active', count: activeProducts, color: '#52c41a' },
-    { status: 'Out of Stock', count: outOfStock, color: '#ff4d4f' },
-    { status: 'Draft', count: products.length - activeProducts - outOfStock, color: '#faad14' },
+  const serviceStatusData = [
+    { status: 'Active', count: activeServices, color: '#52c41a' },
+    { status: 'Unavailable', count: outOfStock, color: '#ff4d4f' },
+    { status: 'Draft', count: services.length - activeServices - outOfStock, color: '#faad14' },
   ];
 
   // Enhanced charts configuration
@@ -328,8 +328,8 @@ const VendorDashboard = () => {
     color: '#1890ff',
   };
 
-  const productStatusConfig = {
-    data: productStatusData,
+  const serviceStatusConfig = {
+    data: serviceStatusData,
     angleField: 'count',
     colorField: 'status',
     radius: 0.8,
@@ -343,7 +343,7 @@ const VendorDashboard = () => {
   return (
     <div style={{ padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <Title level={3}>Vendor Dashboard</Title>
+        <Title level={3}>IT Services Provider Dashboard</Title>
         <Badge count={2} offset={[-5, 5]}>
           <Button icon={<BellOutlined />}>Notifications</Button>
         </Badge>
@@ -370,14 +370,14 @@ const VendorDashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="Total Products"
-              value={products.length}
+              title="Total IT Services"
+              value={services.length}
               prefix={<ShoppingOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
             <Progress percent={92} size="small" showInfo={false} />
             <Text type="secondary" style={{ fontSize: 12 }}>
-              {activeProducts} active, {outOfStock} out of stock
+              {activeServices} active, {outOfStock} unavailable
             </Text>
           </Card>
         </Col>
@@ -424,7 +424,7 @@ const VendorDashboard = () => {
         
         <Col xs={24} lg={8}>
           <Card title="Product Status" bordered={false}>
-            <Pie {...productStatusConfig} />
+            <Pie {...serviceStatusConfig} />
           </Card>
         </Col>
       </Row>

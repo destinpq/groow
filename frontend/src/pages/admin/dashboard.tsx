@@ -40,7 +40,7 @@ interface OrderStats {
 }
 
 interface DashboardStats {
-  totalProducts: number;
+  totalServices: number;
   totalCustomers: number;
   totalVendors: number;
   orderStats: OrderStats;
@@ -184,7 +184,7 @@ const AdminDashboard = () => {
   const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
-    totalProducts: 1247,
+    totalServices: 247,
     totalCustomers: 3891,
     totalVendors: 156,
     orderStats: {
@@ -285,7 +285,7 @@ const AdminDashboard = () => {
       });
       
       setStats({
-        totalProducts: analytics?.productStats?.data?.totalProducts || 0,
+        totalServices: analytics?.productStats?.data?.totalProducts || 0,
         totalCustomers: analytics?.userStats?.data?.totalCustomers || 0,
         totalVendors: analytics?.userStats?.data?.totalVendors || 0,
         orderStats: {
@@ -450,8 +450,8 @@ const AdminDashboard = () => {
   return (
     <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>Admin Dashboard</h1>
-        <p style={{ color: '#666', margin: '4px 0 0 0' }}>Welcome back, {user?.name || 'Admin'}! Here's what's happening with your store today.</p>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>IT Services Admin Dashboard</h1>
+        <p style={{ color: '#666', margin: '4px 0 0 0' }}>Welcome back, {user?.name || 'Admin'}! Here's what's happening with your IT services marketplace today.</p>
       </div>
 
       {/* System Health Alert */}
@@ -535,13 +535,13 @@ const AdminDashboard = () => {
             <Col xs={24} sm={12} lg={6}>
               <Card>
                 <Statistic
-                  title="Active Products"
-                  value={stats.totalProducts}
+                  title="Active IT Services"
+                  value={stats.totalServices}
                   prefix={<ShoppingOutlined style={{ color: '#faad14' }} />}
                   valueStyle={{ color: '#faad14', fontSize: '24px' }}
                 />
                 <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
-                  <span style={{ color: '#52c41a' }}>{stats.totalVendors}</span> vendors
+                  <span style={{ color: '#52c41a' }}>{stats.totalVendors}</span> service providers
                 </div>
               </Card>
             </Col>

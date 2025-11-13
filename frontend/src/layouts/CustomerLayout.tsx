@@ -3,7 +3,11 @@ import { Layout, Menu, Badge } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'umi';
 import {
   HomeOutlined,
-  ShoppingOutlined,
+  CodeOutlined,
+  CloudOutlined,
+  SafetyOutlined,
+  SettingOutlined,
+  TeamOutlined,
   ShoppingCartOutlined,
   UserOutlined,
   LogoutOutlined,
@@ -35,7 +39,18 @@ const CustomerLayout = () => {
 
   const menuItems = [
     { key: '/', icon: <HomeOutlined />, label: 'Home' },
-    { key: '/products', icon: <ShoppingOutlined />, label: 'Products' },
+    { 
+      key: '/services',
+      label: 'IT Services',
+      icon: <CodeOutlined />,
+      children: [
+        { key: '/services/software-development', icon: <CodeOutlined />, label: 'Software Development' },
+        { key: '/services/cloud-services', icon: <CloudOutlined />, label: 'Cloud Services' },
+        { key: '/services/cybersecurity', icon: <SafetyOutlined />, label: 'Cybersecurity' },
+        { key: '/services/devops', icon: <SettingOutlined />, label: 'DevOps' },
+        { key: '/services/consulting', icon: <TeamOutlined />, label: 'IT Consulting' },
+      ]
+    },
     { 
       key: '/cart', 
       icon: <Badge count={0}><ShoppingCartOutlined /></Badge>, 
@@ -71,7 +86,7 @@ const CustomerLayout = () => {
         <Outlet />
       </Content>
       <Footer style={{ textAlign: 'center' }}>
-        Groow E-Commerce ©2024 Created with UmiJS & Ant Design
+        Groow IT Services Marketplace ©2024 Created with UmiJS & Ant Design
       </Footer>
     </Layout>
   );

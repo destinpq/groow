@@ -79,7 +79,7 @@ module.exports = {
     // Frontend Static Server (for production)
     {
       name: 'groow-frontend-static',
-      script: 'serve',
+      script: './node_modules/.bin/serve',
       args: '-s dist -l 21441',
       cwd: '/home/azureuser/Groow/groow/frontend',
       instances: 1,
@@ -89,7 +89,7 @@ module.exports = {
       max_memory_restart: '512M',
       env: {
         NODE_ENV: 'production',
-        PORT: 8001
+        PORT: 21441
       },
       env_production: {
         NODE_ENV: 'production',

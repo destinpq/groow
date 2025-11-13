@@ -1,0 +1,203 @@
+# ===================================================================
+# GROOW E-COMMERCE PLATFORM - FIXED CADDY CONFIGURATION
+# ===================================================================
+# This configuration fixes:
+# - 502 Bad Gateway errors
+# - SSL/TLS certificate issues
+# - Proper timeout and error handling
+# - CORS and security headers
+# ===================================================================
+
+# Global options
+{
+	# Email for Let's Encrypt notifications
+	email admin@destinpq.com
+	
+	# Use production Let's Encrypt by default
+	# acme_ca https://acme-v02.api.letsencrypt.org/directory
+	
+	# For testing, use staging (uncomment the line below)
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+# ===================================================================
+# GROOW BACKEND API
+# ===================================================================
+groow-api.destinpq.com {
+	# Enable gzip compression
+	encode gzip zstd
+	
+	# Reverse proxy to backend on port 21440
+	reverse_proxy localhost:21440 {
+		# Health check endpoint
+		health_uri /health
+		health_interval 30s
+		health_timeout 10s
+		
+		# Retry failed requests
+		fail_duration 30s
+		max_fails 3
+		unhealthy_status 502 503 504
+		
+		# Increase timeouts for slow API responses
+		transport http {
+			dial_timeout 10s
+			response_header_timeout 30s
+			read_timeout 60s
+			write_timeout 60s
+			keepalive 90s
+			keepalive_idle_timeout 90s
+		}
+		
+		# Preserve original headers
+		header_up Host {upstream_hostport}
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+	
+	# Security and CORS headers
+	header {
+		# Security headers
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		
+		# CORS headers for API
+		Access-Control-Allow-Origin "*"
+		Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+		Access-Control-Allow-Headers "Origin, Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token"
+		Access-Control-Allow-Credentials "true"
+		Access-Control-Max-Age "86400"
+		
+		# Remove server information
+		-Server
+		-X-Powered-By
+	}
+	
+	# Handle CORS preflight requests
+	@cors_preflight {
+		method OPTIONS
+	}
+	respond @cors_preflight 204
+	
+	# Custom error pages
+	handle_errors {
+		@502_503_504 {
+			expression {http.error.status_code} in [502, 503, 504]
+		}
+		respond @502_503_504 "Service temporarily unavailable. Please try again in a moment." 503
+		
+		respond "An error occurred: {http.error.status_code}" {http.error.status_code}
+	}
+	
+	# Logging
+	log {
+		output file /var/log/caddy/groow-api.log {
+			roll_size 100mb
+			roll_keep 5
+			roll_keep_for 720h
+		}
+		format json
+		level ERROR
+	}
+}
+
+# ===================================================================
+# GROOW FRONTEND
+# ===================================================================
+groow.destinpq.com {
+	# Enable gzip compression
+	encode gzip zstd
+	
+	# Reverse proxy to frontend on port 21441
+	reverse_proxy localhost:21441 {
+		# Health check
+		health_uri /
+		health_interval 30s
+		health_timeout 10s
+		health_status 2xx 3xx
+		
+		# Retry failed requests
+		fail_duration 30s
+		max_fails 3
+		unhealthy_status 502 503 504
+		
+		# Increase timeouts
+		transport http {
+			dial_timeout 10s
+			response_header_timeout 30s
+			read_timeout 60s
+			write_timeout 60s
+			keepalive 90s
+			keepalive_idle_timeout 90s
+		}
+		
+		# Preserve original headers
+		header_up Host {upstream_hostport}
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+	
+	# Security headers
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		
+		# CSP for frontend (adjust as needed)
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://groow-api.destinpq.com https://groow-api-db.destinpq.com https://grooow-api-db.destinpq.com;"
+		
+		# Remove server information
+		-Server
+		-X-Powered-By
+	}
+	
+	# Custom error pages
+	handle_errors {
+		@502_503_504 {
+			expression {http.error.status_code} in [502, 503, 504]
+		}
+		respond @502_503_504 "Service temporarily unavailable. Please try again in a moment." 503 {
+			close
+		}
+		
+		respond "An error occurred: {http.error.status_code}" {http.error.status_code}
+	}
+	
+	# Logging
+	log {
+		output file /var/log/caddy/groow-frontend.log {
+			roll_size 100mb
+			roll_keep 5
+			roll_keep_for 720h
+		}
+		format json
+		level ERROR
+	}
+}
+
+# ===================================================================
+# OPTIONAL: WWW redirect (if needed)
+# ===================================================================
+www.groow.destinpq.com {
+	redir https://groow.destinpq.com{uri} permanent
+}
+
+# ===================================================================
+# HEALTH CHECK ENDPOINT
+# ===================================================================
+# If you need a simple health check endpoint for monitoring
+:80 {
+	bind 127.0.0.1
+	
+	handle /caddy-health {
+		respond "OK" 200
+	}
+}
