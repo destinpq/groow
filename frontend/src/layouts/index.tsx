@@ -11,9 +11,21 @@ const GlobalLayoutWrapper = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log('[LAYOUT DEBUG]', { 
+    isAuthenticated, 
+    userRole: user?.role,
+    pathname: location.pathname 
+  });
+
   useEffect(() => {
+    console.log('[LAYOUT useEffect]', { isAuthenticated, pathname: location.pathname });
+    
     // Auth protection logic
-    if (!isAuthenticated && !['/login', '/register', '/', '/about', '/contact', '/services', '/privacy', '/terms'].includes(location.pathname) && !location.pathname.startsWith('/service/')) {
+    const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/services', '/privacy', '/terms', '/test-minimal'];
+    const isPublicRoute = publicRoutes.includes(location.pathname) || location.pathname.startsWith('/service/');
+    
+    if (!isAuthenticated && !isPublicRoute) {
+      console.log('[LAYOUT] Redirecting to login');
       navigate('/login');
       return;
     }
@@ -72,10 +84,11 @@ const GlobalLayoutWrapper = () => {
   }
 
   // Public routes (no layout needed)
-  const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/services', '/privacy', '/terms'];
+  const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/services', '/privacy', '/terms', '/test-minimal'];
   const isPublicRoute = publicRoutes.includes(location.pathname) || location.pathname.startsWith('/service/');
   
   if (isPublicRoute || !isAuthenticated) {
+    console.log('[LAYOUT] Rendering <Outlet /> for public route or unauthenticated user');
     return <Outlet />;
   }
 

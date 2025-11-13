@@ -62,7 +62,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "preset",
@@ -92,7 +92,7 @@
             0
           ]
         },
-        "register": 3
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -109,7 +109,7 @@
             2
           ]
         },
-        "register": 2
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -153,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            422
+            448
           ]
         },
-        "register": 23
+        "register": 25
       },
       "enableBy": "register",
       "type": "plugin",
@@ -169,7 +169,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -183,10 +183,10 @@
       "time": {
         "hooks": {
           "onCheckConfig": [
-            0
+            1
           ],
           "onCheck": [
-            0
+            1
           ]
         },
         "register": 1
@@ -236,7 +236,7 @@
             0
           ]
         },
-        "register": 6
+        "register": 5
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1088,7 +1088,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1105,7 +1105,7 @@
             1
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1118,7 +1118,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1144,7 +1144,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 26
+        "register": 29
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1157,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 16
+        "register": 17
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1213,7 +1213,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 31
+        "register": 37
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1238,7 +1238,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/okam/okam.js",
@@ -1263,7 +1263,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1277,7 +1277,7 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            0
+            1
           ]
         },
         "register": 1
@@ -1305,7 +1305,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1357,7 +1357,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1383,7 +1383,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps.js",
@@ -1408,7 +1408,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1421,7 +1421,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1447,7 +1447,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1460,7 +1460,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 4
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute.js",
@@ -1472,7 +1472,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 23
+        "register": 26
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1497,7 +1497,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent.js",
@@ -1522,7 +1522,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1535,7 +1535,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
@@ -1548,7 +1548,7 @@
       "time": {
         "hooks": {
           "addOnDemandDeps": [
-            1
+            0
           ]
         },
         "register": 1
@@ -1613,7 +1613,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 28
+        "register": 31
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1651,7 +1651,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 3
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1664,7 +1664,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 37
+        "register": 39
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1677,7 +1677,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 18
+        "register": 19
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1689,7 +1689,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 5
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1780,7 +1780,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1806,7 +1806,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1819,7 +1819,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1832,7 +1832,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1845,7 +1845,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1858,7 +1858,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1871,7 +1871,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1884,7 +1884,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1897,7 +1897,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1923,7 +1923,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 22
+        "register": 33
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1936,7 +1936,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1949,7 +1949,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1962,7 +1962,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1979,33 +1979,12 @@
   },
   "userConfig": {
     "npmClient": "npm",
-    "headScripts": [
-      {
-        "content": "\n        (function() {\n          // Override all array methods to be defensive\n          const originalSome = Array.prototype.some;\n          const originalFilter = Array.prototype.filter;\n          const originalMap = Array.prototype.map;\n          const originalFind = Array.prototype.find;\n          \n          // Defensive wrapper function\n          function safeArrayMethod(obj, method, defaultReturn) {\n            if (obj == null || obj == undefined || typeof obj.some !== 'function') {\n              return defaultReturn;\n            }\n            return method.apply(obj, arguments);\n          }\n          \n          Array.prototype.some = function() {\n            if (this == null || this == undefined) return false;\n            return originalSome.apply(this, arguments);\n          };\n          \n          Array.prototype.filter = function() {\n            if (this == null || this == undefined) return [];\n            return originalFilter.apply(this, arguments);\n          };\n          \n          Array.prototype.map = function() {\n            if (this == null || this == undefined) return [];\n            return originalMap.apply(this, arguments);\n          };\n          \n          Array.prototype.find = function() {\n            if (this == null || this == undefined) return undefined;\n            return originalFind.apply(this, arguments);\n          };\n          \n          // Intercept all property access to 'some' method\n          const originalDefineProperty = Object.defineProperty;\n          \n          // Global error handler with more aggressive prevention\n          window.addEventListener('error', function(e) {\n            if (e.message && (e.message.includes('some is not a function') || e.message.includes('.some is not a function'))) {\n              console.log('Intercepted some() error:', e);\n              e.preventDefault();\n              e.stopPropagation();\n              e.stopImmediatePropagation();\n              return false;\n            }\n          }, true);\n          \n          // Intercept unhandled promise rejections\n          window.addEventListener('unhandledrejection', function(e) {\n            if (e.reason && e.reason.message && e.reason.message.includes('some is not a function')) {\n              console.log('Intercepted promise rejection with some() error:', e);\n              e.preventDefault();\n              return false;\n            }\n          });\n          \n          // Override console.error to catch and suppress these errors\n          const originalError = console.error;\n          console.error = function() {\n            const message = arguments[0];\n            if (typeof message === 'string' && message.includes('some is not a function')) {\n              console.log('Suppressed some() console error:', message);\n              return;\n            }\n            return originalError.apply(console, arguments);\n          };\n        })();\n      "
-      }
-    ],
     "https": {
       "key": "/etc/letsencrypt/live/groow.destinpq.com/privkey.pem",
       "cert": "/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem"
     },
     "mfsu": false,
-    "devtool": false,
     "esbuildMinifyIIFE": true,
-    "hash": true,
-    "outputPath": "dist",
-    "define": {
-      "process.env.API_URL": "https://groow-api.destinpq.com/api/v1",
-      "process.env.REACT_APP_API_URL": "https://groow-api.destinpq.com/api/v1"
-    },
-    "theme": {
-      "@primary-color": "#FF9900",
-      "@link-color": "#007185",
-      "@success-color": "#067D62",
-      "@warning-color": "#F0C14B",
-      "@error-color": "#C7511F",
-      "@font-size-base": "14px",
-      "@border-radius-base": "4px"
-    },
     "title": "Groow - E-Commerce Platform"
   },
   "mainConfigFile": "/home/azureuser/Groow/groow/frontend/.umirc.ts",
@@ -2035,32 +2014,11 @@
       "regenerator-runtime": "/home/azureuser/Groow/groow/frontend/node_modules/regenerator-runtime"
     },
     "npmClient": "npm",
-    "headScripts": [
-      {
-        "content": "\n        (function() {\n          // Override all array methods to be defensive\n          const originalSome = Array.prototype.some;\n          const originalFilter = Array.prototype.filter;\n          const originalMap = Array.prototype.map;\n          const originalFind = Array.prototype.find;\n          \n          // Defensive wrapper function\n          function safeArrayMethod(obj, method, defaultReturn) {\n            if (obj == null || obj == undefined || typeof obj.some !== 'function') {\n              return defaultReturn;\n            }\n            return method.apply(obj, arguments);\n          }\n          \n          Array.prototype.some = function() {\n            if (this == null || this == undefined) return false;\n            return originalSome.apply(this, arguments);\n          };\n          \n          Array.prototype.filter = function() {\n            if (this == null || this == undefined) return [];\n            return originalFilter.apply(this, arguments);\n          };\n          \n          Array.prototype.map = function() {\n            if (this == null || this == undefined) return [];\n            return originalMap.apply(this, arguments);\n          };\n          \n          Array.prototype.find = function() {\n            if (this == null || this == undefined) return undefined;\n            return originalFind.apply(this, arguments);\n          };\n          \n          // Intercept all property access to 'some' method\n          const originalDefineProperty = Object.defineProperty;\n          \n          // Global error handler with more aggressive prevention\n          window.addEventListener('error', function(e) {\n            if (e.message && (e.message.includes('some is not a function') || e.message.includes('.some is not a function'))) {\n              console.log('Intercepted some() error:', e);\n              e.preventDefault();\n              e.stopPropagation();\n              e.stopImmediatePropagation();\n              return false;\n            }\n          }, true);\n          \n          // Intercept unhandled promise rejections\n          window.addEventListener('unhandledrejection', function(e) {\n            if (e.reason && e.reason.message && e.reason.message.includes('some is not a function')) {\n              console.log('Intercepted promise rejection with some() error:', e);\n              e.preventDefault();\n              return false;\n            }\n          });\n          \n          // Override console.error to catch and suppress these errors\n          const originalError = console.error;\n          console.error = function() {\n            const message = arguments[0];\n            if (typeof message === 'string' && message.includes('some is not a function')) {\n              console.log('Suppressed some() console error:', message);\n              return;\n            }\n            return originalError.apply(console, arguments);\n          };\n        })();\n      "
-      }
-    ],
     "https": {
       "key": "/etc/letsencrypt/live/groow.destinpq.com/privkey.pem",
       "cert": "/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem"
     },
-    "devtool": false,
     "esbuildMinifyIIFE": true,
-    "hash": true,
-    "outputPath": "dist",
-    "define": {
-      "process.env.API_URL": "https://groow-api.destinpq.com/api/v1",
-      "process.env.REACT_APP_API_URL": "https://groow-api.destinpq.com/api/v1"
-    },
-    "theme": {
-      "@primary-color": "#FF9900",
-      "@link-color": "#007185",
-      "@success-color": "#067D62",
-      "@warning-color": "#F0C14B",
-      "@error-color": "#C7511F",
-      "@font-size-base": "14px",
-      "@border-radius-base": "4px"
-    },
     "title": "Groow - E-Commerce Platform",
     "targets": {
       "chrome": 80
@@ -3146,6 +3104,16 @@
       "__content": "import { ProTable } from '@ant-design/pro-components';\nimport type { ProColumns } from '@ant-design/pro-components';\nimport { Tag, Button, Space, Badge, Drawer, Descriptions, Timeline, message, Select } from 'antd';\nimport { EyeOutlined, PrinterOutlined, CheckCircleOutlined } from '@ant-design/icons';\nimport { useState, useRef } from 'react';\nimport type { ActionType } from '@ant-design/pro-components';\nimport { ORDER_STATUS_COLORS } from '@/config/constants';\nimport { ordersAPI, type Order } from '@/services/api/orders';\n\nconst AdminOrders = () => {\n  const actionRef = useRef<ActionType>();\n  const [drawerVisible, setDrawerVisible] = useState(false);\n  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);\n  const [updatingStatus, setUpdatingStatus] = useState(false);\n\n  const handleStatusChange = async (orderId: string, newStatus: string) => {\n    try {\n      setUpdatingStatus(true);\n      await ordersAPI.updateStatus(orderId, newStatus as any);\n      message.success('Order status updated successfully');\n      actionRef.current?.reload();\n      if (selectedOrder?.id === orderId) {\n        const updatedOrder = await ordersAPI.getById(orderId);\n        setSelectedOrder(updatedOrder);\n      }\n    } catch (error: any) {\n      message.error(error.message || 'Failed to update order status');\n    } finally {\n      setUpdatingStatus(false);\n    }\n  };\n\n  const columns: ProColumns<Order>[] = [\n    {\n      title: 'Order #',\n      dataIndex: 'orderNumber',\n      key: 'orderNumber',\n      fixed: 'left',\n      width: 140,\n      render: (text) => <a>{text}</a>,\n    },\n    {\n      title: 'Customer ID',\n      dataIndex: 'customerId',\n      key: 'customerId',\n      width: 180,\n      copyable: true,\n    },\n    {\n      title: 'Vendor ID',\n      dataIndex: 'vendorId',\n      key: 'vendorId',\n      width: 180,\n    },\n    {\n      title: 'Items',\n      dataIndex: 'items',\n      key: 'items',\n      width: 80,\n      align: 'center',\n      render: (_: any, record: Order) => <Badge count={record.items?.length || 0} showZero color=\"#1890ff\" />,\n    },\n    {\n      title: 'Total',\n      dataIndex: 'total',\n      key: 'total',\n      width: 120,\n      render: (_: any, record: Order) => `$${record.total?.toFixed(2) || '0.00'}`,\n      sorter: true,\n    },\n    {\n      title: 'Payment',\n      dataIndex: 'paymentMethod',\n      key: 'paymentMethod',\n      width: 120,\n      filters: [\n        { text: 'Card', value: 'card' },\n        { text: 'Wallet', value: 'wallet' },\n        { text: 'COD', value: 'cod' },\n      ],\n    },\n    {\n      title: 'Status',\n      dataIndex: 'status',\n      key: 'status',\n      width: 200,\n      filters: [\n        { text: 'Pending', value: 'pending' },\n        { text: 'Confirmed', value: 'confirmed' },\n        { text: 'Processing', value: 'processing' },\n        { text: 'Shipped', value: 'shipped' },\n        { text: 'Delivered', value: 'delivered' },\n        { text: 'Cancelled', value: 'cancelled' },\n      ],\n      render: (_: any, record: Order) => (\n        <Select\n          value={record.status}\n          onChange={(value) => handleStatusChange(record.id, value)}\n          loading={updatingStatus}\n          style={{ width: 140 }}\n        >\n          <Select.Option value=\"pending\">\n            <Tag color=\"blue\">PENDING</Tag>\n          </Select.Option>\n          <Select.Option value=\"confirmed\">\n            <Tag color=\"cyan\">CONFIRMED</Tag>\n          </Select.Option>\n          <Select.Option value=\"processing\">\n            <Tag color=\"orange\">PROCESSING</Tag>\n          </Select.Option>\n          <Select.Option value=\"shipped\">\n            <Tag color=\"purple\">SHIPPED</Tag>\n          </Select.Option>\n          <Select.Option value=\"delivered\">\n            <Tag color=\"green\">DELIVERED</Tag>\n          </Select.Option>\n          <Select.Option value=\"cancelled\">\n            <Tag color=\"red\">CANCELLED</Tag>\n          </Select.Option>\n        </Select>\n      ),\n    },\n    {\n      title: 'Date',\n      dataIndex: 'createdAt',\n      key: 'createdAt',\n      width: 180,\n      valueType: 'dateTime',\n      sorter: true,\n    },\n    {\n      title: 'Actions',\n      key: 'actions',\n      fixed: 'right',\n      width: 180,\n      render: (_, record) => (\n        <Space size=\"small\">\n          <Button \n            type=\"link\" \n            icon={<EyeOutlined />}\n            onClick={() => {\n              setSelectedOrder(record);\n              setDrawerVisible(true);\n            }}\n          >\n            View\n          </Button>\n          <Button type=\"link\" icon={<PrinterOutlined />}>\n            Print\n          </Button>\n        </Space>\n      ),\n    },\n  ];\n\n  return (\n    <div>\n      <ProTable<Order>\n        columns={columns}\n        actionRef={actionRef}\n        request={async (params, sort, filter) => {\n          try {\n            const { current, pageSize, status, paymentMethod } = params;\n            \n            const response = await ordersAPI.getAll({\n              page: current,\n              limit: pageSize,\n              status: filter?.status?.[0] as string,\n            });\n\n            return {\n              data: response.data,\n              success: true,\n              total: response.total,\n            };\n          } catch (error) {\n            message.error('Failed to load orders');\n            return {\n              data: [],\n              success: false,\n              total: 0,\n            };\n          }\n        }}\n        rowKey=\"id\"\n        pagination={{\n          defaultPageSize: 20,\n          showSizeChanger: true,\n          showQuickJumper: true,\n          showTotal: (total) => `Total ${total} orders`,\n        }}\n        search={{\n          labelWidth: 'auto',\n        }}\n        dateFormatter=\"string\"\n        headerTitle=\"Order Management\"\n        toolBarRender={() => [\n          <Button key=\"export\">Export</Button>,\n        ]}\n        scroll={{ x: 1400 }}\n      />\n\n      <Drawer\n        title=\"Order Details\"\n        placement=\"right\"\n        width={720}\n        onClose={() => setDrawerVisible(false)}\n        open={drawerVisible}\n      >\n        {selectedOrder && (\n          <div>\n            <Descriptions title=\"Order Information\" bordered column={2}>\n              <Descriptions.Item label=\"Order Number\">{selectedOrder.orderNumber}</Descriptions.Item>\n              <Descriptions.Item label=\"Status\">\n                <Tag color={ORDER_STATUS_COLORS[selectedOrder.status as keyof typeof ORDER_STATUS_COLORS] || 'blue'}>\n                  {selectedOrder.status?.toUpperCase()}\n                </Tag>\n              </Descriptions.Item>\n              <Descriptions.Item label=\"Customer ID\">{selectedOrder.customerId}</Descriptions.Item>\n              <Descriptions.Item label=\"Vendor ID\">{selectedOrder.vendorId}</Descriptions.Item>\n              <Descriptions.Item label=\"Items Count\">{selectedOrder.items?.length || 0}</Descriptions.Item>\n              <Descriptions.Item label=\"Total\">${selectedOrder.total?.toFixed(2)}</Descriptions.Item>\n              <Descriptions.Item label=\"Subtotal\">${selectedOrder.subtotal?.toFixed(2)}</Descriptions.Item>\n              <Descriptions.Item label=\"Tax\">${selectedOrder.tax?.toFixed(2)}</Descriptions.Item>\n              <Descriptions.Item label=\"Shipping\">${selectedOrder.shipping?.toFixed(2)}</Descriptions.Item>\n              <Descriptions.Item label=\"Discount\">${selectedOrder.discount?.toFixed(2)}</Descriptions.Item>\n              <Descriptions.Item label=\"Payment Method\">{selectedOrder.paymentMethod}</Descriptions.Item>\n              <Descriptions.Item label=\"Payment Status\">\n                <Tag color={selectedOrder.paymentStatus === 'paid' ? 'green' : 'orange'}>\n                  {selectedOrder.paymentStatus?.toUpperCase()}\n                </Tag>\n              </Descriptions.Item>\n              <Descriptions.Item label=\"Date\">{new Date(selectedOrder.createdAt).toLocaleString()}</Descriptions.Item>\n              {selectedOrder.trackingNumber && (\n                <Descriptions.Item label=\"Tracking Number\">{selectedOrder.trackingNumber}</Descriptions.Item>\n              )}\n            </Descriptions>\n\n            {/* Order Items */}\n            <div style={{ marginTop: 24 }}>\n              <h3>Order Items</h3>\n              {selectedOrder.items?.map((item, index) => (\n                <div key={item.id} style={{ \n                  padding: '12px', \n                  background: '#f5f5f5', \n                  marginBottom: 8,\n                  borderRadius: 4 \n                }}>\n                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>\n                    <div>\n                      <strong>{item.productName}</strong>\n                      <div style={{ color: '#666', fontSize: 12 }}>\n                        Qty: {item.quantity} × ${item.price.toFixed(2)}\n                      </div>\n                    </div>\n                    <div style={{ fontWeight: 600 }}>\n                      ${item.total.toFixed(2)}\n                    </div>\n                  </div>\n                </div>\n              ))}\n            </div>\n\n            {/* Shipping Address */}\n            <div style={{ marginTop: 24 }}>\n              <h3>Shipping Address</h3>\n              <p>\n                {selectedOrder.shippingAddress?.firstName} {selectedOrder.shippingAddress?.lastName}<br />\n                {selectedOrder.shippingAddress?.address1}<br />\n                {selectedOrder.shippingAddress?.address2 && <>{selectedOrder.shippingAddress.address2}<br /></>}\n                {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} {selectedOrder.shippingAddress?.zipCode}<br />\n                {selectedOrder.shippingAddress?.country}<br />\n                Phone: {selectedOrder.shippingAddress?.phone}\n              </p>\n            </div>\n\n            <div style={{ marginTop: 24 }}>\n              <h3>Order Timeline</h3>\n              <Timeline\n                items={[\n                  {\n                    color: 'green',\n                    children: `Order placed - ${new Date(selectedOrder.createdAt).toLocaleString()}`,\n                  },\n                  selectedOrder.status !== 'pending' && {\n                    color: 'blue',\n                    children: `Order ${selectedOrder.status} - ${new Date(selectedOrder.updatedAt).toLocaleString()}`,\n                  },\n                  selectedOrder.trackingNumber && {\n                    color: 'purple',\n                    children: `Tracking: ${selectedOrder.trackingNumber}`,\n                  },\n                ].filter(Boolean) as any}\n              />\n            </div>\n\n            <div style={{ marginTop: 24 }}>\n              <Space>\n                <Select\n                  value={selectedOrder.status}\n                  onChange={(value) => handleStatusChange(selectedOrder.id, value)}\n                  loading={updatingStatus}\n                  style={{ width: 200 }}\n                >\n                  <Select.Option value=\"pending\">Pending</Select.Option>\n                  <Select.Option value=\"confirmed\">Confirmed</Select.Option>\n                  <Select.Option value=\"processing\">Processing</Select.Option>\n                  <Select.Option value=\"shipped\">Shipped</Select.Option>\n                  <Select.Option value=\"delivered\">Delivered</Select.Option>\n                  <Select.Option value=\"cancelled\">Cancelled</Select.Option>\n                </Select>\n                <Button icon={<PrinterOutlined />}>Print Invoice</Button>\n              </Space>\n            </div>\n          </div>\n        )}\n      </Drawer>\n    </div>\n  );\n};\n\nexport default AdminOrders;\n",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/Groow/groow/frontend/src/pages/admin/orders.tsx"
+    },
+    "test-minimal": {
+      "path": "test-minimal",
+      "id": "test-minimal",
+      "parentId": "@@/global-layout",
+      "file": "test-minimal.tsx",
+      "absPath": "/test-minimal",
+      "__content": "import React from 'react';\n\nconst TestPage = () => {\n  return (\n    <div style={{ padding: '50px', fontSize: '24px', color: 'red' }}>\n      <h1>TEST PAGE - If you see this, React is working!</h1>\n      <p>Date: {new Date().toLocaleString()}</p>\n    </div>\n  );\n};\n\nexport default TestPage;\n",
+      "__isJSFile": true,
+      "__absFile": "/home/azureuser/Groow/groow/frontend/src/pages/test-minimal.tsx"
     },
     "vendor/index": {
       "path": "vendor",

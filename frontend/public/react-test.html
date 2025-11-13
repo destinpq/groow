@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React Direct Test</title>
+</head>
+<body>
+    <h1>Direct React Test</h1>
+    <div id="test-root"></div>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <script>
+        console.log('=== DIRECT TEST SCRIPT RUNNING ===');
+        console.log('React:', typeof React);
+        console.log('ReactDOM:', typeof ReactDOM);
+        
+        const element = React.createElement('div', {
+            style: { padding: '20px', color: 'red', fontSize: '24px', border: '2px solid red' }
+        }, 'REACT IS WORKING! This proves React can render.');
+        
+        const root = ReactDOM.createRoot(document.getElementById('test-root'));
+        root.render(element);
+        
+        console.log('=== RENDER CALLED ===');
+    </script>
+</body>
+</html>

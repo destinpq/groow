@@ -62,7 +62,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "preset",
@@ -75,7 +75,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 6
       },
       "enableBy": "register",
       "type": "preset",
@@ -106,7 +106,7 @@
       "time": {
         "hooks": {
           "onStart": [
-            3
+            2
           ]
         },
         "register": 2
@@ -153,10 +153,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            391
+            377
           ]
         },
-        "register": 21
+        "register": 23
       },
       "enableBy": "register",
       "type": "plugin",
@@ -186,7 +186,7 @@
             0
           ],
           "onCheck": [
-            0
+            1
           ]
         },
         "register": 1
@@ -206,7 +206,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -219,7 +219,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1088,7 +1088,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1102,10 +1102,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            0
+            1
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1131,7 +1131,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 96
+        "register": 97
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1157,7 +1157,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 16
+        "register": 15
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1174,7 +1174,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1187,7 +1187,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1214,10 +1214,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            2
+            1
           ]
         },
-        "register": 32
+        "register": 30
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1242,7 +1242,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/okam/okam.js",
@@ -1254,7 +1254,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1267,7 +1267,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1296,7 +1296,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1309,7 +1309,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 4
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1335,7 +1335,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1348,7 +1348,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1387,7 +1387,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routeProps/routeProps.js",
@@ -1399,7 +1399,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1412,7 +1412,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1438,7 +1438,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1451,7 +1451,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1489,7 +1489,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/test/test.js",
@@ -1501,7 +1501,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1556,7 +1556,7 @@
             0
           ]
         },
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1594,7 +1594,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/utoopack/utoopack.js",
@@ -1618,7 +1618,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 28
+        "register": 27
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1683,10 +1683,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            9
+            8
           ]
         },
-        "register": 21
+        "register": 22
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1698,7 +1698,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1724,7 +1724,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1737,7 +1737,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1750,7 +1750,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1763,7 +1763,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1776,7 +1776,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1789,7 +1789,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1802,7 +1802,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1815,7 +1815,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1841,7 +1841,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1893,7 +1893,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1906,7 +1906,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1932,7 +1932,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 21
+        "register": 22
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1958,7 +1958,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1971,7 +1971,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1988,33 +1988,12 @@
   },
   "userConfig": {
     "npmClient": "npm",
-    "headScripts": [
-      {
-        "content": "\n        (function() {\n          // Override all array methods to be defensive\n          const originalSome = Array.prototype.some;\n          const originalFilter = Array.prototype.filter;\n          const originalMap = Array.prototype.map;\n          const originalFind = Array.prototype.find;\n          \n          // Defensive wrapper function\n          function safeArrayMethod(obj, method, defaultReturn) {\n            if (obj == null || obj == undefined || typeof obj.some !== 'function') {\n              return defaultReturn;\n            }\n            return method.apply(obj, arguments);\n          }\n          \n          Array.prototype.some = function() {\n            if (this == null || this == undefined) return false;\n            return originalSome.apply(this, arguments);\n          };\n          \n          Array.prototype.filter = function() {\n            if (this == null || this == undefined) return [];\n            return originalFilter.apply(this, arguments);\n          };\n          \n          Array.prototype.map = function() {\n            if (this == null || this == undefined) return [];\n            return originalMap.apply(this, arguments);\n          };\n          \n          Array.prototype.find = function() {\n            if (this == null || this == undefined) return undefined;\n            return originalFind.apply(this, arguments);\n          };\n          \n          // Intercept all property access to 'some' method\n          const originalDefineProperty = Object.defineProperty;\n          \n          // Global error handler with more aggressive prevention\n          window.addEventListener('error', function(e) {\n            if (e.message && (e.message.includes('some is not a function') || e.message.includes('.some is not a function'))) {\n              console.log('Intercepted some() error:', e);\n              e.preventDefault();\n              e.stopPropagation();\n              e.stopImmediatePropagation();\n              return false;\n            }\n          }, true);\n          \n          // Intercept unhandled promise rejections\n          window.addEventListener('unhandledrejection', function(e) {\n            if (e.reason && e.reason.message && e.reason.message.includes('some is not a function')) {\n              console.log('Intercepted promise rejection with some() error:', e);\n              e.preventDefault();\n              return false;\n            }\n          });\n          \n          // Override console.error to catch and suppress these errors\n          const originalError = console.error;\n          console.error = function() {\n            const message = arguments[0];\n            if (typeof message === 'string' && message.includes('some is not a function')) {\n              console.log('Suppressed some() console error:', message);\n              return;\n            }\n            return originalError.apply(console, arguments);\n          };\n        })();\n      "
-      }
-    ],
     "https": {
       "key": "/etc/letsencrypt/live/groow.destinpq.com/privkey.pem",
       "cert": "/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem"
     },
     "mfsu": false,
-    "devtool": false,
     "esbuildMinifyIIFE": true,
-    "hash": true,
-    "outputPath": "dist",
-    "define": {
-      "process.env.API_URL": "https://groow-api.destinpq.com/api/v1",
-      "process.env.REACT_APP_API_URL": "https://groow-api.destinpq.com/api/v1"
-    },
-    "theme": {
-      "@primary-color": "#FF9900",
-      "@link-color": "#007185",
-      "@success-color": "#067D62",
-      "@warning-color": "#F0C14B",
-      "@error-color": "#C7511F",
-      "@font-size-base": "14px",
-      "@border-radius-base": "4px"
-    },
     "title": "Groow - E-Commerce Platform"
   },
   "mainConfigFile": "/home/azureuser/Groow/groow/frontend/.umirc.ts",
@@ -2044,32 +2023,11 @@
       "regenerator-runtime": "/home/azureuser/Groow/groow/frontend/node_modules/regenerator-runtime"
     },
     "npmClient": "npm",
-    "headScripts": [
-      {
-        "content": "\n        (function() {\n          // Override all array methods to be defensive\n          const originalSome = Array.prototype.some;\n          const originalFilter = Array.prototype.filter;\n          const originalMap = Array.prototype.map;\n          const originalFind = Array.prototype.find;\n          \n          // Defensive wrapper function\n          function safeArrayMethod(obj, method, defaultReturn) {\n            if (obj == null || obj == undefined || typeof obj.some !== 'function') {\n              return defaultReturn;\n            }\n            return method.apply(obj, arguments);\n          }\n          \n          Array.prototype.some = function() {\n            if (this == null || this == undefined) return false;\n            return originalSome.apply(this, arguments);\n          };\n          \n          Array.prototype.filter = function() {\n            if (this == null || this == undefined) return [];\n            return originalFilter.apply(this, arguments);\n          };\n          \n          Array.prototype.map = function() {\n            if (this == null || this == undefined) return [];\n            return originalMap.apply(this, arguments);\n          };\n          \n          Array.prototype.find = function() {\n            if (this == null || this == undefined) return undefined;\n            return originalFind.apply(this, arguments);\n          };\n          \n          // Intercept all property access to 'some' method\n          const originalDefineProperty = Object.defineProperty;\n          \n          // Global error handler with more aggressive prevention\n          window.addEventListener('error', function(e) {\n            if (e.message && (e.message.includes('some is not a function') || e.message.includes('.some is not a function'))) {\n              console.log('Intercepted some() error:', e);\n              e.preventDefault();\n              e.stopPropagation();\n              e.stopImmediatePropagation();\n              return false;\n            }\n          }, true);\n          \n          // Intercept unhandled promise rejections\n          window.addEventListener('unhandledrejection', function(e) {\n            if (e.reason && e.reason.message && e.reason.message.includes('some is not a function')) {\n              console.log('Intercepted promise rejection with some() error:', e);\n              e.preventDefault();\n              return false;\n            }\n          });\n          \n          // Override console.error to catch and suppress these errors\n          const originalError = console.error;\n          console.error = function() {\n            const message = arguments[0];\n            if (typeof message === 'string' && message.includes('some is not a function')) {\n              console.log('Suppressed some() console error:', message);\n              return;\n            }\n            return originalError.apply(console, arguments);\n          };\n        })();\n      "
-      }
-    ],
     "https": {
       "key": "/etc/letsencrypt/live/groow.destinpq.com/privkey.pem",
       "cert": "/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem"
     },
-    "devtool": false,
     "esbuildMinifyIIFE": true,
-    "hash": true,
-    "outputPath": "dist",
-    "define": {
-      "process.env.API_URL": "https://groow-api.destinpq.com/api/v1",
-      "process.env.REACT_APP_API_URL": "https://groow-api.destinpq.com/api/v1"
-    },
-    "theme": {
-      "@primary-color": "#FF9900",
-      "@link-color": "#007185",
-      "@success-color": "#067D62",
-      "@warning-color": "#F0C14B",
-      "@error-color": "#C7511F",
-      "@font-size-base": "14px",
-      "@border-radius-base": "4px"
-    },
     "title": "Groow - E-Commerce Platform",
     "targets": {
       "chrome": 80
@@ -3156,6 +3114,16 @@
       "__isJSFile": true,
       "__absFile": "/home/azureuser/Groow/groow/frontend/src/pages/admin/orders.tsx"
     },
+    "test-minimal": {
+      "path": "test-minimal",
+      "id": "test-minimal",
+      "parentId": "@@/global-layout",
+      "file": "test-minimal.tsx",
+      "absPath": "/test-minimal",
+      "__content": "import React from 'react';\n\nconst TestPage = () => {\n  return (\n    <div style={{ padding: '50px', fontSize: '24px', color: 'red' }}>\n      <h1>TEST PAGE - If you see this, React is working!</h1>\n      <p>Date: {new Date().toLocaleString()}</p>\n    </div>\n  );\n};\n\nexport default TestPage;\n",
+      "__isJSFile": true,
+      "__absFile": "/home/azureuser/Groow/groow/frontend/src/pages/test-minimal.tsx"
+    },
     "vendor/index": {
       "path": "vendor",
       "id": "vendor/index",
@@ -3436,7 +3404,7 @@
     "tslibVersion": "2.8.1"
   },
   "faviconFiles": [],
-  "port": 21441,
+  "port": 8000,
   "host": "0.0.0.0",
   "ip": "10.0.0.7"
 }
