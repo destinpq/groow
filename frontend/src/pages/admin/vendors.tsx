@@ -119,19 +119,18 @@ const AdminVendorOnboarding = () => {
   const loadVendors = async () => {
     setLoading(true);
     try {
-      // Using directory search since there's no direct admin list method
-      const response = await vendorAPI.directory.search({
-        searchTerm: searchText || undefined,
-        businessCategories: statusFilter !== 'all' ? [statusFilter] : undefined,
-        limit: 100,
-      });
+      // Backend doesn't have /vendors/directory/search endpoint yet
+      // For now, show mock data until backend implements vendor listing
+      console.warn('Vendors directory endpoint not implemented yet, showing empty state');
       
-      // SAFE API RESPONSE HANDLING
-      const vendorsData = response?.data?.data?.items || response?.data?.items || response?.data || [];
-      setVendors(Array.isArray(vendorsData) ? vendorsData : []);
+      // TODO: Replace with actual API when backend implements:
+      // GET /admin/vendors or GET /vendors/list
+      setVendors([]);
+      message.info('Vendor listing endpoint not yet implemented in backend');
     } catch (error) {
       console.error('Failed to load vendors:', error);
       message.error('Failed to load vendors');
+      setVendors([]);
     } finally {
       setLoading(false);
     }

@@ -43,13 +43,15 @@ const LoginPage = () => {
       // Use the auth store login method
       login(access_token, userWithName);
       message.success('Login successful!');
-      
-      // Small delay before navigation to ensure state is updated
-      setTimeout(() => {
-        // The GlobalLayoutWrapper will handle the redirection based on user role
-        // Just trigger a page reload to ensure the layout wrapper picks up the new auth state
-        window.location.href = '/';
-      }, 100);
+
+      // Redirect directly to the appropriate dashboard based on role
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else if (user.role === 'vendor') {
+        navigate('/vendor/dashboard', { replace: true });
+      } else {
+        navigate('/customer/dashboard', { replace: true });
+      }
     } catch (error: any) {
       console.error('Login error:', error);
       message.error(error.response?.data?.message || 'Login failed');

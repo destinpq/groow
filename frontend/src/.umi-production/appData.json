@@ -61,7 +61,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "preset",
@@ -74,7 +74,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 5
       },
       "enableBy": "register",
       "type": "preset",
@@ -152,10 +152,10 @@
       "time": {
         "hooks": {
           "modifyAppData": [
-            437
+            717
           ]
         },
-        "register": 22
+        "register": 33
       },
       "enableBy": "register",
       "type": "plugin",
@@ -168,7 +168,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -185,7 +185,7 @@
             0
           ],
           "onCheck": [
-            1
+            0
           ]
         },
         "register": 1
@@ -232,10 +232,10 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            1
+            0
           ]
         },
-        "register": 6
+        "register": 5
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1087,7 +1087,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1101,10 +1101,10 @@
       "time": {
         "hooks": {
           "onStart": [
-            1
+            0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1117,7 +1117,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1130,7 +1130,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 99
+        "register": 97
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1143,7 +1143,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 27
+        "register": 30
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1156,7 +1156,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 18
+        "register": 19
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1173,7 +1173,7 @@
             0
           ]
         },
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1186,7 +1186,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1199,7 +1199,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1212,7 +1212,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 33
+        "register": 34
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/mock/mock.js",
@@ -1262,7 +1262,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 1
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1276,7 +1276,7 @@
       "time": {
         "hooks": {
           "modifyConfig": [
-            0
+            1
           ]
         },
         "register": 1
@@ -1304,7 +1304,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1420,7 +1420,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 3
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1433,7 +1433,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1459,7 +1459,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 4
+        "register": 3
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/apiRoute/apiRoute.js",
@@ -1471,7 +1471,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 24
+        "register": 27
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1496,7 +1496,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/clickToComponent/clickToComponent.js",
@@ -1521,7 +1521,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1534,7 +1534,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/webpack/webpack.js",
@@ -1563,7 +1563,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 2
+        "register": 3
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/ui/ui.js",
@@ -1575,7 +1575,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "config",
       "type": "plugin",
@@ -1612,7 +1612,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 28
+        "register": 31
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/features/routePreloadOnLoad/routePreloadOnLoad.js",
@@ -1676,7 +1676,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 25
+        "register": 22
       },
       "type": "plugin",
       "path": "/home/azureuser/Groow/groow/frontend/node_modules/@umijs/preset-umi/dist/commands/dev/dev.js",
@@ -1688,7 +1688,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1727,7 +1727,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1753,7 +1753,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 2
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1779,7 +1779,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1792,7 +1792,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1805,7 +1805,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1818,7 +1818,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1831,7 +1831,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1857,7 +1857,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1870,7 +1870,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1883,7 +1883,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1896,7 +1896,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 1
+        "register": 0
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1909,7 +1909,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 0
+        "register": 1
       },
       "enableBy": "register",
       "type": "plugin",
@@ -1922,7 +1922,7 @@
       "config": {},
       "time": {
         "hooks": {},
-        "register": 24
+        "register": 40
       },
       "enableBy": "register",
       "type": "plugin",
@@ -3128,7 +3128,7 @@
       "parentId": "@@/global-layout",
       "file": "admin/vendors.tsx",
       "absPath": "/admin/vendors",
-      "__content": "/**\n * SAFE API RESPONSE HANDLING\n * Use pattern: const data = response?.data?.data || response?.data || [];\n * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;\n */\nimport { ProTable } from '@ant-design/pro-components';\nimport type { ProColumns } from '@ant-design/pro-components';\nimport { \n  Button, \n  Space, \n  Tag, \n  Modal, \n  Descriptions, \n  Avatar, \n  message, \n  Tabs, \n  Card, \n  Row, \n  Col, \n  Statistic, \n  Progress, \n  Timeline,\n  Badge,\n  Tooltip,\n  Form,\n  Input,\n  Select,\n  Upload,\n  Steps,\n  Alert,\n  Typography,\n  List,\n  Image,\n  Divider,\n  Spin,\n  Empty\n} from 'antd';\nimport { \n  EyeOutlined, \n  CheckCircleOutlined, \n  CloseCircleOutlined, \n  StopOutlined,\n  UserAddOutlined,\n  ShopOutlined,\n  FileTextOutlined,\n  CheckOutlined,\n  ClockCircleOutlined,\n  ExclamationCircleOutlined,\n  UploadOutlined,\n  EditOutlined,\n  DeleteOutlined,\n  DownloadOutlined,\n  MailOutlined,\n  PhoneOutlined,\n  GlobalOutlined,\n  TeamOutlined,\n  BankOutlined,\n  SafetyCertificateOutlined,\n  VerifiedOutlined,\n  ReloadOutlined\n} from '@ant-design/icons';\nimport { useState, useEffect } from 'react';\nimport dayjs from 'dayjs';\nimport { vendorAPI } from '@/services/api';\nimport type { Vendor, VendorDocument } from '@/services/api/vendors';\n\nconst { Title, Text, Paragraph } = Typography;\nconst { Step } = Steps;\nconst { TabPane } = Tabs;\nconst { TextArea } = Input;\n\nconst AdminVendorOnboarding = () => {\n  const [vendors, setVendors] = useState<Vendor[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [detailsLoading, setDetailsLoading] = useState(false);\n  const [drawerVisible, setDrawerVisible] = useState(false);\n  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);\n  const [vendorDocuments, setVendorDocuments] = useState<VendorDocument[]>([]);\n  const [activeTab, setActiveTab] = useState('all');\n  const [searchText, setSearchText] = useState('');\n  const [statusFilter, setStatusFilter] = useState<string>('all');\n\n  const statusColors = {\n    draft: 'default',\n    submitted: 'processing',\n    under_review: 'warning',\n    approved: 'success',\n    rejected: 'error',\n    suspended: 'volcano',\n    inactive: 'default',\n  };\n\n  const verificationColors = {\n    unverified: 'default',\n    pending: 'processing',\n    verified: 'success',\n    failed: 'error',\n    expired: 'warning',\n  };\n\n  const onboardingSteps = [\n    { key: 'business_info', title: 'Business Information', icon: <ShopOutlined /> },\n    { key: 'legal_documents', title: 'Legal Documents', icon: <FileTextOutlined /> },\n    { key: 'financial_info', title: 'Financial Information', icon: <BankOutlined /> },\n    { key: 'verification', title: 'Verification', icon: <SafetyCertificateOutlined /> },\n    { key: 'approval', title: 'Final Approval', icon: <VerifiedOutlined /> },\n  ];\n\n  useEffect(() => {\n    loadVendors();\n  }, [searchText, statusFilter]);\n\n  useEffect(() => {\n    if (selectedVendor) {\n      loadVendorDocuments(selectedVendor.id);\n    }\n  }, [selectedVendor]);\n\n  const loadVendors = async () => {\n    setLoading(true);\n    try {\n      // Using directory search since there's no direct admin list method\n      const response = await vendorAPI.directory.search({\n        searchTerm: searchText || undefined,\n        businessCategories: statusFilter !== 'all' ? [statusFilter] : undefined,\n        limit: 100,\n      });\n      \n      // SAFE API RESPONSE HANDLING\n      const vendorsData = response?.data?.data?.items || response?.data?.items || response?.data || [];\n      setVendors(Array.isArray(vendorsData) ? vendorsData : []);\n    } catch (error) {\n      console.error('Failed to load vendors:', error);\n      message.error('Failed to load vendors');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const loadVendorDocuments = async (vendorId: string) => {\n    try {\n      // Note: This would need to be adapted based on actual admin API\n      // For now, we'll show empty documents\n      setVendorDocuments([]);\n    } catch (error) {\n      console.error('Failed to load vendor documents:', error);\n    }\n  };\n\n  const handleApprove = async (vendorId: string) => {\n    Modal.confirm({\n      title: 'Approve Vendor',\n      content: 'Are you sure you want to approve this vendor? They will gain access to the platform.',\n      onOk: async () => {\n        try {\n          await vendorAPI.verify(vendorId, {\n            verificationNotes: 'Approved by admin',\n          });\n          message.success('Vendor approved successfully');\n          loadVendors();\n          if (selectedVendor?.id === vendorId) {\n            setSelectedVendor(null);\n            setDrawerVisible(false);\n          }\n        } catch (error) {\n          console.error('Failed to approve vendor:', error);\n          message.error('Failed to approve vendor');\n        }\n      },\n    });\n  };\n\n  const handleReject = async (vendorId: string) => {\n    Modal.confirm({\n      title: 'Reject Vendor',\n      content: (\n        <Form layout=\"vertical\">\n          <Form.Item\n            name=\"rejectionReason\"\n            label=\"Rejection Reason\"\n            rules={[{ required: true, message: 'Please provide a reason for rejection' }]}\n          >\n            <TextArea rows={4} placeholder=\"Please specify the reason for rejection...\" />\n          </Form.Item>\n        </Form>\n      ),\n      onOk: async (close) => {\n        try {\n          await vendorAPI.reject(vendorId, {\n            rejectionReason: 'Application does not meet requirements',\n          });\n          message.success('Vendor rejected');\n          loadVendors();\n          if (selectedVendor?.id === vendorId) {\n            setSelectedVendor(null);\n            setDrawerVisible(false);\n          }\n          close();\n        } catch (error) {\n          console.error('Failed to reject vendor:', error);\n          message.error('Failed to reject vendor');\n        }\n      },\n    });\n  };\n\n  const handleSuspend = async (vendorId: string) => {\n    Modal.confirm({\n      title: 'Suspend Vendor',\n      content: 'Are you sure you want to suspend this vendor? They will lose access to the platform.',\n      onOk: async () => {\n        try {\n          await vendorAPI.toggleStatus(vendorId, 'suspended');\n          message.success('Vendor suspended');\n          loadVendors();\n          if (selectedVendor?.id === vendorId) {\n            setSelectedVendor(null);\n            setDrawerVisible(false);\n          }\n        } catch (error) {\n          console.error('Failed to suspend vendor:', error);\n          message.error('Failed to suspend vendor');\n        }\n      },\n    });\n  };\n\n  const handleReactivate = async (vendorId: string) => {\n    try {\n      await vendorAPI.toggleStatus(vendorId, 'approved');\n      message.success('Vendor reactivated');\n      loadVendors();\n    } catch (error) {\n      console.error('Failed to reactivate vendor:', error);\n      message.error('Failed to reactivate vendor');\n    }\n  };\n\n  const getOnboardingProgress = (vendor: Vendor) => {\n    if (!vendor.onboardingSteps) return 0;\n    const completedSteps = Object.values(vendor.onboardingSteps).filter(Boolean).length;\n    return (completedSteps / onboardingSteps.length) * 100;\n  };\n\n  const getCurrentOnboardingStep = (vendor: Vendor) => {\n    if (!vendor.onboardingSteps) return 0;\n    const steps = vendor.onboardingSteps;\n    \n    if (!steps.business_info) return 0;\n    if (!steps.legal_documents) return 1;\n    if (!steps.financial_info) return 2;\n    if (!steps.verification) return 3;\n    if (!steps.approval) return 4;\n    return 5;\n  };\n\n  const getVendorStats = () => {\n    const stats = {\n      total: vendors.length,\n      pending: vendors.filter(v => v.status === 'submitted' || v.status === 'under_review').length,\n      approved: vendors.filter(v => v.status === 'approved').length,\n      rejected: vendors.filter(v => v.status === 'rejected').length,\n      suspended: vendors.filter(v => v.status === 'suspended').length,\n    };\n    return stats;\n  };\n\n  const columns: ProColumns<Vendor>[] = [\n    {\n      title: 'Business Name',\n      dataIndex: 'businessName',\n      key: 'businessName',\n      width: 200,\n      render: (text, record) => (\n        <div>\n          <div style={{ display: 'flex', alignItems: 'center' }}>\n            <Avatar \n              size=\"small\" \n              src={record.logoUrl} \n              icon={<ShopOutlined />} \n              style={{ marginRight: 8 }}\n            />\n            <Text strong>{text}</Text>\n          </div>\n          {record.legalName && record.legalName !== text && (\n            <Text type=\"secondary\" style={{ fontSize: 12 }}>\n              Legal: {record.legalName}\n            </Text>\n          )}\n        </div>\n      ),\n    },\n    {\n      title: 'Business Type',\n      dataIndex: 'businessType',\n      key: 'businessType',\n      width: 120,\n      render: (type) => (\n        <Tag>{type?.replace('_', ' ')?.toUpperCase()}</Tag>\n      ),\n    },\n    {\n      title: 'Contact',\n      key: 'contact',\n      width: 200,\n      render: (_, record) => (\n        <div>\n          <div style={{ fontSize: 12 }}>\n            <MailOutlined style={{ marginRight: 4 }} />\n            {record.businessEmail}\n          </div>\n          {record.businessPhone && (\n            <div style={{ fontSize: 12 }}>\n              <PhoneOutlined style={{ marginRight: 4 }} />\n              {record.businessPhone}\n            </div>\n          )}\n          {record.website && (\n            <div style={{ fontSize: 12 }}>\n              <GlobalOutlined style={{ marginRight: 4 }} />\n              <a href={record.website} target=\"_blank\" rel=\"noopener noreferrer\">\n                Website\n              </a>\n            </div>\n          )}\n        </div>\n      ),\n    },\n    {\n      title: 'Status',\n      dataIndex: 'status',\n      key: 'status',\n      width: 120,\n      filters: [\n        { text: 'Draft', value: 'draft' },\n        { text: 'Submitted', value: 'submitted' },\n        { text: 'Under Review', value: 'under_review' },\n        { text: 'Approved', value: 'approved' },\n        { text: 'Rejected', value: 'rejected' },\n        { text: 'Suspended', value: 'suspended' },\n      ],\n      render: (status) => (\n        <Tag color={statusColors[status as keyof typeof statusColors]}>\n          {status?.replace('_', ' ')?.toUpperCase()}\n        </Tag>\n      ),\n    },\n    {\n      title: 'Verification',\n      dataIndex: 'verificationStatus',\n      key: 'verificationStatus',\n      width: 120,\n      render: (status) => (\n        <Tag color={verificationColors[status as keyof typeof verificationColors]}>\n          {status?.replace('_', ' ')?.toUpperCase()}\n        </Tag>\n      ),\n    },\n    {\n      title: 'Onboarding',\n      key: 'onboarding',\n      width: 150,\n      render: (_, record) => {\n        const progress = getOnboardingProgress(record);\n        const isComplete = record.isOnboardingComplete;\n        return (\n          <div>\n            <Progress \n              percent={progress} \n              size=\"small\" \n              status={isComplete ? 'success' : 'active'}\n              showInfo={false}\n            />\n            <Text style={{ fontSize: 11 }}>\n              {isComplete ? 'Complete' : `${Math.round(progress)}% complete`}\n            </Text>\n          </div>\n        );\n      },\n    },\n    {\n      title: 'Joined',\n      dataIndex: 'createdAt',\n      key: 'createdAt',\n      width: 100,\n      render: (date) => dayjs(date).format('MMM DD, YYYY'),\n      sorter: true,\n    },\n    {\n      title: 'Actions',\n      key: 'actions',\n      fixed: 'right',\n      width: 280,\n      render: (_, record) => (\n        <Space size=\"small\">\n          <Tooltip title=\"View Details\">\n            <Button \n              type=\"link\" \n              icon={<EyeOutlined />} \n              onClick={() => {\n                setSelectedVendor(record);\n                setDrawerVisible(true);\n              }}\n            >\n              View\n            </Button>\n          </Tooltip>\n          \n          {(record.status === 'submitted' || record.status === 'under_review') && (\n            <>\n              <Tooltip title=\"Approve Vendor\">\n                <Button \n                  type=\"link\" \n                  icon={<CheckCircleOutlined />} \n                  style={{ color: '#52c41a' }}\n                  onClick={() => handleApprove(record.id)}\n                >\n                  Approve\n                </Button>\n              </Tooltip>\n              <Tooltip title=\"Reject Application\">\n                <Button \n                  type=\"link\" \n                  danger \n                  icon={<CloseCircleOutlined />} \n                  onClick={() => handleReject(record.id)}\n                >\n                  Reject\n                </Button>\n              </Tooltip>\n            </>\n          )}\n          \n          {record.status === 'approved' && (\n            <Tooltip title=\"Suspend Vendor\">\n              <Button \n                type=\"link\" \n                danger \n                icon={<StopOutlined />} \n                onClick={() => handleSuspend(record.id)}\n              >\n                Suspend\n              </Button>\n            </Tooltip>\n          )}\n          \n          {record.status === 'suspended' && (\n            <Tooltip title=\"Reactivate Vendor\">\n              <Button \n                type=\"link\" \n                icon={<CheckOutlined />}\n                style={{ color: '#52c41a' }}\n                onClick={() => handleReactivate(record.id)}\n              >\n                Reactivate\n              </Button>\n            </Tooltip>\n          )}\n        </Space>\n      ),\n    },\n  ];\n\n  const filteredVendors = vendors.filter(vendor => {\n    if (activeTab === 'all') return true;\n    if (activeTab === 'pending') return vendor.status === 'submitted' || vendor.status === 'under_review';\n    if (activeTab === 'approved') return vendor.status === 'approved';\n    if (activeTab === 'rejected') return vendor.status === 'rejected';\n    if (activeTab === 'suspended') return vendor.status === 'suspended';\n    return true;\n  });\n\n  const stats = getVendorStats();\n\n  const renderVendorDetails = () => {\n    if (!selectedVendor) return null;\n\n    const currentStep = getCurrentOnboardingStep(selectedVendor);\n\n    return (\n      <Tabs defaultActiveKey=\"overview\">\n        <TabPane tab=\"Overview\" key=\"overview\">\n          <Descriptions bordered column={2} style={{ marginBottom: 24 }}>\n            <Descriptions.Item label=\"Business Name\">{selectedVendor.businessName}</Descriptions.Item>\n            <Descriptions.Item label=\"Legal Name\">{selectedVendor.legalName || 'N/A'}</Descriptions.Item>\n            <Descriptions.Item label=\"Business Type\">\n              <Tag>{selectedVendor.businessType?.replace('_', ' ')?.toUpperCase()}</Tag>\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Registration Number\">\n              {selectedVendor.businessRegistrationNumber || 'N/A'}\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Email\">{selectedVendor.businessEmail}</Descriptions.Item>\n            <Descriptions.Item label=\"Phone\">{selectedVendor.businessPhone || 'N/A'}</Descriptions.Item>\n            <Descriptions.Item label=\"Website\">\n              {selectedVendor.website ? (\n                <a href={selectedVendor.website} target=\"_blank\" rel=\"noopener noreferrer\">\n                  {selectedVendor.website}\n                </a>\n              ) : 'N/A'}\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Tax ID\">{selectedVendor.taxIdentificationNumber || 'N/A'}</Descriptions.Item>\n            <Descriptions.Item label=\"Status\">\n              <Tag color={statusColors[selectedVendor.status]}>\n                {selectedVendor.status?.replace('_', ' ')?.toUpperCase()}\n              </Tag>\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Verification\">\n              <Tag color={verificationColors[selectedVendor.verificationStatus]}>\n                {selectedVendor.verificationStatus?.replace('_', ' ')?.toUpperCase()}\n              </Tag>\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Joined\" span={2}>\n              {dayjs(selectedVendor.createdAt).format('MMMM DD, YYYY [at] HH:mm')}\n            </Descriptions.Item>\n          </Descriptions>\n\n          {selectedVendor.description && (\n            <Card title=\"Business Description\" style={{ marginBottom: 24 }}>\n              <Paragraph>{selectedVendor.description}</Paragraph>\n            </Card>\n          )}\n\n          {selectedVendor.businessCategories && selectedVendor.businessCategories.length > 0 && (\n            <Card title=\"Business Categories\" style={{ marginBottom: 24 }}>\n              <Space wrap>\n                {selectedVendor.businessCategories.map((category, index) => (\n                  <Tag key={index} color=\"blue\">{category}</Tag>\n                ))}\n              </Space>\n            </Card>\n          )}\n        </TabPane>\n\n        <TabPane tab=\"Onboarding Progress\" key=\"onboarding\">\n          <Card title=\"Onboarding Steps\" style={{ marginBottom: 24 }}>\n            <Steps direction=\"vertical\" current={currentStep}>\n              {onboardingSteps.map((step, index) => (\n                <Step\n                  key={step.key}\n                  title={step.title}\n                  icon={step.icon}\n                  status={\n                    index < currentStep ? 'finish' : \n                    index === currentStep ? 'process' : \n                    'wait'\n                  }\n                  description={\n                    selectedVendor.onboardingSteps?.[step.key] ? \n                    'Completed' : \n                    'Pending'\n                  }\n                />\n              ))}\n            </Steps>\n          </Card>\n\n          {selectedVendor.verificationNotes && (\n            <Card title=\"Verification Notes\">\n              <Paragraph>{selectedVendor.verificationNotes}</Paragraph>\n            </Card>\n          )}\n        </TabPane>\n\n        <TabPane tab=\"Documents\" key=\"documents\">\n          <Card title=\"Uploaded Documents\">\n            {vendorDocuments.length === 0 ? (\n              <Empty description=\"No documents uploaded yet\" />\n            ) : (\n              <List\n                dataSource={vendorDocuments}\n                renderItem={(doc) => (\n                  <List.Item\n                    actions={[\n                      <Button icon={<DownloadOutlined />} size=\"small\">\n                        Download\n                      </Button>\n                    ]}\n                  >\n                    <List.Item.Meta\n                      avatar={<FileTextOutlined />}\n                      title={doc.documentName}\n                      description={`${doc.documentType?.replace('_', ' ')?.toUpperCase()} | ${doc.status?.toUpperCase()}`}\n                    />\n                  </List.Item>\n                )}\n              />\n            )}\n          </Card>\n        </TabPane>\n      </Tabs>\n    );\n  };\n\n  return (\n    <div style={{ padding: 24, backgroundColor: '#f5f5f5' }}>\n      <div style={{ marginBottom: 24 }}>\n        <Title level={2}>\n          <UserAddOutlined style={{ marginRight: 8 }} />\n          Vendor Onboarding & Management\n        </Title>\n        <Paragraph type=\"secondary\">\n          Manage vendor applications, onboarding process, and approvals\n        </Paragraph>\n      </div>\n\n      {/* Statistics Cards */}\n      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Total Vendors\"\n              value={stats.total}\n              prefix={<TeamOutlined />}\n              valueStyle={{ color: '#1890ff' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Pending Review\"\n              value={stats.pending}\n              prefix={<ClockCircleOutlined />}\n              valueStyle={{ color: '#faad14' }}\n            />\n            {stats.pending > 0 && (\n              <Badge\n                status=\"processing\"\n                text=\"Requires attention\"\n                style={{ fontSize: 12 }}\n              />\n            )}\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Approved\"\n              value={stats.approved}\n              prefix={<CheckCircleOutlined />}\n              valueStyle={{ color: '#52c41a' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Rejected/Suspended\"\n              value={stats.rejected + stats.suspended}\n              prefix={<ExclamationCircleOutlined />}\n              valueStyle={{ color: '#ff4d4f' }}\n            />\n          </Card>\n        </Col>\n      </Row>\n\n      {/* Alerts */}\n      {stats.pending > 0 && (\n        <Alert\n          message={`${stats.pending} vendor application(s) pending review`}\n          description=\"Please review pending applications to maintain vendor onboarding efficiency.\"\n          type=\"warning\"\n          showIcon\n          closable\n          style={{ marginBottom: 24 }}\n        />\n      )}\n\n      {/* Main Table */}\n      <Card>\n        <Tabs activeKey={activeTab} onChange={setActiveTab}>\n          <TabPane tab={`All (${stats.total})`} key=\"all\" />\n          <TabPane tab={`Pending (${stats.pending})`} key=\"pending\" />\n          <TabPane tab={`Approved (${stats.approved})`} key=\"approved\" />\n          <TabPane tab={`Rejected (${stats.rejected})`} key=\"rejected\" />\n          <TabPane tab={`Suspended (${stats.suspended})`} key=\"suspended\" />\n        </Tabs>\n\n        <ProTable<Vendor>\n          columns={columns}\n          dataSource={filteredVendors}\n          loading={loading}\n          rowKey=\"id\"\n          pagination={{\n            defaultPageSize: 20,\n            showSizeChanger: true,\n            showQuickJumper: true,\n          }}\n          search={{\n            labelWidth: 'auto',\n          }}\n          headerTitle={\n            <Space>\n              <Text strong>Vendor Applications</Text>\n              <Button \n                icon={<ReloadOutlined />} \n                onClick={loadVendors}\n                size=\"small\"\n              >\n                Refresh\n              </Button>\n            </Space>\n          }\n          scroll={{ x: 1400 }}\n          toolBarRender={false}\n        />\n      </Card>\n\n      {/* Details Modal */}\n      <Modal\n        title={\n          <div style={{ display: 'flex', alignItems: 'center' }}>\n            <Avatar \n              src={selectedVendor?.logoUrl} \n              icon={<ShopOutlined />} \n              style={{ marginRight: 12 }}\n            />\n            <div>\n              <div>{selectedVendor?.businessName}</div>\n              <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                Vendor Details\n              </Text>\n            </div>\n          </div>\n        }\n        open={drawerVisible}\n        onCancel={() => {\n          setDrawerVisible(false);\n          setSelectedVendor(null);\n        }}\n        width={1000}\n        footer={null}\n        loading={detailsLoading}\n      >\n        {renderVendorDetails()}\n      </Modal>\n    </div>\n  );\n};\n\nexport default AdminVendorOnboarding;",
+      "__content": "/**\n * SAFE API RESPONSE HANDLING\n * Use pattern: const data = response?.data?.data || response?.data || [];\n * Use pattern: const total = response?.data?.meta?.total || response?.meta?.total || 0;\n */\nimport { ProTable } from '@ant-design/pro-components';\nimport type { ProColumns } from '@ant-design/pro-components';\nimport { \n  Button, \n  Space, \n  Tag, \n  Modal, \n  Descriptions, \n  Avatar, \n  message, \n  Tabs, \n  Card, \n  Row, \n  Col, \n  Statistic, \n  Progress, \n  Timeline,\n  Badge,\n  Tooltip,\n  Form,\n  Input,\n  Select,\n  Upload,\n  Steps,\n  Alert,\n  Typography,\n  List,\n  Image,\n  Divider,\n  Spin,\n  Empty\n} from 'antd';\nimport { \n  EyeOutlined, \n  CheckCircleOutlined, \n  CloseCircleOutlined, \n  StopOutlined,\n  UserAddOutlined,\n  ShopOutlined,\n  FileTextOutlined,\n  CheckOutlined,\n  ClockCircleOutlined,\n  ExclamationCircleOutlined,\n  UploadOutlined,\n  EditOutlined,\n  DeleteOutlined,\n  DownloadOutlined,\n  MailOutlined,\n  PhoneOutlined,\n  GlobalOutlined,\n  TeamOutlined,\n  BankOutlined,\n  SafetyCertificateOutlined,\n  VerifiedOutlined,\n  ReloadOutlined\n} from '@ant-design/icons';\nimport { useState, useEffect } from 'react';\nimport dayjs from 'dayjs';\nimport { vendorAPI } from '@/services/api';\nimport type { Vendor, VendorDocument } from '@/services/api/vendors';\n\nconst { Title, Text, Paragraph } = Typography;\nconst { Step } = Steps;\nconst { TabPane } = Tabs;\nconst { TextArea } = Input;\n\nconst AdminVendorOnboarding = () => {\n  const [vendors, setVendors] = useState<Vendor[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [detailsLoading, setDetailsLoading] = useState(false);\n  const [drawerVisible, setDrawerVisible] = useState(false);\n  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);\n  const [vendorDocuments, setVendorDocuments] = useState<VendorDocument[]>([]);\n  const [activeTab, setActiveTab] = useState('all');\n  const [searchText, setSearchText] = useState('');\n  const [statusFilter, setStatusFilter] = useState<string>('all');\n\n  const statusColors = {\n    draft: 'default',\n    submitted: 'processing',\n    under_review: 'warning',\n    approved: 'success',\n    rejected: 'error',\n    suspended: 'volcano',\n    inactive: 'default',\n  };\n\n  const verificationColors = {\n    unverified: 'default',\n    pending: 'processing',\n    verified: 'success',\n    failed: 'error',\n    expired: 'warning',\n  };\n\n  const onboardingSteps = [\n    { key: 'business_info', title: 'Business Information', icon: <ShopOutlined /> },\n    { key: 'legal_documents', title: 'Legal Documents', icon: <FileTextOutlined /> },\n    { key: 'financial_info', title: 'Financial Information', icon: <BankOutlined /> },\n    { key: 'verification', title: 'Verification', icon: <SafetyCertificateOutlined /> },\n    { key: 'approval', title: 'Final Approval', icon: <VerifiedOutlined /> },\n  ];\n\n  useEffect(() => {\n    loadVendors();\n  }, [searchText, statusFilter]);\n\n  useEffect(() => {\n    if (selectedVendor) {\n      loadVendorDocuments(selectedVendor.id);\n    }\n  }, [selectedVendor]);\n\n  const loadVendors = async () => {\n    setLoading(true);\n    try {\n      // Backend doesn't have /vendors/directory/search endpoint yet\n      // For now, show mock data until backend implements vendor listing\n      console.warn('Vendors directory endpoint not implemented yet, showing empty state');\n      \n      // TODO: Replace with actual API when backend implements:\n      // GET /admin/vendors or GET /vendors/list\n      setVendors([]);\n      message.info('Vendor listing endpoint not yet implemented in backend');\n    } catch (error) {\n      console.error('Failed to load vendors:', error);\n      message.error('Failed to load vendors');\n      setVendors([]);\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const loadVendorDocuments = async (vendorId: string) => {\n    try {\n      // Note: This would need to be adapted based on actual admin API\n      // For now, we'll show empty documents\n      setVendorDocuments([]);\n    } catch (error) {\n      console.error('Failed to load vendor documents:', error);\n    }\n  };\n\n  const handleApprove = async (vendorId: string) => {\n    Modal.confirm({\n      title: 'Approve Vendor',\n      content: 'Are you sure you want to approve this vendor? They will gain access to the platform.',\n      onOk: async () => {\n        try {\n          await vendorAPI.verify(vendorId, {\n            verificationNotes: 'Approved by admin',\n          });\n          message.success('Vendor approved successfully');\n          loadVendors();\n          if (selectedVendor?.id === vendorId) {\n            setSelectedVendor(null);\n            setDrawerVisible(false);\n          }\n        } catch (error) {\n          console.error('Failed to approve vendor:', error);\n          message.error('Failed to approve vendor');\n        }\n      },\n    });\n  };\n\n  const handleReject = async (vendorId: string) => {\n    Modal.confirm({\n      title: 'Reject Vendor',\n      content: (\n        <Form layout=\"vertical\">\n          <Form.Item\n            name=\"rejectionReason\"\n            label=\"Rejection Reason\"\n            rules={[{ required: true, message: 'Please provide a reason for rejection' }]}\n          >\n            <TextArea rows={4} placeholder=\"Please specify the reason for rejection...\" />\n          </Form.Item>\n        </Form>\n      ),\n      onOk: async (close) => {\n        try {\n          await vendorAPI.reject(vendorId, {\n            rejectionReason: 'Application does not meet requirements',\n          });\n          message.success('Vendor rejected');\n          loadVendors();\n          if (selectedVendor?.id === vendorId) {\n            setSelectedVendor(null);\n            setDrawerVisible(false);\n          }\n          close();\n        } catch (error) {\n          console.error('Failed to reject vendor:', error);\n          message.error('Failed to reject vendor');\n        }\n      },\n    });\n  };\n\n  const handleSuspend = async (vendorId: string) => {\n    Modal.confirm({\n      title: 'Suspend Vendor',\n      content: 'Are you sure you want to suspend this vendor? They will lose access to the platform.',\n      onOk: async () => {\n        try {\n          await vendorAPI.toggleStatus(vendorId, 'suspended');\n          message.success('Vendor suspended');\n          loadVendors();\n          if (selectedVendor?.id === vendorId) {\n            setSelectedVendor(null);\n            setDrawerVisible(false);\n          }\n        } catch (error) {\n          console.error('Failed to suspend vendor:', error);\n          message.error('Failed to suspend vendor');\n        }\n      },\n    });\n  };\n\n  const handleReactivate = async (vendorId: string) => {\n    try {\n      await vendorAPI.toggleStatus(vendorId, 'approved');\n      message.success('Vendor reactivated');\n      loadVendors();\n    } catch (error) {\n      console.error('Failed to reactivate vendor:', error);\n      message.error('Failed to reactivate vendor');\n    }\n  };\n\n  const getOnboardingProgress = (vendor: Vendor) => {\n    if (!vendor.onboardingSteps) return 0;\n    const completedSteps = Object.values(vendor.onboardingSteps).filter(Boolean).length;\n    return (completedSteps / onboardingSteps.length) * 100;\n  };\n\n  const getCurrentOnboardingStep = (vendor: Vendor) => {\n    if (!vendor.onboardingSteps) return 0;\n    const steps = vendor.onboardingSteps;\n    \n    if (!steps.business_info) return 0;\n    if (!steps.legal_documents) return 1;\n    if (!steps.financial_info) return 2;\n    if (!steps.verification) return 3;\n    if (!steps.approval) return 4;\n    return 5;\n  };\n\n  const getVendorStats = () => {\n    const stats = {\n      total: vendors.length,\n      pending: vendors.filter(v => v.status === 'submitted' || v.status === 'under_review').length,\n      approved: vendors.filter(v => v.status === 'approved').length,\n      rejected: vendors.filter(v => v.status === 'rejected').length,\n      suspended: vendors.filter(v => v.status === 'suspended').length,\n    };\n    return stats;\n  };\n\n  const columns: ProColumns<Vendor>[] = [\n    {\n      title: 'Business Name',\n      dataIndex: 'businessName',\n      key: 'businessName',\n      width: 200,\n      render: (text, record) => (\n        <div>\n          <div style={{ display: 'flex', alignItems: 'center' }}>\n            <Avatar \n              size=\"small\" \n              src={record.logoUrl} \n              icon={<ShopOutlined />} \n              style={{ marginRight: 8 }}\n            />\n            <Text strong>{text}</Text>\n          </div>\n          {record.legalName && record.legalName !== text && (\n            <Text type=\"secondary\" style={{ fontSize: 12 }}>\n              Legal: {record.legalName}\n            </Text>\n          )}\n        </div>\n      ),\n    },\n    {\n      title: 'Business Type',\n      dataIndex: 'businessType',\n      key: 'businessType',\n      width: 120,\n      render: (type) => (\n        <Tag>{type?.replace('_', ' ')?.toUpperCase()}</Tag>\n      ),\n    },\n    {\n      title: 'Contact',\n      key: 'contact',\n      width: 200,\n      render: (_, record) => (\n        <div>\n          <div style={{ fontSize: 12 }}>\n            <MailOutlined style={{ marginRight: 4 }} />\n            {record.businessEmail}\n          </div>\n          {record.businessPhone && (\n            <div style={{ fontSize: 12 }}>\n              <PhoneOutlined style={{ marginRight: 4 }} />\n              {record.businessPhone}\n            </div>\n          )}\n          {record.website && (\n            <div style={{ fontSize: 12 }}>\n              <GlobalOutlined style={{ marginRight: 4 }} />\n              <a href={record.website} target=\"_blank\" rel=\"noopener noreferrer\">\n                Website\n              </a>\n            </div>\n          )}\n        </div>\n      ),\n    },\n    {\n      title: 'Status',\n      dataIndex: 'status',\n      key: 'status',\n      width: 120,\n      filters: [\n        { text: 'Draft', value: 'draft' },\n        { text: 'Submitted', value: 'submitted' },\n        { text: 'Under Review', value: 'under_review' },\n        { text: 'Approved', value: 'approved' },\n        { text: 'Rejected', value: 'rejected' },\n        { text: 'Suspended', value: 'suspended' },\n      ],\n      render: (status) => (\n        <Tag color={statusColors[status as keyof typeof statusColors]}>\n          {status?.replace('_', ' ')?.toUpperCase()}\n        </Tag>\n      ),\n    },\n    {\n      title: 'Verification',\n      dataIndex: 'verificationStatus',\n      key: 'verificationStatus',\n      width: 120,\n      render: (status) => (\n        <Tag color={verificationColors[status as keyof typeof verificationColors]}>\n          {status?.replace('_', ' ')?.toUpperCase()}\n        </Tag>\n      ),\n    },\n    {\n      title: 'Onboarding',\n      key: 'onboarding',\n      width: 150,\n      render: (_, record) => {\n        const progress = getOnboardingProgress(record);\n        const isComplete = record.isOnboardingComplete;\n        return (\n          <div>\n            <Progress \n              percent={progress} \n              size=\"small\" \n              status={isComplete ? 'success' : 'active'}\n              showInfo={false}\n            />\n            <Text style={{ fontSize: 11 }}>\n              {isComplete ? 'Complete' : `${Math.round(progress)}% complete`}\n            </Text>\n          </div>\n        );\n      },\n    },\n    {\n      title: 'Joined',\n      dataIndex: 'createdAt',\n      key: 'createdAt',\n      width: 100,\n      render: (date) => dayjs(date).format('MMM DD, YYYY'),\n      sorter: true,\n    },\n    {\n      title: 'Actions',\n      key: 'actions',\n      fixed: 'right',\n      width: 280,\n      render: (_, record) => (\n        <Space size=\"small\">\n          <Tooltip title=\"View Details\">\n            <Button \n              type=\"link\" \n              icon={<EyeOutlined />} \n              onClick={() => {\n                setSelectedVendor(record);\n                setDrawerVisible(true);\n              }}\n            >\n              View\n            </Button>\n          </Tooltip>\n          \n          {(record.status === 'submitted' || record.status === 'under_review') && (\n            <>\n              <Tooltip title=\"Approve Vendor\">\n                <Button \n                  type=\"link\" \n                  icon={<CheckCircleOutlined />} \n                  style={{ color: '#52c41a' }}\n                  onClick={() => handleApprove(record.id)}\n                >\n                  Approve\n                </Button>\n              </Tooltip>\n              <Tooltip title=\"Reject Application\">\n                <Button \n                  type=\"link\" \n                  danger \n                  icon={<CloseCircleOutlined />} \n                  onClick={() => handleReject(record.id)}\n                >\n                  Reject\n                </Button>\n              </Tooltip>\n            </>\n          )}\n          \n          {record.status === 'approved' && (\n            <Tooltip title=\"Suspend Vendor\">\n              <Button \n                type=\"link\" \n                danger \n                icon={<StopOutlined />} \n                onClick={() => handleSuspend(record.id)}\n              >\n                Suspend\n              </Button>\n            </Tooltip>\n          )}\n          \n          {record.status === 'suspended' && (\n            <Tooltip title=\"Reactivate Vendor\">\n              <Button \n                type=\"link\" \n                icon={<CheckOutlined />}\n                style={{ color: '#52c41a' }}\n                onClick={() => handleReactivate(record.id)}\n              >\n                Reactivate\n              </Button>\n            </Tooltip>\n          )}\n        </Space>\n      ),\n    },\n  ];\n\n  const filteredVendors = vendors.filter(vendor => {\n    if (activeTab === 'all') return true;\n    if (activeTab === 'pending') return vendor.status === 'submitted' || vendor.status === 'under_review';\n    if (activeTab === 'approved') return vendor.status === 'approved';\n    if (activeTab === 'rejected') return vendor.status === 'rejected';\n    if (activeTab === 'suspended') return vendor.status === 'suspended';\n    return true;\n  });\n\n  const stats = getVendorStats();\n\n  const renderVendorDetails = () => {\n    if (!selectedVendor) return null;\n\n    const currentStep = getCurrentOnboardingStep(selectedVendor);\n\n    return (\n      <Tabs defaultActiveKey=\"overview\">\n        <TabPane tab=\"Overview\" key=\"overview\">\n          <Descriptions bordered column={2} style={{ marginBottom: 24 }}>\n            <Descriptions.Item label=\"Business Name\">{selectedVendor.businessName}</Descriptions.Item>\n            <Descriptions.Item label=\"Legal Name\">{selectedVendor.legalName || 'N/A'}</Descriptions.Item>\n            <Descriptions.Item label=\"Business Type\">\n              <Tag>{selectedVendor.businessType?.replace('_', ' ')?.toUpperCase()}</Tag>\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Registration Number\">\n              {selectedVendor.businessRegistrationNumber || 'N/A'}\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Email\">{selectedVendor.businessEmail}</Descriptions.Item>\n            <Descriptions.Item label=\"Phone\">{selectedVendor.businessPhone || 'N/A'}</Descriptions.Item>\n            <Descriptions.Item label=\"Website\">\n              {selectedVendor.website ? (\n                <a href={selectedVendor.website} target=\"_blank\" rel=\"noopener noreferrer\">\n                  {selectedVendor.website}\n                </a>\n              ) : 'N/A'}\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Tax ID\">{selectedVendor.taxIdentificationNumber || 'N/A'}</Descriptions.Item>\n            <Descriptions.Item label=\"Status\">\n              <Tag color={statusColors[selectedVendor.status]}>\n                {selectedVendor.status?.replace('_', ' ')?.toUpperCase()}\n              </Tag>\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Verification\">\n              <Tag color={verificationColors[selectedVendor.verificationStatus]}>\n                {selectedVendor.verificationStatus?.replace('_', ' ')?.toUpperCase()}\n              </Tag>\n            </Descriptions.Item>\n            <Descriptions.Item label=\"Joined\" span={2}>\n              {dayjs(selectedVendor.createdAt).format('MMMM DD, YYYY [at] HH:mm')}\n            </Descriptions.Item>\n          </Descriptions>\n\n          {selectedVendor.description && (\n            <Card title=\"Business Description\" style={{ marginBottom: 24 }}>\n              <Paragraph>{selectedVendor.description}</Paragraph>\n            </Card>\n          )}\n\n          {selectedVendor.businessCategories && selectedVendor.businessCategories.length > 0 && (\n            <Card title=\"Business Categories\" style={{ marginBottom: 24 }}>\n              <Space wrap>\n                {selectedVendor.businessCategories.map((category, index) => (\n                  <Tag key={index} color=\"blue\">{category}</Tag>\n                ))}\n              </Space>\n            </Card>\n          )}\n        </TabPane>\n\n        <TabPane tab=\"Onboarding Progress\" key=\"onboarding\">\n          <Card title=\"Onboarding Steps\" style={{ marginBottom: 24 }}>\n            <Steps direction=\"vertical\" current={currentStep}>\n              {onboardingSteps.map((step, index) => (\n                <Step\n                  key={step.key}\n                  title={step.title}\n                  icon={step.icon}\n                  status={\n                    index < currentStep ? 'finish' : \n                    index === currentStep ? 'process' : \n                    'wait'\n                  }\n                  description={\n                    selectedVendor.onboardingSteps?.[step.key] ? \n                    'Completed' : \n                    'Pending'\n                  }\n                />\n              ))}\n            </Steps>\n          </Card>\n\n          {selectedVendor.verificationNotes && (\n            <Card title=\"Verification Notes\">\n              <Paragraph>{selectedVendor.verificationNotes}</Paragraph>\n            </Card>\n          )}\n        </TabPane>\n\n        <TabPane tab=\"Documents\" key=\"documents\">\n          <Card title=\"Uploaded Documents\">\n            {vendorDocuments.length === 0 ? (\n              <Empty description=\"No documents uploaded yet\" />\n            ) : (\n              <List\n                dataSource={vendorDocuments}\n                renderItem={(doc) => (\n                  <List.Item\n                    actions={[\n                      <Button icon={<DownloadOutlined />} size=\"small\">\n                        Download\n                      </Button>\n                    ]}\n                  >\n                    <List.Item.Meta\n                      avatar={<FileTextOutlined />}\n                      title={doc.documentName}\n                      description={`${doc.documentType?.replace('_', ' ')?.toUpperCase()} | ${doc.status?.toUpperCase()}`}\n                    />\n                  </List.Item>\n                )}\n              />\n            )}\n          </Card>\n        </TabPane>\n      </Tabs>\n    );\n  };\n\n  return (\n    <div style={{ padding: 24, backgroundColor: '#f5f5f5' }}>\n      <div style={{ marginBottom: 24 }}>\n        <Title level={2}>\n          <UserAddOutlined style={{ marginRight: 8 }} />\n          Vendor Onboarding & Management\n        </Title>\n        <Paragraph type=\"secondary\">\n          Manage vendor applications, onboarding process, and approvals\n        </Paragraph>\n      </div>\n\n      {/* Statistics Cards */}\n      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Total Vendors\"\n              value={stats.total}\n              prefix={<TeamOutlined />}\n              valueStyle={{ color: '#1890ff' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Pending Review\"\n              value={stats.pending}\n              prefix={<ClockCircleOutlined />}\n              valueStyle={{ color: '#faad14' }}\n            />\n            {stats.pending > 0 && (\n              <Badge\n                status=\"processing\"\n                text=\"Requires attention\"\n                style={{ fontSize: 12 }}\n              />\n            )}\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Approved\"\n              value={stats.approved}\n              prefix={<CheckCircleOutlined />}\n              valueStyle={{ color: '#52c41a' }}\n            />\n          </Card>\n        </Col>\n        <Col xs={24} sm={12} md={6}>\n          <Card>\n            <Statistic\n              title=\"Rejected/Suspended\"\n              value={stats.rejected + stats.suspended}\n              prefix={<ExclamationCircleOutlined />}\n              valueStyle={{ color: '#ff4d4f' }}\n            />\n          </Card>\n        </Col>\n      </Row>\n\n      {/* Alerts */}\n      {stats.pending > 0 && (\n        <Alert\n          message={`${stats.pending} vendor application(s) pending review`}\n          description=\"Please review pending applications to maintain vendor onboarding efficiency.\"\n          type=\"warning\"\n          showIcon\n          closable\n          style={{ marginBottom: 24 }}\n        />\n      )}\n\n      {/* Main Table */}\n      <Card>\n        <Tabs activeKey={activeTab} onChange={setActiveTab}>\n          <TabPane tab={`All (${stats.total})`} key=\"all\" />\n          <TabPane tab={`Pending (${stats.pending})`} key=\"pending\" />\n          <TabPane tab={`Approved (${stats.approved})`} key=\"approved\" />\n          <TabPane tab={`Rejected (${stats.rejected})`} key=\"rejected\" />\n          <TabPane tab={`Suspended (${stats.suspended})`} key=\"suspended\" />\n        </Tabs>\n\n        <ProTable<Vendor>\n          columns={columns}\n          dataSource={filteredVendors}\n          loading={loading}\n          rowKey=\"id\"\n          pagination={{\n            defaultPageSize: 20,\n            showSizeChanger: true,\n            showQuickJumper: true,\n          }}\n          search={{\n            labelWidth: 'auto',\n          }}\n          headerTitle={\n            <Space>\n              <Text strong>Vendor Applications</Text>\n              <Button \n                icon={<ReloadOutlined />} \n                onClick={loadVendors}\n                size=\"small\"\n              >\n                Refresh\n              </Button>\n            </Space>\n          }\n          scroll={{ x: 1400 }}\n          toolBarRender={false}\n        />\n      </Card>\n\n      {/* Details Modal */}\n      <Modal\n        title={\n          <div style={{ display: 'flex', alignItems: 'center' }}>\n            <Avatar \n              src={selectedVendor?.logoUrl} \n              icon={<ShopOutlined />} \n              style={{ marginRight: 12 }}\n            />\n            <div>\n              <div>{selectedVendor?.businessName}</div>\n              <Text type=\"secondary\" style={{ fontSize: 12 }}>\n                Vendor Details\n              </Text>\n            </div>\n          </div>\n        }\n        open={drawerVisible}\n        onCancel={() => {\n          setDrawerVisible(false);\n          setSelectedVendor(null);\n        }}\n        width={1000}\n        footer={null}\n        loading={detailsLoading}\n      >\n        {renderVendorDetails()}\n      </Modal>\n    </div>\n  );\n};\n\nexport default AdminVendorOnboarding;",
       "__isJSFile": true,
       "__absFile": "/home/azureuser/Groow/groow/frontend/src/pages/admin/vendors.tsx"
     },
