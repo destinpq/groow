@@ -163,7 +163,7 @@ const CustomerDashboard = () => {
         </Col>
         
         <Col xs={24} sm={12} lg={6}>
-          <Card hoverable onClick={() => navigate('/customer/wallet')} style={{ cursor: 'pointer' }}>
+          <Card hoverable onClick={() => navigate('/customer/profile')} style={{ cursor: 'pointer' }}>
             <Statistic
               title="Service Credits"
               value={2500.00}
@@ -194,7 +194,7 @@ const CustomerDashboard = () => {
               renderItem={(order: any) => (
                 <List.Item
                   actions={[
-                    <Button type="link" icon={<EyeOutlined />} onClick={() => navigate(`/customer/orders/${order.id}`)}>
+                    <Button type="link" icon={<EyeOutlined />} onClick={() => navigate('/customer/orders')}>
                       View Details
                     </Button>,
                   ]}
@@ -279,7 +279,7 @@ const CustomerDashboard = () => {
                 </Button>
               </Col>
               <Col xs={24} sm={12} md={6}>
-                <Button block size="large" onClick={() => navigate('/customer/rfq')}>
+                <Button block size="large" onClick={() => navigate('/customer/support-tickets')}>
                   Request Custom Quote
                 </Button>
               </Col>

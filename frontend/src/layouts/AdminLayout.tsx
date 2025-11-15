@@ -53,7 +53,7 @@ const AdminLayout = () => {
       key: 'profile',
       icon: <UserOutlined />,
       label: 'Profile',
-      onClick: () => navigate('/admin/profile'),
+      onClick: () => navigate('/admin/settings'),
     },
     {
       key: 'settings',

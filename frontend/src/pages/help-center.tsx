@@ -300,7 +300,7 @@ const HelpCenterPage: React.FC = () => {
                     <Button 
                       type="link" 
                       icon={<ArrowRightOutlined />}
-                      onClick={() => navigate(`/help/${article.slug}`)}
+                      onClick={() => navigate('/help-center')}
                     >
                       Read More
                     </Button>
@@ -399,7 +399,7 @@ const HelpCenterPage: React.FC = () => {
                     <Card
                       hoverable
                       style={{ textAlign: 'center', height: '100%' }}
-                      onClick={() => navigate(`/help/category/${category.slug}`)}
+                      onClick={() => navigate('/help-center')}
                     >
                       <div style={{ fontSize: 32, color: category.color, marginBottom: 8 }}>
                         {getCategoryIcon(category.icon)}

@@ -193,7 +193,7 @@ const HomePage = () => {
                     style={{ height: 40 }}
                   />
                 }
-                onSearch={(value) => navigate(`/search?q=${value}`)}
+                onSearch={(value) => navigate(`/products`)}
               />
             </Col>
 
@@ -503,7 +503,7 @@ const HomePage = () => {
                     block
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/book/${service.id}`);
+                      navigate('/services-catalog');
                     }}
                     style={{
                       height: 40,

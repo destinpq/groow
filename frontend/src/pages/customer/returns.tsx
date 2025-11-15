@@ -216,7 +216,7 @@ const ReturnsPage: React.FC = () => {
       render: (orderNumber: string) => (
         <Button 
           type="link" 
-          onClick={() => navigate(`/orders/${orderNumber}`)}
+          onClick={() => navigate('/customer/orders')}
         >
           {orderNumber}
         </Button>

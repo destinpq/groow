@@ -68,7 +68,7 @@ const CheckoutPage = () => {
       
       // Redirect to order details or orders list
       setTimeout(() => {
-        navigate(`/customer/orders/${order.id}`);
+        navigate('/customer/orders');
       }, 1500);
       
     } catch (error: any) {

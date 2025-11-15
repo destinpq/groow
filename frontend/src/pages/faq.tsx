@@ -569,7 +569,7 @@ const FAQPage: React.FC = () => {
           </Paragraph>
           <Row gutter={16} justify="center" style={{ marginTop: 24 }}>
             <Col xs={24} sm={8}>
-              <Card hoverable onClick={() => navigate('/support/create-ticket')}>
+              <Card hoverable onClick={() => navigate('/customer/support-tickets')}>
                 <Title level={4}>
                   <MailOutlined /> Email Support
                 </Title>
@@ -597,7 +597,7 @@ const FAQPage: React.FC = () => {
               </Card>
             </Col>
             <Col xs={24} sm={8}>
-              <Card hoverable onClick={() => navigate('/support/live-chat')}>
+              <Card hoverable onClick={() => navigate('/contact')}>
                 <Title level={4}>
                   <CommentOutlined /> Live Chat
                 </Title>
