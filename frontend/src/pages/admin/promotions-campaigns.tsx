@@ -122,9 +122,12 @@ const PromotionsManagementPage: React.FC = () => {
       if (filters.objective !== 'all') filterParams.objective = filters.objective;
 
       const response = await promotionsAPI.getAll(filterParams);
-      setPromotions(response.data || response);
+      // SAFE API RESPONSE HANDLING - response.promotions should be an array
+      const promotionsData = response?.promotions || response?.data || [];
+      setPromotions(Array.isArray(promotionsData) ? promotionsData : []);
     } catch (error) {
       message.error('Failed to load promotions');
+      setPromotions([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

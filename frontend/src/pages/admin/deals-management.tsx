@@ -108,11 +108,13 @@ const DealsManagementPage: React.FC = () => {
       if (filters.targetType !== 'all') filterParams.targetType = filters.targetType;
 
       const response = await dealsAPI.getAll(filterParams);
-      const dealsData = response?.data?.data || response?.data || [] || response;
+      // SAFE API RESPONSE HANDLING - response.deals should be an array
+      const dealsData = response?.deals || response?.data?.data || response?.data || [];
       const sanitizedDeals = Array.isArray(dealsData) ? dealsData.map(sanitizeDeal) : [];
       setDeals(sanitizedDeals);
     } catch (error) {
       message.error('Failed to load deals');
+      setDeals([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

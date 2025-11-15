@@ -76,10 +76,13 @@ const ReturnManagementPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await returnsAPI.getReturnRequests({ limit: 100 });
-      setReturns(response.data.returns);
+      // SAFE API RESPONSE HANDLING - response.data.returns should be an array
+      const returnsData = response?.data?.returns || response?.returns || [];
+      setReturns(Array.isArray(returnsData) ? returnsData : []);
     } catch (error) {
       message.error('Failed to fetch return requests');
       console.error(error);
+      setReturns([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

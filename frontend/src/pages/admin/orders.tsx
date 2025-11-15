@@ -173,9 +173,9 @@ const AdminOrders = () => {
               status: filter?.status?.[0] as string,
             });
 
-            // SAFE API RESPONSE HANDLING
-            const ordersData = response?.data?.data || response?.data || [];
-            const total = response?.data?.meta?.total || response?.meta?.total || response?.total || 0;
+            // SAFE API RESPONSE HANDLING - response is PaginatedResponse with items and total
+            const ordersData = response?.items || [];
+            const total = response?.total || 0;
 
             return {
               data: Array.isArray(ordersData) ? ordersData : [],

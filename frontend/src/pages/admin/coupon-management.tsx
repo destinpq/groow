@@ -71,9 +71,12 @@ const CouponManagementPage: React.FC = () => {
       if (typeFilter !== 'all') filters.type = typeFilter;
       
       const response = await couponsAPI.getAll(filters);
-      setCoupons(response.data || response);
+      // SAFE API RESPONSE HANDLING - response.coupons is the array
+      const couponsData = response?.coupons || [];
+      setCoupons(Array.isArray(couponsData) ? couponsData : []);
     } catch (error) {
       message.error('Failed to load coupons');
+      setCoupons([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

@@ -134,10 +134,13 @@ const FlashSalesPage: React.FC = () => {
         limit: 50,
       };
       const response = await flashSalesAPI.getAll(filters);
-      setFlashSales(response.flashSales);
+      // SAFE API RESPONSE HANDLING - response.flashSales should be an array
+      const flashSalesData = response?.flashSales || [];
+      setFlashSales(Array.isArray(flashSalesData) ? flashSalesData : []);
     } catch (error) {
       console.error('Error loading flash sales:', error);
       message.error('Failed to load flash sales');
+      setFlashSales([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -146,10 +149,12 @@ const FlashSalesPage: React.FC = () => {
   const loadDailyDeals = async () => {
     try {
       const deals = await flashSalesAPI.getDailyDeals();
-      setDailyDeals(deals);
+      // SAFE API RESPONSE HANDLING - deals should be an array
+      setDailyDeals(Array.isArray(deals) ? deals : []);
     } catch (error) {
       console.error('Error loading daily deals:', error);
       message.error('Failed to load daily deals');
+      setDailyDeals([]); // Set empty array on error
     }
   };
 

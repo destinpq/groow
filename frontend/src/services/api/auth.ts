@@ -227,8 +227,9 @@ export interface VendorRegisterDTO extends RegisterDTO {
 }
 
 class AuthService {
-    private baseURL = process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com/api/v1';  // ============================================
-  private readonly shouldUseMockAuth = featureFlags.useMockAuth;
+  private baseURL = process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com/api/v1';
+  
+  // ============================================
   // Core Authentication
   // ============================================
 
@@ -260,20 +261,8 @@ class AuthService {
   }
 
   async register(userData: RegisterDTO): Promise<AuthResponse> {
-    if (this.shouldUseMockAuth) {
-      logMockUsage('auth.register');
-      return this.createMockAuthResponse(userData);
-    }
-
-    try {
-      return await this.performRegisterRequest(userData);
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        logMockUsage('auth.register (fallback)', error);
-        return this.createMockAuthResponse(userData);
-      }
-      throw error;
-    }
+    // ALWAYS use real API - no mock data fallback
+    return await this.performRegisterRequest(userData);
   }
 
   private async performRegisterRequest(userData: RegisterDTO): Promise<AuthResponse> {
@@ -292,7 +281,20 @@ class AuthService {
       throw new Error(message);
     }
 
-    return response.json();
+    const result = await response.json();
+    
+    // Handle the actual API response structure
+    if (result.success && result.data) {
+      return {
+        user: result.data.user,
+        token: result.data.access_token,
+        refreshToken: result.data.refresh_token,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+      };
+    }
+    
+    // Fallback for different response structure
+    return result;
   }
 
   private async tryParseJson(response: Response): Promise<any | null> {
@@ -301,27 +303,6 @@ class AuthService {
     } catch {
       return null;
     }
-  }
-
-  private createMockAuthResponse(userData: RegisterDTO): AuthResponse {
-    const now = Date.now();
-    const fallbackName = userData.email?.split?.('@')?.[0] || 'New';
-    const role = (userData as any)?.role || 'customer';
-
-    return {
-      user: {
-        id: `mock-user-${Math.random().toString(36).slice(2, 10)}`,
-        email: userData.email,
-        firstName: userData.firstName || fallbackName,
-        lastName: userData.lastName || 'User',
-        role,
-        status: 'active',
-        isEmailVerified: true,
-      },
-      token: `mock-token-${now}`,
-      refreshToken: `mock-refresh-${now}`,
-      expiresAt: new Date(now + 24 * 60 * 60 * 1000),
-    };
   }
 
   async logout(): Promise<void> {

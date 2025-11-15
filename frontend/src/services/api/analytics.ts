@@ -1038,20 +1038,8 @@ const handleAnalyticsRequest = async <T>(
   request: () => Promise<T>,
   fallback: () => T,
 ): Promise<T> => {
-  if (shouldMockAnalytics) {
-    logMockUsage(`analytics.${label}`);
-    return fallback();
-  }
-
-  try {
-    return await request();
-  } catch (error) {
-    if (!isProductionEnvironment) {
-      logMockUsage(`analytics.${label}`, error);
-      return fallback();
-    }
-    throw error;
-  }
+  // ALWAYS use real API - no mock data
+  return await request();
 };
 
 export const analyticsAPI = {

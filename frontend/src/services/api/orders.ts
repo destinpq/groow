@@ -124,6 +124,18 @@ export const ordersAPI = {
     return response?.data?.data || response?.data;
   },
 
+  // Alias for list() - for backward compatibility
+  getAll: async (filters?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<PaginatedResponse<Order>> => {
+    const response = await apiClient.get<APIResponse<PaginatedResponse<Order>>>('/orders', {
+      params: filters,
+    });
+    return response?.data?.data || response?.data;
+  },
+
   // Get order by ID with full details
   getById: async (id: string, includes?: {
     includeItems?: boolean;

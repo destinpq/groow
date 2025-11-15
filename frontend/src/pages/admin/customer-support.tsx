@@ -103,10 +103,13 @@ const CustomerSupportPage: React.FC = () => {
         priority: priorityFilter !== 'all' ? [priorityFilter as SupportTicket['priority']] : undefined,
       };
       const response = await supportAPI.getTickets(filters);
-      setTickets(response.tickets);
+      // SAFE API RESPONSE HANDLING - response.tickets should be an array
+      const ticketsData = response?.tickets || [];
+      setTickets(Array.isArray(ticketsData) ? ticketsData : []);
     } catch (error) {
       message.error('Failed to fetch support tickets');
       console.error(error);
+      setTickets([]); // Set empty array on error
     } finally {
       setLoading(false);
     }

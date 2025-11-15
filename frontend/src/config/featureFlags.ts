@@ -14,12 +14,13 @@ const normalizeBoolean = (value: string | undefined, defaultValue: boolean): boo
 };
 
 const isDevEnvironment = process.env.NODE_ENV !== 'production';
-const baseMockPreference = normalizeBoolean(process.env.REACT_APP_USE_MOCK_DATA, isDevEnvironment);
+// DISABLED: Always use real APIs, never mock data
+const baseMockPreference = normalizeBoolean(process.env.REACT_APP_USE_MOCK_DATA, false);
 
 const featureFlags = {
-  useMockAuth: normalizeBoolean(process.env.REACT_APP_USE_MOCK_AUTH, baseMockPreference),
-  useMockAnalytics: normalizeBoolean(process.env.REACT_APP_USE_MOCK_ANALYTICS, baseMockPreference),
-  useMockVendorStats: normalizeBoolean(process.env.REACT_APP_USE_MOCK_VENDOR_STATS, baseMockPreference),
+  useMockAuth: false, // ALWAYS use real auth API
+  useMockAnalytics: false, // ALWAYS use real analytics API
+  useMockVendorStats: false, // ALWAYS use real vendor stats API
 };
 
 export const shouldLogMockUsage = normalizeBoolean(

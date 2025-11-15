@@ -690,19 +690,11 @@ export const vendorAPI = {
         message: 'Mock data',
       });
 
-      if (shouldMockVendorStats) {
-        logMockUsage('vendor.reviews.getStats');
-        return fallback();
-      }
-
+      // ALWAYS use real API - no mock data
       try {
         const response = await apiClient.get<APIResponse<any>>('/vendors/reviews/stats');
         return response.data;
       } catch (error) {
-        if (!isProductionEnvironment) {
-          logMockUsage('vendor.reviews.getStats', error);
-          return fallback();
-        }
         throw error;
       }
     },
