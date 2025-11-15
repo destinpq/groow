@@ -221,17 +221,20 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <div style={{ 
-        background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
-        padding: '80px 20px',
+        background: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',
+        padding: '100px 20px',
         color: 'white',
-        textAlign: 'center'
+        textAlign: 'center',
+        minHeight: '500px',
+        display: 'flex',
+        alignItems: 'center'
       }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
           <Title 
             level={1} 
             style={{ 
               color: 'white', 
-              fontSize: 52, 
+              fontSize: 'clamp(32px, 5vw, 52px)', 
               marginBottom: 24, 
               fontWeight: 700,
               lineHeight: 1.2
@@ -243,57 +246,65 @@ const HomePage = () => {
           </Title>
           <Paragraph 
             style={{ 
-              fontSize: 20, 
-              color: 'white', 
+              fontSize: 'clamp(16px, 2.5vw, 20px)', 
+              color: 'rgba(255, 255, 255, 0.95)', 
               marginBottom: 40, 
-              opacity: 0.95,
-              maxWidth: 600,
-              margin: '0 auto 40px'
+              maxWidth: 700,
+              margin: '0 auto 40px',
+              padding: '0 20px'
             }}
           >
             Salon, cleaning, appliance repair, electrician, plumber and more — 
             book trusted professionals with transparent pricing.
           </Paragraph>
           
-          <Space direction="vertical" align="center" size="large">
-            <div style={{ maxWidth: 400, width: '100%' }}>
+          <Space direction="vertical" align="center" size="large" style={{ width: '100%' }}>
+            <div style={{ maxWidth: 600, width: '100%', padding: '0 20px' }}>
               <Search
                 placeholder="What service do you need?"
                 size="large"
                 enterButton={
                   <Button 
+                    type="primary"
                     size="large"
                     style={{ 
-                      background: '#22c55e', 
-                      borderColor: '#22c55e',
+                      background: '#52c41a', 
+                      borderColor: '#52c41a',
                       fontWeight: 600,
                       height: 50,
-                      fontSize: 16
+                      fontSize: 16,
+                      minWidth: '180px'
                     }}
                   >
                     Find services near you
                   </Button>
                 }
-                style={{ marginBottom: 20 }}
+                style={{ 
+                  marginBottom: 20,
+                  '.ant-input': {
+                    height: '50px',
+                    fontSize: '16px'
+                  }
+                }}
               />
             </div>
             
-            <Row gutter={40} style={{ marginTop: 40 }}>
-              <Col>
+            <Row gutter={[32, 32]} style={{ marginTop: 50, width: '100%' }} justify="center">
+              <Col xs={24} sm={8}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>4.8★</div>
+                  <div style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 'bold', marginBottom: 8, color: '#52c41a' }}>4.8★</div>
                   <div style={{ fontSize: 14, opacity: 0.9 }}>Service Rating</div>
                 </div>
               </Col>
-              <Col>
+              <Col xs={24} sm={8}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>50K+</div>
+                  <div style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 'bold', marginBottom: 8, color: '#52c41a' }}>50K+</div>
                   <div style={{ fontSize: 14, opacity: 0.9 }}>Happy Customers</div>
                 </div>
               </Col>
-              <Col>
+              <Col xs={24} sm={8}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 32, fontWeight: 'bold', marginBottom: 8 }}>24/7</div>
+                  <div style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: 'bold', marginBottom: 8, color: '#52c41a' }}>24/7</div>
                   <div style={{ fontSize: 14, opacity: 0.9 }}>Support Available</div>
                 </div>
               </Col>
@@ -319,27 +330,32 @@ const HomePage = () => {
           Choose from our wide range of professional IT services
         </Text>
         
-        <Row gutter={[24, 24]}>
+        <Row gutter={[24, 24]} justify="center">
           {serviceCategories.map((category, index) => (
-            <Col xs={24} sm={12} md={8} lg={4} key={index}>
+            <Col xs={24} sm={12} md={8} lg={8} xl={6} key={index}>
               <Card
                 hoverable
                 onClick={() => navigate(`/services/${category.title.toLowerCase().replace(/\s+/g, '-')}`)}
                 style={{ 
                   height: '100%',
-                  border: 'none',
-                  borderRadius: 12,
-                  overflow: 'hidden'
+                  border: '1px solid #f0f0f0',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
                 }}
                 styles={{ body: { padding: 0 } }}
               >
                 <div 
                   style={{ 
-                    height: 120,
-                    background: `url(${category.image})`,
+                    height: 180,
+                    background: category.image ? `url(${category.image})` : `linear-gradient(135deg, ${category.color}20 0%, ${category.color}40 100%)`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    position: 'relative'
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
                   <div 
@@ -347,7 +363,7 @@ const HomePage = () => {
                       position: 'absolute',
                       top: 16,
                       left: 16,
-                      width: 40,
+                      width: 48,
                       height: 40,
                       borderRadius: 8,
                       background: 'white',
@@ -385,22 +401,25 @@ const HomePage = () => {
             </Text>
           </div>
 
-          <Row gutter={[24, 24]}>
+          <Row gutter={[24, 24]} justify="start">
             {popularServices.map((service) => (
-              <Col xs={24} sm={12} md={8} lg={8} xl={6} key={service.id}>
+              <Col xs={24} sm={12} md={12} lg={8} xl={8} key={service.id}>
                 <Card
                   hoverable
                   onClick={() => navigate(`/service/${service.id}`)}
                   style={{ 
                     border: '1px solid #f0f0f0',
-                    borderRadius: 12,
-                    overflow: 'hidden'
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    height: '100%',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    transition: 'all 0.3s ease'
                   }}
-                  styles={{ body: { padding: 16 } }}
+                  styles={{ body: { padding: 20 } }}
                   cover={
                     <div style={{ 
-                      height: 180, 
-                      background: `url(${service.image})`,
+                      height: 220, 
+                      background: service.image ? `url(${service.image})` : '#f0f0f0',
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
                       position: 'relative'
@@ -409,14 +428,15 @@ const HomePage = () => {
                         <div 
                           style={{
                             position: 'absolute',
-                            top: 12,
-                            right: 12,
-                            background: '#FF4D4F',
+                            top: 16,
+                            right: 16,
+                            background: '#ff4d4f',
                             color: 'white',
-                            padding: '4px 8px',
-                            borderRadius: 4,
-                            fontSize: 12,
-                            fontWeight: 'bold'
+                            padding: '6px 12px',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontWeight: 'bold',
+                            boxShadow: '0 2px 8px rgba(255,77,79,0.3)'
                           }}
                         >
                           Save ${service.originalPrice - service.price}

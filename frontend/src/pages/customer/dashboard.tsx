@@ -13,9 +13,11 @@ import {
 import { useNavigate } from 'umi';
 import { useEffect, useState } from 'react';
 import { ordersAPI } from '@/services/api/orders';
+import { useAuthStore } from '@/store/auth';
 
 const CustomerDashboard = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, token } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
   const [recommendedServices, setRecommendedServices] = useState<any[]>([]);
@@ -77,8 +79,14 @@ const CustomerDashboard = () => {
   ];
 
   useEffect(() => {
+    // Only fetch data if authenticated
+    if (!isAuthenticated || !token) {
+      console.log('[CUSTOMER DASHBOARD] Not authenticated, skipping API calls');
+      setLoading(false);
+      return;
+    }
     fetchDashboardData();
-  }, []);
+  }, [isAuthenticated, token]);
 
   const fetchDashboardData = async () => {
     try {

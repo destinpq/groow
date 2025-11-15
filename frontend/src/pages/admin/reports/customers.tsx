@@ -337,19 +337,19 @@ const AdminCustomerReportsPage: React.FC = () => {
       {/* Charts */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="Customer Acquisition Trend" bordered={false}>
+          <Card title="Customer Acquisition Trend" variant="borderless">
             <Line {...acquisitionChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Customer Spending Distribution" bordered={false}>
+          <Card title="Customer Spending Distribution" variant="borderless">
             <Column {...spendingChartConfig} />
           </Card>
         </Col>
       </Row>
 
       {/* Customer Table */}
-      <Card title="Customer Performance Details" bordered={false}>
+      <Card title="Customer Performance Details" variant="borderless">
         <Table
           columns={columns}
           dataSource={mockCustomers}

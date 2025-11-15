@@ -1,4 +1,5 @@
 // Cypress support file for API testing
+import './api-test-helpers';
 
 // Global variables
 let authToken: string | null = null;

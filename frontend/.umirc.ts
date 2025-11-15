@@ -3,18 +3,12 @@ import { defineConfig } from 'umi';
 export default defineConfig({
   npmClient: 'npm',
   
-  // HTTPS configuration
-  https: {
-    key: '/etc/letsencrypt/live/groow.destinpq.com/privkey.pem',
-    cert: '/etc/letsencrypt/live/groow.destinpq.com/fullchain.pem',
-  },
-  
   // CRITICAL: Completely disable MFSU - it breaks with HTTPS/Caddy proxy
   mfsu: false,
   
-  // Disable code splitting to avoid chunk loading issues
+  // Disable code splitting to avoid chunk loading issues with Caddy proxy
   codeSplitting: {
-    jsStrategy: 'bigVendors',
+    jsStrategy: 'granularChunks',
   },
   
   // Force cache busting with hash in development
@@ -25,5 +19,13 @@ export default defineConfig({
   
   // Title and metadata
   title: 'Groow - E-Commerce Platform',
+  
+  // Proxy configuration for API calls
+  proxy: {
+    '/api': {
+      target: 'http://localhost:21440',
+      changeOrigin: true,
+    },
+  },
 });
   

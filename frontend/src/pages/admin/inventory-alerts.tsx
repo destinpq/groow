@@ -83,6 +83,7 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie, Area } from '@ant-design/charts';
+import { formatPieLabelContent } from '@/utils/chartHelpers';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 import { 
@@ -986,7 +987,7 @@ const InventoryAlertsPage: React.FC = () => {
                     radius={0.8}
                     label={{
                       type: 'outer',
-                      content: '{name} {percentage}',
+                      content: formatPieLabelContent,
                     }}
                     height={300}
                   />

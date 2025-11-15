@@ -190,7 +190,7 @@ const AdminCustomReportPage: React.FC = () => {
       <Row gutter={16}>
         {/* Report Configuration */}
         <Col xs={24} lg={8}>
-          <Card title="Report Configuration" bordered={false}>
+          <Card title="Report Configuration" variant="borderless">
             <Form form={form} layout="vertical">
               <Form.Item label="Report Type" name="reportType">
                 <Select
@@ -267,7 +267,7 @@ const AdminCustomReportPage: React.FC = () => {
           </Card>
 
           {/* Export Options */}
-          <Card title="Export Options" bordered={false} style={{ marginTop: 16 }}>
+          <Card title="Export Options" variant="borderless" style={{ marginTop: 16 }}>
             <Form.Item label="Export Format">
               <Radio.Group value={exportFormat} onChange={e => setExportFormat(e.target.value)}>
                 <Space direction="vertical">
@@ -300,7 +300,7 @@ const AdminCustomReportPage: React.FC = () => {
         <Col xs={24} lg={16}>
           <Card
             title="Report Preview"
-            bordered={false}
+            variant="borderless"
             extra={
               reportData.length > 0 && (
                 <Space>

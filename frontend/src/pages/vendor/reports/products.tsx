@@ -23,6 +23,7 @@ import {
   DollarOutlined,
 } from '@ant-design/icons';
 import { Column, Pie } from '@ant-design/charts';
+import { formatPieLabelContent } from '@/utils/chartHelpers';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
@@ -139,7 +140,7 @@ const VendorProductReportPage: React.FC = () => {
     radius: 0.8,
     label: {
       type: 'outer',
-      content: '{name} {percentage}',
+      content: formatPieLabelContent,
     },
   };
 
@@ -354,19 +355,19 @@ const VendorProductReportPage: React.FC = () => {
       {/* Charts */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={16}>
-          <Card title="Top Selling Products" bordered={false}>
+          <Card title="Top Selling Products" variant="borderless">
             <Column {...salesChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Category Distribution" bordered={false}>
+          <Card title="Category Distribution" variant="borderless">
             <Pie {...categoryChartConfig} />
           </Card>
         </Col>
       </Row>
 
       {/* Product Performance Table */}
-      <Card title="Product Performance Details" bordered={false}>
+      <Card title="Product Performance Details" variant="borderless">
         <Table
           columns={columns}
           dataSource={mockProducts}

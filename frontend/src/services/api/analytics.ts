@@ -1,3 +1,4 @@
+import featureFlags, { logMockUsage } from '@/config/featureFlags';
 import api from './client';
 import { PaginatedResponse } from '../../types/api/common';
 import {
@@ -687,6 +688,372 @@ export interface AnalyticsFilters {
 // Enhanced B2B Enterprise Analytics API Service
 // ========================================
 
+const isProductionEnvironment = process.env.NODE_ENV === 'production';
+const shouldMockAnalytics = featureFlags.useMockAnalytics;
+
+const formatDateLabel = (offset: number): string => {
+  const date = new Date();
+  date.setDate(date.getDate() - offset);
+  return date.toISOString().slice(0, 10);
+};
+
+const buildRevenueChartData = (): RevenueData[] =>
+  Array.from({ length: 7 }, (_, index) => {
+    const base = 18000 + index * 2500;
+    return {
+      date: formatDateLabel(6 - index),
+      revenue: base,
+      orders: Math.round(base / 240),
+      refunds: Math.round(base * 0.02),
+      netRevenue: Math.round(base * 0.95),
+      profit: Math.round(base * 0.32),
+      costs: Math.round(base * 0.58),
+      margin: 32,
+      tax: Math.round(base * 0.05),
+      shipping: Math.round(base * 0.03),
+      discounts: Math.round(base * 0.04),
+    };
+  });
+
+const mockSalesMetrics = (): SalesMetrics => ({
+  id: 'mock-sales-metrics',
+  totalRevenue: 128000,
+  totalOrders: 342,
+  averageOrderValue: 374.2,
+  conversionRate: 3.4,
+  period: 'last_7_days',
+  date: new Date().toISOString(),
+  growth: {
+    revenue: 8.2,
+    orders: 5.4,
+    aov: 2.1,
+    conversion: 0.4,
+  },
+  profitMargins: {
+    gross: 42,
+    net: 18,
+    operating: 12,
+  },
+  segments: {
+    b2b: {
+      revenue: 72000,
+      orders: 142,
+      aov: 507,
+      margin: 28,
+    },
+    b2c: {
+      revenue: 36000,
+      orders: 150,
+      aov: 240,
+      margin: 22,
+    },
+  },
+  channels: [
+    { channel: 'Organic', revenue: 42000, orders: 112, growth: 6 },
+    { channel: 'Paid', revenue: 36000, orders: 96, growth: 9 },
+    { channel: 'Partner', revenue: 22000, orders: 54, growth: 4 },
+  ],
+});
+
+const mockTopProducts = (): ProductAnalytics[] => [
+  {
+    id: 'prod-1',
+    name: 'AI Support Suite',
+    category: 'Software',
+    totalSold: 182,
+    revenue: 54000,
+    averageRating: 4.8,
+    views: 3800,
+    conversionRate: 4.2,
+    profit: 22000,
+    marginPercentage: 41,
+    inventory: 320,
+    stockTurnover: 7,
+    competitivePosition: {
+      market_rank: 1,
+      price_vs_competitors: 1.05,
+      feature_score: 92,
+    },
+    lifecycle: {
+      stage: 'growth',
+      days_in_stage: 120,
+      next_action: 'expand enterprise tier',
+    },
+  },
+  {
+    id: 'prod-2',
+    name: 'Edge Security Appliance',
+    category: 'Hardware',
+    totalSold: 96,
+    revenue: 31000,
+    averageRating: 4.6,
+    views: 2100,
+    conversionRate: 3.1,
+    profit: 12000,
+    marginPercentage: 38,
+    inventory: 140,
+    stockTurnover: 5,
+    competitivePosition: {
+      market_rank: 2,
+      price_vs_competitors: 0.98,
+      feature_score: 88,
+    },
+    lifecycle: {
+      stage: 'maturity',
+      days_in_stage: 260,
+      next_action: 'launch refresh campaign',
+    },
+  },
+  {
+    id: 'prod-3',
+    name: 'Managed Cloud Migration',
+    category: 'Services',
+    totalSold: 48,
+    revenue: 28000,
+    averageRating: 4.9,
+    views: 950,
+    conversionRate: 5.6,
+    profit: 14000,
+    marginPercentage: 50,
+    inventory: 999,
+    stockTurnover: 10,
+    competitivePosition: {
+      market_rank: 1,
+      price_vs_competitors: 1.1,
+      feature_score: 95,
+    },
+    lifecycle: {
+      stage: 'growth',
+      days_in_stage: 90,
+      next_action: 'scale delivery teams',
+    },
+  },
+];
+
+const mockCustomerInsights = (): CustomerAnalytics => ({
+  totalCustomers: 1820,
+  newCustomers: 148,
+  returningCustomers: 540,
+  customerLifetimeValue: 1840,
+  churnRate: 3.1,
+  acquisitionCost: 42,
+  retentionRate: 86,
+  avgOrdersPerCustomer: 2.8,
+  segments: [
+    { segment: 'Enterprise', count: 120, revenue: 62000, avgOrderValue: 520, retentionRate: 92, profitability: 'high' },
+    { segment: 'SMB', count: 420, revenue: 38000, avgOrderValue: 180, retentionRate: 83, profitability: 'medium' },
+    { segment: 'Consumer', count: 1280, revenue: 28000, avgOrderValue: 96, retentionRate: 68, profitability: 'medium' },
+  ],
+  satisfaction: {
+    nps_score: 62,
+    satisfaction_rating: 4.6,
+    support_ticket_volume: 132,
+    resolution_time: 3.2,
+  },
+  engagement: {
+    email_open_rate: 34,
+    click_through_rate: 5.2,
+    app_usage: 68,
+    feature_adoption: {
+      analytics: 72,
+      automation: 58,
+      marketplace: 41,
+    },
+  },
+});
+
+const mockTrafficOverview = (): TrafficData[] =>
+  Array.from({ length: 7 }, (_, index) => {
+    const visitors = 4200 + index * 120;
+    return {
+      date: formatDateLabel(6 - index),
+      visitors,
+      pageViews: visitors * 2.4,
+      uniqueVisitors: visitors * 0.82,
+      sessionsPerUser: 1.6,
+      avgSessionDuration: 185 + index * 3,
+      bounceRate: 41 - index * 0.4,
+      conversion_funnel: {
+        visitors,
+        product_views: Math.round(visitors * 0.62),
+        add_to_cart: Math.round(visitors * 0.21),
+        checkout_started: Math.round(visitors * 0.12),
+        orders: Math.round(visitors * 0.034),
+      },
+      user_journey: [
+        { step: 'Landing', users: visitors, dropout_rate: 0, avg_time: 35 },
+        { step: 'Browse', users: Math.round(visitors * 0.72), dropout_rate: 28, avg_time: 58 },
+        { step: 'Configure', users: Math.round(visitors * 0.38), dropout_rate: 47, avg_time: 110 },
+        { step: 'Checkout', users: Math.round(visitors * 0.14), dropout_rate: 63, avg_time: 160 },
+      ],
+    };
+  });
+
+const mockDashboardData = () => ({
+  salesMetrics: mockSalesMetrics(),
+  revenueChart: buildRevenueChartData(),
+  topProducts: mockTopProducts(),
+  customerInsights: mockCustomerInsights(),
+  trafficOverview: mockTrafficOverview(),
+  recentActivity: [
+    { title: 'Order #A1042 paid', description: '₹42,800 from Northwind Retail', timestamp: '5 min ago', status: 'success' },
+    { title: 'High value lead', description: 'Enterprise lead from FinEdge', timestamp: '18 min ago', status: 'info' },
+    { title: 'Inventory notice', description: 'Security appliance below threshold', timestamp: '1 hr ago', status: 'warning' },
+  ],
+  quickInsights: [
+    { title: 'Top Region', value: 'Bengaluru', change: '+6.3%' },
+    { title: 'Churn Risk', value: '3.1%', change: '-0.4%' },
+    { title: 'Avg Fulfillment', value: '1.9 days', change: '-0.2d' },
+  ],
+  performanceIndicators: {
+    revenue: { value: 128000, target: 150000, status: 'at_risk' },
+    fulfillment: { value: 96, target: 95, status: 'on_track' },
+    retention: { value: 86, target: 85, status: 'on_track' },
+    nps: { value: 62, target: 65, status: 'at_risk' },
+  },
+});
+
+const mockExecutiveDashboard = () => ({
+  kpis: {
+    revenue: { value: 128000, change: 8.2, trend: 'up' },
+    profit: { value: 38400, change: 5.6, trend: 'up' },
+    pipeline: { value: 48, change: -3.1, trend: 'down' },
+  },
+  revenue_breakdown: { b2b: 72000, b2c: 36000, enterprise: 20000 },
+  customer_health: { nps: 62, churn_rate: 3.1, satisfaction: 4.6 },
+  market_position: { market_share: 18, competitive_rank: 2 },
+  operational_efficiency: { profit_margin: 18, cost_per_acquisition: 42 },
+  growth_metrics: { revenue_growth: 8.2, customer_growth: 5.1, market_expansion: 2.3 },
+  risk_indicators: [
+    { type: 'supply_chain', level: 'medium', description: 'Lead time up 12% for hardware SKUs' },
+    { type: 'currency', level: 'low', description: 'INR volatility within guardrails' },
+  ],
+  strategic_insights: [
+    { category: 'enterprise', insight: 'Upsell demand for managed services', priority: 'high' },
+    { category: 'marketing', insight: 'Organic pipeline exceeding paid for first time', priority: 'medium' },
+  ],
+});
+
+const mockBusinessIntelligence = (): BusinessIntelligence => ({
+  insights: [
+    {
+      type: 'trend',
+      title: 'B2B revenue acceleration',
+      description: 'Enterprise contracts grew 11% WoW.',
+      severity: 'medium',
+      confidence: 82,
+      metrics: { revenue: 72000, orders: 18 },
+      timeframe: 'last_7_days',
+      actionable: true,
+      recommendations: ['Increase account-based marketing budget', 'Prioritize enterprise onboarding squad'],
+      impact: { revenue: 18000 },
+      relatedEntities: [{ type: 'vendor', id: 'v-1', name: 'Northwind Tech' }],
+    },
+  ],
+  predictions: [
+    {
+      metric: 'revenue',
+      timeframe: 'next_30_days',
+      predicted_value: 182000,
+      confidence_interval: { lower: 168000, upper: 195000 },
+      factors: [
+        { name: 'seasonality', impact: 0.3, description: 'Holiday procurement cycle' },
+        { name: 'pipeline', impact: 0.2, description: 'Enterprise deals in negotiation' },
+      ],
+    },
+  ],
+  benchmarks: [
+    {
+      metric: 'conversion_rate',
+      current_value: 3.4,
+      industry_benchmark: 2.8,
+      top_quartile: 3.9,
+      percentile: 78,
+      trend: 'improving',
+    },
+  ],
+});
+
+const mockVendorPerformance = () => ({
+  vendors: [
+    {
+      vendor_id: 'v-1',
+      name: 'Northwind Tech',
+      performance_score: 92,
+      delivery_performance: 95,
+      quality_score: 94,
+      cost_efficiency: 86,
+      risk_level: 'low',
+      recommendations: ['Expand capacity for managed services'],
+    },
+    {
+      vendor_id: 'v-2',
+      name: 'Contoso Logistics',
+      performance_score: 78,
+      delivery_performance: 74,
+      quality_score: 82,
+      cost_efficiency: 80,
+      risk_level: 'medium',
+      recommendations: ['Improve on-time dispatch rate'],
+    },
+  ],
+  benchmarks: {
+    delivery_performance: { average: 88, top_quartile: 94, industry_standard: 85 },
+    quality_score: { average: 86, top_quartile: 93, industry_standard: 84 },
+    cost_efficiency: { average: 80, top_quartile: 86, industry_standard: 78 },
+  },
+  optimization_opportunities: [
+    {
+      vendor_id: 'v-2',
+      opportunity: 'Streamline customs documentation',
+      potential_savings: 12000,
+      implementation_effort: 'medium',
+    },
+  ],
+});
+
+const mockRealTimeMetrics = () => ({
+  currentVisitors: 148,
+  activeOrders: 32,
+  todayRevenue: 18420,
+  conversionRate: 3.6,
+  recentOrders: [
+    { customer: 'Nexus Labs', amount: 4200, product: 'AI Support Suite', timestamp: new Date().toISOString() },
+    { customer: 'BluePeak Retail', amount: 980, product: 'Managed Cloud Migration', timestamp: new Date().toISOString() },
+  ],
+  topPages: [
+    { page: '/admin/analytics', visitors: 48 },
+    { page: '/marketplace/services', visitors: 36 },
+    { page: '/pricing', visitors: 24 },
+  ],
+  system_health: { status: 'healthy', uptime: 99.97 },
+  live_transactions: [
+    { amount: 1200, customer: 'Helios Ventures', product: 'Edge Security Appliance', timestamp: new Date().toISOString() },
+    { amount: 640, customer: 'DigitalCraft', product: 'Cloud Optimization', timestamp: new Date().toISOString() },
+  ],
+});
+
+const handleAnalyticsRequest = async <T>(
+  label: string,
+  request: () => Promise<T>,
+  fallback: () => T,
+): Promise<T> => {
+  if (shouldMockAnalytics) {
+    logMockUsage(`analytics.${label}`);
+    return fallback();
+  }
+
+  try {
+    return await request();
+  } catch (error) {
+    if (!isProductionEnvironment) {
+      logMockUsage(`analytics.${label}`, error);
+      return fallback();
+    }
+    throw error;
+  }
+};
+
 export const analyticsAPI = {
   // ========================================
   // Executive Dashboard & Overview with Business Intelligence
@@ -701,17 +1068,29 @@ export const analyticsAPI = {
     risk_indicators: Array<{ type: string; level: 'low' | 'medium' | 'high'; description: string }>;
     strategic_insights: Array<{ category: string; insight: string; priority: 'low' | 'medium' | 'high' }>;
   }> => {
-    const response = await api.get('/analytics/executive-dashboard', {
-      params: filters,
-    });
-    return response.data;
+    return handleAnalyticsRequest(
+      'getExecutiveDashboard',
+      async () => {
+        const response = await api.get('/analytics/executive-dashboard', {
+          params: filters,
+        });
+        return response.data;
+      },
+      mockExecutiveDashboard,
+    );
   },
 
   getBusinessIntelligence: async (filters?: AnalyticsFilters): Promise<BusinessIntelligence> => {
-    const response = await api.get('/analytics/business-intelligence', {
-      params: filters,
-    });
-    return response.data;
+    return handleAnalyticsRequest(
+      'getBusinessIntelligence',
+      async () => {
+        const response = await api.get('/analytics/business-intelligence', {
+          params: filters,
+        });
+        return response.data;
+      },
+      mockBusinessIntelligence,
+    );
   },
 
   getOverview: async (filters?: AnalyticsFilters): Promise<AnalyticsOverview> => {
@@ -748,10 +1127,16 @@ export const analyticsAPI = {
     quickInsights: any[];
     performanceIndicators: Record<string, { value: number; target: number; status: 'on_track' | 'at_risk' | 'behind' }>;
   }> => {
-    const response = await api.get('/analytics/dashboard', {
-      params: filters,
-    });
-    return response.data;
+    return handleAnalyticsRequest(
+      'getDashboardData',
+      async () => {
+        const response = await api.get('/analytics/dashboard', {
+          params: filters,
+        });
+        return response.data?.data || response.data;
+      },
+      mockDashboardData,
+    );
   },
 
   getRealTimeMetrics: async (): Promise<{
@@ -764,18 +1149,30 @@ export const analyticsAPI = {
     system_health: { status: 'healthy' | 'warning' | 'critical'; uptime: number };
     live_transactions: Array<{ amount: number; customer: string; product: string; timestamp: string }>;
   }> => {
-    const response = await api.get('/analytics/realtime');
-    return response.data;
+    return handleAnalyticsRequest(
+      'getRealTimeMetrics',
+      async () => {
+        const response = await api.get('/analytics/realtime');
+        return response.data?.data || response.data;
+      },
+      mockRealTimeMetrics,
+    );
   },
 
   // ========================================
   // Advanced Sales Analytics & Forecasting
   // ========================================
   getSalesMetrics: async (filters?: AnalyticsFilters): Promise<SalesMetrics> => {
-    const response = await api.get<SalesMetrics>('/analytics/sales/metrics', {
-      params: filters,
-    });
-    return response.data;
+    return handleAnalyticsRequest(
+      'getSalesMetrics',
+      async () => {
+        const response = await api.get<SalesMetrics>('/analytics/sales/metrics', {
+          params: filters,
+        });
+        return response.data;
+      },
+      mockSalesMetrics,
+    );
   },
 
   getSalesForecasting: async (
@@ -1102,10 +1499,16 @@ export const analyticsAPI = {
       implementation_effort: 'low' | 'medium' | 'high';
     }>;
   }> => {
-    const response = await api.get('/analytics/vendors/performance', {
-      params: filters,
-    });
-    return response.data;
+    return handleAnalyticsRequest(
+      'getVendorPerformance',
+      async () => {
+        const response = await api.get('/analytics/vendors/performance', {
+          params: filters,
+        });
+        return response.data;
+      },
+      mockVendorPerformance,
+    );
   },
 
   // ========================================
@@ -1730,7 +2133,7 @@ export const analyticsAPI = {
     const response = await api.get('/analytics/alerts', {
       params: filters,
     });
-    return response.data;
+    return response.data?.data || response.data;
   },
 
   createAlert: async (alertConfig: {

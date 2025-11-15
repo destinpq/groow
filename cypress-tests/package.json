@@ -18,9 +18,26 @@
     "test:rfq": "cypress run --spec 'cypress/e2e/10-rfq.cy.ts'",
     "test:core": "cypress run --spec 'cypress/e2e/{01,02,03,04,05,06}*.cy.ts'",
     "test:all": "cypress run",
-    "report": "cypress run --reporter json --reporter-options output=test-results.json"
+    "test:comprehensive": "cypress run --spec 'cypress/e2e/00-comprehensive-api-test.cy.ts'",
+    "test:comprehensive:headed": "cypress run --spec 'cypress/e2e/00-comprehensive-api-test.cy.ts' --headed --browser chrome",
+    "test:all-apis": "cypress run --spec 'cypress/e2e/generated/**/*.cy.ts'",
+    "test:all-apis:headed": "cypress run --spec 'cypress/e2e/generated/**/*.cy.ts' --headed --browser chrome",
+    "test:master": "cypress run --spec 'cypress/e2e/01-master-comprehensive-test.cy.ts'",
+    "test:authenticated": "cypress run --spec 'cypress/e2e/02-authenticated-api-test.cy.ts'",
+    "test:authenticated:headed": "cypress run --spec 'cypress/e2e/02-authenticated-api-test.cy.ts' --headed --browser chrome",
+    "report": "cypress run --reporter json --reporter-options output=test-results.json",
+    "report:open": "open cypress/reports/api-test-report.html || xdg-open cypress/reports/api-test-report.html",
+    "test:fixed": "cypress run --spec \"cypress/e2e/fixed/**/*.cy.ts\"",
+    "test:fixed:headed": "cypress run --spec \"cypress/e2e/fixed/**/*.cy.ts\" --headed --browser chrome",
+    "test:real": "cypress run --spec \"cypress/e2e/real-backend/**/*.cy.ts\"",
+    "test:real:headed": "cypress run --spec \"cypress/e2e/real-backend/**/*.cy.ts\" --headed --browser chrome"
   },
-  "keywords": ["cypress", "api", "testing", "groow"],
+  "keywords": [
+    "cypress",
+    "api",
+    "testing",
+    "groow"
+  ],
   "author": "Groow Team",
   "license": "MIT",
   "devDependencies": {

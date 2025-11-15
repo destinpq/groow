@@ -25,6 +25,7 @@ import { FinanceModule } from './modules/finance/finance.module';
 import { StaffModule } from './modules/staff/staff.module';
 import { SupportModule } from './modules/support/support.module';
 import { MarketingModule } from './modules/marketing/marketing.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 
 @Module({
   imports: [
@@ -148,6 +149,7 @@ import { MarketingModule } from './modules/marketing/marketing.module';
     StaffModule,
     SupportModule,
     MarketingModule,
+    AnalyticsModule,
     HealthModule,
     SeedModule,
   ],

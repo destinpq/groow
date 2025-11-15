@@ -1,0 +1,26 @@
+Status,Method,Endpoint,HTTP Code,Expected,Response Time (ms),Category,Requires Auth,Error
+FAIL,GET,"/admin/dashboard",404,200,54,Admin,true,Expected 200, got 404
+FAIL,GET,"/admin/users",404,200,22,Admin,true,Expected 200, got 404
+FAIL,GET,"/admin/analytics",404,200,37,Admin,true,Expected 200, got 404
+FAIL,GET,"/admin/products",404,200,28,Admin,true,Expected 200, got 404
+FAIL,GET,"/admin/orders",404,200,38,Admin,true,Expected 200, got 404
+FAIL,GET,"/admin/reports",404,200,66,Admin,true,Expected 200, got 404
+FAIL,GET,"/admin/settings",404,200,40,Admin,true,Expected 200, got 404
+FAIL,GET,"/vendors/profile",404,200,54,Vendor,true,Expected 200, got 404
+FAIL,GET,"/vendors/dashboard",404,200,67,Vendor,true,Expected 200, got 404
+FAIL,GET,"/vendors/products",404,200,35,Vendor,true,Expected 200, got 404
+FAIL,GET,"/vendors/orders",404,200,37,Vendor,true,Expected 200, got 404
+FAIL,GET,"/vendors/analytics",404,200,36,Vendor,true,Expected 200, got 404
+FAIL,GET,"/customers/profile",404,200,38,Customer,true,Expected 200, got 404
+FAIL,GET,"/customers/orders",404,200,21,Customer,true,Expected 200, got 404
+FAIL,GET,"/customers/wishlist",404,200,19,Customer,true,Expected 200, got 404
+FAIL,GET,"/customers/addresses",404,200,27,Customer,true,Expected 200, got 404
+PASS,GET,"/orders",200,200,73,Orders,true,
+FAIL,GET,"/orders/tracking",500,200,390,Orders,true,Expected 200, got 500
+PASS,GET,"/finance/transactions",200,200,100,Finance,true,
+FAIL,GET,"/finance/payouts",500,200,36,Finance,true,Expected 200, got 500
+FAIL,GET,"/admin/dashboard",404,401,30,Security Check,false,Expected 401, got 404
+FAIL,GET,"/vendors/profile",404,401,23,Security Check,false,Expected 401, got 404
+FAIL,GET,"/customers/profile",404,401,31,Security Check,false,Expected 401, got 404
+PASS,GET,"/orders",401,401,24,Security Check,false,
+PASS,GET,"/finance/transactions",401,401,43,Security Check,false,

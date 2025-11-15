@@ -1,3 +1,5 @@
+import featureFlags, { logMockUsage } from '@/config/featureFlags';
+
 // Temporary types for backend integration (will be replaced when backend POJOs are available)
 interface LoginDTO {
   email: string;
@@ -226,6 +228,7 @@ export interface VendorRegisterDTO extends RegisterDTO {
 
 class AuthService {
     private baseURL = process.env.REACT_APP_API_URL || 'https://groow-api.destinpq.com/api/v1';  // ============================================
+  private readonly shouldUseMockAuth = featureFlags.useMockAuth;
   // Core Authentication
   // ============================================
 
@@ -257,6 +260,23 @@ class AuthService {
   }
 
   async register(userData: RegisterDTO): Promise<AuthResponse> {
+    if (this.shouldUseMockAuth) {
+      logMockUsage('auth.register');
+      return this.createMockAuthResponse(userData);
+    }
+
+    try {
+      return await this.performRegisterRequest(userData);
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        logMockUsage('auth.register (fallback)', error);
+        return this.createMockAuthResponse(userData);
+      }
+      throw error;
+    }
+  }
+
+  private async performRegisterRequest(userData: RegisterDTO): Promise<AuthResponse> {
     const response = await fetch(`${this.baseURL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -264,10 +284,44 @@ class AuthService {
     });
 
     if (!response.ok) {
-      throw new Error('Registration failed');
+      const errorBody = await this.tryParseJson(response);
+      const message =
+        errorBody?.message ||
+        errorBody?.error ||
+        `Registration failed (${response.status})`;
+      throw new Error(message);
     }
 
     return response.json();
+  }
+
+  private async tryParseJson(response: Response): Promise<any | null> {
+    try {
+      return await response.clone().json();
+    } catch {
+      return null;
+    }
+  }
+
+  private createMockAuthResponse(userData: RegisterDTO): AuthResponse {
+    const now = Date.now();
+    const fallbackName = userData.email?.split?.('@')?.[0] || 'New';
+    const role = (userData as any)?.role || 'customer';
+
+    return {
+      user: {
+        id: `mock-user-${Math.random().toString(36).slice(2, 10)}`,
+        email: userData.email,
+        firstName: userData.firstName || fallbackName,
+        lastName: userData.lastName || 'User',
+        role,
+        status: 'active',
+        isEmailVerified: true,
+      },
+      token: `mock-token-${now}`,
+      refreshToken: `mock-refresh-${now}`,
+      expiresAt: new Date(now + 24 * 60 * 60 * 1000),
+    };
   }
 
   async logout(): Promise<void> {

@@ -44,6 +44,13 @@ const LoginPage = () => {
       login(access_token, userWithName);
       message.success('Login successful!');
 
+      // Wait for token to be fully stored before redirecting
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Verify token is in localStorage
+      const storedToken = localStorage.getItem('access_token');
+      console.log('[LOGIN] Token stored:', storedToken ? 'YES' : 'NO');
+
       // Redirect directly to the appropriate dashboard based on role
       if (user.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });

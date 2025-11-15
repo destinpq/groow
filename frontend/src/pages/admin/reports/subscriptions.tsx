@@ -331,19 +331,19 @@ const AdminSubscriptionReportsPage: React.FC = () => {
       {/* Charts */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="Subscription Growth Trend" bordered={false}>
+          <Card title="Subscription Growth Trend" variant="borderless">
             <Line {...trendChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Revenue by Plan" bordered={false}>
+          <Card title="Revenue by Plan" variant="borderless">
             <Column {...revenueChartConfig} />
           </Card>
         </Col>
       </Row>
 
       {/* Subscription Table */}
-      <Card title="Subscription Plan Performance" bordered={false}>
+      <Card title="Subscription Plan Performance" variant="borderless">
         <Table
           columns={columns}
           dataSource={mockSubscriptions}

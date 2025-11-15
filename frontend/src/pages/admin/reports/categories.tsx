@@ -29,6 +29,7 @@ import {
   FallOutlined,
 } from '@ant-design/icons';
 import { Column, Pie } from '@ant-design/charts';
+import { formatPieLabelContent } from '@/utils/chartHelpers';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
@@ -134,7 +135,7 @@ const AdminCategoryReportsPage: React.FC = () => {
     radius: 0.8,
     label: {
       type: 'outer',
-      content: '{name} {percentage}',
+      content: formatPieLabelContent,
     },
     interactions: [{ type: 'element-active' }],
   };
@@ -347,19 +348,19 @@ const AdminCategoryReportsPage: React.FC = () => {
       {/* Charts */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={16}>
-          <Card title="Revenue by Category" bordered={false}>
+          <Card title="Revenue by Category" variant="borderless">
             <Column {...revenueChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Market Share Distribution" bordered={false}>
+          <Card title="Market Share Distribution" variant="borderless">
             <Pie {...marketShareChartConfig} />
           </Card>
         </Col>
       </Row>
 
       {/* Category Table */}
-      <Card title="Category Performance Details" bordered={false}>
+      <Card title="Category Performance Details" variant="borderless">
         <Table
           columns={columns}
           dataSource={mockCategories}

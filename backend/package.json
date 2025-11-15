@@ -33,8 +33,10 @@
     "migration:revert": "typeorm-ts-node-commonjs migration:revert",
     "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts",
     "seed:direct": "ts-node -r tsconfig-paths/register src/database/direct-seed.ts",
+    "seed:analytics": "ts-node -r tsconfig-paths/register src/database/seed-analytics.ts",
     "db:setup": "npm run seed:direct",
-    "db:reset": "npm run seed"
+    "db:reset": "npm run seed",
+    "db:seed:all": "npm run seed && npm run seed:analytics"
   },
   "dependencies": {
     "@nestjs/bull": "^10.0.1",

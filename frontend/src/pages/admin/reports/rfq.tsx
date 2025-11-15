@@ -29,6 +29,7 @@ import {
   DollarOutlined,
 } from '@ant-design/icons';
 import { Column, Pie } from '@ant-design/charts';
+import { formatPieLabelContent } from '@/utils/chartHelpers';
 import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
@@ -141,7 +142,7 @@ const AdminRFQReportsPage: React.FC = () => {
     radius: 0.8,
     label: {
       type: 'outer',
-      content: '{name} {percentage}',
+      content: formatPieLabelContent,
     },
     color: ({ type }: { type: string }) => {
       const colors: Record<string, string> = {
@@ -369,19 +370,19 @@ const AdminRFQReportsPage: React.FC = () => {
       {/* Charts */}
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={16}>
-          <Card title="Quotes Received per RFQ" bordered={false}>
+          <Card title="Quotes Received per RFQ" variant="borderless">
             <Column {...quotesChartConfig} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="RFQ Status Distribution" bordered={false}>
+          <Card title="RFQ Status Distribution" variant="borderless">
             <Pie {...statusChartConfig} />
           </Card>
         </Col>
       </Row>
 
       {/* RFQ Table */}
-      <Card title="RFQ Performance Details" bordered={false}>
+      <Card title="RFQ Performance Details" variant="borderless">
         <Table
           columns={columns}
           dataSource={mockRFQs}

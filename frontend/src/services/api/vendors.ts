@@ -1,3 +1,4 @@
+import featureFlags, { logMockUsage } from '@/config/featureFlags';
 import apiClient from './client';
 
 // Temporary frontend types until backend integration is complete
@@ -232,6 +233,30 @@ interface VendorReview {
 
 interface PaginatedResponse<T> { items: T[]; total: number; page: number; limit: number; hasNext: boolean; hasPrev: boolean; }
 interface APIResponse<T> { success: boolean; data: T; message?: string; timestamp?: string; }
+const isProductionEnvironment = process.env.NODE_ENV === 'production';
+const shouldMockVendorStats = featureFlags.useMockVendorStats;
+
+const mockVendorReviewStats = () => ({
+  averageRating: 4.6,
+  totalReviews: 328,
+  ratingDistribution: {
+    5: 210,
+    4: 78,
+    3: 24,
+    2: 10,
+    1: 6,
+  },
+  recentTrends: [
+    { period: '2025-10', averageRating: 4.5, reviewCount: 112 },
+    { period: '2025-11', averageRating: 4.7, reviewCount: 132 },
+  ],
+  criteriaBreakdown: {
+    communication: 4.7,
+    delivery: 4.5,
+    quality: 4.6,
+    compliance: 4.8,
+  },
+});
 
 // Comprehensive B2B Enterprise Vendor Management API
 export const vendorAPI = {
@@ -659,8 +684,27 @@ export const vendorAPI = {
       }>;
       criteriaBreakdown: Record<string, number>;
     }>> => {
-      const response = await apiClient.get<APIResponse<any>>('/vendors/reviews/stats');
-      return response.data;
+      const fallback = (): APIResponse<any> => ({
+        success: true,
+        data: mockVendorReviewStats(),
+        message: 'Mock data',
+      });
+
+      if (shouldMockVendorStats) {
+        logMockUsage('vendor.reviews.getStats');
+        return fallback();
+      }
+
+      try {
+        const response = await apiClient.get<APIResponse<any>>('/vendors/reviews/stats');
+        return response.data;
+      } catch (error) {
+        if (!isProductionEnvironment) {
+          logMockUsage('vendor.reviews.getStats', error);
+          return fallback();
+        }
+        throw error;
+      }
     },
   },
 

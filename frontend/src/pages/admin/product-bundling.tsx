@@ -91,6 +91,7 @@ import {
   FireOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie, Area } from '@ant-design/charts';
+import { formatPieLabelContent } from '@/utils/chartHelpers';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 import { bundlesAPI, ProductBundle, BundleProduct, BundleStats, BundleTemplate } from '../../services/api/bundles';
@@ -873,7 +874,7 @@ const ProductBundlingPage: React.FC = () => {
                     radius={0.8}
                     label={{
                       type: 'outer',
-                      content: '{name} {percentage}',
+                      content: formatPieLabelContent,
                     }}
                     interactions={[{ type: 'element-active' }]}
                     height={300}

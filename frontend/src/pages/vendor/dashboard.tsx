@@ -41,6 +41,7 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons';
 import { Line, Column, Pie, Area, Gauge, Heatmap } from '@ant-design/charts';
+import { formatPieLabelContent } from '@/utils/chartHelpers';
 import { vendorAPI } from '../../services/api/vendors';
 import { ordersAPI } from '../../services/api/orders';
 import { productAPI } from '../../services/api/products';
@@ -97,6 +98,7 @@ interface AnalyticsData {
 }
 
 const VendorDashboard = () => {
+  const { isAuthenticated, token } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [realTimeLoading, setRealTimeLoading] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -110,6 +112,13 @@ const VendorDashboard = () => {
   const [selectedMetrics, setSelectedMetrics] = useState(['revenue', 'orders', 'customers']);
 
   useEffect(() => {
+    // Only fetch data if authenticated and token is available
+    if (!isAuthenticated || !token) {
+      console.log('[VENDOR DASHBOARD] Not authenticated, skipping API calls');
+      setLoading(false);
+      return;
+    }
+
     fetchDashboardData();
     fetchRealTimeMetrics();
     fetchAlerts();
@@ -117,7 +126,7 @@ const VendorDashboard = () => {
     // Set up real-time updates
     const interval = setInterval(fetchRealTimeMetrics, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
-  }, [timeRange]);
+  }, [timeRange, isAuthenticated, token]);
 
   const fetchDashboardData = async () => {
     try {
@@ -335,7 +344,7 @@ const VendorDashboard = () => {
     radius: 0.8,
     label: {
       type: 'outer',
-      content: '{name} {percentage}',
+      content: formatPieLabelContent,
     },
     interactions: [{ type: 'element-active' }],
   };
@@ -417,13 +426,13 @@ const VendorDashboard = () => {
       {/* Charts Section */}
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={16}>
-          <Card title="Sales Overview (Last 6 Months)" bordered={false}>
+          <Card title="Sales Overview (Last 6 Months)" variant="borderless">
             <Line {...lineChartConfig} />
           </Card>
         </Col>
         
         <Col xs={24} lg={8}>
-          <Card title="Product Status" bordered={false}>
+          <Card title="Product Status" variant="borderless">
             <Pie {...serviceStatusConfig} />
           </Card>
         </Col>
@@ -434,7 +443,7 @@ const VendorDashboard = () => {
         <Col span={24}>
           <Card 
             title="Recent Orders" 
-            bordered={false}
+            variant="borderless"
             extra={<Button type="primary" onClick={() => window.location.href = '/vendor/orders'}>View All Orders</Button>}
           >
             <Table
@@ -476,7 +485,7 @@ const VendorDashboard = () => {
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         {/* Real-time Performance Indicators */}
         <Col span={24}>
-          <Card title="Real-time Performance" bordered={false}>
+          <Card title="Real-time Performance" variant="borderless">
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={6}>
                 <Statistic
@@ -519,7 +528,7 @@ const VendorDashboard = () => {
       {alerts.length > 0 && (
         <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
           <Col span={24}>
-            <Card title="Performance Alerts" bordered={false}>
+            <Card title="Performance Alerts" variant="borderless">
               <List
                 dataSource={alerts.slice(0, 5)}
                 renderItem={(alert: any) => (
@@ -552,7 +561,7 @@ const VendorDashboard = () => {
       {topProducts.length > 0 && (
         <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
           <Col span={24}>
-            <Card title="Top Performing Products" bordered={false}>
+            <Card title="Top Performing Products" variant="borderless">
               <List
                 dataSource={topProducts}
                 renderItem={(product: any) => (
@@ -579,7 +588,7 @@ const VendorDashboard = () => {
       {analyticsData && (
         <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
           <Col xs={24} lg={12}>
-            <Card title="Performance Overview" bordered={false}>
+            <Card title="Performance Overview" variant="borderless">
               {analyticsData.performanceIndicators && Object.entries(analyticsData.performanceIndicators).map(([key, indicator]) => (
                 <div key={key} style={{ marginBottom: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -599,7 +608,7 @@ const VendorDashboard = () => {
           </Col>
           
           <Col xs={24} lg={12}>
-            <Card title="Quick Insights" bordered={false}>
+            <Card title="Quick Insights" variant="borderless">
               <List
                 dataSource={analyticsData.quickInsights || []}
                 renderItem={(insight: any) => (
