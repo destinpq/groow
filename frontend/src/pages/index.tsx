@@ -335,7 +335,7 @@ const HomePage = () => {
             <Col xs={24} sm={12} md={8} lg={8} xl={6} key={index}>
               <Card
                 hoverable
-                onClick={() => navigate(`/services/${category.title.toLowerCase().replace(/\s+/g, '-')}`)}
+                onClick={() => navigate('/services-catalog')}
                 style={{ 
                   height: '100%',
                   border: '1px solid #f0f0f0',
@@ -406,7 +406,7 @@ const HomePage = () => {
               <Col xs={24} sm={12} md={12} lg={8} xl={8} key={service.id}>
                 <Card
                   hoverable
-                  onClick={() => navigate(`/service/${service.id}`)}
+                  onClick={() => navigate('/services-catalog')}
                   style={{ 
                     border: '1px solid #f0f0f0',
                     borderRadius: 16,
@@ -635,7 +635,7 @@ const HomePage = () => {
                 padding: '0 40px',
                 fontWeight: 600
               }}
-              onClick={() => navigate('/services')}
+              onClick={() => navigate('/services-catalog')}
             >
               Browse Services
             </Button>
@@ -691,7 +691,7 @@ const HomePage = () => {
                       padding: '4px 0',
                       height: 'auto'
                     }}
-                    onClick={() => navigate(`/services/${service.toLowerCase().replace(/\s+/g, '-')}`)}
+                    onClick={() => navigate('/services-catalog')}
                   >
                     {service}
                   </Button>

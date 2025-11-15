@@ -22,7 +22,7 @@ const GlobalLayoutWrapper = () => {
     console.log('[LAYOUT useEffect]', { isAuthenticated, pathname: location.pathname });
     
     // Auth protection logic
-    const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/services', '/privacy', '/terms', '/test-minimal'];
+    const publicRoutes = ['/login', '/register', '/', '/about', '/contact', '/services-catalog', '/privacy', '/terms', '/test-minimal'];
     const isPublicRoute = publicRoutes.includes(location.pathname) || location.pathname.startsWith('/service/');
     
     if (!isAuthenticated && !isPublicRoute) {

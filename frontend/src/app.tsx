@@ -1,11 +1,18 @@
 // Defensive fix for Array.prototype.some to handle null/undefined arrays
 import './arrayfix.js';
+import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
 
 console.log('[APP.TSX] Loading app.tsx', new Date().toISOString());
 
 export function rootContainer(container: any) {
   console.log('[APP.TSX] rootContainer called', { container });
-  return container;
+  // Wrap the entire app with English locale
+  return (
+    <ConfigProvider locale={enUS}>
+      {container}
+    </ConfigProvider>
+  );
 }
 
 export function render(oldRender: any) {

@@ -227,13 +227,13 @@ const CustomerDashboard = () => {
         </Col>
 
         <Col xs={24} lg={12}>
-          <Card title="Recommended IT Services" extra={<a onClick={() => navigate('/services')}>View All</a>}>
+          <Card title="Recommended IT Services" extra={<a onClick={() => navigate('/services-catalog')}>View All</a>}>
             <List
               dataSource={recommendedServices}
               renderItem={(service: any) => (
                 <List.Item
                   actions={[
-                    <Button type="primary" size="small" onClick={() => navigate(`/services/${service.id}`)}>
+                    <Button type="primary" size="small" onClick={() => navigate('/services-catalog')}>
                       View Service
                     </Button>,
                   ]}
@@ -274,7 +274,7 @@ const CustomerDashboard = () => {
           >
             <Row gutter={16}>
               <Col xs={24} sm={12} md={6}>
-                <Button block size="large" onClick={() => navigate('/services')}>
+                <Button block size="large" onClick={() => navigate('/services-catalog')}>
                   Browse IT Services
                 </Button>
               </Col>
