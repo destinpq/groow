@@ -17,6 +17,19 @@ export default defineConfig({
   // Fix esbuild helper conflicts in production builds
   esbuildMinifyIIFE: true,
   
+  // Browser targets - ensure proper polyfill support
+  targets: {
+    chrome: 79,
+    firefox: 67,
+    safari: 11,
+    edge: 79,
+  },
+  
+  // Polyfill configuration
+  polyfill: {
+    imports: ['core-js/stable'],
+  },
+  
   // Title and metadata
   title: 'Groow - E-Commerce Platform',
   

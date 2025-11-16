@@ -1,5 +1,9 @@
+// Import polyfills first - this must be the very first import
+import './polyfills';
+
 // Defensive fix for Array.prototype.some to handle null/undefined arrays
 import './arrayfix.js';
+
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/locale/en_US';
 
