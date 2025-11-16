@@ -476,121 +476,133 @@ const ProductDetailPage: React.FC = () => {
 
       {/* Product Details Tabs */}
       <Card style={{ marginTop: 32 }}>
-        <Tabs defaultActiveKey="1" size="large">
-          <Tabs.TabPane tab="Description" key="1">
-            <div dangerouslySetInnerHTML={{ __html: product.description }} />
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="Specifications" key="2">
-            <Row gutter={[16, 16]}>
-              {product.specifications.map((spec, index) => (
-                <React.Fragment key={index}>
-                  <Col span={8}>
-                    <Text strong>{spec.label}</Text>
-                  </Col>
-                  <Col span={16}>
-                    <Text>{spec.value}</Text>
-                  </Col>
-                </React.Fragment>
-              ))}
-            </Row>
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab={`Reviews (${product.reviewCount})`} key="3">
-            {reviewsLoading ? (
-              <div style={{ textAlign: 'center', padding: '50px 0' }}>
-                <Spin />
-                <div style={{ marginTop: 16 }}>Loading reviews...</div>
-              </div>
-            ) : (
-              <>
-                {/* Rating Summary */}
-                <Row gutter={32} style={{ marginBottom: 32 }}>
-                  <Col xs={24} md={8}>
-                    <div style={{ textAlign: 'center' }}>
-                      <Title level={1} style={{ margin: 0 }}>
-                        {product.rating}
-                      </Title>
-                      <Rate disabled defaultValue={product.rating} allowHalf />
-                      <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
-                        Based on {product.reviewCount.toLocaleString()} reviews
-                      </Text>
-                    </div>
-                  </Col>
-                  <Col xs={24} md={16}>
-                    {ratingBreakdown && [5, 4, 3, 2, 1].map((star) => (
-                      <Row key={star} align="middle" gutter={8} style={{ marginBottom: 8 }}>
-                        <Col span={3}>
-                          <Text>{star} star</Text>
-                        </Col>
-                        <Col span={18}>
-                          <Progress
-                            percent={Number(calculateRatingPercentage(star))}
-                            strokeColor="#FF9900"
-                            showInfo={false}
-                          />
-                        </Col>
-                        <Col span={3}>
-                          <Text type="secondary">{calculateRatingPercentage(star)}%</Text>
-                        </Col>
-                      </Row>
-                    ))}
-                  </Col>
-                </Row>
-
-                <Divider />
-
-                {/* Reviews List */}
-                {reviews.map((review) => (
-                  <Card key={review.id} style={{ marginBottom: 16 }} size="small">
-                    <Row gutter={16}>
-                      <Col span={3}>
-                        <Avatar size={48} src={review.userAvatar} />
+        <Tabs 
+          defaultActiveKey="1" 
+          size="large"
+          items={[
+            {
+              key: '1',
+              label: 'Description',
+              children: <div dangerouslySetInnerHTML={{ __html: product.description }} />,
+            },
+            {
+              key: '2',
+              label: 'Specifications',
+              children: (
+                <Row gutter={[16, 16]}>
+                  {product.specifications.map((spec, index) => (
+                    <React.Fragment key={index}>
+                      <Col span={8}>
+                        <Text strong>{spec.label}</Text>
                       </Col>
-                      <Col span={21}>
-                        <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                          <Space>
-                            <Text strong>{review.userName}</Text>
-                            {review.verified && (
-                              <Tag color="success" icon={<CheckCircleOutlined />}>
-                                Verified Purchase
-                              </Tag>
-                            )}
-                          </Space>
-                          <Rate disabled defaultValue={review.rating} style={{ fontSize: 14 }} />
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            Reviewed on {new Date(review.createdAt).toLocaleDateString()}
+                      <Col span={16}>
+                        <Text>{spec.value}</Text>
+                      </Col>
+                    </React.Fragment>
+                  ))}
+                </Row>
+              ),
+            },
+            {
+              key: '3',
+              label: `Reviews (${product.reviewCount})`,
+              children: (
+                reviewsLoading ? (
+                  <div style={{ textAlign: 'center', padding: '50px 0' }}>
+                    <Spin />
+                    <div style={{ marginTop: 16 }}>Loading reviews...</div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Rating Summary */}
+                    <Row gutter={32} style={{ marginBottom: 32 }}>
+                      <Col xs={24} md={8}>
+                        <div style={{ textAlign: 'center' }}>
+                          <Title level={1} style={{ margin: 0 }}>
+                            {product.rating}
+                          </Title>
+                          <Rate disabled defaultValue={product.rating} allowHalf />
+                          <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
+                            Based on {product.reviewCount.toLocaleString()} reviews
                           </Text>
-                          {review.title && (
-                            <Text strong style={{ display: 'block', marginTop: 4 }}>
-                              {review.title}
-                            </Text>
-                          )}
-                          <Paragraph style={{ marginTop: 8 }}>{review.comment}</Paragraph>
-                          <Text type="secondary" style={{ fontSize: 12 }}>
-                            {review.helpful} people found this helpful
-                          </Text>
-                        </Space>
+                        </div>
+                      </Col>
+                      <Col xs={24} md={16}>
+                        {ratingBreakdown && [5, 4, 3, 2, 1].map((star) => (
+                          <Row key={star} align="middle" gutter={8} style={{ marginBottom: 8 }}>
+                            <Col span={3}>
+                              <Text>{star} star</Text>
+                            </Col>
+                            <Col span={18}>
+                              <Progress
+                                percent={Number(calculateRatingPercentage(star))}
+                                strokeColor="#FF9900"
+                                showInfo={false}
+                              />
+                            </Col>
+                            <Col span={3}>
+                              <Text type="secondary">{calculateRatingPercentage(star)}%</Text>
+                            </Col>
+                          </Row>
+                        ))}
                       </Col>
                     </Row>
-                  </Card>
-                ))}
 
-                {reviews.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '50px 0' }}>
-                    <Text type="secondary">No reviews yet. Be the first to review this product!</Text>
-                  </div>
-                )}
+                    <Divider />
 
-                {reviews.length > 0 && (
-                  <Button block style={{ marginTop: 16 }}>
-                    Load More Reviews
-                  </Button>
-                )}
-              </>
-            )}
-          </Tabs.TabPane>
-        </Tabs>
+                    {/* Reviews List */}
+                    {reviews.map((review) => (
+                      <Card key={review.id} style={{ marginBottom: 16 }} size="small">
+                        <Row gutter={16}>
+                          <Col span={3}>
+                            <Avatar size={48} src={review.userAvatar} />
+                          </Col>
+                          <Col span={21}>
+                            <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                              <Space>
+                                <Text strong>{review.userName}</Text>
+                                {review.verified && (
+                                  <Tag color="success" icon={<CheckCircleOutlined />}>
+                                    Verified Purchase
+                                  </Tag>
+                                )}
+                              </Space>
+                              <Rate disabled defaultValue={review.rating} style={{ fontSize: 14 }} />
+                              <Text type="secondary" style={{ fontSize: 12 }}>
+                                Reviewed on {new Date(review.createdAt).toLocaleDateString()}
+                              </Text>
+                              {review.title && (
+                                <Text strong style={{ display: 'block', marginTop: 4 }}>
+                                  {review.title}
+                                </Text>
+                              )}
+                              <Paragraph style={{ marginTop: 8 }}>{review.comment}</Paragraph>
+                              <Text type="secondary" style={{ fontSize: 12 }}>
+                                {review.helpful} people found this helpful
+                              </Text>
+                            </Space>
+                          </Col>
+                        </Row>
+                      </Card>
+                    ))}
+
+                    {reviews.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '50px 0' }}>
+                        <Text type="secondary">No reviews yet. Be the first to review this product!</Text>
+                      </div>
+                    )}
+
+                    {reviews.length > 0 && (
+                      <Button block style={{ marginTop: 16 }}>
+                        Load More Reviews
+                      </Button>
+                    )}
+                  </>
+                )
+              ),
+            },
+          ]}
+        />
       </Card>
 
       {/* Related Products */}

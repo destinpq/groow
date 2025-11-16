@@ -28,6 +28,7 @@ async function seed() {
     const brandsData = loadJSON('brands.json');
     const vendorsData = loadJSON('vendors.json');
     const customersData = loadJSON('customers.json');
+    const productsData = loadJSON('products.json');
     const dealsData = loadJSON('deals.json');
     const couponsData = loadJSON('coupons.json');
     const promotionsData = loadJSON('promotions.json');
@@ -37,6 +38,7 @@ async function seed() {
     await dataSource.query('TRUNCATE TABLE users CASCADE');
     await dataSource.query('TRUNCATE TABLE categories CASCADE');
     await dataSource.query('TRUNCATE TABLE brands CASCADE');
+    await dataSource.query('TRUNCATE TABLE products CASCADE');
     await dataSource.query('TRUNCATE TABLE deals CASCADE');
     await dataSource.query('TRUNCATE TABLE coupons CASCADE');
     await dataSource.query('TRUNCATE TABLE promotions CASCADE');
@@ -96,6 +98,71 @@ async function seed() {
       }
     }
     console.log(`✅ Created ${customerCount} customers\n`);
+
+    console.log('📦 Creating products...');
+    let productCount = 0;
+    const vendorIdMap = new Map();
+    
+    // Get vendor IDs
+    const vendorResults = await dataSource.query('SELECT id, "userId" FROM vendors');
+    for (const vendor of vendorResults) {
+      const userResult = await dataSource.query('SELECT email FROM users WHERE id = $1', [vendor.userId]);
+      if (userResult.length > 0) {
+        vendorIdMap.set(userResult[0].email, vendor.id);
+      }
+    }
+    
+    // Get category and brand IDs
+    const categoryMap = new Map();
+    const categoryResults = await dataSource.query('SELECT id, slug FROM categories');
+    for (const cat of categoryResults) {
+      categoryMap.set(cat.slug, cat.id);
+    }
+    
+    const brandMap = new Map();
+    const brandResults = await dataSource.query('SELECT id, slug FROM brands');
+    for (const brand of brandResults) {
+      brandMap.set(brand.slug, brand.id);
+    }
+    
+    for (const product of productsData) {
+      const vendorId = vendorIdMap.get(product.vendorEmail);
+      const categoryId = categoryMap.get(product.categorySlug);
+      const brandId = brandMap.get(product.brandSlug);
+      
+      if (vendorId && categoryId) {
+        await dataSource.query(
+          `INSERT INTO products (
+            name, slug, description, "shortDescription", sku, "vendorId", 
+            "categoryId", "brandId", "basePrice", "salePrice", "stockQuantity", 
+            "minOrderQuantity", images, specifications, status, rating, 
+            "reviewCount", seo
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+          [
+            product.name,
+            product.slug,
+            product.description,
+            product.shortDescription,
+            product.sku,
+            vendorId,
+            categoryId,
+            brandId || null,
+            product.basePrice,
+            product.salePrice || product.basePrice,
+            product.stockQuantity,
+            product.minOrderQuantity || 1,
+            JSON.stringify(product.images || []),
+            JSON.stringify(product.specifications || []),
+            product.status || 'active',
+            product.rating || 0,
+            product.reviewCount || 0,
+            JSON.stringify(product.seo || {})
+          ]
+        );
+        productCount++;
+      }
+    }
+    console.log(`✅ Created ${productCount} products\n`);
 
     console.log('🎯 Creating deals...');
     let dealCount = 0;
@@ -205,6 +272,7 @@ async function seed() {
     console.log(`  ✓ ${brandsData.length} Brands`);
     console.log(`  ✓ ${vendorCount} Vendors`);
     console.log(`  ✓ ${customerCount} Customers`);
+    console.log(`  ✓ ${productCount} Products`);
     console.log(`  ✓ ${dealCount} Deals`);
     console.log(`  ✓ ${couponCount} Coupons`);
     console.log(`  ✓ ${promotionCount} Promotions`);

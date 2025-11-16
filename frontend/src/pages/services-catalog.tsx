@@ -17,6 +17,9 @@ import {
   Checkbox,
   Collapse,
   Divider,
+  Spin,
+  Empty,
+  message,
 } from 'antd';
 import {
   SearchOutlined,
@@ -33,11 +36,11 @@ import {
 } from '@ant-design/icons';
 import ServiceGrid from '@/components/services/ServiceGrid';
 import type { Service } from '@/components/services/ServiceCard';
+import { apiClient } from '@/services/api/client';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
-const { TabPane } = Tabs;
 const { Panel } = Collapse;
 
 // Mock data for demonstration - replace with actual API calls
@@ -54,7 +57,7 @@ const mockServices: Service[] = [
       name: "TechCraft Solutions",
       rating: 4.8
     },
-    images: ["/api/placeholder/300/200"],
+    images: ["https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop"],
     packages: [
       { id: 1, name: "Basic", price: 2500, duration: "2-3 weeks", features: ["5 pages", "Responsive design", "Basic SEO"] },
       { id: 2, name: "Standard", price: 5000, duration: "4-6 weeks", features: ["10 pages", "CMS", "Advanced SEO", "Payment integration"] },
@@ -79,7 +82,7 @@ const mockServices: Service[] = [
       name: "CloudExperts Inc",
       rating: 4.7
     },
-    images: ["/api/placeholder/300/200"],
+    images: ["https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop"],
     packages: [
       { id: 4, name: "Assessment", price: 1500, duration: "1 week", features: ["Infrastructure audit", "Migration plan", "Cost estimation"] },
       { id: 5, name: "Migration", price: 8000, duration: "4-6 weeks", features: ["Data migration", "Application setup", "Testing"] },
@@ -104,7 +107,7 @@ const mockServices: Service[] = [
       name: "SecureShield Security",
       rating: 4.9
     },
-    images: ["/api/placeholder/300/200"],
+    images: ["https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=300&fit=crop"],
     packages: [
       { id: 7, name: "Basic Scan", price: 2000, duration: "1 week", features: ["Vulnerability scan", "Basic report", "Recommendations"] },
       { id: 8, name: "Full Assessment", price: 5000, duration: "2-3 weeks", features: ["Pen testing", "Detailed report", "Compliance check"] },
@@ -129,7 +132,7 @@ const mockServices: Service[] = [
       name: "DevOps Masters",
       rating: 4.6
     },
-    images: ["/api/placeholder/300/200"],
+    images: ["https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&h=300&fit=crop"],
     packages: [
       { id: 10, name: "Basic Setup", price: 3000, duration: "2 weeks", features: ["CI/CD pipeline", "Basic monitoring", "Documentation"] },
       { id: 11, name: "Advanced", price: 6000, duration: "4 weeks", features: ["Multi-environment", "Advanced monitoring", "Security scanning"] },
@@ -154,7 +157,7 @@ const mockServices: Service[] = [
       name: "Strategic IT Advisors",
       rating: 4.8
     },
-    images: ["/api/placeholder/300/200"],
+    images: ["https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop"],
     packages: [
       { id: 13, name: "Assessment", price: 2500, duration: "1-2 weeks", features: ["IT audit", "Strategy roadmap", "Technology recommendations"] },
       { id: 14, name: "Implementation", price: 8000, duration: "3-6 months", features: ["Project management", "Vendor selection", "Change management"] }
@@ -178,7 +181,7 @@ const mockServices: Service[] = [
       name: "MobileFirst Studios",
       rating: 4.7
     },
-    images: ["/api/placeholder/300/200"],
+    images: ["https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop"],
     packages: [
       { id: 15, name: "MVP", price: 5000, duration: "6-8 weeks", features: ["Basic features", "Cross-platform", "App store submission"] },
       { id: 16, name: "Standard", price: 12000, duration: "10-14 weeks", features: ["Advanced features", "Backend API", "Push notifications"] },
@@ -203,9 +206,9 @@ const serviceCategories = [
 ];
 
 const ServicesCatalog: React.FC = () => {
-  const [services, setServices] = useState<Service[]>(mockServices);
-  const [filteredServices, setFilteredServices] = useState<Service[]>(mockServices);
-  const [loading, setLoading] = useState(false);
+  const [services, setServices] = useState<Service[]>([]);
+  const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
@@ -214,6 +217,53 @@ const ServicesCatalog: React.FC = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 30000]);
   const [sortBy, setSortBy] = useState('popular');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Fetch services from backend
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get('/services');
+      const servicesData = response?.data?.data || response?.data || [];
+      
+      // Transform backend data to match frontend Service interface
+      const transformedServices = Array.isArray(servicesData) ? servicesData.map((service: any) => ({
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        shortDescription: service.shortDescription,
+        category: service.categoryId || 'General',
+        subcategory: service.subcategoryId,
+        vendor: {
+          id: service.vendorId,
+          name: service.vendor?.businessName || 'Vendor',
+          rating: 4.5
+        },
+        images: Array.isArray(service.images) ? service.images : (service.images ? [service.images] : ['https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400']),
+        packages: service.servicePackages || [],
+        rating: service.rating || 4.5,
+        reviewCount: service.reviewCount || 0,
+        deliveryTime: service.estimatedDuration ? `${service.estimatedDuration} ${service.durationUnit || 'days'}` : 'Varies',
+        tags: service.technicalSpecs?.flatMap((spec: any) => spec.items || []).slice(0, 5) || [],
+        isAvailable: service.isActive !== false,
+        startingPrice: service.basePrice || service.discountPrice || 0
+      })) : [];
+      
+      setServices(transformedServices);
+      setFilteredServices(transformedServices);
+    } catch (error) {
+      console.error('Failed to fetch services:', error);
+      message.warning('Using demo data - backend services not available');
+      // Fallback to mock data
+      setServices(mockServices);
+      setFilteredServices(mockServices);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get all unique tags from services
   const allTags = Array.from(new Set(services.flatMap(service => service.tags || [])));
@@ -299,36 +349,51 @@ const ServicesCatalog: React.FC = () => {
     currentPage * pageSize
   );
 
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        <Space direction="vertical" align="center" size="large">
+          <Spin size="large" />
+          <Text type="secondary">Loading services...</Text>
+        </Space>
+      </div>
+    );
+  }
+
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Header Section */}
       <div style={{ backgroundColor: 'white', padding: '24px 0', borderBottom: '1px solid #f0f0f0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <Row justify="space-between" align="middle">
-            <Col>
+          <Row justify="space-between" align="middle" gutter={[16, 16]}>
+            <Col xs={24} md={12}>
               <Space direction="vertical" size="small">
-                <Title level={1} style={{ margin: 0, fontSize: '2rem' }}>
+                <Title level={1} style={{ margin: 0, fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
                   IT Services Marketplace
                 </Title>
-                <Text type="secondary" style={{ fontSize: '16px' }}>
+                <Text type="secondary" style={{ fontSize: 'clamp(14px, 2vw, 16px)' }}>
                   Find the perfect IT services for your business needs
                 </Text>
               </Space>
             </Col>
             
-            <Col>
-              <Space size="large">
-                <Statistic
-                  title="Services"
-                  value={filteredServices.length}
-                  prefix={<AppstoreOutlined />}
-                />
-                <Statistic
-                  title="Categories"
-                  value={serviceCategories.length - 1}
-                  prefix={<CodeOutlined />}
-                />
-              </Space>
+            <Col xs={24} md={12}>
+              <Row gutter={16} justify="end">
+                <Col xs={12} sm={8}>
+                  <Statistic
+                    title="Services"
+                    value={filteredServices.length}
+                    prefix={<AppstoreOutlined />}
+                  />
+                </Col>
+                <Col xs={12} sm={8}>
+                  <Statistic
+                    title="Categories"
+                    value={serviceCategories.length - 1}
+                    prefix={<CodeOutlined />}
+                  />
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div>
@@ -338,41 +403,44 @@ const ServicesCatalog: React.FC = () => {
         {/* Search and Category Tabs */}
         <Card style={{ marginBottom: 24 }}>
           <Space direction="vertical" style={{ width: '100%' }} size="middle">
-            <Row gutter={16} align="middle">
-              <Col flex="auto">
+            <Row gutter={[16, 16]} align="middle">
+              <Col xs={24} md={16} lg={18}>
                 <Search
                   placeholder="Search for services, vendors, or technologies..."
                   size="large"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onSearch={(value) => setSearchQuery(value)}
+                  enterButton
                 />
               </Col>
-              <Col>
+              <Col xs={12} sm={8} md={4} lg={3}>
                 <Select
                   value={sortBy}
                   onChange={setSortBy}
-                  style={{ width: 150 }}
+                  style={{ width: '100%' }}
                   size="large"
                 >
-                  <Option value="popular">Most Popular</Option>
-                  <Option value="rating">Highest Rated</Option>
+                  <Option value="popular">Popular</Option>
+                  <Option value="rating">Top Rated</Option>
                   <Option value="reviews">Most Reviews</Option>
-                  <Option value="price-low">Price: Low to High</Option>
-                  <Option value="price-high">Price: High to Low</Option>
+                  <Option value="price-low">Price ↑</Option>
+                  <Option value="price-high">Price ↓</Option>
                 </Select>
               </Col>
-              <Col>
-                <Button.Group size="large">
+              <Col xs={12} sm={4} md={4} lg={3}>
+                <Button.Group size="large" style={{ width: '100%' }}>
                   <Button
                     icon={<AppstoreOutlined />}
                     type={viewMode === 'grid' ? 'primary' : 'default'}
                     onClick={() => setViewMode('grid')}
+                    style={{ width: '50%' }}
                   />
                   <Button
                     icon={<UnorderedListOutlined />}
                     type={viewMode === 'list' ? 'primary' : 'default'}
                     onClick={() => setViewMode('list')}
+                    style={{ width: '50%' }}
                   />
                 </Button.Group>
               </Col>
@@ -383,20 +451,17 @@ const ServicesCatalog: React.FC = () => {
               activeKey={selectedCategory}
               onChange={setSelectedCategory}
               size="large"
-            >
-              {serviceCategories.map(category => (
-                <TabPane
-                  tab={
-                    <Space>
-                      {category.icon}
-                      <span>{category.label}</span>
-                      <Badge count={category.count} showZero style={{ backgroundColor: '#1890ff' }} />
-                    </Space>
-                  }
-                  key={category.key}
-                />
-              ))}
-            </Tabs>
+              items={serviceCategories.map(category => ({
+                key: category.key,
+                label: (
+                  <Space>
+                    {category.icon}
+                    <span style={{ display: window.innerWidth < 768 ? 'none' : 'inline' }}>{category.label}</span>
+                    <Badge count={category.count} showZero style={{ backgroundColor: '#1890ff' }} />
+                  </Space>
+                ),
+              }))}
+            />
           </Space>
         </Card>
 

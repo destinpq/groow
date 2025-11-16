@@ -133,8 +133,14 @@ const AdminVendorReportsPage: React.FC = () => {
     colorField: 'type',
     radius: 0.8,
     label: {
-      type: 'outer',
-      content: formatPieLabelContent,
+      text: (datum: any) => {
+        const percent = datum.percent || 0;
+        return `${datum.type}: ${(percent * 100).toFixed(1)}%`;
+      },
+      position: 'outside' as const,
+    },
+    legend: {
+      position: 'bottom' as const,
     },
     color: ({ type }: { type: string }) => {
       const colors: Record<string, string> = {
@@ -163,16 +169,21 @@ const AdminVendorReportsPage: React.FC = () => {
     columnWidthRatio: 0.6,
     label: {
       position: 'top' as const,
-      formatter: (datum: { revenue: number }) => `$${datum.revenue.toLocaleString()}`,
-    },
-    xAxis: {
-      label: {
-        autoRotate: true,
+      text: (datum: any) => {
+        const revenue = datum?.revenue || 0;
+        return `$${revenue.toLocaleString()}`;
       },
     },
-    yAxis: {
-      label: {
-        formatter: (v: string) => `$${Number(v).toLocaleString()}`,
+    axis: {
+      x: {
+        label: {
+          autoRotate: true,
+        },
+      },
+      y: {
+        label: {
+          formatter: (v: string) => `$${Number(v).toLocaleString()}`,
+        },
       },
     },
   };

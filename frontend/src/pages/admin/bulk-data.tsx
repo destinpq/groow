@@ -740,243 +740,248 @@ const BulkDataPage: React.FC = () => {
         </Row>
 
         {/* Main Content */}
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <Tabs.TabPane
-            tab={
-              <span>
-                <ImportOutlined />
-                Import Jobs ({importJobs.length})
-              </span>
-            }
-            key="imports"
-          >
-            <Card
-              title="Import Jobs"
-              extra={
-                <Space>
-                  <Button
-                    type="primary"
-                    icon={<UploadOutlined />}
-                    onClick={() => setImportModalOpen(true)}
-                  >
-                    New Import
-                  </Button>
-                </Space>
-              }
-            >
-              <Table
-                columns={importColumns}
-                dataSource={importJobs}
-                rowKey="id"
-                pagination={{
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} import jobs`,
-                }}
-                scroll={{ x: 1200 }}
-              />
-            </Card>
-          </Tabs.TabPane>
-
-          <Tabs.TabPane
-            tab={
-              <span>
-                <ExportOutlined />
-                Export Jobs ({exportJobs.length})
-              </span>
-            }
-            key="exports"
-          >
-            <Card
-              title="Export Jobs"
-              extra={
-                <Space>
-                  <Button
-                    type="primary"
-                    icon={<DownloadOutlined />}
-                    onClick={() => setExportModalOpen(true)}
-                  >
-                    New Export
-                  </Button>
-                </Space>
-              }
-            >
-              <Table
-                columns={exportColumns}
-                dataSource={exportJobs}
-                rowKey="id"
-                pagination={{
-                  pageSize: 10,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} export jobs`,
-                }}
-                scroll={{ x: 1200 }}
-              />
-            </Card>
-          </Tabs.TabPane>
-
-          <Tabs.TabPane
-            tab={
-              <span>
-                <BarsOutlined />
-                Bulk Operations
-              </span>
-            }
-            key="bulk-ops"
-          >
-            <Card
-              title="Bulk Operations"
-              extra={
-                <Space>
-                  <Button
-                    type="primary"
-                    icon={<SettingOutlined />}
-                    onClick={() => setBulkOpModalOpen(true)}
-                  >
-                    New Operation
-                  </Button>
-                </Space>
-              }
-            >
-              {bulkOperations.length === 0 ? (
-                <Empty description="No bulk operations found" />
-              ) : (
-                <List
-                  dataSource={bulkOperations}
-                  renderItem={(operation) => (
-                    <List.Item
-                      actions={[
-                        <Button
-                          type="text"
-                          icon={<EyeOutlined />}
-                          onClick={() => {
-                            // TODO: Show operation details
-                          }}
+        <Tabs 
+          activeKey={activeTab} 
+          onChange={setActiveTab}
+          items={[
+            {
+              key: 'imports',
+              label: (
+                <span>
+                  <ImportOutlined />
+                  Import Jobs ({importJobs.length})
+                </span>
+              ),
+              children: (
+                <Card
+                  title="Import Jobs"
+                  extra={
+                    <Space>
+                      <Button
+                        type="primary"
+                        icon={<UploadOutlined />}
+                        onClick={() => setImportModalOpen(true)}
+                      >
+                        New Import
+                      </Button>
+                    </Space>
+                  }
+                >
+                  <Table
+                    columns={importColumns}
+                    dataSource={importJobs}
+                    rowKey="id"
+                    pagination={{
+                      pageSize: 10,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) =>
+                        `${range[0]}-${range[1]} of ${total} import jobs`,
+                    }}
+                    scroll={{ x: 1200 }}
+                  />
+                </Card>
+              ),
+            },
+            {
+              key: 'exports',
+              label: (
+                <span>
+                  <ExportOutlined />
+                  Export Jobs ({exportJobs.length})
+                </span>
+              ),
+              children: (
+                <Card
+                  title="Export Jobs"
+                  extra={
+                    <Space>
+                      <Button
+                        type="primary"
+                        icon={<DownloadOutlined />}
+                        onClick={() => setExportModalOpen(true)}
+                      >
+                        New Export
+                      </Button>
+                    </Space>
+                  }
+                >
+                  <Table
+                    columns={exportColumns}
+                    dataSource={exportJobs}
+                    rowKey="id"
+                    pagination={{
+                      pageSize: 10,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
+                      showTotal: (total, range) =>
+                        `${range[0]}-${range[1]} of ${total} export jobs`,
+                    }}
+                    scroll={{ x: 1200 }}
+                  />
+                </Card>
+              ),
+            },
+            {
+              key: 'bulk-ops',
+              label: (
+                <span>
+                  <BarsOutlined />
+                  Bulk Operations
+                </span>
+              ),
+              children: (
+                <Card
+                  title="Bulk Operations"
+                  extra={
+                    <Space>
+                      <Button
+                        type="primary"
+                        icon={<SettingOutlined />}
+                        onClick={() => setBulkOpModalOpen(true)}
+                      >
+                        New Operation
+                      </Button>
+                    </Space>
+                  }
+                >
+                  {bulkOperations.length === 0 ? (
+                    <Empty description="No bulk operations found" />
+                  ) : (
+                    <List
+                      dataSource={bulkOperations}
+                      renderItem={(operation) => (
+                        <List.Item
+                          actions={[
+                            <Button
+                              type="text"
+                              icon={<EyeOutlined />}
+                              onClick={() => {
+                                // TODO: Show operation details
+                              }}
+                            >
+                              View
+                            </Button>,
+                            <Button
+                              type="text"
+                              icon={<DeleteOutlined />}
+                              danger
+                              onClick={() => {
+                                // TODO: Delete operation
+                              }}
+                            >
+                              Delete
+                            </Button>,
+                          ]}
                         >
-                          View
-                        </Button>,
-                        <Button
-                          type="text"
-                          icon={<DeleteOutlined />}
-                          danger
-                          onClick={() => {
-                            // TODO: Delete operation
-                          }}
-                        >
-                          Delete
-                        </Button>,
-                      ]}
-                    >
-                      <List.Item.Meta
-                        avatar={<Avatar icon={<SettingOutlined />} />}
-                        title={
-                          <div>
-                            <Text strong>{operation.type}</Text>
-                            <Tag color={getStatusColor(operation.status)} style={{ marginLeft: 8 }}>
-                              {operation.status}
-                            </Tag>
-                          </div>
-                        }
-                        description={
-                          <div>
-                            <div>Entity: {operation.entityType}</div>
-                            <div>Progress: {operation.processedItems}/{operation.totalItems}</div>
-                            <div>Created: {dayjs(operation.createdAt).format('MMM DD, YYYY HH:mm')}</div>
-                          </div>
-                        }
-                      />
-                      <Progress percent={operation.progress} style={{ width: 200 }} />
-                    </List.Item>
+                          <List.Item.Meta
+                            avatar={<Avatar icon={<SettingOutlined />} />}
+                            title={
+                              <div>
+                                <Text strong>{operation.type}</Text>
+                                <Tag color={getStatusColor(operation.status)} style={{ marginLeft: 8 }}>
+                                  {operation.status}
+                                </Tag>
+                              </div>
+                            }
+                            description={
+                              <div>
+                                <div>Entity: {operation.entityType}</div>
+                                <div>Progress: {operation.processedItems}/{operation.totalItems}</div>
+                                <div>Created: {dayjs(operation.createdAt).format('MMM DD, YYYY HH:mm')}</div>
+                              </div>
+                            }
+                          />
+                          <Progress percent={operation.progress} style={{ width: 200 }} />
+                        </List.Item>
+                      )}
+                    />
                   )}
-                />
-              )}
-            </Card>
-          </Tabs.TabPane>
-
-          <Tabs.TabPane
-            tab={
-              <span>
-                <TableOutlined />
-                Templates
-              </span>
-            }
-            key="templates"
-          >
-            <Row gutter={16}>
-              <Col span={12}>
-                <Card title="Import Templates">
-                  <List
-                    dataSource={importTemplates}
-                    renderItem={(template) => (
-                      <List.Item
-                        actions={[
-                          <Button type="text" icon={<DownloadOutlined />}>
-                            Download
-                          </Button>,
-                          <Button type="text" icon={<CopyOutlined />}>
-                            Use
-                          </Button>,
-                          <Button type="text" icon={<EditOutlined />}>
-                            Edit
-                          </Button>,
-                        ]}
-                      >
-                        <List.Item.Meta
-                          avatar={<Avatar icon={<TableOutlined />} />}
-                          title={template.name}
-                          description={
-                            <div>
-                              <div>{template.description}</div>
-                              <div style={{ fontSize: '12px', color: '#666' }}>
-                                Type: {template.type} • Used {template.usageCount} times
-                              </div>
-                            </div>
-                          }
-                        />
-                      </List.Item>
-                    )}
-                  />
                 </Card>
-              </Col>
-              <Col span={12}>
-                <Card title="Export Templates">
-                  <List
-                    dataSource={exportTemplates}
-                    renderItem={(template) => (
-                      <List.Item
-                        actions={[
-                          <Button type="text" icon={<CopyOutlined />}>
-                            Use
-                          </Button>,
-                          <Button type="text" icon={<EditOutlined />}>
-                            Edit
-                          </Button>,
-                        ]}
-                      >
-                        <List.Item.Meta
-                          avatar={<Avatar icon={<TableOutlined />} />}
-                          title={template.name}
-                          description={
-                            <div>
-                              <div>{template.description}</div>
-                              <div style={{ fontSize: '12px', color: '#666' }}>
-                                Type: {template.type} • {template.columns.length} columns
-                              </div>
-                            </div>
-                          }
-                        />
-                      </List.Item>
-                    )}
-                  />
-                </Card>
-              </Col>
-            </Row>
-          </Tabs.TabPane>
-        </Tabs>
+              ),
+            },
+            {
+              key: 'templates',
+              label: (
+                <span>
+                  <TableOutlined />
+                  Templates
+                </span>
+              ),
+              children: (
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Card title="Import Templates">
+                      <List
+                        dataSource={importTemplates}
+                        renderItem={(template) => (
+                          <List.Item
+                            actions={[
+                              <Button type="text" icon={<DownloadOutlined />}>
+                                Download
+                              </Button>,
+                              <Button type="text" icon={<CopyOutlined />}>
+                                Use
+                              </Button>,
+                              <Button type="text" icon={<EditOutlined />}>
+                                Edit
+                              </Button>,
+                            ]}
+                          >
+                            <List.Item.Meta
+                              avatar={<Avatar icon={<TableOutlined />} />}
+                              title={template.name}
+                              description={
+                                <div>
+                                  <div>{template.description}</div>
+                                  <div style={{ fontSize: '12px', color: '#666' }}>
+                                    Type: {template.type} • Used {template.usageCount} times
+                                  </div>
+                                </div>
+                              }
+                            />
+                          </List.Item>
+                        )}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card title="Export Templates">
+                      <List
+                        dataSource={exportTemplates}
+                        renderItem={(template) => (
+                          <List.Item
+                            actions={[
+                              <Button type="text" icon={<CopyOutlined />}>
+                                Use
+                              </Button>,
+                              <Button type="text" icon={<EditOutlined />}>
+                                Edit
+                              </Button>,
+                            ]}
+                          >
+                            <List.Item.Meta
+                              avatar={<Avatar icon={<TableOutlined />} />}
+                              title={template.name}
+                              description={
+                                <div>
+                                  <div>{template.description}</div>
+                                  <div style={{ fontSize: '12px', color: '#666' }}>
+                                    Type: {template.type} • {template.columns.length} columns
+                                  </div>
+                                </div>
+                              }
+                            />
+                          </List.Item>
+                        )}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+              ),
+            },
+          ]}
+        />
 
         {/* Import Modal */}
         <Modal

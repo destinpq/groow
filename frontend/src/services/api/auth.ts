@@ -234,17 +234,43 @@ class AuthService {
   // ============================================
 
   async login(credentials: LoginDTO): Promise<AuthResponse> {
+    console.log('[AUTH] Attempting login to:', `${this.baseURL}/auth/login`);
+    console.log('[AUTH] Credentials:', { email: credentials.email, password: '***' });
+    
     const response = await fetch(`${this.baseURL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
     });
 
+    console.log('[AUTH] Response status:', response.status);
+    console.log('[AUTH] Response headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      throw new Error('Login failed');
+      // Try to get error details from response
+      let errorMessage = 'Login failed';
+      let errorDetails = null;
+      
+      try {
+        errorDetails = await response.json();
+        console.error('[AUTH] Error response:', errorDetails);
+        errorMessage = errorDetails.message || errorDetails.error || errorMessage;
+      } catch (e) {
+        // Response is not JSON
+        try {
+          const textError = await response.text();
+          console.error('[AUTH] Error text:', textError);
+          errorMessage = textError || errorMessage;
+        } catch (textErr) {
+          console.error('[AUTH] Could not parse error response');
+        }
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
+    console.log('[AUTH] Login response:', result);
     
     // Handle the actual API response structure
     if (result.success && result.data) {

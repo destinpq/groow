@@ -540,10 +540,19 @@ export const promotionsAPI = {
 
   // Get promotion templates
   getTemplates: async (type?: string, objective?: string): Promise<PromotionTemplate[]> => {
-    const response = await apiClient.get<PromotionsAPIResponse<PromotionTemplate[]>>('/promotions/templates', {
-      params: { type, objective },
-    });
-    return response?.data?.data || response?.data;
+    try {
+      const response = await apiClient.get<PromotionsAPIResponse<PromotionTemplate[]>>('/promotions/templates', {
+        params: { type, objective },
+      });
+      return response?.data?.data || response?.data;
+    } catch (error: any) {
+      // Return empty array if endpoint not implemented yet
+      if (error?.response?.status === 404) {
+        console.warn('Promotions templates endpoint not implemented yet');
+        return [];
+      }
+      throw error;
+    }
   },
 
   // Create promotion from template

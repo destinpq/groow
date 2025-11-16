@@ -8,6 +8,7 @@
 import { ProTable } from '@ant-design/pro-components';
 import type { ProColumns } from '@ant-design/pro-components';
 import { Button, Space, Modal, Form, Input, Upload, Switch, Select, message, Image } from 'antd';
+import { getPlaceholderByType } from '@/utils/placeholderImage';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
@@ -82,7 +83,7 @@ const AdminBanners = () => {
     {
       id: '1',
       title: 'Summer Sale Banner',
-      image: 'https://via.placeholder.com/1200x400?text=Summer+Sale',
+      image: getPlaceholderByType('banner', 'Summer Sale'),
       link: '/deals/summer-sale',
       position: 'home_top',
       order: 1,

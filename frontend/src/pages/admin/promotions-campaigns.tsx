@@ -110,7 +110,7 @@ const PromotionsManagementPage: React.FC = () => {
   useEffect(() => {
     fetchPromotions();
     fetchStats();
-    fetchTemplates();
+    // fetchTemplates(); // TODO: Enable when backend endpoint is implemented
   }, [filters]);
 
   const fetchPromotions = async () => {
